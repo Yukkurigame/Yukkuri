@@ -1,0 +1,22 @@
+# pixel size for "world grid" -- used as the unit
+# for pathfinding, broad collision, and pickup/drop.
+# it's good but not now
+block_size	 20
+
+# diffusion reflow period
+reflow_timer	 5
+max_timer	 5.1
+
+hunger_hp_ratio 1
+
+# length of a day, in seconds
+day_length      60
+evening		21
+morning	        6
+# time moves this much faster at night
+evening_scale	100%
+
+MAX_SPAWN 50
+MAX_EDIBLES 30
+
+TIME_OF_DAY_SCALE 68%

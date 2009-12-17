@@ -1,0 +1,3 @@
+- !Event { name: init, argcount: 0 }
+- !Event { name: start, argcount: 0 }
+- !Event { name: quit, argcount: 0 }

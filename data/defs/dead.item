@@ -1,0 +1,5 @@
+- !EntityDef
+  name: dead
+  image: dead.png
+  edible: True
+  nutritive: 0.8

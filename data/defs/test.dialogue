@@ -1,0 +1,178 @@
+- !DialogueDef
+    name: test
+    blocks:
+        - !DialogueBlock
+            actor: first
+            time: 1
+            text: Hello easy.
+        - !DialogueBlock
+            actor: second
+            time: 2
+            text: Hello easy. My level is %level%.
+        - !DialogueBlock
+            actor: second
+            time: 2
+            text: 
+                Question with choices is here<br/>
+                Русский внезапно поддерживается<br/>
+                fgsfds<br/>
+                fgsfds
+        - !DialogueBlock
+            actor: second
+            time: None
+            choicer: first             
+            text: Make you choise
+            choices:
+                "One":
+                "Two":
+                "Three":
+                "Four":
+        - !DialogueBlock
+            actor: second
+            time: 1
+            text: Yay
+        - !DialogueBlock
+            actor: first
+            time: 1
+            text: OK.
+
+- !DialogueDef
+    name: main
+    blocks:
+        #0
+        - !DialogueBlock
+            actor: second
+            time: 2
+            text: Would you need easy?
+        #1
+        - !DialogueBlock
+            actor: second
+            time: None
+            text: Would you need easy?
+            chooser: first            
+            choices:
+                - !DialogueChoice
+                    text: "Join me to take it easy together"
+                    command: actor.owner.invite(self.actors["second"].owner)
+                    trueframe: 3
+                    falseframe: 2
+                - !DialogueChoice
+                    text: "You level easy"
+                    command: True
+                    trueframe: 4 
+        #2
+        - !DialogueBlock
+            actor: second
+            nextframe: last
+            time: 2
+            text: "No"
+        #3
+        - !DialogueBlock
+            actor: second
+            nextframe: last
+            time: 2                         
+            text: "OK. Let's take it easy together"
+        #4
+        - !DialogueBlock
+            actor: second            
+            time: 2
+            text: My level is %s
+            command: self.actors["second"].owner.level
+
+- !DialogueDef
+    name: botjoin
+    blocks:
+        #0
+        - !DialogueBlock
+            actor: second
+            time: 5
+            text: "Would you need easy?"
+        #1
+        - !DialogueBlock
+            actor: first
+            time: 5
+            trueframe: 3
+            falseframe: 2
+            text: "Join me to take it easy together"
+            command: self.actors["first"].owner.invite(self.actors["second"].owner)
+        #2
+        - !DialogueBlock
+            actor: second
+            nextframe: last
+            time: 5
+            text: "No"
+            command: self.actors["first"].owner.party_reject(self.actors["second"].owner)
+        #3
+        - !DialogueBlock
+            actor: second
+            nextframe: last
+            time: 5
+            text: "OK. Let's take it easy together"            
+
+- !DialogueDef
+    name: playerjoin
+    blocks:
+        #0
+        - !DialogueBlock
+            actor: second
+            time: 5
+            text: "Would you need easy?"
+        #1
+        - !DialogueBlock
+            actor: first
+            time: 5
+            trueframe: 3
+            falseframe: 2
+            text: "Join me to take it easy together"
+        #2
+        - !DialogueBlock
+            actor: first
+            time: None
+            text: "Join me to take it easy together"
+            chooser: second
+            choices:
+                - !DialogueChoice
+                    text: "OK. Let's take it easy together"
+                    command: self.actors["second"].owner.join_party(self.actors["first"].owner)
+                    nextframe: 4                    
+                - !DialogueChoice
+                    text: "No"
+                    command: self.actors["second"].owner.party_reject(self.actors["first"].owner) 
+                    nextframe: 3
+        #3
+        - !DialogueBlock
+            actor: first
+            nextframe: last
+            time: 5
+            text: "So bad easy"             
+        #4
+        - !DialogueBlock
+            actor: first
+            nextframe: last
+            time: 5                       
+            text: "Yay"            
+
+
+- !DialogueDef
+    name: selftalking
+    blocks:
+        - !DialogueBlock
+            actor: first
+            time: 2
+            nextframe: last
+            text: Nobody here easy.
+        - !DialogueBlock
+            actor: first
+            time: 1
+            nextframe: last
+            text: I'm hungry easy
+        - !DialogueBlock
+            actor: first
+            time: 1
+            nextframe: last
+            text:  Drop dead easy!!! 
+        - !DialogueBlock
+            actor: first
+            time: 1
+            nextframe: last
+            text:  Not realized yet

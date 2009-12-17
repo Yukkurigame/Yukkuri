@@ -1,0 +1,20 @@
+!EntityDef
+name: Marisa
+speed: 80
+anim_distance: 10
+width: 90
+height: 100
+up_anim: [marisa_0, marisa_0, marisa_0, marisa_0]
+right_anim: [marisa_1, marisa_1, marisa_1, marisa_1]
+down_anim: [marisa_1, marisa_1, marisa_1, marisa_1]
+left_anim: [marisa_0, marisa_0, marisa_0, marisa_0]
+anchor_x: 24
+anchor_y: 8
+color: "#ffffff"
+damage: 3.0
+hungry: 1.0
+hp: 10.0
+bclrr: 50
+bclrg: 50
+bclrb: 50
+meeting: 40.0

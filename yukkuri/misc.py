@@ -87,6 +87,7 @@ class EntityDef(layer.parse.ParseObject):
     speed = 100
     anim_distance = 10
     hp = 0
+    predator= False
     damage = 0
     color = (255, 255, 255)
     growth = []
@@ -206,6 +207,9 @@ class DialogueDef(layer.parse.ParseObject):
     blocks = []
 
 class DialogueMeta(object):
+    
+    ################
+    ## If actor dead dialogue crashes. Repair!    
     
     def __init__(self, starter):
         self.starter = starter        

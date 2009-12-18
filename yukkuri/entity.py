@@ -15,7 +15,8 @@ class Yukkuri(Entity):
                              batch=world.sprites_batch)
         self.sprite.color = (255, 255, 255)
         self.sprite.scale = 0.3
-        self.bloodcolor = (self.dfn.bclrr, self.dfn.bclrg, self.dfn.bclrb)
+        #self.bloodcolor = (self.dfn.bclrr, self.dfn.bclrg, self.dfn.bclrb)
+        self.bloodcolor = eval(self.dfn.bloodcolor)
         self.dialogue = Dialogue(self)
         self.attacked = None
         self.hungry = False
@@ -102,7 +103,7 @@ class Yukkuri(Entity):
 
     def attack(self, victim = None):        
         if not victim:
-            if self.attaked and dist(self, self.attaked)*self.spritescale <= 120:
+            if self.attacked and dist(self, self.attacked)*self.sprite.scale <= 120:
                 victim = self.attacked
             else: 
                 victim = self.closer(120, self.world.ents)
@@ -128,7 +129,7 @@ class Yukkuri(Entity):
 
     def dead(self):
         killer = None
-        if self.attacked:
+        if self.attacked:            
             killer = self.attacked
             killer.exp += self.max_hp*killer.stats["Int"]/killer.level
             killer.kills += 1
@@ -146,7 +147,7 @@ class Yukkuri(Entity):
         if self.party and self.party.leader == self:
             self.party.leader_dead(killer)
         if self.dialogue.started:
-            self.dialogue.destroy()
+            self.dialogue.destroy()        
         self.kill()
 
     def eat(self, obj):
@@ -232,6 +233,8 @@ class Yukkuri(Entity):
     def update(self, dt):
         self.dialogue_update(dt)
         self.timer = self.world.timer.get()
+        if self.attacked and self.attacked.hp <= 0:
+            self.attacked = None
         if self.exp >= self.max_exp:
             self.levelup()
         if self.fed < 0.7:
@@ -427,9 +430,10 @@ class Bot(Yukkuri):
         super(Bot, self).__init__(world)
         if x: self.x = x
         if y: self.y = y        
-        self.full = 0        
+        self.full = 0
+        self.predator = self.dfn.predator
         self.exp = random.randint(0, self.world.player.level*self.world.player.level*1000)
-        self.wantparty = False        
+        self.wantparty = False
         if random.randint(0,100) >= 30:
             self.wantparty = True
 
@@ -468,8 +472,10 @@ class Bot(Yukkuri):
         elif self.hp < 0:
             self.dead()
             self.world.spawner.count -= 1
-        elif self.hungry and not self.force_go_to:
+        elif self.hungry and not self.force_go_to:            
             item = self.closer(2000, self.world.items)
+            if self.predator and not item.meat:
+                item = None
             if item:
                 if dist(self, item) < 200 * self.sprite.scale:
                     self.eat(item)
@@ -515,6 +521,9 @@ class Item(Entity):
         self.dfn = dfn
         self.world = world
         self.hp = self.dfn.hp
+        self.meat = False
+        if hasattr(self.dfn, "meat"):
+            self.meat = self.dfn.meat
         self.nutritive = self.dfn.nutritive
         if hasattr(self.dfn, "down_anim") and len(self.dfn.down_anim) > 0:
             self.images = self.dfn.down_anim

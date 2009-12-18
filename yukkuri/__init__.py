@@ -122,7 +122,7 @@ class World(object):
         if timer < 1:
             #if not self._diffuse_accum: self._diffuse_accum = True
             if not self._action: self._action = True
-        if  self._action and timer > 1:
+        if  self._action and timer > 0.5:
             self._action = False
             self.action()
         #if self._diffuse_accum and timer > layer.const.REFLOW_TIMER:

@@ -1,0 +1,19 @@
+!EntityDef
+name: Flan
+speed: 80
+anim_distance: 10
+width: 85
+height: 80
+up_anim: [flan_0]
+right_anim: [flan_1]
+down_anim: [flan_0]
+left_anim: [flan_0]
+anchor_x: 24
+anchor_y: 8
+color: "#ffffff"
+damage: 3.0
+hungry: 1.0
+hp: 10.0
+predator: True
+bloodcolor: (215, 180, 70)
+meeting: 0.87

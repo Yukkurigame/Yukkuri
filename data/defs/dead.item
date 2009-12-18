@@ -2,4 +2,5 @@
   name: dead
   image: dead.png
   edible: True
+  meat: True
   nutritive: 0.8

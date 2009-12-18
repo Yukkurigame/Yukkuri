@@ -14,8 +14,5 @@ color: "#ffffff"
 damage: 3.0
 hungry: 1.0
 hp: 10.0
-bclrr: 170
-bclrg: 55
-bclrb: 55
 bloodcolor: (170, 55, 55)
-meeting: 50.0
+meeting: 47

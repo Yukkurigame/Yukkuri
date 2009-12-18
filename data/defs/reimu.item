@@ -4,9 +4,9 @@ speed: 80
 anim_distance: 10
 width: 85
 height: 80
-up_anim: [reimu_0]
+up_anim: [reimu_back_0, reimu_back_1, reimu_back_2, reimu_back_3]
 right_anim: [reimu_3, reimu_4, reimu_5, reimu_6]
-down_anim: [reimu_2]
+down_anim: [reimu_face_0, reimu_face_1, reimu_face_2, reimu_face_3]
 left_anim: [reimu_7, reimu_8, reimu_9, reimu_10]
 anchor_x: 24
 anchor_y: 8

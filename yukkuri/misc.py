@@ -4,15 +4,15 @@ import random
 import re
 
 import layer
-import layer.audio
-import layer.colors
-import layer.command
-import layer.const
-import layer.load
-import layer.coll
-import layer.task
-import layer.keybind
-import layer.gl
+#import layer.audio
+#import layer.colors
+#import layer.command
+#import layer.const
+#import layer.load
+#import layer.coll
+#import layer.task
+#import layer.keybind
+#import layer.gl
 
 from layer.sprite import Sprite, Group, OrderedGroup, batch, Batch
 from layer.entity import Entity, EntityGroup

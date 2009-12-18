@@ -1,8 +1,0 @@
-state town
-dialogue test
-give_item weed 0
-give_item weed 1
-give_item poop_brown 2
-give_item poop_red 3
-give_item poop_yellow 4
-repeat 3 spawn

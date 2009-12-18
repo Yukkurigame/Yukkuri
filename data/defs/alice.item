@@ -1,0 +1,20 @@
+!EntityDef
+name: Alise
+speed: 80
+anim_distance: 10
+width: 85
+height: 85
+up_anim: [alice_0, alice_0, alice_0, alice_0]
+right_anim: [alice_1, alice_1, alice_1, alice_1]
+down_anim: [alice_1, alice_1, alice_1, alice_1]
+left_anim: [alice_0, alice_0, alice_0, alice_0]
+anchor_x: 24
+anchor_y: 8
+color: "#ffffff"
+damage: 3.0
+hungry: 1.0
+hp: 10.0
+bclrr: 250
+bclrg: 220
+bclrb: 100
+meeting: 10.0

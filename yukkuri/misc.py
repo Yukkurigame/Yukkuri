@@ -57,72 +57,6 @@ class Timer(object):
     def enable(self):
         self.work = True
 
-class Entity(Entity):
-    dfn = None
-    eaten = None
-    eating = None
-    force_go_to = None
-
-    @property
-    def block(self):
-        return (int(self.x / layer.const.BLOCK_SIZE),
-                int(self.y / layer.const.BLOCK_SIZE))
-
-    def dst_to_player(self):
-         return dist(self, self.world.player)
-
-class EntityDef(layer.parse.ParseObject):
-    load_spec = "*.item"
-    _thawers_ = dict(color=layer.colors.value)
-    _freezers_ = dict(color=layer.colors.name)
-    image = None
-    down_anim = []
-    up_anim = []
-    left_anim = []
-    right_anim = []
-    anchor_x = None
-    anchor_y = None
-    hungry = False
-    takeable = False
-    speed = 100
-    anim_distance = 10
-    hp = 0
-    predator= False
-    damage = 0
-    color = (255, 255, 255)
-    growth = []
-    days_to_grow = 1e9
-    grows_into = []
-
-    def __getstate__(self):
-        d = super(EntityDef, self).__getstate__()
-        try: d["image"] = d["image"].filename
-        except KeyError: pass
-        except AttributeError: del(d["image"])
-
-        for attr in ["down_anim", "up_anim", "left_anim", "right_anim",
-                     "growth"]:
-            try: d[attr] = map(lambda i: i.filename, d[attr])
-            except KeyError: pass
-            except AttributeError: del(d[attr])
-        return d
-    
-    def __setstate__(self, d):
-        super(EntityDef, self).__setstate__(d)
-        if self.image:
-            self.image = layer.load.image(self.image)
-            self.image.anchor_x = self.anchor_x or self.image.width / 2
-            self.image.anchor_y = self.anchor_y or self.image.height / 2
-        for attr in ["down_anim", "up_anim", "left_anim", "right_anim",
-                     "growth"]:
-            l = getattr(self, attr)
-            if l:
-                l = map(layer.load.image, l)
-                setattr(self, attr, l)
-                for image in l:
-                    image.anchor_x = self.anchor_x or image.width / 2
-                    image.anchor_y = self.anchor_y or image.height / 2
-
 class EntGroup(list): #Move into layer. This copy EntityGroup methods, it's not good
     """This class - simple group manager"""
     
@@ -232,7 +166,6 @@ class DialogueMeta(object):
         self.actors[role] = member
 
     def remove_member(self, role):
-        self.actors[role].destroy()
         del self.actors[role]
 
     def next_frame(self):          
@@ -250,7 +183,12 @@ class DialogueMeta(object):
 
     def __set_frame(self, frame):
         block = self.dfn.blocks[frame]
-        actor = self.actors[block.actor]
+        if self.actors.has_key(block.actor):
+            actor = self.actors[block.actor]
+        else:
+            self.next = "leave"
+            self.next_frame()
+            return
         text = block.text
         if hasattr(block, "nextframe"):
             self.next = block.nextframe
@@ -300,7 +238,7 @@ class DialogueMeta(object):
         actor.box.opacity = 255
         label.color = (0, 0, 0, 255)
         actor.label.color = (0, 0, 0, 0)
-        
+
     def make_choices(self, role, choices):
         actor = self.actors[role]
         oldy = 0
@@ -313,7 +251,7 @@ class DialogueMeta(object):
         self.cmove(0)
         layer.keybind.push("Dialogue")
         layer.keybind.pop("Main")
-        
+
     def choice_label(self, actor):
         label = pyglet.text.HTMLLabel(batch = actor.world.sprites_batch,
             multiline=True,  group=self.atextgroup, anchor_x="center", 
@@ -351,10 +289,10 @@ class DialogueMeta(object):
         self.timerstatus = 2
         layer.keybind.push("Main")
         layer.keybind.pop("Dialogue")
-        
+
     def destroy(self):
         for actor in self.actors.keys():
-            self.remove_member(actor)
+            self.actors[actor].leave()
 
 class Dialogue(object):
     
@@ -402,12 +340,20 @@ class Dialogue(object):
         self.alabel.content_valign = "center"
         self.alabel.color = (0, 0, 0, 0)
 
+    def leave(self):
+        if self.started:
+            self.started.remove_member(self.role)
+            self.destroy()
+
     def destroy(self):
         self.started = None
         self.role = None
-        self.box.delete()
-        self.label.delete()
-        self.alabel.delete()
+        if self.box:
+            self.box.delete()
+        if self.label:
+            self.label.delete()
+        if self.alabel:
+            self.alabel.delete()
 
 class TimeOfDay(object):
     def __init__(self, world, window):

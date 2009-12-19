@@ -2,6 +2,68 @@
 from layer.sprite import Sprite, Group, OrderedGroup, batch, Batch
 from misc import *
 
+class Entity(Entity):
+    dfn = None
+    force_go_to = None
+
+    @property
+    def block(self):
+        return (int(self.x / layer.const.BLOCK_SIZE),
+                int(self.y / layer.const.BLOCK_SIZE))
+
+    def dst_to_player(self):
+         return dist(self, self.world.player)
+
+class EntityDef(layer.parse.ParseObject):
+    load_spec = "*.item"
+    _thawers_ = dict(color=layer.colors.value)
+    _freezers_ = dict(color=layer.colors.name)
+    image = None
+    down_anim = []
+    up_anim = []
+    left_anim = []
+    right_anim = []
+    anchor_x = None
+    anchor_y = None
+    takeable = False
+    speed = 100
+    anim_distance = 10
+    hp = 0
+    damage = 0
+    color = (255, 255, 255)
+    growth = []
+    days_to_grow = 1e9
+    grows_into = []
+    type = None
+
+    def __getstate__(self):
+        d = super(EntityDef, self).__getstate__()
+        try: d["image"] = d["image"].filename
+        except KeyError: pass
+        except AttributeError: del(d["image"])
+
+        for attr in ["down_anim", "up_anim", "left_anim", "right_anim",
+                     "growth"]:
+            try: d[attr] = map(lambda i: i.filename, d[attr])
+            except KeyError: pass
+            except AttributeError: del(d[attr])
+        return d
+    
+    def __setstate__(self, d):
+        super(EntityDef, self).__setstate__(d)
+        if self.image:
+            self.image = layer.load.image(self.image)
+            self.image.anchor_x = self.anchor_x or self.image.width / 2
+            self.image.anchor_y = self.anchor_y or self.image.height / 2
+        for attr in ["down_anim", "up_anim", "left_anim", "right_anim",
+                     "growth"]:
+            l = getattr(self, attr)
+            if l:
+                l = map(layer.load.image, l)
+                setattr(self, attr, l)
+                for image in l:
+                    image.anchor_x = self.anchor_x or image.width / 2
+                    image.anchor_y = self.anchor_y or image.height / 2
 
 class Yukkuri(Entity):    
 
@@ -15,11 +77,12 @@ class Yukkuri(Entity):
                              batch=world.sprites_batch)
         self.sprite.color = (255, 255, 255)
         self.sprite.scale = 0.3
-        #self.bloodcolor = (self.dfn.bclrr, self.dfn.bclrg, self.dfn.bclrb)
         self.bloodcolor = eval(self.dfn.bloodcolor)
         self.dialogue = Dialogue(self)
         self.attacked = None
+        self.eating = None
         self.hungry = False
+        self.predator = False
         self.days, self.distance, self.kills = 0, 0, 0
         self.width = self.dfn.width * self.sprite.scale
         self.height = self.dfn.height * self.sprite.scale        
@@ -89,7 +152,7 @@ class Yukkuri(Entity):
             nx = self.x + self.dx
             ny = self.y + self.dy            
             nx, ny = self.world.valid_pos(self.x, self.y, nx, ny)            
-            if nx == self.x and ny == self.y:
+            if self.x - 1 <= nx <= self.x + 1 and self.y - 1 <= ny <= self.y + 1:
                 self.dx, self.dy = 0, 0
                 if hasattr(self, "force_go_to") and self.force_go_to:
                     self.force_go_to = None
@@ -147,7 +210,7 @@ class Yukkuri(Entity):
         if self.party and self.party.leader == self:
             self.party.leader_dead(killer)
         if self.dialogue.started:
-            self.dialogue.destroy()        
+            self.dialogue.leave()        
         self.kill()
 
     def eat(self, obj):
@@ -207,16 +270,19 @@ class Yukkuri(Entity):
         self.dialogue.started.set_dfn(dfn, first)
         
     def dialogue_update(self, dt):
-        if not self.dialogue.started or not self.dialogue.started.timerstatus:
+        ds = self.dialogue.started
+        if not ds  or not ds.timerstatus:
             return
-        self.dialogue.started.timer += dt
-        if self.dialogue.started.timer > self.dialogue.started.timerstatus:
-            self.dialogue.started.next_frame()
+        ds.timer += dt
+        if ds.timer > ds.timerstatus:
+            ds.next_frame()
 
-    def closer(self, dst, objects, reject=[]):
+    def closer(self, dst, objects, reject=[], **kwargs):
         def it(obj):
             if self is not obj:
                 if not len(reject) or obj not in reject:
+                    if kwargs.has_key("type") and obj.type is not kwargs["type"]:
+                        return 
                     d = dist(self, obj)
                     if d <= dst*self.sprite.scale:
                         return {"obj": obj, "dist": d}
@@ -431,7 +497,8 @@ class Bot(Yukkuri):
         if x: self.x = x
         if y: self.y = y        
         self.full = 0
-        self.predator = self.dfn.predator
+        if hasattr(self.dfn, "predator"):
+            self.predator = self.dfn.predator
         self.exp = random.randint(0, self.world.player.level*self.world.player.level*1000)
         self.wantparty = False
         if random.randint(0,100) >= 30:
@@ -472,10 +539,11 @@ class Bot(Yukkuri):
         elif self.hp < 0:
             self.dead()
             self.world.spawner.count -= 1
-        elif self.hungry and not self.force_go_to:            
-            item = self.closer(2000, self.world.items)
-            if self.predator and not item.meat:
-                item = None
+        elif self.hungry and not self.force_go_to:
+            if self.predator:
+                item = self.closer(2000, self.world.items, type="meat")
+            else:
+                item = self.closer(2000, self.world.items)
             if item:
                 if dist(self, item) < 200 * self.sprite.scale:
                     self.eat(item)
@@ -497,15 +565,15 @@ class Bot(Yukkuri):
                             self.force_go_to = e            
         else:
             if self.force_go_to and not self.dialogue.started:
-                left = self.force_go_to[0]  < self.x
-                right = self.force_go_to[0]  > self.x
-                down = self.force_go_to[1]  < self.y
-                up = self.force_go_to[1]  > self.y
+                left = self.force_go_to[0]  < self.x + 1
+                right = self.force_go_to[0]  > self.x - 1
+                down = self.force_go_to[1]  < self.y + 1
+                up = self.force_go_to[1]  > self.y - 1
                 dx = self.x - self.force_go_to[0]
                 dy = self.y - self.force_go_to[1]
-                pre_dist = dx * dx + dy * dy
+                #pre_dist = dx * dx + dy * dy 
                 dx = right - left
-                dy = up - down
+                dy = up - down                                 
                 if abs(self.x - self.force_go_to[0]) < 2 and abs(self.y - self.force_go_to[1]) < 2:
                     self.force_go_to = None
             elif not self.eating:
@@ -521,9 +589,7 @@ class Item(Entity):
         self.dfn = dfn
         self.world = world
         self.hp = self.dfn.hp
-        self.meat = False
-        if hasattr(self.dfn, "meat"):
-            self.meat = self.dfn.meat
+        self.type = self.dfn.type        
         self.nutritive = self.dfn.nutritive
         if hasattr(self.dfn, "down_anim") and len(self.dfn.down_anim) > 0:
             self.images = self.dfn.down_anim

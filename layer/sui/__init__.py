@@ -18,6 +18,7 @@ import layer.util
 import weakref
 
 from layer.sui.font import Font
+from layer.simpleanim import SimpleAnimationSequence, SimpleAnimation
 
 class ScreenDef(layer.parse.ParseObject):
     """A collection of widgets.
@@ -64,6 +65,7 @@ class WidgetState(layer.parse.ParseObject):
     font = None
     texture = None
     opacity = 255
+    animation = None
 
     _shelves_ = ["name", "origin", "color", "color4", "opacity",
                  "texture", "x", "y", "width", "height",
@@ -74,12 +76,14 @@ class WidgetState(layer.parse.ParseObject):
                       on_enter=layer.expr.Decompile,
                       on_exit=layer.expr.Decompile,
                       font=Font.Freeze,
+                      animation=SimpleAnimationSequence.Freeze,
                       )
     _thawers_ = dict(color=layer.colors.value,
                      color4=lambda l: map(layer.colors.value, l),
                      on_enter=layer.expr.Compile,
                      on_exit=layer.expr.Compile,
                      font=Font.Thaw,
+                     animation=SimpleAnimationSequence.Thaw,
                      )
 
     def interp(self, other, p):
@@ -118,11 +122,16 @@ class Widget(object):
     dirty_layout = True
     result = None
     animation = 0
+    simpleanim = None
 
-    def __init__(self, dfn, screen):
+    def __init__(self, dfn, screen, z, **result):
         self.dfn = dfn
         self.states = set(["base", "last"])
         self._screen = weakref.ref(screen)
+        self.z = z
+        if result:
+            self.result = WidgetState(**result)
+            self.dirty_result = False
 
     screen = property(lambda self: self._screen())
 
@@ -134,10 +143,21 @@ class Widget(object):
 
     def message(self, message, **kwargs):
         message = message.lower()
-        if message in self.dfn.messages:
-            try: context = self.screen.context
-            except AttributeError: context = None
-            self.dfn.messages[message](context=context, self=self, **kwargs)
+        if self.dfn:
+            if message in self.dfn.messages:
+                try: context = self.screen.context
+                except AttributeError: context = None
+                self.dfn.messages[message](context=context, self=self, **kwargs)
+                return True
+        else:
+            try:
+                f = getattr(self, "on_" + message)
+            except AttributeError:
+                pass
+            else:
+                f(**kwargs)
+                return True
+        return False
 
     def state(self, state, on):
         if on:
@@ -150,32 +170,47 @@ class Widget(object):
             return False
         else:
             self.states.add(state)
-            for override in self.dfn.overrides:
-                if override.name == state:
-                    if override.on_enter:
-                        try: context = self.screen.context
-                        except AttributeError: context = None
-                        override.on_enter(context=context, self=self)
-                    self.dirty_result = True
-                    break
+            if self.dfn:
+                for override in self.dfn.overrides:
+                    if override.name == state:
+                        if override.on_enter:
+                            try: context = self.screen.context
+                            except AttributeError: context = None
+                            override.on_enter(context=context, self=self)
+                        self.dirty_result = True
+                        break
+            else:
+                try:
+                    f = getattr(self, "on_enter_" + state)
+                except AttributeError:
+                    pass
+                else:
+                    f()
             return True
-        
+
     def exit(self, state):
         try: self.states.remove(state)
         except KeyError:
             return False
         else:
-            for override in self.dfn.overrides:
-                if override.name == state:
-                    if override.on_exit:
-                        try: context = self.screen.context
-                        except AttributeError: context = None
-                        override.on_exit(context=context, self=self)
-                    self.dirty_result = True
-                    break
+            if self.dfn:
+                for override in self.dfn.overrides:
+                    if override.name == state:
+                        if override.on_exit:
+                            try: context = self.screen.context
+                            except AttributeError: context = None
+                            override.on_exit(context=context, self=self)
+                        self.dirty_result = True
+                        break
+            else:
+                try: f = getattr(self, "on_xit_" + state)
+                except AttributeError: pass
+                else: f()
             return True
 
     def update(self, dt, window):
+        if self.result is None:
+            self.message("create")
         self.message("update")
         if self.result is None or self.dirty_result:
             self.message("result")
@@ -184,7 +219,20 @@ class Widget(object):
             self.dirty_layout = True
             self.enter("visible")
 
-        if self.dfn.animation > self.animation:
+        if self.simpleanim:
+            if self.simpleanim.dfn is not self.result.animation:
+                self.simpleanim.stop()
+                self.simpleanim = None
+        if self.result.animation and not self.simpleanim:
+            self.simpleanim = SimpleAnimation(
+                self.result, self.result.animation)
+            self.simpleanim.start()
+        if self.simpleanim:
+            self.simpleanim.sprite = self.result
+            self.dirty_layout = True
+            self.simpleanim.update(dt)
+
+        if self.dfn and self.dfn.animation > self.animation:
             self.message("animate")
             self.animation += dt
             p = min(1.0, self.animation / self.dfn.animation)
@@ -195,9 +243,9 @@ class Widget(object):
             self.dirty_layout = True
 
         if self.dirty_layout:
+            self.dirty_layout = False
             self.message("layout")
             self.layout(window)
-            self.dirty_layout = False
 
     def layout(self, window):
         screen = self.screen
@@ -216,14 +264,16 @@ class Widget(object):
 
         self.width = width
         self.height = height
-
+        
         if self.sprite is None or self.sprite.filename != self.result.texture:
             if self.sprite is not None:
                 self.sprite.delete()
                 self.sprite = None
             if self.result.texture:
-                self.sprite = layer.sprite.Sprite(filename=self.result.texture)
-        if self.label and self.label.font is not self.result.font:
+                self.sprite = layer.sprite.Sprite(
+                    filename=self.result.texture, z=self.z)
+        print self.result.font
+        if self.label and self.label.font is not self.result.font:            
             self.label.delete()
             self.label = None
         if self.label is None and self.result.font and self.result.text:
@@ -235,14 +285,16 @@ class Widget(object):
             self.label.anchor_y = "center"
 
         if self.sprite:
-            if not self.width:
+            if not self.result.width:
                 self.width = self.sprite.width
-            if not self.height:
+            if not self.result.height:
                 self.height = self.sprite.height
 
         if self.label:
-            self.label.text = self.result.text % layer.util.attrdict(
+            text = self.result.text % layer.util.attrdict(
                 self.screen.context.as_dict())
+            if text != self.label.text:
+                self.label.text = text
             if not self.width:
                 self.width = self.label.content_width
             if not self.height:
@@ -263,9 +315,7 @@ class Widget(object):
             self.y = y + (window.height - self.height) / 2
 
         if self.sprite:
-            self.sprite.position = self.x, self.y
-            self.sprite.width = self.width
-            self.sprite.height = self.height
+            self.sprite.box = (self.x, self.y, self.width, self.height)
             self.sprite.opacity = self.result.opacity
             if self.result.color4:
                 self.sprite.color4 = self.result.color4
@@ -285,22 +335,26 @@ class Widget(object):
             self.old_result = None
         self.new_result = new_result = WidgetState()
 
-        dfn = self.dfn
-        for override in self.dfn.overrides:
-            if override.name in self.states:
-                new_result.__dict__.update(override.__dict__)
+        if self.dfn:
+            for override in self.dfn.overrides:
+                if override.name in self.states:
+                    new_result.__dict__.update(override.__dict__)
 
-        if self.old_result is None:
-            self.animation = self.dfn.animation
+            if self.old_result is None:
+                self.animation = self.dfn.animation
 
-        if self.animation >= self.dfn.animation:
-            self.result = self.new_result
+            if self.animation >= self.dfn.animation:
+                self.result = self.new_result
 
 class Screen(object):
-    def __init__(self, window, dfn, context):
+    def __init__(self, window, dfn, context=None):
         self.window = window
         self.widgets = []
+        if dfn is None:
+            dfn = ScreenDef()
         self.dfn = dfn
+        if context is None:
+            context = UIManager.Context
         self.context = context
         self._create_widgets()
         self._focused = None
@@ -325,8 +379,8 @@ class Screen(object):
             self.scale_x = self.dfn.width / self.window.width
             self.scale_y = self.dfn.height / self.window.height
         self.widgets = []
-        for dfn in self.dfn.widgets:
-            widget = Widget(dfn, self)
+        for i, dfn in enumerate(self.dfn.widgets):
+            widget = Widget(dfn, self, i)
             self.widgets.append(widget)
 
     def _get_focused(self):
@@ -350,24 +404,32 @@ class Screen(object):
     focused = property(_get_focused, focus)
 
 class UIManager(object):
-    def __init__(self, window, globals):
+    Context = layer.expr.EvalContext("UIManager", dict(_=_))
+
+    def __init__(self, window):
         self.window = window
         self.screens = []
         self.task = layer.task.Task(self.update, enabled=True)
-        self.context = layer.expr.EvalContext("UIManager", globals)
-        self.context["_"] = _
         window.push_handlers(self)
 
     def show(self, screen):
         for scr in self.screens:
-            if scr.dfn is screen: break
+            if scr.dfn is screen:
+                return scr
         else:
-            self.screens.append(Screen(self.window, screen, self.context))
+            self.screens.append(Screen(self.window, screen, self.Context))
+            return self.screens[-1]
 
     def hide(self, screen):
         for scr in list(self.screens):
             if scr.dfn is screen:
                 self.screens.remove(scr)
+
+    def on_key_press(self, symbol, modifiers):
+        message = "key_" + layer.key.unparse(symbol)
+        for screen in self.screens:
+            if screen.focused and screen.focused.message(message):
+                return True
 
     def on_mouse_motion(self, x, y, dx, dy):
         for screen in self.screens:
@@ -400,7 +462,7 @@ class UIManager(object):
                         if w.dfn is not dfn:
                             screen._create_widgets()
                             break
-                else:
+                elif screen.dfn.widgets:
                     screen._create_widgets()
             for widget in screen.widgets:
                 widget.update(dt, self.window)
@@ -410,9 +472,9 @@ manager = None
 show = lambda *args, **kwargs: manager.show(*args, **kwargs)
 hide = lambda *args, **kwargs: manager.hide(*args, **kwargs)
 
-def init(window, globals={}):
+def init(window):
     global manager
-    manager = UIManager(window, globals)
+    manager = UIManager(window)
 
 @layer.command.command(declspec=[ScreenDef.Find])
 def ui_show(screen):

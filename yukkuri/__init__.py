@@ -4,11 +4,13 @@
 
 import layer
 import layer.audio
+import layer.camera
+import layer.coll
 import layer.colors
 import layer.command
 import layer.const
 import layer.load
-import layer.coll
+import layer.sui
 import layer.task
 import layer.keybind
 import layer.gl
@@ -18,13 +20,34 @@ from layer.entity import Entity, EntityGroup
 from misc import *
 from entity import *
 
+#do I need AppStateManager?
+
+class CameraGroup(layer.sprite.Group):
+    def __init__(self, window, world, *args, **kwargs):
+        super(CameraGroup, self).__init__(*args, **kwargs)
+        self.camera = layer.camera.Camera((window.width, window.height), world)
+        self.window = window
+        self.world = world
+        layer.camera.set_default_camera(self.camera)
+
+    def set_state(self):
+        layer.gl.glViewport(0, 0, self.window.width, self.window.height)
+        if self.world.player is not None:
+            self.camera.x = self.world.player.x
+            self.camera.y = self.world.player.y
+            #self.camera.clamp()
+            self.camera.focus()
+
+    def unset_state(self):
+        self.window.restore_state()
+        layer.gl.glViewport(0, 0, self.window.width, self.window.height)
+
 class World(object):
     _state = "main"
 
     def __init__(self, window):
         self.window = window        
         self.title = Sprite(filename="title.png")
-        self.diffuse_batch = Batch(z=100)
         self.sprites_batch = Batch(z=-1)
         self.ui_batch = Batch(z=1)                 
         self.width = window.width
@@ -32,7 +55,7 @@ class World(object):
         self.x = 0
         self.y = 0
         self.timer = Timer();
-        self.group = OrderedGroup(1)
+        self.group = CameraGroup(window, self)
         self.sprfloor = OrderedGroup(1, parent=self.group)
         self.spritems = OrderedGroup(2, parent=self.group)
         self.sprites = OrderedGroup(3, parent=self.group)
@@ -49,26 +72,12 @@ class World(object):
         self.pathing = [[0 for y in range(self.height / self.blocksize)]
                         for x in range(self.width / self.blocksize)]
         #self.open = self.map.open_grid(self.blocksize)
-        self.diffsprites = []
         self.floorsprites = {"x":{}, "y":{}}
         self.floor = []
-        self._diffuse_accum = False
         self._action = False
         self.task = layer.task.Task(self.update)
         self.spawner = Spawner(self)
         self.night = False            
-        for x, l in enumerate(self.pathing):
-            sprs = []
-            for y, v in enumerate(l):
-                spr = Sprite(batch=self.diffuse_batch, filename="white")
-                spr.width = self.blocksize
-                spr.height = self.blocksize
-                spr.x = x * self.blocksize
-                spr.y = y * self.blocksize
-                spr.color = (255, 0, 0)
-                spr.opacity = 0
-                sprs.append(spr)
-            self.diffsprites.append(sprs)
         for x in range(int(-(self.width*0.3)/self.blocksize), int(self.width*1.3/self.blocksize)):
             sprs = []
             for y in range(int(-(self.height*0.3)/self.blocksize), int(self.height*1.3/self.blocksize)):
@@ -133,14 +142,6 @@ class World(object):
         self.time.update(dt)
         self.player.inventory.update(dt)
 
-    def debug_diffusion(self, enable=None):
-        if enable is None:
-            return self.diffuse_batch in self.window.batches
-        elif enable and self.diffuse_batch not in self.window.batches:
-            self.window.batches.append(self.diffuse_batch)
-        elif not enable and self.diffuse_batch in self.window.batches:
-            self.window.batches.remove(self.diffuse_batch)
-
     def action(self):
         for ent in self.ents:
             if ent.sprite.color != ent.dfn.color:
@@ -186,9 +187,6 @@ class World(object):
         for x in xrange(width):
             for y in xrange(height):
                 self.pathing[x][y] = p(x, y)
-                if self.debug_diffusion():
-                    self.diffsprites[x][y].opacity = (
-                        self.pathing[x][y] / 60.0) * 255
 
     def valid_pos(self, ox, oy, nx, ny):
         dx = nx - ox
@@ -197,9 +195,9 @@ class World(object):
         for ent in self.ents:
             if ox == ent.x and oy == ent.y: continue
             else:
-                sx = ent.x  - (ent.width * 0.70)
-                sy = ent.y - (ent.height * 0.70)
-                if ( sx <= nx and nx <= sx + ent.width*1.4) and (sy <= ny and ny <= sy + ent.height*1.4):
+                sx = ent.x  - (ent.width / 2)
+                sy = ent.y - (ent.height / 2)
+                if (sx <= nx < sx + ent.width) and (sy <= ny < sy + ent.height):
                     return ox, oy                
         return nx, ny
 
@@ -244,24 +242,16 @@ class World(object):
         return (0, 0)
 
     def enable(self):
-        self.title.batch = None
-        layer.keybind.pop("menu")
+        self.title.batch = None        
+        layer.keybind.pop("menu")        
         layer.command.attr_command(self, "state")
         layer.command.attr_command(self.player, "up")        
         layer.command.attr_command(self.player, "down")
         layer.command.attr_command(self.player, "left")
         layer.command.attr_command(self.player, "right")
-        layer.command.command(
-            self.debug_diffusion, declspec=[layer.command.cmd_bool])
-        layer.command.command(self.interact)
-        layer.command.command(self.player.choose)
-        layer.command.command(self.player.show_stats)
-        layer.command.command(self.player.attack)
-        layer.command.command(self.player.rape)
-        layer.command.command(self.player.use)
-        layer.command.command(self.player.talk)        
-        layer.command.command(self.pickup_drop, "pickup", declspec=[int])
-        layer.command.command(self.player.drop, declspec=[int])
+        self.commands("enable")
+        #layer.command.command(self.pickup_drop, "pickup", declspec=[int])
+        #layer.command.command(self.player.drop, declspec=[int])
         layer.command.command(self.player.cmove, declspec=[int])
         #layer.command.command(self.give_item, declspec=[EntityDef.Find, int])
         layer.command.uncommand(self.enable)
@@ -273,30 +263,21 @@ class World(object):
         self.items.window = self.window
         self.state = 'main'
         self.window.batches.append(self.ui_batch)
-        self.player.move_camera()
 
     def disable(self):
-        self.player.restore_camera()
         self.title.batch = batch
         layer.keybind.push("menu")
         layer.command.command(self.enable)
         layer.command.uncommand(self.disable)
+        self.commands("disable")
         layer.command.uncommand("up")
         layer.command.uncommand("down")
         layer.command.uncommand("left")
         layer.command.uncommand("right")        
-        layer.command.uncommand(self.interact)
         layer.command.uncommand(self.player.cmove)
-        layer.command.uncommand(self.player.choose)        
-        layer.command.uncommand(self.player.show_stats)
-        layer.command.uncommand(self.player.attack)
-        layer.command.uncommand(self.player.rape)
-        layer.command.uncommand(self.player.use)
-        layer.command.uncommand(self.player.talk)
         #layer.command.uncommand(self.pickup_drop)        
         #layer.command.uncommand(self.player.drop)
         #layer.command.uncommand(self.give_item)        
-        #layer.command.uncommand(self.debug_diffusion)
         self.task.disable()
         self.ents.disable()
         self.items.disable()
@@ -305,6 +286,18 @@ class World(object):
         for b in (self.sprites_batch, self.ui_batch):
             try: self.window.batches.remove(b)
             except ValueError: pass
+
+    def commands(self, status):
+        comm = layer.command.uncommand
+        if status == "enable":
+            comm = layer.command.command
+        comm(self.interact)
+        comm(self.player.choose)
+        comm(self.player.show_stats)
+        comm(self.player.attack)
+        comm(self.player.rape)
+        comm(self.player.use)
+        comm(self.player.talk)
 
     def destroy(self):
         self.disable()
@@ -382,6 +375,7 @@ class GameOver(object):
 def init(argv):
     window = layer.init(
         "Yukkuri", _("Yukkuri"), argv, size=(800, 600))
+    layer.sui.init(window)
     return window
 
 def main(window, argv):

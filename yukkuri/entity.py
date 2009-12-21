@@ -99,8 +99,12 @@ class Yukkuri(Entity):
         self.timer = self.world.timer
         self.timerstatus = False
         self.partyreject = []
-        self.wantparty = False
         self.party = None
+        self.rapespeed = 0.1
+        if hasattr(self.dfn, "rapespeed"): self.rapespeed = self.dfn.rapespeed
+        self.rapebar = 0
+        self.blocked = False        
+        self.raping, self.raped = None, None 
         self.tint = random.uniform(1, int(layer.const.MAX_TIMER))
 
     def levelup(self, up = 1):        
@@ -145,26 +149,28 @@ class Yukkuri(Entity):
             speed = self.dfn.speed * self.fed * 2 #(self.dfn.speed * self.world.map.speed(self.x, self.y))
             if speed < 10:
                  speed = 20
-            if speed == 0: #and self.force_go_to:
-                speed = self.dfn.speed / 1
             self.dx = dt * speed * self.dx / l
             self.dy = dt * speed * self.dy / l
             nx = self.x + self.dx
             ny = self.y + self.dy            
-            nx, ny = self.world.valid_pos(self.x, self.y, nx, ny)            
+            nx, ny = self.world.valid_pos(self.x, self.y, nx, ny)
             if self.x - 1 <= nx <= self.x + 1 and self.y - 1 <= ny <= self.y + 1:
+                if self.dx == 0: self.dx = random.uniform(-0.2, 0.2)
+                if self.dy == 0: self.dy = random.uniform(-0.2, 0.2)
+                self.round_go = (self.x-self.dx*random.randint(4,24), 
+                                          self.y-self.dy*random.randint(4,24))
                 self.dx, self.dy = 0, 0
-                if hasattr(self, "force_go_to") and self.force_go_to:
-                    self.force_go_to = None
-            else:
+            else: 
                 distance = math.sqrt((nx - self.x) * (nx - self.x) + (ny - self.y) * (ny - self.y))
-                self.distance += distance
+                self.distance += distance                 
                 self.x =  nx
                 self.y = ny
                 if self.fed >= 0.01:
                     self.fed -= distance*0.0001/(self.stats["Agi"]+math.sqrt(self.stats["Sta"]))
 
-    def attack(self, victim = None):        
+    def attack(self, victim = None):
+        if self.blocked:
+            return
         if not victim:
             if self.attacked and dist(self, self.attacked)*self.sprite.scale <= 120:
                 victim = self.attacked
@@ -177,10 +183,29 @@ class Yukkuri(Entity):
             victim.hit(self)
 
     def rape(self, victim = None):
+        if self.blocked:
+            return
+        if self.rapebar < 100:
+            return
         if not victim:
             victim = self.closer(120, self.world.ents)
-        if victim:            
-            self.dialogue_start(dfn="selftalking", frame=3)
+        if victim:
+            self.rape_attempt(victim)
+
+    def rape_attempt(self, victim):
+        self.chanse = 1
+        if victim.level >= self.level:
+             self.chanse = random.randint(self.level, victim.level) - self.level + 1
+        if self.chanse > 2:
+            victim.attacked = self
+            return
+        self.x = victim.x
+        self.y = victim.y + victim.height/2
+        self.dialogue_start(dfn="selftalking", frame=4)
+        self.blocked = True
+        victim.blocked = True                
+        victim.raped = self        
+        self.raping = victim
 
     def hit(self, hiter):                        
         self.attacked = hiter
@@ -214,6 +239,8 @@ class Yukkuri(Entity):
         self.kill()
 
     def eat(self, obj):
+        if self.blocked:
+            return
         #rewrite
         if obj.hp > 0:
             dmg = self.damage/self.fed
@@ -239,7 +266,9 @@ class Yukkuri(Entity):
     def take(self, obj):
         pass
 
-    def invite(self, obj):        
+    def invite(self, obj):
+        if self.blocked:
+            return
         if obj.party:
             return False
         if obj.level > self.level + 2:            
@@ -249,6 +278,8 @@ class Yukkuri(Entity):
         return obj.join_party(self)
 
     def join_party(self, obj):
+        if self.blocked:
+            return
         if not obj.party:
             obj.party = Family(obj)
         self.party = obj.party.join(self)
@@ -262,17 +293,21 @@ class Yukkuri(Entity):
         return True
 
     def dialogue_start(self, *obj, **kwargs):
+        if self.blocked:
+            return
         if not self.dialogue.start(*obj):
             return
         dfn, first = "main", 0        
         if kwargs.has_key("dfn"): dfn = kwargs["dfn"] 
         if kwargs.has_key("frame"): first = kwargs["frame"]
         self.dialogue.started.set_dfn(dfn, first)
-        
-    def dialogue_update(self, dt):
+
+    def dialogue_update(self, dt):        
         ds = self.dialogue.started
         if not ds  or not ds.timerstatus:
             return
+        if not self.blocked:
+            self.blocked = True
         ds.timer += dt
         if ds.timer > ds.timerstatus:
             ds.next_frame()
@@ -306,14 +341,33 @@ class Yukkuri(Entity):
         if self.fed < 0.7:
             if not self.hungry:
                 self.dialogue_start(dfn="selftalk", frame=1)
-            self.hungry = True        
+            self.hungry = True
         if self.fed > 0.95:
             self.hungry = False                
         if self.timer < 1:
             if not self.timerstatus: self.timerstatus = True
         if self.timerstatus and self.timer > self.tint:
-            if self.party:
-                self.party.family_jobs(self)            
+            if self.raping:
+                if self.rapebar <= 0: 
+                    self.blocked = False
+                    self.raping.blocked = False                   
+                    self.raping.raped = None
+                    self.raping = None                                        
+                else:
+                    self.dialogue.leave()
+                    self.raping.dialogue.leave()
+                    self.blocked = True
+                    self.raping.blocked = True
+                    self.rapebar -= self.level*10
+                    self.fed -= 0.01/self.level
+                    self.hp -= 0.1/self.level
+                    self.raping.fed -= 0.01/self.level + 0.1/self.raping.fed
+                    self.raping.hp -= 0.01/self.raping.level
+            else:                
+                if self.rapebar < 100:
+                    self.rapebar += self.rapespeed
+            if self.party and not self.blocked:
+                    self.party.family_jobs(self)
             if self.fed >= 0.01:
                 self.fed -= 0.01/self.level
             self.exp += 5*self.level
@@ -370,6 +424,8 @@ class Player(Yukkuri):
             self.inventory.statssw = True
 
     def use(self):        
+        if self.blocked:
+            return
         item = self.closer(120, self.world.items)
         if hasattr(item, "edible") and item.edible:
                     self.eat(item)
@@ -377,53 +433,13 @@ class Player(Yukkuri):
                     self.take(item)
 
     def talk(self):
+        if self.blocked:
+            return
         ent = self.closer(140, self.world.ents)
         if ent:
             self.dialogue_start(ent)
         else:
             self.dialogue_start(dfn="selftalking")
-
-    def move_camera(self): # rewrite in future        
-        if not self.world.player:            
-            return
-        scale = 1        
-        layer.gl.glMatrixMode(layer.gl.GL_PROJECTION)
-        layer.gl.glLoadIdentity()
-        layer.gl.gluOrtho2D(
-            math.floor(-scale * self.world.window.width / 2.0),
-            math.floor(+scale * self.world.window.width / 2.0),
-            math.floor(-scale * self.world.window.height / 2.0),
-            math.floor(+scale * self.world.window.height / 2.0))
-    
-        # Set modelview matrix to move, scale & rotate to camera position
-        layer.gl.glMatrixMode(layer.gl.GL_MODELVIEW)
-        layer.gl.glLoadIdentity()
-        layer.gl.gluLookAt(
-            math.floor(self.world.player.x),
-            math.floor(self.world.player.y), +1.0,
-            math.floor(self.world.player.x),
-            math.floor(self.world.player.y), -1.0,
-            0, 1, 0)
-    
-    def restore_camera(self):
-        scale = 1        
-        layer.gl.glMatrixMode(layer.gl.GL_PROJECTION)
-        layer.gl.glLoadIdentity()
-        layer.gl.gluOrtho2D(
-            math.floor(-scale * self.world.window.width / 2.0),
-            math.floor(+scale * self.world.window.width / 2.0),
-            math.floor(-scale * self.world.window.height / 2.0),
-            math.floor(+scale * self.world.window.height / 2.0))
-    
-        # Set modelview matrix to move, scale & rotate to camera position
-        layer.gl.glMatrixMode(layer.gl.GL_MODELVIEW)
-        layer.gl.glLoadIdentity()
-        layer.gl.gluLookAt(
-            math.floor(self.world.window.width / 2.0),
-            math.floor(self.world.window.height / 2.0), +1.0,
-            math.floor(self.world.window.width / 2.0),
-            math.floor(self.world.window.height / 2.0), -1.0,
-            0, 1, 0)
 
     def movie_floor(self):
         dx, dy = self.dx, self.dy
@@ -466,26 +482,26 @@ class Player(Yukkuri):
             self.dialogue.started.make_choose(self.dialogue)
 
     def tick(self, dt):
-        self.update(dt)
+        self.update(dt)        
+        if self.rapebar >= 100:
+            self.inventory.rapeshow()
+        else:
+            self.inventory.rapehide()
         if self.timerstatus and self.timer > self.tint:
             self.timerstatus = False
+        if self.blocked:
+            return
         left = self.left
         right = self.right
         up = self.up
         down = self.down        
         self.dx = right - left
-        self.dy = up - down
+        self.dy = up - down        
         if self.dx != 0 or self.dy != 0:
             self.movie_floor()
-            self.go_to(dt)            
-            self.world.x += self.dx
-            self.world.y += self.dy
+            self.go_to(dt)
             self.label.x += self.dx
             self.label.y += self.dy
-            self.world.time.dark.x = self.world.time.light.x = self.world.x
-            self.world.time.dark.y = self.world.time.light.y = self.world.y
-            self.inventory.move(self.dx, self.dy)            
-            self.move_camera()
 
 class Bot(Yukkuri):
     rage = 1
@@ -501,6 +517,7 @@ class Bot(Yukkuri):
             self.predator = self.dfn.predator
         self.exp = random.randint(0, self.world.player.level*self.world.player.level*1000)
         self.wantparty = False
+        self.round_go = None 
         if random.randint(0,100) >= 30:
             self.wantparty = True
 
@@ -519,7 +536,7 @@ class Bot(Yukkuri):
                 return False
             if dist(self, member) < 50:
                 if member == self.world.player:
-                    if not member.party:
+                    if not member.party or member.wantparty:
                         self.dialogue_start(member, dfn="playerjoin")
                     else:
                         self.party_reject(member)
@@ -530,6 +547,18 @@ class Bot(Yukkuri):
             return True
         return False  
 
+    def go_offset(self, x, y):
+        left = x  < self.x + 1
+        right = x  > self.x - 1
+        down = y  < self.y + 1
+        up = y  > self.y - 1
+        dx = self.x - x
+        dy = self.y - y
+        dx = right - left
+        dy = up - down
+        return (dx, dy)
+        
+
     def tick(self, dt):
         #need in rewrite
         self.update(dt)
@@ -539,7 +568,7 @@ class Bot(Yukkuri):
         elif self.hp < 0:
             self.dead()
             self.world.spawner.count -= 1
-        elif self.hungry and not self.force_go_to:
+        elif self.hungry and not self.force_go_to and not self.blocked:
             if self.predator:
                 item = self.closer(2000, self.world.items, type="meat")
             else:
@@ -557,25 +586,23 @@ class Bot(Yukkuri):
                     self.force_go_to = (self.x+300, self.y+200)
         elif self.timerstatus and self.timer > self.tint:
             self.timerstatus = False            
-            if not self.hungry and not self.force_go_to:
+            if not self.hungry and not self.force_go_to and not self.blocked:
                 if not self.find_party():
                     if random.randint(0, 100) < 30:
                         e = (self.x + random.randint(-300,300), self.y + random.randint(-300,300))                     
                         if math.sqrt((self.x - e[0]) * (self.x - e[0]) + (self.y - e[1]) * (self.y - e[1])) > 100:
                             self.force_go_to = e            
-        else:
-            if self.force_go_to and not self.dialogue.started:
-                left = self.force_go_to[0]  < self.x + 1
-                right = self.force_go_to[0]  > self.x - 1
-                down = self.force_go_to[1]  < self.y + 1
-                up = self.force_go_to[1]  > self.y - 1
-                dx = self.x - self.force_go_to[0]
-                dy = self.y - self.force_go_to[1]
-                #pre_dist = dx * dx + dy * dy 
-                dx = right - left
-                dy = up - down                                 
+        elif not self.blocked:
+            if self.round_go: # clones. remove
+                dx, dy = self.go_offset(*self.round_go)  
+                if abs(self.x - self.round_go[0]) < 2 and abs(self.y - self.round_go[1]) < 2:
+                    self.round_go = None
+                    dx, dy = 0, 0
+            elif self.force_go_to and not self.dialogue.started:
+                dx, dy = self.go_offset(*self.force_go_to)
                 if abs(self.x - self.force_go_to[0]) < 2 and abs(self.y - self.force_go_to[1]) < 2:
                     self.force_go_to = None
+                    dx, dy = 0, 0
             elif not self.eating:
                 dx, dy = self.world.seek(self, confusion=200)
             self.dx = dx

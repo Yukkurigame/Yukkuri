@@ -147,7 +147,7 @@ class DialogueMeta(object):
     
     def __init__(self, starter):
         self.starter = starter        
-        self.group = OrderedGroup(100)
+        self.group = OrderedGroup(20, parent=self.starter.world.group)
         self.boxgroup = OrderedGroup(3, parent=self.group)        
         self.textgroup = OrderedGroup(4, parent=self.group)
         self.aboxgroup = OrderedGroup(10, parent=self.group)
@@ -309,7 +309,7 @@ class Dialogue(object):
         self.set_role(self.started.roles[0], self.started)
         if len(objects) > 0:
             for i in range(0, len(objects)):
-               if objects[i].dialogue.started:
+               if objects[i].dialogue.started or objects[i].blocked:
                    return False
                objects[i].dialogue.set_role(self.started.roles[i+1], self.started)
         return True        
@@ -342,6 +342,7 @@ class Dialogue(object):
 
     def leave(self):
         if self.started:
+            self.owner.blocked = False
             self.started.remove_member(self.role)
             self.destroy()
 
@@ -357,14 +358,14 @@ class Dialogue(object):
 
 class TimeOfDay(object):
     def __init__(self, world, window):
-        self.world = world
-        self.group = OrderedGroup(100)
+        self.world = world        
+        self.group = OrderedGroup(20)
         self.dark = Sprite(
             filename="white", group=OrderedGroup(0, parent=self.group),
-            batch=world.sprites_batch)
+            batch=world.ui_batch)
         self.light = Sprite(
             filename="white", group=OrderedGroup(1, parent=self.group),
-            batch=world.sprites_batch,
+            batch=world.ui_batch,
             blend_src=layer.gl.GL_SRC_ALPHA,
             blend_dest=layer.gl.GL_ONE)
         self.dark.x = self.light.x = 0
@@ -486,7 +487,7 @@ class Map(layer.parse.ParseObject):
 class Inventory(object):
          
     def __init__(self, player, length, window):
-        self.group = OrderedGroup(10)
+        self.group = OrderedGroup(100)
         self.boxgroup = OrderedGroup(0, parent=self.group)
         self.bargroup = OrderedGroup(1, parent=self.group)
         self.sprgroup = OrderedGroup(2, parent=self.group)
@@ -511,8 +512,22 @@ class Inventory(object):
             self.items.append(spr)
             self.timeofday[tod] = spr            
         self.time = player.world.time
+        self.rape = None
         #for i in xrange(length):
             #self.items.append(None)
+
+    def rapeshow(self):
+        if not self.rape:
+            self.rape = pyglet.text.Label(bold=True, text= "It's Rape time", 
+                group=self.sprgroup, batch=self.batch, font_size = 13, color = (255, 0, 0, 255))
+            self.rape.x = self.window.width - self.rape.content_width*1.5
+            self.rape.y =  self.window.height - self.timebg.height - self.rape.content_height
+            self.items.append(self.rape)
+
+    def rapehide(self):
+        if self.rape:
+            self.rape.delete()
+            self.rape = None
 
     def create_stats(self):
         #rewrite. longfunction is looooooooooong
@@ -649,6 +664,6 @@ class Inventory(object):
             self.timeofday["evening"].opacity = 255
 
     def move(self, dx, dy):
-        for item in self.items:             
+        for item in self.items:
             item.x += dx
             item.y += dy

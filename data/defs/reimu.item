@@ -14,5 +14,6 @@ color: "#ffffff"
 damage: 3.0
 hungry: 1.0
 hp: 10.0
+rapespeed: 50
 bloodcolor: (170, 55, 55)
 meeting: 47

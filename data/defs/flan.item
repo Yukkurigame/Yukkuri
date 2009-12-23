@@ -4,10 +4,12 @@ speed: 80
 anim_distance: 10
 width: 85
 height: 80
+mini: flan_0.png
 up_anim: [flan_0]
 right_anim: [flan_1]
 down_anim: [flan_0]
 left_anim: [flan_0]
+growth: [flan_0, flan_1]
 anchor_x: 24
 anchor_y: 8
 color: "#ffffff"

@@ -32,8 +32,7 @@ class EntityDef(layer.parse.ParseObject):
     damage = 0
     color = (255, 255, 255)
     growth = []
-    days_to_grow = 1e9
-    grows_into = []
+    days_to_grow = 1    
     type = None
 
     def __getstate__(self):
@@ -68,16 +67,18 @@ class EntityDef(layer.parse.ParseObject):
 class Yukkuri(Entity):    
 
     def __init__(self, world):
-        super(Yukkuri, self).__init__()
+        super(Yukkuri, self).__init__()        
         self.world = world        
         self.x = world.width / 2
         self.y = world.height / 2
         self.images = self.dfn.down_anim
         self.sprite = Sprite(image=self.images[0], group=world.sprites,
                              batch=world.sprites_batch)
+        self.imgmini = self.dfn.mini
         self.sprite.color = (255, 255, 255)
+        self.type = self.dfn.name
         self.sprite.scale = 0.3
-        self.bloodcolor = eval(self.dfn.bloodcolor)
+        self.bloodcolor = eval(self.dfn.bloodcolor)        
         self.dialogue = Dialogue(self)
         self.attacked = None
         self.eating = None
@@ -103,9 +104,10 @@ class Yukkuri(Entity):
         self.rapespeed = 0.1
         if hasattr(self.dfn, "rapespeed"): self.rapespeed = self.dfn.rapespeed
         self.rapebar = 0
-        self.blocked = False        
-        self.raping, self.raped = None, None 
-        self.tint = random.uniform(1, int(layer.const.MAX_TIMER))
+        self.blocked = False
+        self.grows_into = [self.type]
+        self.raping, self.raped, self.growth, self.days_to_grow = None, None, None, None 
+        self.tint = random.uniform(1, int(layer.const.MAX_TIMER))        
 
     def levelup(self, up = 1):        
         self.level += up
@@ -146,27 +148,27 @@ class Yukkuri(Entity):
     def go_to(self, dt):
         if self.dx or self.dy:
             l = math.sqrt(self.dx * self.dx + self.dy * self.dy)
-            speed = self.dfn.speed * self.fed * 2 #(self.dfn.speed * self.world.map.speed(self.x, self.y))
-            if speed < 10:
-                 speed = 20
+            speed = abs(self.dfn.speed * self.fed * 2) #(self.dfn.speed * self.world.map.speed(self.x, self.y))            
+            if speed < 50:
+                speed = 50
             self.dx = dt * speed * self.dx / l
             self.dy = dt * speed * self.dy / l
             nx = self.x + self.dx
-            ny = self.y + self.dy            
+            ny = self.y + self.dy
             nx, ny = self.world.valid_pos(self.x, self.y, nx, ny)
-            if self.x - 1 <= nx <= self.x + 1 and self.y - 1 <= ny <= self.y + 1:
-                if self.dx == 0: self.dx = random.uniform(-0.2, 0.2)
-                if self.dy == 0: self.dy = random.uniform(-0.2, 0.2)
-                self.round_go = (self.x-self.dx*random.randint(4,24), 
-                                          self.y-self.dy*random.randint(4,24))
-                self.dx, self.dy = 0, 0
-            else: 
-                distance = math.sqrt((nx - self.x) * (nx - self.x) + (ny - self.y) * (ny - self.y))
-                self.distance += distance                 
-                self.x =  nx
-                self.y = ny
-                if self.fed >= 0.01:
-                    self.fed -= distance*0.0001/(self.stats["Agi"]+math.sqrt(self.stats["Sta"]))
+            #if self.x - 1 <= nx <= self.x + 1 and self.y - 1 <= ny <= self.y + 1:
+                #if self.dx == 0: self.dx = random.uniform(-0.2, 0.2)
+                #if self.dy == 0: self.dy = random.uniform(-0.2, 0.2)
+                #self.round_go = (self.x-self.dx*random.randint(4,24), 
+                                          #self.y-self.dy*random.randint(4,24))
+                #self.dx, self.dy = 0, 0
+            #else: 
+            distance = math.sqrt((nx - self.x) * (nx - self.x) + (ny - self.y) * (ny - self.y))
+            self.distance += distance                 
+            self.x =  nx
+            self.y = ny
+            if self.fed >= 0.01:
+                self.fed -= distance*0.0001/(self.stats["Agi"]+math.sqrt(self.stats["Sta"]))
 
     def attack(self, victim = None):
         if self.blocked:
@@ -176,36 +178,11 @@ class Yukkuri(Entity):
                 victim = self.attacked
             else: 
                 victim = self.closer(120, self.world.ents)
-        if victim:
+        if victim and dist(self, victim) < 120:
             self.dialogue_start(dfn="selftalking", frame=2)
             if self.fed >= 0.01:
                 self.fed -= 0.001/(self.stats["Agi"]+math.sqrt(self.stats["Sta"]))
             victim.hit(self)
-
-    def rape(self, victim = None):
-        if self.blocked:
-            return
-        if self.rapebar < 100:
-            return
-        if not victim:
-            victim = self.closer(120, self.world.ents)
-        if victim:
-            self.rape_attempt(victim)
-
-    def rape_attempt(self, victim):
-        self.chanse = 1
-        if victim.level >= self.level:
-             self.chanse = random.randint(self.level, victim.level) - self.level + 1
-        if self.chanse > 2:
-            victim.attacked = self
-            return
-        self.x = victim.x
-        self.y = victim.y + victim.height/2
-        self.dialogue_start(dfn="selftalking", frame=4)
-        self.blocked = True
-        victim.blocked = True                
-        victim.raped = self        
-        self.raping = victim
 
     def hit(self, hiter):                        
         self.attacked = hiter
@@ -232,11 +209,72 @@ class Yukkuri(Entity):
             dead.blood.color = (155, 0, 0)
         dead.blood.scale = self.sprite.scale
         dead.sprite.x, dead.sprite.y = dead.x, dead.y = self.x, self.y
-        if self.party and self.party.leader == self:
-            self.party.leader_dead(killer)
+        if self.party:            
+            self.party.leave(self, killer)
         if self.dialogue.started:
             self.dialogue.leave()        
         self.kill()
+
+    def rape(self, victim = None):
+        if self.blocked:
+            return
+        if self.rapebar < 100:
+            return
+        if not victim:
+            victim = self.closer(120, self.world.ents)
+        if victim and dist(self, victim) < 120:
+            self.rape_attempt(victim)
+
+    def rape_attempt(self, victim):
+        self.chanse = 1
+        if self.party and victim not in self.party:
+            if victim.level >= self.level:
+                self.chanse = random.randint(self.level, victim.level) - self.level + 1
+            if self.chanse > 2:
+                victim.attacked = self
+                return
+        self.x = victim.x
+        self.y = victim.y + victim.height/2
+        self.dialogue_start(dfn="selftalking", frame=4)
+        self.blocked = True
+        victim.blocked = True                
+        victim.raped = self        
+        self.raping = victim
+
+    def rape_end(self, victim):
+        self.blocked = False
+        victim.blocked = False
+        self.x += 20
+        if self.party and victim not in self.party:
+            attack = random.randint(0, 100)
+            if attack <= 5:
+                victim.attacked = self
+            elif victim.party:
+                victim.party.enemy = self
+        elif not self.party and not victim.party:
+            join = random.randint(0, 100)
+            if join >= 20:
+                victim.join_party(self)
+        if random.randint(0, 100) > 5:
+            victim.growth = True
+            victim.days_to_grow = self.dfn.days_to_grow
+            victim.grows_into = [self.type, victim.type]
+        self.raping = None
+        victim.raped = None
+
+    def born(self):
+        for i in range(random.randint(3, 8)):
+            child = Bot(self.world, 
+                             self.x + random.randint(-30, 30), 
+                             self.y + random.randint(-30, 30),
+                             random.choice(self.grows_into), 1)
+            self.world.ents.add(child)
+            self.world.spawner.count += 1
+            child.hp = random.uniform(-10, 10)
+            child.join_party(self)
+        self.growth = False
+        self.grows_into = [self]
+        self.force_go_to = (self.x + 20, self.y + 20)
 
     def eat(self, obj):
         if self.blocked:
@@ -278,8 +316,6 @@ class Yukkuri(Entity):
         return obj.join_party(self)
 
     def join_party(self, obj):
-        if self.blocked:
-            return
         if not obj.party:
             obj.party = Family(obj)
         self.party = obj.party.join(self)
@@ -342,26 +378,29 @@ class Yukkuri(Entity):
             if not self.hungry:
                 self.dialogue_start(dfn="selftalk", frame=1)
             self.hungry = True
+            if self.fed < 0.1:
+                self.fed = 0.1
         if self.fed > 0.95:
-            self.hungry = False                
+            self.hungry = False
+        if self.growth and self.days_to_grow < 0:
+            self.born()
         if self.timer < 1:
             if not self.timerstatus: self.timerstatus = True
-        if self.timerstatus and self.timer > self.tint:
+        if self.timerstatus and self.timer > self.tint:                        
             if self.raping:
-                if self.rapebar <= 0: 
-                    self.blocked = False
-                    self.raping.blocked = False                   
-                    self.raping.raped = None
-                    self.raping = None                                        
+                if self.raping.growth:
+                    self.raping.growth = None
+                if self.rapebar <= 0:
+                    self.rape_end(self.raping)
                 else:
                     self.dialogue.leave()
                     self.raping.dialogue.leave()
                     self.blocked = True
                     self.raping.blocked = True
                     self.rapebar -= self.level*10
-                    self.fed -= 0.01/self.level
+                    self.fed -= 0.05
                     self.hp -= 0.1/self.level
-                    self.raping.fed -= 0.01/self.level + 0.1/self.raping.fed
+                    self.raping.fed -= 0.05 + 0.1/self.raping.fed
                     self.raping.hp -= 0.01/self.raping.level
             else:                
                 if self.rapebar < 100:
@@ -372,7 +411,7 @@ class Yukkuri(Entity):
                 self.fed -= 0.01/self.level
             self.exp += 5*self.level
 
-    def draw(self):        
+    def draw(self):
         if not ((self.images == self.dfn.down_anim and self.dy < 0)
                 or (self.images == self.dfn.up_anim and self.dy > 0)
                 or (self.images == self.dfn.left_anim and self.dx < 0)
@@ -388,6 +427,10 @@ class Yukkuri(Entity):
         else:
             imgidx = 0 
         img = self.images[imgidx]
+        
+        if self.growth:            
+            self.images = self.dfn.growth 
+            img = self.images[self.days_to_grow]
         
         if img is not self.sprite.image:
             self.sprite.image = img
@@ -409,10 +452,6 @@ class Player(Yukkuri):
         self.action = "use"
         self.inventory = Inventory(self, 8, world.window)
         self.sprite.color = self.dfn.color        
-        self.label = pyglet.text.Label(
-            text="Player", group=self.sprite.group, batch=self.sprite.batch,
-            x = self.x - 20, y = self.y - 20, color = (200, 30, 30, 255))
-        self.label.font_size = 14
         self.wantparty = False
 
     
@@ -487,7 +526,8 @@ class Player(Yukkuri):
             self.inventory.rapeshow()
         else:
             self.inventory.rapehide()
-        if self.timerstatus and self.timer > self.tint:
+        self.inventory.party()
+        if self.timerstatus and self.timer > self.tint:            
             self.timerstatus = False
         if self.blocked:
             return
@@ -500,14 +540,13 @@ class Player(Yukkuri):
         if self.dx != 0 or self.dy != 0:
             self.movie_floor()
             self.go_to(dt)
-            self.label.x += self.dx
-            self.label.y += self.dy
 
 class Bot(Yukkuri):
     rage = 1
 
-    def __init__(self, world, x=None, y=None):        
-        type = prob(**world.chances)        
+    def __init__(self, world, x=None, y=None, type=None, exp=None):
+        if not type:        
+            type = prob(**world.chances)
         self.dfn = EntityDef.Find(type)
         super(Bot, self).__init__(world)
         if x: self.x = x
@@ -515,7 +554,7 @@ class Bot(Yukkuri):
         self.full = 0
         if hasattr(self.dfn, "predator"):
             self.predator = self.dfn.predator
-        self.exp = random.randint(0, self.world.player.level*self.world.player.level*1000)
+        self.exp = (exp or random.randint(0, self.world.player.level*self.world.player.level*1000))
         self.wantparty = False
         self.round_go = None 
         if random.randint(0,100) >= 30:
@@ -593,18 +632,17 @@ class Bot(Yukkuri):
                         if math.sqrt((self.x - e[0]) * (self.x - e[0]) + (self.y - e[1]) * (self.y - e[1])) > 100:
                             self.force_go_to = e            
         elif not self.blocked:
-            if self.round_go: # clones. remove
-                dx, dy = self.go_offset(*self.round_go)  
-                if abs(self.x - self.round_go[0]) < 2 and abs(self.y - self.round_go[1]) < 2:
-                    self.round_go = None
-                    dx, dy = 0, 0
-            elif self.force_go_to and not self.dialogue.started:
-                dx, dy = self.go_offset(*self.force_go_to)
-                if abs(self.x - self.force_go_to[0]) < 2 and abs(self.y - self.force_go_to[1]) < 2:
-                    self.force_go_to = None
-                    dx, dy = 0, 0
-            elif not self.eating:
-                dx, dy = self.world.seek(self, confusion=200)
+            dx, dy = None, None
+            for c in (self.round_go, self.force_go_to):
+                if c:
+                    dx, dy = self.go_offset(*c)
+                    if abs(self.x - c[0]) < 2 and abs(self.y - c[1]) < 2:
+                        if c is self.round_go: self.round_go = None
+                        if c is self.force_go_to: self.force_go_to = None
+                        dx, dy = 0, 0
+                    if c is self.round_go: break
+            if not dx and not dy:
+                dx, dy = self.world.seek(self, confusion=200)            
             self.dx = dx
             self.dy = dy        
             self.go_to(dt)

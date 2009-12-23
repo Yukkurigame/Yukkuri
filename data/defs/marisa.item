@@ -4,10 +4,12 @@ speed: 80
 anim_distance: 10
 width: 90
 height: 100
+mini: marisa_0.png
 up_anim: [marisa_0, marisa_0, marisa_0, marisa_0]
 right_anim: [marisa_1, marisa_1, marisa_1, marisa_1]
 down_anim: [marisa_1, marisa_1, marisa_1, marisa_1]
 left_anim: [marisa_0, marisa_0, marisa_0, marisa_0]
+growth: [marisa_0, marisa_1]
 anchor_x: 24
 anchor_y: 8
 color: "#ffffff"

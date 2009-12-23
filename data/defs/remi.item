@@ -4,10 +4,12 @@ speed: 80
 anim_distance: 10
 width: 85
 height: 80
+mini: remi_0.png
 up_anim: [remi_0]
 right_anim: [remi_1]
 down_anim: [remi_0]
 left_anim: [remi_0]
+growth: [remi_0, remi_1]
 anchor_x: 24
 anchor_y: 8
 color: "#ffffff"

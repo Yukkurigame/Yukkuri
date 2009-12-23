@@ -46,7 +46,7 @@ class World(object):
     _state = "main"
 
     def __init__(self, window):
-        self.window = window        
+        self.window = window
         self.title = Sprite(filename="title.png")
         self.sprites_batch = Batch(z=-1)
         self.ui_batch = Batch(z=1)                 
@@ -315,13 +315,14 @@ class Spawner(object):
         if self.edibles < int(layer.const.MAX_EDIBLES):
             x, y = self.getxy()
             b = Item(EntityDef.Find("flowers"), self.world)
-            b.sprite.x, b.sprite.y = b.x, b.y = x, y              
+            #b.sprite.x, b.sprite.y = 
+            b.x, b.y = x, y              
             self.edibles += 1
         if self.count < int(layer.const.MAX_SPAWN):
             x, y = self.getxy()
             b = Bot(self.world, x, y)
             self.world.ents.add(b)
-            b.sprite.batch = self.world.sprites_batch
+            #b.sprite.batch = self.world.sprites_batch
             self.count += 1
 
     def getxy(self):

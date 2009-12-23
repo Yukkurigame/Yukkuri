@@ -16,7 +16,7 @@ morning	        6
 # time moves this much faster at night
 evening_scale	100%
 
-MAX_SPAWN 50
+MAX_SPAWN 40
 MAX_EDIBLES 30
 
 TIME_OF_DAY_SCALE 68%

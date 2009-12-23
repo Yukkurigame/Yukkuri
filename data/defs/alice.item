@@ -4,10 +4,12 @@ speed: 80
 anim_distance: 10
 width: 85
 height: 85
+mini: alice_0.png
 up_anim: [alice_0, alice_0, alice_0, alice_0]
 right_anim: [alice_1, alice_1, alice_1, alice_1]
 down_anim: [alice_1, alice_1, alice_1, alice_1]
 left_anim: [alice_0, alice_0, alice_0, alice_0]
+growth: [alice_grow_1, alice_grow_0]
 anchor_x: 24
 anchor_y: 8
 color: "#ffffff"

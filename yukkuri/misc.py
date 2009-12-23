@@ -93,6 +93,12 @@ class Family(EntGroup): #think about compare with DialogueMeta.
         self.add(obj)
         return self
 
+    def leave(self, obj, killer=None):
+        if self.leader == obj:
+            self.leader_dead(killer)
+        self.remove(obj)
+        obj.party = None
+
     def family_jobs(self, ent):
         # this method into tick of bots. here will be:        
         # something elde?
@@ -114,7 +120,7 @@ class Family(EntGroup): #think about compare with DialogueMeta.
                                          random.randint(int(self.leader.y - 50), int(self.leader.y + 50)))
 
     def leader_dead(self, killer=None):
-        self.remove(self.leader)
+        #self.remove(self.leader)
         if len(list(self)) > 1:
             if not killer or killer not in list(self):             
                 self.leader = self[0]
@@ -387,6 +393,7 @@ class TimeOfDay(object):
                 if not self.days_update:
                     for i in self.world.ents:
                         i.days += 1
+                        if i.growth: i.days_to_grow -= 1
                 self.days_update = True
             else:
                 self.days_update = False
@@ -503,7 +510,13 @@ class Inventory(object):
         self.timebg.y = self.window.height - self.timebg.height
         self.items.append(self.timebg)
         self.create_stats()
-        self.timeofday = {}            
+        self.timeofday = {}
+        self.partyobj = []
+        label = pyglet.text.Label(text= "Player", group=self.sprgroup,  
+                batch=self.batch, font_size = 14, color = (200, 30, 30, 255))
+        label.x = self.player.world.width/2 - label.content_width/2 + 10
+        label.y = self.player.world.height/2 - self.player.height
+        self.items.append(label)
         for tod in ['twilight', 'morning', 'noon', 'afternoon', 'evening', 'midnight']:
             spr = Sprite(filename=tod + ".png", group=self.sprgroup, batch=self.batch)            
             spr.opacity = 0
@@ -515,6 +528,33 @@ class Inventory(object):
         self.rape = None
         #for i in xrange(length):
             #self.items.append(None)
+
+    def party(self):
+        party = self.player.party
+        if not party:
+            self.partyhide()
+            return
+        if len(self.partyobj) <> len(party):
+            self.partyhide()
+            leader = Sprite(group=self.boxgroup, batch=self.batch, 
+                              filename=party.leader.imgmini)
+            leader.scale = 0.7
+            self.partyobj.append(leader)
+            self.items.append(leader)
+            oldx = leader.width 
+            for m in party:
+                if m == party.leader: continue
+                member = Sprite(group=self.boxgroup, batch=self.batch, 
+                              filename=m.imgmini, x = leader.x + oldx)
+                oldx += member.width + 2
+                member.scale = 0.7
+                self.partyobj.append(member)
+                self.items.append(member)
+
+    def partyhide(self):
+        for i in self.partyobj:
+            i.delete()
+        self.partyobj = []
 
     def rapeshow(self):
         if not self.rape:
@@ -535,7 +575,7 @@ class Inventory(object):
                          filename="state_back.png")        
         statsbg.y = self.window.height - statsbg.height
         img = Sprite(filename="reimu_0.png", group=self.sprgroup, batch=self.batch)        
-        img.x = img.width / 2
+        img.x = img.width  / 2        
         img.y = self.window.height - img.height
         self.lvl = pyglet.text.Label(
             text= "", group=self.sprgroup, batch=self.batch, font_size = 13, color = (0, 0, 0, 255), 

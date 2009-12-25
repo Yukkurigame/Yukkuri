@@ -122,8 +122,8 @@ class Yukkuri(Entity):
             self.stats[i] += 1
         hp = self.hp/self.max_hp
         self.exp = self.exp - self.max_exp
-        self.max_hp *= self.level
-        self.max_exp *= self.level
+        self.max_hp = self.max_hp + 10*self.level
+        self.max_exp += self.max_exp + math.log(self.level/40.0)
         self.hp = self.max_hp*hp
 
     def pickup(self, item, slot):
@@ -172,6 +172,8 @@ class Yukkuri(Entity):
 
     def attack(self, victim = None):
         if self.blocked:
+            return
+        if victim and victim is self:
             return
         if not victim:
             if self.attacked and dist(self, self.attacked)*self.sprite.scale <= 120:
@@ -244,7 +246,7 @@ class Yukkuri(Entity):
     def rape_end(self, victim):
         self.blocked = False
         victim.blocked = False
-        self.x += 20
+        self.y += 20
         if self.party and victim not in self.party:
             attack = random.randint(0, 100)
             if attack <= 5:
@@ -397,7 +399,7 @@ class Yukkuri(Entity):
                     self.raping.dialogue.leave()
                     self.blocked = True
                     self.raping.blocked = True
-                    self.rapebar -= self.level*10
+                    self.rapebar -= 10
                     self.fed -= 0.05
                     self.hp -= 0.1/self.level
                     self.raping.fed -= 0.05 + 0.1/self.raping.fed

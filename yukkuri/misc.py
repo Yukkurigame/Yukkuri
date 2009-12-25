@@ -102,6 +102,9 @@ class Family(EntGroup): #think about compare with DialogueMeta.
     def family_jobs(self, ent):
         # this method into tick of bots. here will be:        
         # something elde?
+        if len(ent.party) < 2:
+            self.leave(ent)
+            return
         if not ent.hungry or not ent.attacked: # self is first!
             self.follow_leader(ent)
             if ent.attacked and ent.attacked not in list(self):
@@ -115,7 +118,7 @@ class Family(EntGroup): #think about compare with DialogueMeta.
     def follow_leader(self, ent):        
         if ent is self.leader or ent is self.world.player: 
             return
-        if dist(self.leader, ent) > 1000*ent.sprite.scale:
+        if dist(self.leader, ent) > 500*ent.sprite.scale:
             ent.force_go_to = (random.randint(int(self.leader.x - 50), int(self.leader.x + 50)),
                                          random.randint(int(self.leader.y - 50), int(self.leader.y + 50)))
 
@@ -125,7 +128,7 @@ class Family(EntGroup): #think about compare with DialogueMeta.
             if not killer or killer not in list(self):             
                 self.leader = self[0]
             else:
-                delf.leader = killer
+                self.leader = killer
         else:
             self[0].family = None
             self.remove(self[0])
@@ -552,6 +555,10 @@ class Inventory(object):
                 self.items.append(member)
 
     def partyhide(self):
+        if self.player.party:
+            print list(self.player.party)
+        if self.player.party and len(self.player.party) < 2:
+            self.player.party.leave(self.player)
         for i in self.partyobj:
             i.delete()
         self.partyobj = []

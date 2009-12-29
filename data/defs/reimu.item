@@ -6,16 +6,21 @@ width: 85
 height: 80
 mini: reimu_0.png
 up_anim: [reimu_back_0, reimu_back_1, reimu_back_2, reimu_back_3]
-right_anim: [reimu_3, reimu_4, reimu_5, reimu_6]
+right_anim: [reimu_right_0, reimu_right_1, reimu_right_2, reimu_right_3]
 down_anim: [reimu_face_0, reimu_face_1, reimu_face_2, reimu_face_3]
-left_anim: [reimu_7, reimu_8, reimu_9, reimu_10]
-growth: [reimu_grow_1, reimu_grow_0] 
+left_anim: [reimu_left_0, reimu_left_1, reimu_left_2, reimu_left_3]
+leftdown_anim: [reimu_ld_0, reimu_ld_1, reimu_ld_2, reimu_ld_3]
+rightdown_anim: [reimu_rd_0, reimu_rd_1, reimu_rd_2, reimu_rd_3]
+leftup_anim: [reimu_lu_0, reimu_lu_1, reimu_lu_2, reimu_lu_3]
+rightup_anim: [reimu_ru_0, reimu_ru_1, reimu_ru_2, reimu_ru_3]
+growth: [reimu_grow_1, reimu_grow_0]
+raped: [reimu_raped_0, reimu_raped_1, reimu_raped_2]
+raping: [reimu_raping_0, reimu_raping_1, reimu_raping_2, reimu_raping_3]
 anchor_x: 24
 anchor_y: 8
 color: "#ffffff"
 damage: 3.0
-hungry: 1.0
 hp: 10.0
-rapespeed: 50
+rapespeed: 5
 bloodcolor: (170, 55, 55)
 meeting: 47

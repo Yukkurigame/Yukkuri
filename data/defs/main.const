@@ -16,7 +16,13 @@ morning	        6
 # time moves this much faster at night
 evening_scale	100%
 
+#Minimum level for reproduction functions
+rape_level 10
+
 MAX_SPAWN 40
 MAX_EDIBLES 30
+
+# Percents of yukkuri that want not family
+FAMILY 50
 
 TIME_OF_DAY_SCALE 68%

@@ -101,7 +101,7 @@ class Entity(object):
 
     def kill(self):
         for group in list(self.entgroups):
-            group.kill(self)
+            group.kill(self)        
         try:
             self.sprite.batch = None
         except AttributeError: pass

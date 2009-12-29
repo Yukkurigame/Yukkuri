@@ -189,15 +189,20 @@ class World(object):
                 self.pathing[x][y] = p(x, y)
 
     def valid_pos(self, ox, oy, nx, ny):
-        dx = nx - ox
-        dy = ny - oy
-        err = 0
+        #dx = nx - ox
+        #dy = ny - oy
+        #err = 0
+        #think about this optimisation
         for ent in self.ents:
             if ox == ent.x and oy == ent.y: continue
             else:
                 sx = ent.x  - (ent.width / 2)
                 sy = ent.y - (ent.height / 2)
-                if (sx <= nx < sx + ent.width) and (sy <= ny < sy + ent.height):
+                if (sx < ox < sx + ent.width) and (sy < oy < sy + ent.height):
+                    dx = sx - ox
+                    dy = sy - oy
+                    return (ox + dx, oy + dy)
+                if (sx < nx < sx + ent.width) and (sy < ny < sy + ent.height):
                     return ox, oy                
         return nx, ny
 

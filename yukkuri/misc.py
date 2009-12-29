@@ -13,6 +13,7 @@ import layer
 #import layer.task
 #import layer.keybind
 #import layer.gl
+import layer.output
 
 from layer.sprite import Sprite, Group, OrderedGroup, batch, Batch
 from layer.entity import Entity, EntityGroup
@@ -75,7 +76,7 @@ class EntGroup(list): #Move into layer. This copy EntityGroup methods, it's not 
         except ValueError: return -1
         else:
             self.pop(index)
-            return index        
+            return index
     remove = kill
     def destroy(self):
         self.leader = None
@@ -99,12 +100,21 @@ class Family(EntGroup): #think about compare with DialogueMeta.
         self.remove(obj)
         obj.party = None
 
+    def exp(self, exp):
+        for member in list(self):
+            member.exp += exp*member.level
+
     def family_jobs(self, ent):
         # this method into tick of bots. here will be:        
-        # something elde?
+        # something else?
         if len(ent.party) < 2:
             self.leave(ent)
             return
+        elif len(ent.party) > 2:
+            if self.leader is not ent and ent.level >= layer.const.rape_level:
+                self.leave(ent)
+                if random.randint(0, 100) > layer.const.FAMILY:
+                    ent.wantparty = True
         if not ent.hungry or not ent.attacked: # self is first!
             self.follow_leader(ent)
             if ent.attacked and ent.attacked not in list(self):
@@ -205,14 +215,16 @@ class DialogueMeta(object):
             self.next = frame+1
         if hasattr(block, "command"):
             if hasattr(block, "falseframe") and hasattr(block, "trueframe"):
-                action = eval(block.command)
+                try: action = eval(block.command)
+                except: action = False
                 if not action:
                     self.next = block.falseframe
                 else:
                     self.next = block.trueframe
             else:
                 if not text.find("%s"):
-                    eval(block.command)
+                    try: eval(block.command)
+                    except Ecteption, e: print_d(e) 
                 else:
                     replace = eval(block.command)
                     text = text.replace("%s", str(replace))
@@ -540,23 +552,21 @@ class Inventory(object):
         if len(self.partyobj) <> len(party):
             self.partyhide()
             leader = Sprite(group=self.boxgroup, batch=self.batch, 
-                              filename=party.leader.imgmini)
+                              filename=party.leader.imgmini)                              
             leader.scale = 0.7
             self.partyobj.append(leader)
             self.items.append(leader)
             oldx = leader.width 
-            for m in party:
+            for m in party:                
                 if m == party.leader: continue
                 member = Sprite(group=self.boxgroup, batch=self.batch, 
-                              filename=m.imgmini, x = leader.x + oldx)
-                oldx += member.width + 2
+                              filename=m.imgmini)                
                 member.scale = 0.7
+                member.x = member.width*party.index(m)
                 self.partyobj.append(member)
                 self.items.append(member)
 
     def partyhide(self):
-        if self.player.party:
-            print list(self.player.party)
         if self.player.party and len(self.player.party) < 2:
             self.player.party.leave(self.player)
         for i in self.partyobj:
@@ -581,12 +591,12 @@ class Inventory(object):
         statsbg = Sprite(group=self.boxgroup, batch=self.batch,
                          filename="state_back.png")        
         statsbg.y = self.window.height - statsbg.height
-        img = Sprite(filename="reimu_0.png", group=self.sprgroup, batch=self.batch)        
-        img.x = img.width  / 2        
+        img = Sprite(filename=self.player.imgmini, group=self.sprgroup, batch=self.batch)
+        img.x = img.width  / 8
         img.y = self.window.height - img.height
         self.lvl = pyglet.text.Label(
             text= "", group=self.sprgroup, batch=self.batch, font_size = 13, color = (0, 0, 0, 255), 
-            x = int(math.ceil(img.x*2 + 20)), y = int(math.ceil(img.y + img.width/2 - 5)))
+            x = int(math.ceil(img.x*7 + 20)), y = int(math.ceil(img.y + img.width/2 - 5)))
         self.days = pyglet.text.Label(
             text= "", group=self.sprgroup, batch=self.batch, font_size = 13, 
             x = self.lvl.x, y = self.lvl.y - 25, color = (0, 0, 0, 255))
@@ -596,7 +606,7 @@ class Inventory(object):
         for i in ("hp", "fed", "exp"):
             lbl = pyglet.text.Label(text= "", group=self.sprgroup, batch=self.batch, font_size = 11)
             if i == "hp":
-                lbl.x = int(math.ceil(img.x/2 + 5))
+                lbl.x = int(math.ceil(img.x*2 + 5))
                 lbl.y = int(math.ceil(self.window.height - img.height*1.4))
             else:
                 lbl.x = oldbarx + 5

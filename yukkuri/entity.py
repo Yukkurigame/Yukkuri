@@ -18,11 +18,18 @@ class EntityDef(layer.parse.ParseObject):
     load_spec = "*.item"
     _thawers_ = dict(color=layer.colors.value)
     _freezers_ = dict(color=layer.colors.name)
-    image = None
+    image = None    
     down_anim = []
     up_anim = []
     left_anim = []
     right_anim = []
+    leftdown_anim = []
+    rightdown_anim = []
+    leftup_anim = []
+    rightup_anim = []
+    growth = []
+    raped = []
+    raping = []
     anchor_x = None
     anchor_y = None
     takeable = False
@@ -30,8 +37,8 @@ class EntityDef(layer.parse.ParseObject):
     anim_distance = 10
     hp = 0
     damage = 0
-    color = (255, 255, 255)
-    growth = []
+    hhungry = 1.0
+    color = (255, 255, 255)    
     days_to_grow = 1    
     type = None
 
@@ -42,7 +49,8 @@ class EntityDef(layer.parse.ParseObject):
         except AttributeError: del(d["image"])
 
         for attr in ["down_anim", "up_anim", "left_anim", "right_anim",
-                     "growth"]:
+                     "leftdown_anim", "rightdown_anim", "leftup_anim", "rightup_anim",
+                     "raped", "raping", "growth"]:
             try: d[attr] = map(lambda i: i.filename, d[attr])
             except KeyError: pass
             except AttributeError: del(d[attr])
@@ -55,7 +63,8 @@ class EntityDef(layer.parse.ParseObject):
             self.image.anchor_x = self.anchor_x or self.image.width / 2
             self.image.anchor_y = self.anchor_y or self.image.height / 2
         for attr in ["down_anim", "up_anim", "left_anim", "right_anim",
-                     "growth"]:
+                     "leftdown_anim", "rightdown_anim", "leftup_anim", "rightup_anim",
+                     "raped", "raping", "growth"]:
             l = getattr(self, attr)
             if l:
                 l = map(layer.load.image, l)
@@ -74,7 +83,7 @@ class Yukkuri(Entity):
         self.images = self.dfn.down_anim
         self.sprite = Sprite(image=self.images[0], group=world.sprites,
                              batch=world.sprites_batch)
-        self.imgmini = self.dfn.mini
+        self.imgmini = self.dfn.mini        
         self.sprite.color = (255, 255, 255)
         self.type = self.dfn.name
         self.sprite.scale = 0.3
@@ -91,7 +100,7 @@ class Yukkuri(Entity):
         self.level = 1
         self.stats = {"Str": 1, "Agi": 1, "Sta": 1, "Int": 1, "Def": 1}
         self.damage = self.dfn.damage
-        self.hp = self.dfn.hp
+        self.hp = self.dfn.hp        
         self.max_hp = self.level*self.hp
         self.max_fed = 1.0
         self.fed = 1.0
@@ -102,12 +111,13 @@ class Yukkuri(Entity):
         self.partyreject = []
         self.party = None
         self.rapespeed = 0.1
+        self.info = []
         if hasattr(self.dfn, "rapespeed"): self.rapespeed = self.dfn.rapespeed
         self.rapebar = 0
         self.blocked = False
         self.grows_into = [self.type]
         self.raping, self.raped, self.growth, self.days_to_grow = None, None, None, None 
-        self.tint = random.uniform(1, int(layer.const.MAX_TIMER))        
+        self.tint = random.uniform(1, int(layer.const.MAX_TIMER))
 
     def levelup(self, up = 1):        
         self.level += up
@@ -126,25 +136,6 @@ class Yukkuri(Entity):
         self.max_exp += self.max_exp + math.log(self.level/40.0)
         self.hp = self.max_hp*hp
 
-    def pickup(self, item, slot):
-        self.drop(slot)
-        self.world.ents.kill(item)
-        self.inventory[slot] = item
-
-    def drop(self, slot):
-        item = self.inventory[slot]
-        if item:
-            item.x = self.x
-            item.y = self.y
-            item.sprite.group = self.world.sprites
-            item.sprite.color = item.dfn.color
-            item.sprite.batch = self.world.sprites_batch
-            item.sprite.scale = (item.dfn.hp
-                                 and (float(item.hp) / item.dfn.hp)
-                                 or 1)
-            self.world.ents.add(item)
-        self.inventory[slot] = None
-
     def go_to(self, dt):
         if self.dx or self.dy:
             l = math.sqrt(self.dx * self.dx + self.dy * self.dy)
@@ -156,19 +147,20 @@ class Yukkuri(Entity):
             nx = self.x + self.dx
             ny = self.y + self.dy
             nx, ny = self.world.valid_pos(self.x, self.y, nx, ny)
-            #if self.x - 1 <= nx <= self.x + 1 and self.y - 1 <= ny <= self.y + 1:
-                #if self.dx == 0: self.dx = random.uniform(-0.2, 0.2)
-                #if self.dy == 0: self.dy = random.uniform(-0.2, 0.2)
-                #self.round_go = (self.x-self.dx*random.randint(4,24), 
-                                          #self.y-self.dy*random.randint(4,24))
+            if self.x == nx and self.y == ny:                
+                x = self.dx
+                y = self.dy
+                if x <> 0: x *= x / abs(x)
+                if y <> 0: y *= y / abs(y)                
+                self.round_go = (self.x+x*random.randint(1, 4), 
+                                          self.y+y*random.randint(1,4))
                 #self.dx, self.dy = 0, 0
-            #else: 
-            distance = math.sqrt((nx - self.x) * (nx - self.x) + (ny - self.y) * (ny - self.y))
-            self.distance += distance                 
-            self.x =  nx
-            self.y = ny
-            if self.fed >= 0.01:
-                self.fed -= distance*0.0001/(self.stats["Agi"]+math.sqrt(self.stats["Sta"]))
+            else: 
+                distance = math.sqrt((nx - self.x) * (nx - self.x) + (ny - self.y) * (ny - self.y))
+                self.distance += distance
+                self.move(nx, ny)                
+                if self.fed >= 0.01:
+                    self.fed -= distance*0.0001/(self.stats["Agi"]+math.sqrt(self.stats["Sta"]))
 
     def attack(self, victim = None):
         if self.blocked:
@@ -211,11 +203,11 @@ class Yukkuri(Entity):
             dead.blood.color = (155, 0, 0)
         dead.blood.scale = self.sprite.scale
         dead.sprite.x, dead.sprite.y = dead.x, dead.y = self.x, self.y
-        if self.party:            
-            self.party.leave(self, killer)
-        if self.dialogue.started:
-            self.dialogue.leave()        
-        self.kill()
+        if self.raping:
+            self.raping.rape_fail()
+        for item in self.info:
+            item.delete()
+        self.delete(killer)
 
     def rape(self, victim = None):
         if self.blocked:
@@ -229,24 +221,26 @@ class Yukkuri(Entity):
 
     def rape_attempt(self, victim):
         self.chanse = 1
-        if self.party and victim not in self.party:
+        if victim.party:
+            if self not in victim.party:
+                victim.party.enemy = self
+        else:        
             if victim.level >= self.level:
                 self.chanse = random.randint(self.level, victim.level) - self.level + 1
             if self.chanse > 2:
                 victim.attacked = self
                 return
-        self.x = victim.x
-        self.y = victim.y + victim.height/2
-        self.dialogue_start(dfn="selftalking", frame=4)
+        self.move(victim.x, (victim.y + victim.height/2))         
         self.blocked = True
         victim.blocked = True                
         victim.raped = self        
         self.raping = victim
 
     def rape_end(self, victim):
+        "use it on raping object"
         self.blocked = False
         victim.blocked = False
-        self.y += 20
+        self.move(self.x, self.y+20)
         if self.party and victim not in self.party:
             attack = random.randint(0, 100)
             if attack <= 5:
@@ -257,14 +251,29 @@ class Yukkuri(Entity):
             join = random.randint(0, 100)
             if join >= 20:
                 victim.join_party(self)
-        if random.randint(0, 100) > 5:
+        if random.randint(0, 100) > 5 and victim.level >= layer.const.rape_level:
+            victim.rapebar = 0
             victim.growth = True
             victim.days_to_grow = self.dfn.days_to_grow
             victim.grows_into = [self.type, victim.type]
+        self.exp += 20*self.level
+        victim.exp += 20*victim.level 
         self.raping = None
         victim.raped = None
 
+    def rape_fail(self):
+        "use it on raped object"
+        if self.raped:
+            self.raped.blocked = False
+            self.attacked = self.raped
+            self.raping = None
+        self.exp += 25*self.level  
+        self.blocked = False
+        self.raped = None
+
     def born(self):
+        if self.party:
+            self.party.exp(30)
         for i in range(random.randint(3, 8)):
             child = Bot(self.world, 
                              self.x + random.randint(-30, 30), 
@@ -306,6 +315,25 @@ class Yukkuri(Entity):
     def take(self, obj):
         pass
 
+    def pickup(self, item, slot):
+        self.drop(slot)
+        self.world.items.kill(item)
+        self.inventory[slot] = item
+
+    def drop(self, slot):
+        item = self.inventory[slot]
+        if item:
+            item.x = self.x
+            item.y = self.y
+            item.sprite.group = self.world.sprites
+            item.sprite.color = item.dfn.color
+            item.sprite.batch = self.world.sprites_batch
+            item.sprite.scale = (item.dfn.hp
+                                 and (float(item.hp) / item.dfn.hp)
+                                 or 1)
+            self.world.items.add(item)
+        self.inventory[slot] = None
+
     def invite(self, obj):
         if self.blocked:
             return
@@ -321,6 +349,8 @@ class Yukkuri(Entity):
         if not obj.party:
             obj.party = Family(obj)
         self.party = obj.party.join(self)
+        self.exp += 100*self.level
+        obj.exp += 100*obj.level 
         self.wantparty = False
         obj.wantparty = False
         return True
@@ -354,8 +384,9 @@ class Yukkuri(Entity):
         def it(obj):
             if self is not obj:
                 if not len(reject) or obj not in reject:
-                    if kwargs.has_key("type") and obj.type is not kwargs["type"]:
-                        return 
+                    for arg in kwargs.keys():
+                        if hasattr(obj, arg) and getattr(obj, arg) is not kwargs[arg]:
+                            return
                     d = dist(self, obj)
                     if d <= dst*self.sprite.scale:
                         return {"obj": obj, "dist": d}
@@ -376,13 +407,13 @@ class Yukkuri(Entity):
             self.attacked = None
         if self.exp >= self.max_exp:
             self.levelup()
-        if self.fed < 0.7:
+        if self.fed < 0.7 or self.hp < self.max_hp:
             if not self.hungry:
                 self.dialogue_start(dfn="selftalk", frame=1)
             self.hungry = True
-            if self.fed < 0.1:
-                self.fed = 0.1
-        if self.fed > 0.95:
+            if self.fed < 0.01:
+                self.fed = 0.01
+        if self.fed > 0.95 and self.hp >= self.max_hp:
             self.hungry = False
         if self.growth and self.days_to_grow < 0:
             self.born()
@@ -404,35 +435,68 @@ class Yukkuri(Entity):
                     self.hp -= 0.1/self.level
                     self.raping.fed -= 0.05 + 0.1/self.raping.fed
                     self.raping.hp -= 0.01/self.raping.level
-            else:                
-                if self.rapebar < 100:
-                    self.rapebar += self.rapespeed
+            elif self.raped and self.raped.raping is not self:
+                self.rape_fail()
+            else:
+                if self.rapebar < 100 and not self.growth and self.level >= layer.const.rape_level:
+                    if self.party and len(self.party) > 2:
+                        self.rapebar += self.rapespeed/(len(self.party))*10
+                    else:
+                        self.rapebar += self.rapespeed
             if self.party and not self.blocked:
-                    self.party.family_jobs(self)
+                self.party.family_jobs(self)
             if self.fed >= 0.01:
                 self.fed -= 0.01/self.level
             self.exp += 5*self.level
 
+    def move(self, x, y):
+        dx = x - self.x
+        dy = y - self.y 
+        self.x = x
+        self.y = y
+        for item in self.info:
+            item.x += dx
+            item.y += dy
+
     def draw(self):
-        if not ((self.images == self.dfn.down_anim and self.dy < 0)
-                or (self.images == self.dfn.up_anim and self.dy > 0)
-                or (self.images == self.dfn.left_anim and self.dx < 0)
-                or (self.images == self.dfn.right_anim and self.dx > 0)):
-            if self.dy < 0: self.images = self.dfn.down_anim
-            elif self.dy > 0: self.images = self.dfn.up_anim
-            elif self.dx < 0: self.images = self.dfn.left_anim
-            elif self.dx > 0: self.images = self.dfn.right_anim
-        
-        if self.dx or self.dy:
-            imgidx = int(
-                (self.distance / self.dfn.anim_distance) % len(self.images))
-        else:
-            imgidx = 0 
-        img = self.images[imgidx]
-        
         if self.growth:            
             self.images = self.dfn.growth 
             img = self.images[self.days_to_grow]
+        elif self.raped:
+            self.images = self.dfn.raped
+            l = len(self.images)
+            rb = self.raped.rapebar
+            r = rb % l
+            img = self.images[r-1]            
+        elif self.raping:            
+            self.images = self.dfn.raping
+            l = len(self.images)
+            rb = self.rapebar
+            r = rb % l
+            img = self.images[r]
+        else:
+            if not ((self.images == self.dfn.leftdown_anim and (self.dx < 0 and self.dy < 0))
+                    or (self.images == self.dfn.leftup_anim and (self.dx < 0 and self.dy > 0))
+                    or (self.images == self.dfn.rightdown_anim and (self.dx > 0 and self.dy < 0))
+                    or (self.images == self.dfn.rightup_anim and (self.dx > 0 and self.dy > 0))):
+                    #or (self.images == self.dfn.down_anim and self.dy < 0)
+                    #or (self.images == self.dfn.up_anim and self.dy > 0)
+                    #or (self.images == self.dfn.left_anim and self.dx < 0)
+                    #or (self.images == self.dfn.right_anim and self.dx > 0)):
+                if self.dx < 0 and self.dy < 0: self.images = self.dfn.leftdown_anim
+                elif self.dx < 0 and self.dy > 0: self.images = self.dfn.leftup_anim
+                elif self.dx > 0 and self.dy < 0: self.images = self.dfn.rightdown_anim
+                elif self.dx > 0 and self.dy > 0: self.images = self.dfn.rightup_anim
+                elif self.dy < 0: self.images = self.dfn.down_anim
+                elif self.dy > 0: self.images = self.dfn.up_anim
+                elif self.dx < 0: self.images = self.dfn.left_anim
+                elif self.dx > 0: self.images = self.dfn.right_anim
+            if self.dx or self.dy:
+                imgidx = int(
+                    (self.distance / self.dfn.anim_distance) % len(self.images))
+            else:
+                imgidx = 0
+            img = self.images[imgidx]
         
         if img is not self.sprite.image:
             self.sprite.image = img
@@ -441,6 +505,14 @@ class Yukkuri(Entity):
         
         self.sprite.x = self.x
         self.sprite.y = self.y
+
+    def delete(self, killer=None):
+        self.world.spawner.count -= 1
+        if self.party:            
+            self.party.leave(self, killer)
+        if self.dialogue.started:
+            self.dialogue.leave()        
+        self.kill()
 
 class Player(Yukkuri):
     
@@ -558,8 +630,9 @@ class Bot(Yukkuri):
             self.predator = self.dfn.predator
         self.exp = (exp or random.randint(0, self.world.player.level*self.world.player.level*1000))
         self.wantparty = False
-        self.round_go = None 
-        if random.randint(0,100) >= 30:
+        self.round_go = None
+        self.hpbar = None
+        if random.randint(0,100) >= layer.const.FAMILY:
             self.wantparty = True
 
     def run_away(self, x, y):
@@ -570,6 +643,21 @@ class Bot(Yukkuri):
             posy = -1
         self.force_go_to = (self.x+500*posx, self.y+500*posy)
 
+    def find_rape(self):        
+        if self.rapebar >= 100:
+            if self.party:
+                victim = self.closer(700, self.party)
+            else:
+                victim = self.closer(700, self.world.ents)
+            if not victim or victim.blocked: 
+                return False                
+            if dist(self, victim) < 100*self.sprite.scale:
+                self.rape(victim)                
+            else:
+                self.force_go_to = (victim.x + 20, victim.y + 20)
+            return True
+        return False  
+
     def find_party(self):
         if self.wantparty and not self.party:
             member = self.closer(700, self.world.ents, self.partyreject)
@@ -577,7 +665,7 @@ class Bot(Yukkuri):
                 return False
             if dist(self, member) < 50:
                 if member == self.world.player:
-                    if not member.party or member.wantparty:
+                    if not member.party:
                         self.dialogue_start(member, dfn="playerjoin")
                     else:
                         self.party_reject(member)
@@ -603,9 +691,21 @@ class Bot(Yukkuri):
     def tick(self, dt):
         #need in rewrite
         self.update(dt)
+        if self.hp != self.max_hp:
+            if not self.hpbar:
+                self.hpbar = Sprite(filename="bar.png", group=self.world.sprites, 
+                              batch=self.world.sprites_batch, x=self.x-self.width/2, y=self.y-self.height/2)
+                self.hpbar.height=5.0
+                self.hpbar.color=(255,0,0)                
+                self.info.append(self.hpbar)
+            self.hpbar.width = 45.0*float(self.hp)/float(self.max_hp)
+        else:
+            if self.hpbar:
+                self.info.remove(self.hpbar)
+                self.hpbar.delete()
+                self.hpbar = None
         if self.dst_to_player() > 2000:
-            self.kill()
-            self.world.spawner.count -= 1          
+            self.delete()                      
         elif self.hp < 0:
             self.dead()
             self.world.spawner.count -= 1
@@ -628,7 +728,7 @@ class Bot(Yukkuri):
         elif self.timerstatus and self.timer > self.tint:
             self.timerstatus = False            
             if not self.hungry and not self.force_go_to and not self.blocked:
-                if not self.find_party():
+                if not self.find_rape() and not self.find_party():
                     if random.randint(0, 100) < 30:
                         e = (self.x + random.randint(-300,300), self.y + random.randint(-300,300))                     
                         if math.sqrt((self.x - e[0]) * (self.x - e[0]) + (self.y - e[1]) * (self.y - e[1])) > 100:
@@ -674,14 +774,15 @@ class Item(Entity):
             self.takeable = self.dfn.takeable
 
     def cross(self, other):
-        for attr in ('hp_delta', 'rage_delta', 'satiation_delta'):
-            v1 = getattr(self, attr)
-            v2 = getattr(other, attr)
-            v1, v2 = min(v1, v2), max(v1, v2)
-            v1 -= 0.3
-            v2 += 0.3
-            v = random.uniform(v1, v2)
-            setattr(self, attr, clamp(v, 0, 2))
+        pass
+        #for attr in ('hp_delta', 'rage_delta', 'satiation_delta'):
+            #v1 = getattr(self, attr)
+            #v2 = getattr(other, attr)
+            #v1, v2 = min(v1, v2), max(v1, v2)
+            #v1 -= 0.3
+            #v2 += 0.3
+            #v = random.uniform(v1, v2)
+            #setattr(self, attr, clamp(v, 0, 2))
 
     def tick(self, dt):
         if self.hp <= 0 or self.dst_to_player() > 2000:

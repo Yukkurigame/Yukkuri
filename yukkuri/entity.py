@@ -548,7 +548,7 @@ class Player(Yukkuri):
     def talk(self):
         if self.blocked:
             return
-        ent = self.closer(140, self.world.ents)
+        ent = self.closer(140, self.world.ents, blocked=False)
         if ent:
             self.dialogue_start(ent)
         else:

@@ -56,6 +56,9 @@ def caseinsensitive(func):
     return wrap
 
 class LayerLoader(pyglet.resource.Loader):
+    images = {}
+    regions = {}
+
     def reindex(self, *args, **kwargs):
         super(LayerLoader, self).reindex(*args, **kwargs)
         self._casemap = {}
@@ -71,19 +74,32 @@ class LayerLoader(pyglet.resource.Loader):
     def glob(self, spec):
         """Return all files in the index matching the glob pattern."""
         spec = spec.lower()
-        #print dirname
         res = [resource for name, resource in self._casemap.iteritems()
                 if fnmatch.fnmatch(name, spec)]
-        #print res
         return res 
 
     @caseinsensitive
     def image(self, filename, *args):
         if "." not in filename:
             filename = filename + ".png"
-        image = super(LayerLoader, self).image(filename, *args)
-        image.filename = filename
+        try: image = self.images[filename.lower()]
+        except KeyError:
+            image = super(LayerLoader, self).image(filename, *args)
+            self.images[filename.lower()] = image
+            image.filename = filename
         return image
+
+    def imageregion(self, image, width, height, first, offset, *args):        
+        #image = self.images(filename, *args)
+        cols = int(image.width / width)        
+        rows =  int(image.height / height)
+        try: regions = self.regions[image.filename.lower()]
+        except KeyError:
+            regions = pyglet.image.ImageGrid(image, rows, cols, 
+                                                 row_padding=1, column_padding=1)
+            self.regions[image.filename.lower()] = regions
+        last = first+offset
+        return regions[first:last]
 
     file = caseinsensitive(pyglet.resource.Loader.file)
     animation = caseinsensitive(pyglet.resource.Loader.animation)
@@ -121,6 +137,7 @@ _loader = LayerLoader(DIRS)
 
 file = _loader.file
 image = _loader.image
+imageregion = _loader.imageregion
 glob = _loader.glob
 add_font = _loader.add_font
 sound = _loader.sound

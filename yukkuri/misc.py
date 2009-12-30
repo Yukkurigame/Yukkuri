@@ -460,7 +460,7 @@ class Map(layer.parse.ParseObject):
     
     def __setstate__(self, d):
         super(Map, self).__setstate__(d)
-        self.map_texture = layer.load.image(self.map)
+        self.map_texture = layer.load.image(self.map) 
         coll = layer.load.image(self.collision)
         texels = coll.image_data.get_data("RGBA", coll.width * 4)
         self.speedmap = {}

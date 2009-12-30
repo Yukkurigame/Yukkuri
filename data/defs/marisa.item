@@ -5,17 +5,17 @@ anim_distance: 10
 width: 90
 height: 100
 mini: marisa_0.png
-up_anim: [marisa_face_0, marisa_face_0, marisa_face_0, marisa_face_0]
-right_anim: [marisa_face_0, marisa_face_0, marisa_face_0, marisa_face_0]
-down_anim: [marisa_face_0, marisa_face_0, marisa_face_0, marisa_face_0]
-left_anim: [marisa_face_0, marisa_face_0, marisa_face_0, marisa_face_0]
+up_anim: [marisa_face_0]
+right_anim: [marisa_face_0]
+down_anim: [marisa_face_0]
+left_anim: [marisa_face_0]
 leftdown_anim: [marisa_face_0]
 rightdown_anim: [marisa_face_0]
 leftup_anim: [marisa_face_0]
 rightup_anim: [marisa_face_0]
 raped: [marisa_face_0]
 raping: [marisa_face_0]
-growth: [marisa_face_0, marisa_face_0]
+growth: [marisa_face_0]
 anchor_x: 24
 anchor_y: 8
 color: "#ffffff"

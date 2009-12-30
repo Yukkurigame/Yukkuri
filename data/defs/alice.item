@@ -15,7 +15,7 @@ leftup_anim: [alice_0]
 rightup_anim: [alice_0]
 raped: [alice_0]
 raping: [alice_0]
-growth: [alice_grow_1, alice_grow_0]
+growth: [alice_grow_0]
 anchor_x: 24
 anchor_y: 8
 color: "#ffffff"

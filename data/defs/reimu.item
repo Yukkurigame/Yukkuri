@@ -2,22 +2,21 @@
 name: Reimu
 speed: 80
 anim_distance: 10
-width: 85
-height: 80
+width: 80
+height: 69
 mini: reimu_0.png
-up_anim: [reimu_back_0, reimu_back_1, reimu_back_2, reimu_back_3]
-right_anim: [reimu_right_0, reimu_right_1, reimu_right_2, reimu_right_3]
-down_anim: [reimu_face_0, reimu_face_1, reimu_face_2, reimu_face_3]
-left_anim: [reimu_left_0, reimu_left_1, reimu_left_2, reimu_left_3]
-leftdown_anim: [reimu_ld_0, reimu_ld_1, reimu_ld_2, reimu_ld_3]
-rightdown_anim: [reimu_rd_0, reimu_rd_1, reimu_rd_2, reimu_rd_3]
-leftup_anim: [reimu_lu_0, reimu_lu_1, reimu_lu_2, reimu_lu_3]
-rightup_anim: [reimu_ru_0, reimu_ru_1, reimu_ru_2, reimu_ru_3]
-growth: [reimu_grow_1, reimu_grow_0]
-raped: [reimu_raped_0, reimu_raped_1, reimu_raped_2]
-raping: [reimu_raping_0, reimu_raping_1, reimu_raping_2, reimu_raping_3]
-anchor_x: 24
-anchor_y: 8
+image: reimu.png
+down_anim: [0, 3]
+up_anim: [4, 3]
+leftdown_anim: [8, 3]
+left_anim: [12, 3]
+leftup_anim: [16, 3]
+rightdown_anim: [20, 3]
+right_anim: [24, 3]
+rightup_anim: [28, 3]
+raping: [32, 3]
+raped: [36, 2]
+growth: [40, 1]
 color: "#ffffff"
 damage: 3.0
 hp: 10.0

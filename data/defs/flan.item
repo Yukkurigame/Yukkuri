@@ -15,7 +15,7 @@ leftup_anim: [flan_0]
 rightup_anim: [flan_0]
 raped: [flan_0]
 raping: [flan_0]
-growth: [flan_0, flan_1]
+growth: [flan_0]
 anchor_x: 24
 anchor_y: 8
 color: "#ffffff"

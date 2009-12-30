@@ -1,4 +1,5 @@
 
+import layer.load
 from layer.sprite import Sprite, Group, OrderedGroup, batch, Batch
 from misc import *
 
@@ -66,8 +67,11 @@ class EntityDef(layer.parse.ParseObject):
                      "leftdown_anim", "rightdown_anim", "leftup_anim", "rightup_anim",
                      "raped", "raping", "growth"]:
             l = getattr(self, attr)
-            if l:
-                l = map(layer.load.image, l)
+            if l:                
+                if len(l) > 1:                    
+                    l = layer.load.imageregion(self.image, self.width, self.height, *l)
+                else:
+                    l = map(layer.load.image, l)
                 setattr(self, attr, l)
                 for image in l:
                     image.anchor_x = self.anchor_x or image.width / 2

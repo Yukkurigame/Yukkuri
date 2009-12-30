@@ -9,7 +9,6 @@ import layer.coll
 import layer.colors
 import layer.command
 import layer.const
-import layer.load
 import layer.sui
 import layer.task
 import layer.keybind

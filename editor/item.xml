@@ -1,0 +1,6 @@
+<form>
+    <label><text>entry:</text></label>
+    <label><text>Source files directory path:</text></label> 
+    <entry bg='white'/>
+    <button text="open" />
+</form>

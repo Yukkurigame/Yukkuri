@@ -81,7 +81,7 @@ class EntGroup(list): #Move into layer. This copy EntityGroup methods, it's not 
     def destroy(self):
         self.leader = None
         for entity in list(self):
-            entity.kill()        
+            entity.kill()
 
 class Family(EntGroup): #think about compare with DialogueMeta. 
     
@@ -226,8 +226,9 @@ class DialogueMeta(object):
                     try: eval(block.command)
                     except Ecteption, e: print_d(e) 
                 else:
-                    replace = eval(block.command)
-                    text = text.replace("%s", str(replace))
+                    try: replace = eval(block.command)
+                    except Ecteption, e: print_d(e)
+                    else: text = text.replace("%s", str(replace))
         self.__show_text(actor, text, actor.alabel)
         if hasattr(block, "choices"):
             self.make_choices(block.chooser, block.choices)

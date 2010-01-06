@@ -96,7 +96,7 @@ class LayerLoader(pyglet.resource.Loader):
         try: regions = self.regions[image.filename.lower()]
         except KeyError:
             regions = pyglet.image.ImageGrid(image, rows, cols, 
-                                                 row_padding=1, column_padding=1)
+                                                 row_padding=2, column_padding=2)
             self.regions[image.filename.lower()] = regions
         last = first+offset
         return regions[first:last]

@@ -1,6 +1,26 @@
-<form>
-    <label><text>entry:</text></label>
-    <label><text>Source files directory path:</text></label> 
-    <entry bg='white'/>
-    <button text="open" />
+<form side="top">
+    <form>
+        <label><text>Name:</text></label>
+        <entry name="name" bg='white'/>
+    </form>
+    <form>
+        <label><text>Edible:</text></label>
+        <entry name="edible" bg='white'/>
+    </form>
+    <form>
+        <label><text>Image:</text></label>    
+        <entry name="image" bg='white'/>
+        <button text="Open" change="image" type="('PNG and JPEG files', '*.png *.jpg')" do="openFile" />
+    </form>
+    <form>
+        <label><text>Nutritive:</text></label>
+        <entry name="nutritive" bg='white'/>
+    </form>
+    <form>
+        <label><text>Type:</text></label>
+        <entry name="type" bg='white'/>
+    </form>
+    <form>
+        <button text="Save" do="saveFile"/>
+    </form>
 </form>

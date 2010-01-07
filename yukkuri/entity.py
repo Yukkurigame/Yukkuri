@@ -38,7 +38,7 @@ class EntityDef(layer.parse.ParseObject):
     anim_distance = 10
     hp = 0
     damage = 0
-    hhungry = 1.0
+    hungry = 1.0
     color = (255, 255, 255)    
     days_to_grow = 1    
     type = None
@@ -91,8 +91,6 @@ class ItemDef(layer.parse.ParseObject):
     leftup_anim = []
     rightup_anim = []
     growth = []
-    raped = []
-    raping = []
     anchor_x = None
     anchor_y = None
     takeable = False
@@ -100,7 +98,6 @@ class ItemDef(layer.parse.ParseObject):
     anim_distance = 10
     hp = 0
     damage = 0
-    hhungry = 1.0
     color = (255, 255, 255)    
     days_to_grow = 1    
     type = None
@@ -111,9 +108,8 @@ class ItemDef(layer.parse.ParseObject):
         except KeyError: pass
         except AttributeError: del(d["image"])
 
-        for attr in ["down_anim", "up_anim", "left_anim", "right_anim",
-                     "leftdown_anim", "rightdown_anim", "leftup_anim", "rightup_anim",
-                     "raped", "raping", "growth"]:
+        for attr in ["down_anim", "up_anim", "left_anim", "right_anim", "growth",
+                     "leftdown_anim", "rightdown_anim", "leftup_anim", "rightup_anim"]:
             try: d[attr] = map(lambda i: i.filename, d[attr])
             except KeyError: pass
             except AttributeError: del(d[attr])
@@ -125,9 +121,8 @@ class ItemDef(layer.parse.ParseObject):
             self.image = layer.load.image(self.image)
             self.image.anchor_x = self.anchor_x or self.image.width / 2
             self.image.anchor_y = self.anchor_y or self.image.height / 2
-        for attr in ["down_anim", "up_anim", "left_anim", "right_anim",
-                     "leftdown_anim", "rightdown_anim", "leftup_anim", "rightup_anim",
-                     "raped", "raping", "growth"]:
+        for attr in ["down_anim", "up_anim", "left_anim", "right_anim", "growth",
+                     "leftdown_anim", "rightdown_anim", "leftup_anim", "rightup_anim"]:
             l = getattr(self, attr)
             if l:                
                 if len(l) > 1:                    
@@ -827,7 +822,7 @@ class Item(Entity):
         self.world = world
         self.hp = self.dfn.hp
         self.type = self.dfn.type        
-        self.nutritive = self.dfn.nutritive
+        self.nutritive = float(self.dfn.nutritive)
         if hasattr(self.dfn, "down_anim") and len(self.dfn.down_anim) > 0:
             self.images = self.dfn.down_anim
             self.image = self.images[0]

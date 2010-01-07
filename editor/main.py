@@ -4,8 +4,11 @@ import yaml
 from xml.etree.ElementTree import XML, parse
 import Tkinter
 from Tkinter import *
-from tkFileDialog import askdirectory
+from tkFileDialog import askdirectory, askopenfilename
 from yaml import Loader as _Loader
+from yaml import Dumper as _Dumper
+
+_version = '0.1a'
 
 class CurrentDir(list):
     
@@ -64,11 +67,15 @@ class Main:
         main = parse("main.xml")
         pathlbl = parse("path.xml")
         self.root = root
-        self.config = Config()        
+        self.config = Config()
         self.dir = CurrentDir()
-        self.parser = Parser()
-        tabframe = Frame(root)        
+        self.parser = ParseObject()
+        self.classes = ClassFactory()
+        tabframe = Frame(root)
         self.mainframe = Frame(root)
+        self.fields = {}
+        self.loadobj = None
+        self.loadfile = None
         self.tabmanager = Tabs(tabframe, self)
         self.pathfrm = self.draw(self.mainframe, pathlbl.getroot())                
         frame = self.draw(self.mainframe, main.getroot())                
@@ -76,37 +83,67 @@ class Main:
         self.mainframe.pack(side=TOP, expand=YES, fill=BOTH)
         self.pathfrm.pack()        
         frame.pack()
-        self.changeDir()
-        self.pathfrm.children["open"].config(command=self.openDir)
+        self.dir.change(self.config.path)
+        self.changeText(self.fields["path"], str(self.config.path))
+        #self.pathfrm.children["open"].config(command=lambda: self.openDir("path"))
         frame.children["ok"].config(command=self.action_ok)
         frame.children["cancel"].config(command=self.root.quit)
 
-    def draw(self, master, element):                
-        if element.tag == "form":
-            frame = Frame(master, **element.attrib)
-            for subelement in element:                
+    def draw(self, master, element):
+        side="left" 
+        if element.tag == "form":           
+            if element.attrib.has_key("side"):
+                side = element.attrib["side"]
+                del element.attrib["side"]
+            frame = Frame(master, **element.attrib)            
+            for subelement in element:
                 widget = self.draw(frame, subelement)
                 if widget:                    
-                    widget.pack(side="left")
+                    widget.pack(side=side)
             return frame        
         else:
             options = element.attrib
             try: pxml = parse(element.tag+".xml")
             except IOError:            
                 if element:
-                    options = options.copy()
+                    options = options.copy()                    
                     for subelement in element:
                         options[subelement.tag] = subelement.text
-                widget_factory = getattr(Tkinter, element.tag.capitalize())                            
-                return widget_factory(master, **options)
+                if element.tag == "button":
+                    if options.has_key("do"):
+                        change, type = None, None 
+                        do = options["do"]
+                        do = eval('self.'+do)
+                        try: change = options["change"]
+                        except: pass
+                        else: del options["change"]
+                        try: typeb = eval(options["type"])
+                        except: pass                        
+                        else:
+                            type = []
+                            type.append(typeb)                            
+                            del options["type"]                        
+                        options["command"] = lambda: do(change, type)
+                        del options["do"]
+                widget_factory = getattr(Tkinter, element.tag.capitalize())
+                widget = widget_factory(master, **options)
+                if options.has_key("name"):
+                    #if self.fields.has_key(options["name"]):
+                        #raise KeyError(options["name"])
+                    #else:
+                    self.fields[options["name"]] = widget 
+                return widget
             else:
-                frame = Frame(self.tabmanager())
+                frame = Frame(self.tabmanager())                                
+                widget = self.draw(frame, pxml.getroot())
+                if widget:
+                    widget.pack()
                 eroot = pxml.getroot()
                 options = options.copy()
-                for subelement in eroot:
-                    options[subelement.tag] = subelement.text
-                    widget_factory = getattr(Tkinter, subelement.tag.capitalize())                
-                    widget_factory(frame, **options).pack()
+                #for subelement in eroot:
+                    #options[subelement.tag] = subelement.text
+                    #widget_factory = getattr(Tkinter, subelement.tag.capitalize())                
+                    #widget_factory(frame, **options).pack()
                 tab = self.tabmanager.add_screen(frame, element.tag)
                 return tab
 
@@ -114,24 +151,58 @@ class Main:
         self.config.save()
         root.quit()
 
-    def openDir(self):
-        self.config.path = askdirectory()
-        self.pathfrm.children["plabel"].config(fg='#000')
-        self.changeDir()
-        #self.change_list()
-   
-    def changeDir(self):
-        pen = self.pathfrm.children["path"]        
+    def openDir(self, change, type=None):
+        self.config.path = askdirectory(initialdir=self.config.path)
+        self.fields["plabel"].config(fg='#000')
+        self.changeText(self.fields[change], str(self.config.path))
         self.dir.change(self.config.path)
+        #self.change_list()
+    
+    def openFile(self, change, type=None):        
+        path = askopenfilename(filetypes=type, initialdir=self.config.path)        
+        self.fields["plabel"].config(fg='#000')
+        self.changeText(self.fields[change], str(path))
+        #self.change_list()
+
+    def saveFile(self, *args):
+        print os.path.join(self.config.path, self.loaded)
+        for field in self.fields:
+            if hasattr(self.loadobj, field):
+                setattr(self.loadobj, field, self.fields[field].get())
+        fileObj = open(os.path.join(self.config.path, self.loaded),"w")
+        fileObj.write(self.loadobj.dump())
+        fileObj.close()         
+
+    def changeText(self, pen, text):
         pen.delete(0, END)
-        pen.insert(0, str(self.config.path))
+        pen.insert(0, text)
 
     def load(self, filename):
+        self.loaded = filename
         stream = file(os.path.join(self.config.path, filename), 'rU')
-        
-        print yaml.load(stream)
+        self.classes.create(self.tabmanager.title.lower().capitalize()+'Def', ParseObject)
+        self.loadobj = self.parser.load(stream)
+        for field in self.fields:
+            if hasattr(self.loadobj, field):
+                self.changeText(self.fields[field], getattr(self.loadobj, field))
 
-class Parser:
+class _ParseObjectMetaclass(type):
+
+    def __new__(cls, name, bases, kwds):
+        kwds.setdefault("parse_tag", "!" + ("." + name).rsplit(".", 1)[1])
+        return type.__new__(cls, name, bases, kwds)
+
+    def __init__(cls, name, bases, kwds):
+        super(_ParseObjectMetaclass, cls).__init__(name, bases, kwds)
+        cls._Loader.add_constructor(cls.parse_tag, cls._from_yaml)
+        cls._Dumper.add_representer(cls, cls._to_yaml)
+
+class ParseObject(object):
+    __metaclass__ = _ParseObjectMetaclass
+    _Loader = _Loader
+    _Dumper = _Dumper
+
+    _parse_flow_style = False
 
     @classmethod
     def _from_yaml(cls, loader, node):
@@ -151,41 +222,20 @@ class Parser:
                 "Loaded data type %r != loader type %r" % (type(data), cls))
         return result
 
-    @classmethod
-    def load_list(cls, data):
-        """Create a list of objects from data, fail if it's the wrong type.
-        If data describes a single object, a list containing it is
-        returned.
-        """
-        result = load(data)
-        if isinstance(result, list) and result:
-            types = map(type, result)
-            if not (max(types) == min(types) == cls):
-                raise TypeError(
-                    "Loaded list types %r, %r != loader type %r" %
-                    (max(types), min(types), cls))
-        elif not isinstance(result, cls):
-            raise TypeError(
-                "Loaded data type %r != loader type %r" % (type(data), cls))
-        elif not isinstance(result, list):
-            result = [result]
-        return result
-
     def dump(self):
         """Create a string from this object."""
         return yaml.dump(self, Dumper=self._Dumper)
 
-    def constructor(self, loader, node):
-        value = loader.construct_scalar(node)
-        print value
-    
-    def add(self, type):        
-        yaml.add_constructor(u'!'+type.lower().capitalize()+'Def', self._from_yaml)
+class ClassFactory(object):    
+    def create(self, name,  parent, **k):
+        cls =  type(name, (parent,), k)
+        return cls
 
 class Tabs:
     
     def __init__(self, master, main, side=TOP):
-        self.active_fr = None        
+        self.active_fr = None
+        self.title = None        
         self.count = 0
         self.main = main
         self.config = main.config
@@ -224,27 +274,26 @@ class Tabs:
             self.main.pathfrm.children["open"].config(activebackground='#fff')
             self.main.pathfrm.children["plabel"].config(fg='#f00')            
             return
+        self.title = title
         if self.active_fr:
             self.active_fr.forget()
         fr.pack(fill=BOTH, expand=1)
         self.active_fr = fr
-        self.main.root.title("Make it easy: "+title.capitalize()+" editor")
+        self.main.root.title("Make it easy: "+title.capitalize()+" editor "+_version)
         self.change_list(title)
         
     def change_list(self, title):
         self.list.delete(0, END)
         for item in self.main.dir.get_type(title):
             self.list.insert(END, item)
-        self.main.parser.add(title)
 
     def onSelect(self, e):
-        print e
         select=self.list.get(self.list.curselection())
         self.main.load(select)
 
 if __name__ == "__main__":
     root = Tk()
     Main(root)
-    root.title("Make it easy")
+    root.title("Make it easy "+_version)
     root.mainloop()    
 

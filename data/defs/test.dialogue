@@ -181,3 +181,8 @@
             time: 1
             nextframe: last
             text:  No animation avalible yet
+        - !DialogueBlock
+            actor: first
+            time: 1
+            nextframe: last
+            text: Make peace, not war. It is game over. Wait! oh shi~ 

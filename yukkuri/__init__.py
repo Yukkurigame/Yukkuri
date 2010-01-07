@@ -318,9 +318,8 @@ class Spawner(object):
     def spawn(self):
         if self.edibles < int(layer.const.MAX_EDIBLES):
             x, y = self.getxy()
-            b = Item(EntityDef.Find("flowers"), self.world)
-            #b.sprite.x, b.sprite.y = 
-            b.x, b.y = x, y              
+            b = Item(self.world, x, y)
+            self.world.items.add(b)
             self.edibles += 1
         if self.count < int(layer.const.MAX_SPAWN):
             x, y = self.getxy()
@@ -346,36 +345,7 @@ class Spawner(object):
 
 class GameOver(object):
     def __init__(self, player, window):
-        text = """<center><font color=white>
-<font color=white>You:<br>\
-<font color=white>Survived %(days)d days<br>\
-<font color=white>Earned $%(money)d<br>\
-<font color=white>Killed %(killed)d rabbits<br>\
-<font color=white>Cured %(cured)d rabbits<br>\
-<font color=white>Grew %(grown)d plants</font></center>"""
-        text = text % dict(
-            money=player.inventory.money,
-            days=player.days,
-            killed=player.killed,
-            cured=player.saved,
-            grown=player.grown)
-        self.batch = Batch(z=2)
-        self.window = window
-        self.bg = Sprite(filename="gameover.png", batch=self.batch,
-                     group=self.batch.Group(1))
-        self.label = pyglet.text.HTMLLabel(            
-            text, batch=self.batch,
-            y=window.height * 0.6,
-            multiline=True,
-            width=window.width / 2,
-            group=self.batch.Group(2))
-        self.label.font_size = 20
-        window.batches.append(self.batch)
-
-    def delete(self):
-        self.window.batches.remove(self.batch)
-        self.bg.delete()
-        self.label.delete()
+        pass        
             
 def init(argv):
     window = layer.init(

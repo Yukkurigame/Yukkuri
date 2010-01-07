@@ -1,4 +1,4 @@
-- !EntityDef
+- !ItemDef
   name: flowers
   down_anim: [flowers_0]
   edible: True

@@ -1,4 +1,4 @@
-- !EntityDef
+- !ItemDef
   name: dead
   image: dead.png
   edible: True

@@ -175,6 +175,7 @@ class DialogueMeta(object):
         self.actors = {}
         self.choices = []
         self.choose = 0
+        self.type = None
         self.add_member(starter, "first")
         self.next = None
         self.timerstatus = None
@@ -197,6 +198,7 @@ class DialogueMeta(object):
 
     def set_dfn(self, dfn, frame=0):
         self.dfn = DialogueDef.Find(dfn)
+        self.type = dfn
         self.next = frame
         self.next_frame()
 

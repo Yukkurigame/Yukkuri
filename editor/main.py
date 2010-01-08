@@ -55,11 +55,13 @@ class Config(dict):
         stream = file('config', 'w')
         yaml.dump(dict(self), stream)
     
-    def load(self):
-        stream = file('config', 'rU')
-        d = yaml.load(stream)
-        for key in d.keys():
-            setattr(self, key, d[key])
+    def load(self):        
+        try: stream = file('config', 'rU')
+        except: pass
+        else:
+            d = yaml.load(stream)
+            for key in d.keys():
+                setattr(self, key, d[key])
 
 class Main:
 
@@ -168,7 +170,10 @@ class Main:
         print os.path.join(self.config.path, self.loaded)
         for field in self.fields:
             if hasattr(self.loadobj, field):
-                setattr(self.loadobj, field, self.fields[field].get())
+                fld = self.fields[field].get()                
+                try: fld = eval(fld)
+                except: pass
+                setattr(self.loadobj, field, fld)
         fileObj = open(os.path.join(self.config.path, self.loaded),"w")
         fileObj.write(self.loadobj.dump())
         fileObj.close()         

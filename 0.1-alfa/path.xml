@@ -1,0 +1,5 @@
+<form>
+    <label name="plabel"><text>Source files directory path:</text></label> 
+    <entry name="path" bg='white'/>
+    <button name="open" change="path" do="openDir"  text="Open" />
+</form>

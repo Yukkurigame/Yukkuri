@@ -2,9 +2,8 @@
 import os
 import yaml
 from xml.etree.ElementTree import XML, parse
-import Tkinter
-from Tkinter import *
-from tkFileDialog import askdirectory, askopenfilename
+import widgets
+from widgets import *
 from yaml import Loader as _Loader
 from yaml import Dumper as _Dumper
 
@@ -92,7 +91,7 @@ class Main:
         frame.children["cancel"].config(command=self.root.quit)
 
     def draw(self, master, element):
-        side="left" 
+        side="left"        
         if element.tag == "form":           
             if element.attrib.has_key("side"):
                 side = element.attrib["side"]
@@ -101,7 +100,7 @@ class Main:
             for subelement in element:
                 widget = self.draw(frame, subelement)
                 if widget:                    
-                    widget.pack(side=side)
+                    widget.pack(side=side, fill=X, expand=YES)
             return frame        
         else:
             options = element.attrib
@@ -127,7 +126,7 @@ class Main:
                             del options["type"]                        
                         options["command"] = lambda: do(change, type)
                         del options["do"]
-                widget_factory = getattr(Tkinter, element.tag.capitalize())
+                widget_factory = getattr(widgets, element.tag.capitalize())
                 widget = widget_factory(master, **options)
                 if options.has_key("name"):
                     #if self.fields.has_key(options["name"]):
@@ -144,7 +143,7 @@ class Main:
                 options = options.copy()
                 #for subelement in eroot:
                     #options[subelement.tag] = subelement.text
-                    #widget_factory = getattr(Tkinter, subelement.tag.capitalize())                
+                    #widget_factory = getattr(widgets, subelement.tag.capitalize())                
                     #widget_factory(frame, **options).pack()
                 tab = self.tabmanager.add_screen(frame, element.tag)
                 return tab
@@ -153,7 +152,7 @@ class Main:
         self.config.save()
         root.quit()
 
-    def openDir(self, change, type=None):
+    def openDir(self, change, type=None): #type'll deprecated in future
         self.config.path = askdirectory(initialdir=self.config.path)
         self.fields["plabel"].config(fg='#000')
         self.changeText(self.fields[change], str(self.config.path))
@@ -162,7 +161,7 @@ class Main:
     
     def openFile(self, change, type=None):        
         path = askopenfilename(filetypes=type, initialdir=self.config.path)        
-        self.fields["plabel"].config(fg='#000')
+        #self.fields["plabel"].config(fg='#000')
         self.changeText(self.fields[change], str(path))
         #self.change_list()
 
@@ -179,8 +178,10 @@ class Main:
         fileObj.close()         
 
     def changeText(self, pen, text):
-        pen.delete(0, END)
-        pen.insert(0, text)
+        try: pen.change(text)
+        except:            
+            pen.delete(0, END)
+            pen.insert(0, text)
 
     def load(self, filename):
         self.loaded = filename
@@ -272,12 +273,14 @@ class Tabs:
         return b
 
     def display(self, fr, title):
-        if not self.config.path:
-            pathfrm = self.main.pathfrm
-            self.main.pathfrm.children["open"].config(activebackground='#0b0')
-            self.main.pathfrm.children["open"].flash()
-            self.main.pathfrm.children["open"].config(activebackground='#fff')
-            self.main.pathfrm.children["plabel"].config(fg='#f00')            
+        self.config.path = self.main.fields["path"].get()        
+        if not self.config.path:            
+            self.main.fields["path"].flash()
+            #pathfrm = self.main.pathfrm
+            #self.main.pathfrm.children["open"].config(activebackground='#0b0')
+            #self.main.pathfrm.children["open"].flash()
+            #self.main.pathfrm.children["open"].config(activebackground='#fff')
+            #self.main.pathfrm.children["plabel"].config(fg='#f00')            
             return
         self.title = title
         if self.active_fr:

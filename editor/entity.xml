@@ -1,111 +1,87 @@
 <form>    
-    <form side="top">
-        <form>
-            <label><text>Name:</text></label>
-            <entry name="name" bg='white'/>
-        </form>
-        <form>
-            <label><text>Speed:</text></label>
-            <entry name="speed" bg='white'/>
-        </form>
-            <form>
-            <label><text>Animation Distance:</text></label>
-            <entry name="anim_distance" bg='white'/>
-        </form>
-        <form>
-            <label><text>Width:</text></label>
-            <entry name="width" bg='white'/>
-        </form>
-            <form>
-            <label><text>Height:</text></label>
-            <entry name="height" bg='white'/>
-        </form>
+    <form side="top">        
+        <input name="name" bg='white'>
+            <text>Name:</text>
+        </input>
+        <input name="speed" bg='white'>
+            <text>Speed:</text>
+        </input>
+        <input name="anim_distance" bg='white'>
+            <text>Animation Distance:</text>
+        </input>
+        <input name="width" bg='white'>
+            <text>Width:</text>
+        </input>
+        <input name="height" bg='white'>
+            <text>Height:</text>
+        </input>
         <form>
             <label><text>Image miniature:</text></label>    
             <entry name="mini" bg='white'/>
             <button text="Open" change="image" type="('PNG and JPEG files', '*.png *.jpg')" do="openFile" />
         </form>
-        <form>
-            <label><text>Image horisontale anchor:</text></label>
-            <entry name="anchor_x" bg='white'/>
-        </form>
-        <form>
-            <label><text>Image verticale anchor:</text></label>
-            <entry name="anchor_y" bg='white'/>
-        </form>
-        <form>
-            <label><text>Image color:</text></label>
-            <entry name="color" bg='white'/>
-        </form>
-        <form>
-            <label><text>Damage:</text></label>
-            <entry name="damage" bg='white'/>
-        </form>
-        <form>
-            <label><text>Rapebar grow speed:</text></label>
-            <entry name="rapespeed" bg='white'/>
-        </form>
-        <form>
-            <label><text>Hp:</text></label>
-            <entry name="hp" bg='white'/>
-        </form>
-        <form>
-            <label><text>Blood color:</text></label>
-            <entry name="bloodcolor" bg='white'/>
-        </form>
-            <form>
-            <label><text>Meeting chanse:</text></label>
-            <entry name="meeting" bg='white'/>
-        </form>
+        <input name="anchor_x" bg='white'>
+            <text>Image horisontale anchor:</text>
+        </input>
+        <input name="anchor_y" bg='white'>
+            <text>Image verticale anchor:</text>
+        </input>
+        <input name="color" bg='white'>
+            <text>Image color:</text>
+        </input>
+        <input name="damage" bg='white'>
+            <text>Damage:</text>
+        </input>
+        <input name="rapespeed" bg='white'>
+            <text>Rapebar grow speed:</text>
+        </input>
+        <input name="hp" bg='white'>
+            <text>Hp:</text>
+        </input>
+        <input name="bloodcolor" bg='white'>
+            <text>Blood color:</text>            
+        </input>
+        <input name="meeting" bg='white'>
+            <text>Meeting chanse:</text>
+        </input>
         <form>
             <button text="Save" do="saveFile"/>
         </form>
     </form>
     <form side="top">    
         <label><text>Animation:</text></label>
-        <form>
-            <label><text>Up animation:</text></label>
-            <entry name="up_anim" bg='white'/>
-        </form>
-        <form>
-            <label><text>Rigth animation:</text></label>
-            <entry name="right_anim" bg='white'/>
-        </form>
-        <form>
-            <label><text>Down animation:</text></label>
-            <entry name="down_anim" bg='white'/>
-        </form>
-        <form>
-            <label><text>Left animation:</text></label>
-            <entry name="left_anim" bg='white'/>
-        </form>
-        <form>
-            <label><text>Left-Down animation:</text></label>
-            <entry name="leftdown_anim" bg='white'/>
-        </form>
-        <form>
-            <label><text>Left-Up animation:</text></label>
-            <entry name="leftup_anim" bg='white'/>
-        </form>
-        <form>
-            <label><text>Rigth-Up animation:</text></label>
-            <entry name="rightup_anim" bg='white'/>
-        </form>
-        <form>
-            <label><text>Rigth-Down animation:</text></label>
-            <entry name="rightdown_anim" bg='white'/>
-        </form>
-        <form>
-            <label><text>Raped animation:</text></label>
-            <entry name="raped" bg='white'/>
-        </form>
-        <form>
-            <label><text>Raping animation:</text></label>
-            <entry name="raping" bg='white'/>
-        </form>
-        <form>
-            <label><text>Growth animation:</text></label>
-            <entry name="growth" bg='white'/>
-        </form>        
+        <input  name="up_anim" bg='white'>
+            <text>Up animation:</text>
+        </input>
+        <input name="right_anim" bg='white'>
+            <text>Rigth animation:</text>            
+        </input>
+        <input name="down_anim" bg='white'>
+            <text>Down animation:</text>
+        </input>
+        <input name="left_anim" bg='white'>
+            <text>Left animation:</text>
+        </input>
+        <input name="leftdown_anim" bg='white'>
+            <text>Left-Down animation:</text>
+        </input>
+        <input name="leftup_anim" bg='white'>
+            <text>Left-Up animation:</text>
+        </input>
+        <input name="rightup_anim" bg='white'>
+            <text>Rigth-Up animation:</text>
+        </input>
+        <input name="rightdown_anim" bg='white'>
+            <text>Rigth-Down animation:</text>
+        </input>
+        <input name="raped" bg='white'>
+            <text>Raped animation:</text>
+        </input>
+        <input name="raping" bg='white'>
+            <text>Raping animation:</text>
+        </input>
+        <input name="growth" bg='white'>
+            <text>Growth animation:</text>
+        </input>        
     </form>
 </form>

@@ -15,20 +15,19 @@
         <input name="height" bg='white'>
             <text>Height:</text>
         </input>
-        <form>
-            <label><text>Image miniature:</text></label>    
-            <entry name="mini" bg='white'/>
-            <button text="Open" change="image" type="('PNG and JPEG files', '*.png *.jpg')" do="openFile" />
-        </form>
+        <openfile name="mini">
+            <text>Image miniature:</text>
+            #<button text="Open" change="image" type="('PNG and JPEG files', '*.png *.jpg')" do="openFile" />            
+        </openfile>
         <input name="anchor_x" bg='white'>
             <text>Image horisontale anchor:</text>
         </input>
         <input name="anchor_y" bg='white'>
             <text>Image verticale anchor:</text>
         </input>
-        <input name="color" bg='white'>
+        <opencolor name="color">
             <text>Image color:</text>
-        </input>
+        </opencolor>
         <input name="damage" bg='white'>
             <text>Damage:</text>
         </input>
@@ -38,12 +37,15 @@
         <input name="hp" bg='white'>
             <text>Hp:</text>
         </input>
-        <input name="bloodcolor" bg='white'>
+        <opencolortriple name="bloodcolor">
             <text>Blood color:</text>            
-        </input>
+        </opencolortriple>
         <input name="meeting" bg='white'>
             <text>Meeting chanse:</text>
         </input>
+        <bool name="predator">
+            <text>Predator:</text>
+        </bool>
         <form>
             <button text="Save" do="saveFile"/>
         </form>

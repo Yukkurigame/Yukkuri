@@ -7,7 +7,7 @@ from widgets import *
 from yaml import Loader as _Loader
 from yaml import Dumper as _Dumper
 
-_version = '0.1a'
+_version = '0.2a'
 
 class CurrentDir(list):
     
@@ -23,7 +23,8 @@ class CurrentDir(list):
         self.clear()
         for item in os.listdir(path):
             if os.path.isfile(os.path.join(path, item)):
-                self.append(item)
+                if item.find(".") > 0 and item.rfind("~")+1 < len(item):
+                    self.append(item)
 
     def clear(self):
         for item in list(self):
@@ -86,7 +87,6 @@ class Main:
         frame.pack()
         self.dir.change(self.config.path)
         self.changeText(self.fields["path"], str(self.config.path))
-        #self.pathfrm.children["open"].config(command=lambda: self.openDir("path"))
         frame.children["ok"].config(command=self.action_ok)
         frame.children["cancel"].config(command=self.root.quit)
 
@@ -150,15 +150,9 @@ class Main:
 
     def action_ok(self):
         self.config.save()
+        self.saveFile()
         root.quit()
 
-    def openDir(self, change, type=None): #type'll deprecated in future
-        self.config.path = askdirectory(initialdir=self.config.path)
-        self.fields["plabel"].config(fg='#000')
-        self.changeText(self.fields[change], str(self.config.path))
-        self.dir.change(self.config.path)
-        #self.change_list()
-    
     def openFile(self, change, type=None):        
         path = askopenfilename(filetypes=type, initialdir=self.config.path)        
         #self.fields["plabel"].config(fg='#000')
@@ -166,7 +160,7 @@ class Main:
         #self.change_list()
 
     def saveFile(self, *args):
-        print os.path.join(self.config.path, self.loaded)
+        #print os.path.join(self.config.path, self.loaded)
         for field in self.fields:
             if hasattr(self.loadobj, field):
                 fld = self.fields[field].get()                

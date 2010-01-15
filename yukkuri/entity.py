@@ -148,7 +148,7 @@ class Yukkuri(Entity):
         self.sprite.color = (255, 255, 255)
         self.type = self.dfn.name
         self.sprite.scale = 0.3
-        self.bloodcolor = eval(self.dfn.bloodcolor)        
+        self.bloodcolor = self.dfn.bloodcolor        
         self.dialogue = Dialogue(self)
         self.attacked = None
         self.eating = None

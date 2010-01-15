@@ -2,7 +2,7 @@
 anchor_x: 24
 anchor_y: 8
 anim_distance: 10
-bloodcolor: (250, 220, 100)
+bloodcolor: !!python/tuple [250, 220, 100]
 color: '#ffffff'
 damage: 3.0
 down_anim: [alice_1]
@@ -14,7 +14,7 @@ leftdown_anim: [alice_0]
 leftup_anim: [alice_0]
 meeting: 10.0
 mini: alice_0.png
-name: Alise
+name: Alice
 raped: [alice_0]
 rapespeed: 10
 raping: [alice_0]

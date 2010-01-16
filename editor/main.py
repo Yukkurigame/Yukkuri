@@ -43,7 +43,9 @@ class Config(dict):
         try:
             return self.__getitem__(item)
         except KeyError:
-            raise AttributeError(item)
+            return ''
+            #raise AttributeError(item)
+         
 
     def __setattr__(self, item, value):
         if self.__dict__.has_key(item):
@@ -78,12 +80,13 @@ class Main:
         self.fields = {}
         self.loadobj = None
         self.loadfile = None
+        self.loaded = None
         self.tabmanager = Tabs(tabframe, self)
         self.pathfrm = self.draw(self.mainframe, pathlbl.getroot())                
         frame = self.draw(self.mainframe, main.getroot())                
         tabframe.pack(side=TOP, fill=X)        
         self.mainframe.pack(side=TOP, expand=YES, fill=BOTH)
-        self.pathfrm.pack()        
+        self.pathfrm.pack()
         frame.pack()
         self.dir.change(self.config.path)
         self.changeText(self.fields["path"], str(self.config.path))
@@ -155,20 +158,14 @@ class Main:
         self.saveFile()
         root.quit()
 
-#    def openFile(self, change, type=None):        
-#        path = askopenfilename(filetypes=type, initialdir=self.config.path)        
-        #self.fields["plabel"].config(fg='#000')
-#        self.changeText(self.fields[change], str(path))
-        #self.change_list()
-
     def saveFile(self, *args):
-        #print os.path.join(self.config.path, self.loaded)
+        if not self.loaded: return
         for field in self.fields:
             if hasattr(self.loadobj, field):
                 fld = self.fields[field].get()                
                 try: fld = eval(fld)
                 except: pass
-                setattr(self.loadobj, field, fld)
+                setattr(self.loadobj, field, fld)        
         fileObj = open(os.path.join(self.config.path, self.loaded),"w")
         fileObj.write(self.loadobj.dump())
         fileObj.close()         

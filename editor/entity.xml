@@ -56,7 +56,7 @@
             <text>Up animation:</text>
         </input>
         <input name="right_anim" bg='white'>
-            <text>Rigth animation:</text>            
+            <text>Right animation:</text>            
         </input>
         <input name="down_anim" bg='white'>
             <text>Down animation:</text>
@@ -71,10 +71,10 @@
             <text>Left-Up animation:</text>
         </input>
         <input name="rightup_anim" bg='white'>
-            <text>Rigth-Up animation:</text>
+            <text>Right-Up animation:</text>
         </input>
         <input name="rightdown_anim" bg='white'>
-            <text>Rigth-Down animation:</text>
+            <text>Right-Down animation:</text>
         </input>
         <input name="raped" bg='white'>
             <text>Raped animation:</text>

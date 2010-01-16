@@ -3,6 +3,7 @@ from Tkinter import *
 from tkFileDialog import askdirectory, askopenfilename
 from tkColorChooser import askcolor
 import os.path
+import Image, ImageTk
 
 class InputMeta(object):
 
@@ -18,7 +19,7 @@ class InputMeta(object):
             if elem == 'label': expand = 'no'
             else: expand = 'yes'
             self.objects[elem].pack(side=LEFT,expand=expand, fill=X)
-        self.frame.pack(**kwargs)
+        self.frame.pack(**kwargs)        
 
     def get(self):
         get = self.objects['entry'].get()
@@ -176,3 +177,95 @@ class Bool(InputMeta):
     def get(self):
         print bool(self.var.get())
         return bool(self.var.get())
+
+class Animation(InputMeta):
+    
+    def __init__(self, master, *args, **kwargs):
+        self.width, self.height = 10, 10        
+        self.activeimages = None
+        self.activeimage = None
+        self.main = kwargs["main"]
+        del kwargs["main"]
+        super(Animation, self).__init__(master, **kwargs)
+        self.imageframe = Frame(self.frame, padx=5, pady=5)
+        self.uiframe = Frame(self.frame)
+        canvas = getattr(Tkinter, "canvas".capitalize())        
+        self.canvas = canvas(self.imageframe, width=self.width, height=self.height, relief=GROOVE, bd=2)
+        self.objects["canvas"] = self.canvas
+        self.var = StringVar()
+        fields = self.get_opts()        
+        opts = getattr(Tkinter, "OptionMenu")
+        self.opts = opts(self.uiframe, self.var, *fields, command=self.select)
+        button = getattr(Tkinter, "button".capitalize())        
+        self.button = button(self.uiframe, text="Next", command=self.next_image)
+
+    def change(self):
+        self.width = int(self.main.fields["width"].get())
+        self.height = int(self.main.fields["height"].get())
+        self.objects["canvas"].config(width=int(self.width+4), height=int(self.height+4))
+        self.mainimage = None
+
+    def pack(self, *args, **kwargs):
+        self.button.pack(side=TOP,expand=YES, fill=X)
+        self.opts.pack(side=TOP,expand=YES, fill=X)
+        self.imageframe.pack(side=LEFT)
+        self.uiframe.pack(side=LEFT,expand=YES, fill=X)
+        super(Animation, self).pack(*args, **kwargs)
+
+    def get_opts(self):
+        fields = self.frame.master.children.keys()
+        fields.sort()
+        fields.remove(self.frame._name)
+        fields.remove("animation_label")
+        return fields
+
+    def select(self, select):
+        try: field = eval(self.main.fields[select].get())
+        except: return
+        self.activeimages = self.get_images(*field)
+        self.activeimage = None
+        self.next_image()
+        
+    def load_image(self):         
+        try: image = self.main.fields["name"].get().lower()+'.png'
+        except: return        
+        path =  os.path.join(self.main.config.path, '..', 'images' , image)
+        try: image = Image.open(path)
+        except:
+            print "Failed to load "+path 
+            return
+        self.mainimage = image
+        size = image.size
+        cols = int(size[0] / int(self.width))
+        rows =  int(size[1] / int(self.height))
+        bboxes = []
+        width = int(self.width)
+        height = int(self.height)
+        for row in range(rows):
+            mbox = []
+            for col in range(cols):
+                box = (col*width,
+                           row*height+1,
+                           int(width+col*width-1),
+                           int(height+row*height))
+                bbox = image.crop(box)
+                tkimage = ImageTk.PhotoImage(bbox)
+                mbox.append(tkimage)
+            mbox.reverse()
+            for el in mbox:
+                bboxes.append(el)
+        bboxes.reverse() #artful plan
+        self.bboxes = bboxes
+
+    def get_images(self, start, offset=None):
+        if not offset: return
+        if not self.mainimage: self.load_image()
+        return self.bboxes[start:start+offset+1]
+
+    def next_image(self):
+        if not self.activeimages: return
+        if not self.activeimage or self.activeimage >= len(self.activeimages): 
+            self.activeimage = 0
+        self.objects["canvas"].delete(ALL)
+        self.objects["canvas"].create_image(4, 4, anchor=NW, image=self.activeimages[self.activeimage])
+        self.activeimage += 1

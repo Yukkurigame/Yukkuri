@@ -51,7 +51,7 @@
         </form>
     </form>
     <form side="top">    
-        <label><text>Animation:</text></label>
+        <label name="animation_label"><text>Animation:</text></label>
         <input  name="up_anim" bg='white'>
             <text>Up animation:</text>
         </input>
@@ -84,6 +84,8 @@
         </input>
         <input name="growth" bg='white'>
             <text>Growth animation:</text>
-        </input>        
+        </input>
+        <animation name="playAnim">
+        </animation>
     </form>
 </form>

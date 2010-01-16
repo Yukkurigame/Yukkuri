@@ -7,7 +7,7 @@ from widgets import *
 from yaml import Loader as _Loader
 from yaml import Dumper as _Dumper
 
-_version = '0.2a'
+_version = '0.3a'
 
 class CurrentDir(list):
     
@@ -73,7 +73,7 @@ class Main:
         self.dir = CurrentDir()
         self.parser = ParseObject()
         self.classes = ClassFactory()
-        tabframe = Frame(root)
+        tabframe = Frame(root)        
         self.mainframe = Frame(root)
         self.fields = {}
         self.loadobj = None
@@ -88,7 +88,7 @@ class Main:
         self.dir.change(self.config.path)
         self.changeText(self.fields["path"], str(self.config.path))
         frame.children["ok"].config(command=self.action_ok)
-        frame.children["cancel"].config(command=self.root.quit)
+        frame.children["cancel"].config(command=self.root.quit)        
 
     def draw(self, master, element):
         side="left"        
@@ -127,6 +127,8 @@ class Main:
                         options["command"] = lambda: do(change, type)
                         del options["do"]
                 widget_factory = getattr(widgets, element.tag.capitalize())
+                if element.tag.capitalize() == "Animation":
+                    options["main"] = self
                 widget = widget_factory(master, **options)
                 if options.has_key("name"):
                     #if self.fields.has_key(options["name"]):
@@ -153,10 +155,10 @@ class Main:
         self.saveFile()
         root.quit()
 
-    def openFile(self, change, type=None):        
-        path = askopenfilename(filetypes=type, initialdir=self.config.path)        
+#    def openFile(self, change, type=None):        
+#        path = askopenfilename(filetypes=type, initialdir=self.config.path)        
         #self.fields["plabel"].config(fg='#000')
-        self.changeText(self.fields[change], str(path))
+#        self.changeText(self.fields[change], str(path))
         #self.change_list()
 
     def saveFile(self, *args):
@@ -185,6 +187,7 @@ class Main:
         for field in self.fields:
             if hasattr(self.loadobj, field):
                 self.changeText(self.fields[field], getattr(self.loadobj, field))
+        self.fields["playAnim"].change()
 
 class _ParseObjectMetaclass(type):
 

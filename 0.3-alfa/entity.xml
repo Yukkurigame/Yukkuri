@@ -1,0 +1,91 @@
+<form>    
+    <form side="top">        
+        <input name="name" bg='white'>
+            <text>Name:</text>
+        </input>
+        <input name="speed" bg='white'>
+            <text>Speed:</text>
+        </input>
+        <input name="anim_distance" bg='white'>
+            <text>Animation Distance:</text>
+        </input>
+        <input name="width" bg='white'>
+            <text>Width:</text>
+        </input>
+        <input name="height" bg='white'>
+            <text>Height:</text>
+        </input>
+        <openfile name="mini">
+            <text>Image miniature:</text>
+            #<button text="Open" change="image" type="('PNG and JPEG files', '*.png *.jpg')" do="openFile" />            
+        </openfile>
+        <input name="anchor_x" bg='white'>
+            <text>Image horisontale anchor:</text>
+        </input>
+        <input name="anchor_y" bg='white'>
+            <text>Image verticale anchor:</text>
+        </input>
+        <opencolor name="color">
+            <text>Image color:</text>
+        </opencolor>
+        <input name="damage" bg='white'>
+            <text>Damage:</text>
+        </input>
+        <input name="rapespeed" bg='white'>
+            <text>Rapebar grow speed:</text>
+        </input>
+        <input name="hp" bg='white'>
+            <text>Hp:</text>
+        </input>
+        <opencolortriple name="bloodcolor">
+            <text>Blood color:</text>            
+        </opencolortriple>
+        <input name="meeting" bg='white'>
+            <text>Meeting chanse:</text>
+        </input>
+        <bool name="predator">
+            <text>Predator:</text>
+        </bool>
+        <form>
+            <button text="Save" do="saveFile"/>
+        </form>
+    </form>
+    <form side="top">    
+        <label name="animation_label"><text>Animation:</text></label>
+        <input  name="up_anim" bg='white'>
+            <text>Up animation:</text>
+        </input>
+        <input name="right_anim" bg='white'>
+            <text>Right animation:</text>            
+        </input>
+        <input name="down_anim" bg='white'>
+            <text>Down animation:</text>
+        </input>
+        <input name="left_anim" bg='white'>
+            <text>Left animation:</text>
+        </input>
+        <input name="leftdown_anim" bg='white'>
+            <text>Left-Down animation:</text>
+        </input>
+        <input name="leftup_anim" bg='white'>
+            <text>Left-Up animation:</text>
+        </input>
+        <input name="rightup_anim" bg='white'>
+            <text>Right-Up animation:</text>
+        </input>
+        <input name="rightdown_anim" bg='white'>
+            <text>Right-Down animation:</text>
+        </input>
+        <input name="raped" bg='white'>
+            <text>Raped animation:</text>
+        </input>
+        <input name="raping" bg='white'>
+            <text>Raping animation:</text>
+        </input>
+        <input name="growth" bg='white'>
+            <text>Growth animation:</text>
+        </input>
+        <animation name="playAnim">
+        </animation>
+    </form>
+</form>

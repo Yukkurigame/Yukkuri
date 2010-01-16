@@ -1,0 +1,21 @@
+<form side="top">
+    <input  name="name" bg='white'>
+        <text>Name:</text>
+    </input>
+    <input name="edible" bg='white'>
+        <text>Edible:</text>
+    </input>
+    <openfile name="image">
+        <text>Image:</text>
+        #<button text="Open" change="image" type="('PNG and JPEG files', '*.png *.jpg')" do="openFile" />
+    </openfile>
+    <input name="nutritive" bg='white'>
+        <text>Nutritive:</text>
+    </input>
+    <input name="type" bg='white'>
+        <text>Type:</text>
+    </input>
+    <form>
+        <button text="Save" do="saveFile"/>
+    </form>
+</form>

@@ -1,0 +1,22 @@
+<form side="left" expand="yes" fill="y">
+    <form side="top" expand="no" name="anim_frameleft">
+        <input name="creator_image_width" bg='#ff4400'>
+            <text>Image width:</text>
+        </input>
+        <input name="creator_image_height" bg='#ff4400'>
+            <text>Image height:</text>
+        </input>
+        <input name="creator_image_rows" bg='#ff4400'>
+            <text>Rows:</text>
+        </input>
+        <input name="creator_image_cols" bg='#ff4400'>
+            <text>Cols:</text>
+        </input>
+        <button name="creator_gird_create" text='Create gird'/>
+        <button name="creator_canvas_save" text='Save image'/>
+        <button name="creator_close" text='Close'/>
+    </form>
+    <form padx="2" pady="2">
+        <canvas name="creator_canvas" width="10" height="10" relief="groove" bd="2" />
+    </form>
+</form>

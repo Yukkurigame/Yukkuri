@@ -6,6 +6,7 @@ import widgets
 from widgets import *
 from yaml import Loader as _Loader
 from yaml import Dumper as _Dumper
+import Image
 
 _version = '0.3a'
 
@@ -68,8 +69,8 @@ class Config(dict):
 class Main:
 
     def __init__(self, root):
-        main = parse("main.xml")
-        pathlbl = parse("path.xml")
+        #main = parse("main.xml")
+        #pathlbl = parse("path.xml")
         self.root = root
         self.config = Config()
         self.dir = CurrentDir()
@@ -82,8 +83,8 @@ class Main:
         self.loadfile = None
         self.loaded = None
         self.tabmanager = Tabs(tabframe, self)
-        self.pathfrm = self.draw(self.mainframe, pathlbl.getroot())                
-        frame = self.draw(self.mainframe, main.getroot())                
+        self.pathfrm = self.load_xml(self.mainframe, "path.xml")                
+        frame = self.load_xml(self.mainframe, "main.xml")                
         tabframe.pack(side=TOP, fill=X)        
         self.mainframe.pack(side=TOP, expand=YES, fill=BOTH)
         self.pathfrm.pack()
@@ -93,18 +94,26 @@ class Main:
         frame.children["ok"].config(command=self.action_ok)
         frame.children["cancel"].config(command=self.root.quit)        
 
-    def draw(self, master, element):
-        side="left"        
-        if element.tag == "form":           
-            if element.attrib.has_key("side"):
-                side = element.attrib["side"]
-                del element.attrib["side"]
+    def load_xml(self, master, xml):
+        xml = str(xml)
+        if xml.find(".xml") < 1:
+            xml += ".xml" 
+        xml = parse(xml)
+        return self.draw(master, xml.getroot())
+
+    def draw(self, master, element):                        
+        if element.tag == "form":
+            opts = {"side":LEFT, "fill":X, "expand":YES, "padx":0, "pady":0}
+            for k in opts.keys(): #Take parent props
+                    try: opts[k] = element.attrib[k]
+                    except: pass
+                    else: del element.attrib[k]
             frame = Frame(master, **element.attrib)            
-            for subelement in element:
+            for subelement in element:                
                 widget = self.draw(frame, subelement)
-                if widget:                    
-                    widget.pack(side=side, fill=X, expand=YES)
-            return frame        
+                if widget:
+                    widget.pack(**opts)
+            return frame
         else:
             options = element.attrib
             try: pxml = parse(element.tag+".xml")
@@ -113,31 +122,19 @@ class Main:
                     options = options.copy()                    
                     for subelement in element:
                         options[subelement.tag] = subelement.text
-                if element.tag == "button":
-                    if options.has_key("do"):
-                        change, type = None, None 
-                        do = options["do"]
-                        do = eval('self.'+do)
-                        try: change = options["change"]
-                        except: pass
-                        else: del options["change"]
-                        try: typeb = eval(options["type"])
-                        except: pass                        
-                        else:
-                            type = []
-                            type.append(typeb)                            
-                            del options["type"]                        
-                        options["command"] = lambda: do(change, type)
-                        del options["do"]
+                try:
+                    do = eval('self.'+options["do"])
+                    options["command"] = lambda: do()
+                except: pass
+                else: del options["do"]
                 widget_factory = getattr(widgets, element.tag.capitalize())
                 if element.tag.capitalize() == "Animation":
                     options["main"] = self
                 widget = widget_factory(master, **options)
                 if options.has_key("name"):
-                    #if self.fields.has_key(options["name"]):
-                        #raise KeyError(options["name"])
-                    #else:
-                    self.fields[options["name"]] = widget 
+                    if self.fields.has_key(options["name"]):
+                        print "W: Name duplicate: "+options["name"]+". It's not bad but can cause bugs"
+                    self.fields[options["name"]] = widget
                 return widget
             else:
                 frame = Frame(self.tabmanager())                                
@@ -185,6 +182,14 @@ class Main:
             if hasattr(self.loadobj, field):
                 self.changeText(self.fields[field], getattr(self.loadobj, field))
         self.fields["playAnim"].change()
+
+    def load_image(self, name, path=None):
+        if not path:
+            path = self.config.path        
+        path = os.path.join(path, name)        
+        try: image = Image.open(path)
+        except: print "Failed to load "+path
+        else: return image
 
 class _ParseObjectMetaclass(type):
 
@@ -268,13 +273,8 @@ class Tabs:
 
     def display(self, fr, title):
         self.config.path = self.main.fields["path"].get()        
-        if not self.config.path:            
+        if not self.config.path:
             self.main.fields["path"].flash()
-            #pathfrm = self.main.pathfrm
-            #self.main.pathfrm.children["open"].config(activebackground='#0b0')
-            #self.main.pathfrm.children["open"].flash()
-            #self.main.pathfrm.children["open"].config(activebackground='#fff')
-            #self.main.pathfrm.children["plabel"].config(fg='#f00')            
             return
         self.title = title
         if self.active_fr:

@@ -50,7 +50,7 @@
             <button text="Save" do="saveFile"/>
         </form>
     </form>
-    <form side="top">    
+    <form side="top" fill="both">    
         <label name="animation_label"><text>Animation:</text></label>
         <input  name="up_anim" bg='white'>
             <text>Up animation:</text>
@@ -85,7 +85,6 @@
         <input name="growth" bg='white'>
             <text>Growth animation:</text>
         </input>
-        <animation name="playAnim">
-        </animation>
+        <animation name="playAnim" />
     </form>
 </form>

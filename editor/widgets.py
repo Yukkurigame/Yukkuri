@@ -1,9 +1,10 @@
 import Tkinter
 from Tkinter import *
-from tkFileDialog import askdirectory, askopenfilename
+from tkFileDialog import askdirectory, askopenfilename, asksaveasfilename
 from tkColorChooser import askcolor
-import os.path
-import Image, ImageTk
+import os
+import ImageTk, Image
+from math import ceil
 
 class InputMeta(object):
 
@@ -13,12 +14,13 @@ class InputMeta(object):
         del kwargs["name"]
 
     def pack(self, *args, **kwargs):
-        keys = self.objects.keys()
+        try: keys = self.objects.keys()
+        except: keys =[]
         keys.sort(reverse=True)
         for elem in keys:
             if elem == 'label': expand = 'no'
             else: expand = 'yes'
-            self.objects[elem].pack(side=LEFT,expand=expand, fill=X)
+            self.objects[elem].pack(side=LEFT,expand=expand, fill=X)        
         self.frame.pack(**kwargs)        
 
     def get(self):
@@ -49,6 +51,9 @@ class Input(InputMeta):
                 kargs[k] = kwargs[k]            
             widget = widget_factory(self.frame, **kargs)
             self.objects[elem] = widget
+
+    def bind(self, *args, **kwargs):
+        self.objects["entry"].bind(*args, **kwargs)
 
 class OpenMeta(InputMeta):
 
@@ -181,35 +186,32 @@ class Bool(InputMeta):
 class Animation(InputMeta):
     
     def __init__(self, master, *args, **kwargs):
-        self.width, self.height = 10, 10        
+        self.width, self.height = 10, 10
         self.activeimages = None
         self.activeimage = None
         self.main = kwargs["main"]
         del kwargs["main"]
         super(Animation, self).__init__(master, **kwargs)
-        self.imageframe = Frame(self.frame, padx=5, pady=5)
-        self.uiframe = Frame(self.frame)
-        canvas = getattr(Tkinter, "canvas".capitalize())        
-        self.canvas = canvas(self.imageframe, width=self.width, height=self.height, relief=GROOVE, bd=2)
-        self.objects["canvas"] = self.canvas
+        self.frame = self.main.load_xml(master, "playanim")
+        self.uiframe = self.frame.children["anim_frameleft"].children["anim_uiframe"]
+        self.canvas =  self.main.fields["anim_img_canvas"]
         self.var = StringVar()
-        fields = self.get_opts()        
-        opts = getattr(Tkinter, "OptionMenu")
-        self.opts = opts(self.uiframe, self.var, *fields, command=self.select)
-        button = getattr(Tkinter, "button".capitalize())        
-        self.button = button(self.uiframe, text="Next", command=self.next_image)
+        fields = self.get_opts()
+        self.opts = OptionMenu(self.uiframe, self.var, *fields, command=self.select)
+        self.main.fields["next_image_frame"].configure(command=self.next_image)
+        self.main.fields["open_image_creator"].configure(command=self.open_creator)
+        self.imagemaker = ImageMaker(self.main)
+        self.imagemaker.pack()
 
     def change(self):
         self.width = int(self.main.fields["width"].get())
         self.height = int(self.main.fields["height"].get())
-        self.objects["canvas"].config(width=int(self.width+4), height=int(self.height+4))
+        self.canvas.config(width=int(self.width+4), height=int(self.height+4))
         self.mainimage = None
 
     def pack(self, *args, **kwargs):
-        self.button.pack(side=TOP,expand=YES, fill=X)
         self.opts.pack(side=TOP,expand=YES, fill=X)
-        self.imageframe.pack(side=LEFT)
-        self.uiframe.pack(side=LEFT,expand=YES, fill=X)
+        self.uiframe.pack(expand=YES)
         super(Animation, self).pack(*args, **kwargs)
 
     def get_opts(self):
@@ -226,14 +228,10 @@ class Animation(InputMeta):
         self.activeimage = None
         self.next_image()
         
-    def load_image(self):         
+    def load_image(self):
         try: image = self.main.fields["name"].get().lower()+'.png'
-        except: return        
-        path =  os.path.join(self.main.config.path, '..', 'images' , image)
-        try: image = Image.open(path)
-        except:
-            print "Failed to load "+path 
-            return
+        except: return
+        image = self.main.load_image(os.path.join('..', 'images' , image))
         self.mainimage = image
         size = image.size
         cols = int(size[0] / int(self.width))
@@ -266,6 +264,116 @@ class Animation(InputMeta):
         if not self.activeimages: return
         if not self.activeimage or self.activeimage >= len(self.activeimages): 
             self.activeimage = 0
-        self.objects["canvas"].delete(ALL)
-        self.objects["canvas"].create_image(4, 4, anchor=NW, image=self.activeimages[self.activeimage])
+        self.canvas.delete(ALL)
+        self.canvas.create_image(4, 4, anchor=NW, image=self.activeimages[self.activeimage])
         self.activeimage += 1
+
+    def open_creator(self):
+        self.imagemaker.show()
+
+class ImageMaker(InputMeta):
+
+    def __init__(self, main, **kwargs):
+        self.main = main
+        self.window = self.__create()
+        self.images = []
+        #super(ImageMaker, self).__init__(self.window, name="imagemaker")                
+        self.main.fields["imagemaker"] = self
+        self.main.fields["creator_close"].configure(command=self.hide)
+        self.dpioffset = ceil(self.canvas.winfo_fpixels('1i'))/72.0
+        self.advoffset = 5*self.dpioffset
+
+    def __create(self):
+        imagemaker = Toplevel(self.main.root)
+        imagemaker.title('Make it easy: ImageMaker "I have not mastered photoshop"')
+        imagemaker.protocol("WM_DELETE_WINDOW", self.hide)
+        self.imagemaker = imagemaker
+        self.__fill(imagemaker)
+        imagemaker.withdraw()
+        return imagemaker
+
+    def hide(self):
+        self.window.withdraw()
+
+    def show(self):
+        self.window.state("normal")
+        image = self.main.load_image('cirno.jpg', '.')
+        self.canvas_draw(*image.size, img=image)
+
+    def canvas_draw(self, x, y, img=None):        
+        self.canvas.configure(width=x-self.advoffset, height=y-self.advoffset)        
+        self.canvas.delete(ALL)
+        if img:
+            try: img = self.canvas.create_image(0, 0, anchor=NW, image=img)
+            except:                
+                img = ImageTk.PhotoImage(img)
+                self.images.append(img) # If img is local it's not drawing
+                self.canvas.create_image(0, 0, anchor=NW, image=img)
+
+    def canvas_gird(self, offsetx, offsety, cols, rows):
+        offsetx = offsetx*self.dpioffset+self.dpioffset
+        offsety = offsety*self.dpioffset+self.dpioffset        
+        maxx = cols*offsetx
+        maxy = rows*offsety
+        self.canvas.configure(width=maxx-self.advoffset, height=maxy-self.advoffset)
+        for x in range(0, cols+1):
+            offx = x*offsetx
+            #if offx > maxx: offx = maxx
+            self.canvas.create_line(offx, 0, offx, maxy)
+        for y in range(0, rows+1):
+            offy = y*offsety
+            #if offy > maxy: offy = maxy
+            print offy
+            self.canvas.create_line(0, offy, maxx, offy)
+
+    def canvas_save(self):
+        self.canvas.update()
+        #for i in ['winfo_containing', 'winfo_fpixels', 'winfo_pixels',
+        #             'winfo_screenheight', 'winfo_screenmmheight', 'winfo_screenmmwidth', 'winfo_screenwidth']:
+        #    print "==="
+        #    print i
+        #    e = getattr(self.canvas, i)
+        #    try: print e()
+        #    except Exception, er: print er
+        #    print "==="
+        image = os.tmpfile()
+        image.write(self.canvas.postscript(colormode='color'))
+        image.seek(0)
+        img = Image.open(image)
+        path = asksaveasfilename()
+        if not path or path is '': return
+        img.save(path, dpi=(72, 72))
+
+    def __fill(self, master):
+         self.frame = self.main.load_xml(master, "imgcreator")
+         self.canvas = self.main.fields["creator_canvas"]
+         for param in ['width', 'height', 'rows', 'cols']:
+             try: setattr(self, param, self.main.fields["creator_image_"+param])
+             except: print "Failed param set"
+         for value in [self.width, self.height, self.rows, self.cols]: 
+             #this may be realized with eval in previous loop but many evals not good.
+             value.bind("<KeyPress>", self.check_field)
+         self.girdbutton = self.main.fields["creator_gird_create"]
+         self.girdbutton.config(command=self.create_gird)
+         self.savebutton = self.main.fields["creator_canvas_save"]
+         self.savebutton.config(command=self.canvas_save)
+
+    def check_field(self, event):
+        self.check_value(event.widget)
+
+    def check_value(self, widget):
+        get = widget.get()
+        widget.config(bg="#ff4400")
+        try: int(get)
+        except: return
+        if len(widget.get()) > 0:
+            widget.config(bg="white")
+            return True
+
+    def create_gird(self):
+        for value in [self.width, self.height, self.rows, self.cols]:
+            if not self.check_value(value.objects["entry"]):
+                return
+        self.canvas_draw(int(self.width.get())*int(self.cols.get()), int(self.height.get())*int(self.rows.get()))
+        self.canvas_gird(int(self.width.get()), int(self.height.get()), 
+                                 int(self.cols.get()), int(self.rows.get()))

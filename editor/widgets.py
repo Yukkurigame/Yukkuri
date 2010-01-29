@@ -280,7 +280,7 @@ class ImageMaker(InputMeta):
         #super(ImageMaker, self).__init__(self.window, name="imagemaker")                
         self.main.fields["imagemaker"] = self
         self.main.fields["creator_close"].configure(command=self.hide)
-        self.dpioffset = ceil(self.canvas.winfo_fpixels('1i'))/72.0
+        self.dpioffset = self.canvas.winfo_fpixels('1i')/72.0
         self.advoffset = 5*self.dpioffset
 
     def __create(self):
@@ -323,7 +323,6 @@ class ImageMaker(InputMeta):
         for y in range(0, rows+1):
             offy = y*offsety
             #if offy > maxy: offy = maxy
-            print offy
             self.canvas.create_line(0, offy, maxx, offy)
 
     def canvas_save(self):
@@ -362,7 +361,8 @@ class ImageMaker(InputMeta):
         self.check_value(event.widget)
 
     def check_value(self, widget):
-        get = widget.get()
+        widget.update()
+        get = widget.get()        
         widget.config(bg="#ff4400")
         try: int(get)
         except: return

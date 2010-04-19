@@ -1,157 +1,144 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "engine.h"
-#include "output.h"
+#include "yukkuri.h"
+//#include "output.h"
  
-class CMyEngine: public CEngine
-{
-public:
-	void AdditionalInit ();
-	void Think	    ( const int& iElapsedTime );
-	void Render	    ( SDL_Surface* pDestSurface );
- 
-	void KeyUp  	    (const int& iKeyEnum);
-	void KeyDown	    (const int& iKeyEnum);
- 
-	void MouseMoved     (const int& iButton, 
-			     const int& iX, 
-			     const int& iY, 
-			     const int& iRelX, 
-		             const int& iRelY);
- 
-	void MouseButtonUp  (const int& iButton, 
-			     const int& iX, 
-			     const int& iY, 
-			     const int& iRelX, 
-		             const int& iRelY);
- 
-	void MouseButtonDown(const int& iButton, 
-			     const int& iX, 
-			     const int& iY, 
-			     const int& iRelX, 
-		             const int& iRelY);
- 
-	void WindowInactive();
-	void WindowActive();
- 
-	void End();
-};
- 
- 
+
 // Entry point
 int main(int argc, char* argv[])  // <- this must match exactly, since SDL rewrites it
 {
-    CMyEngine Engine;
-    print_d("Strat engine")
+    Yukkuri Engine;
+    //print_d( "Strat engine" );
     
-	Engine.SetTitle( "Loading..." );
-	Engine.Init();
+    Engine.Init();
  
-	Engine.SetTitle( "SDL Testing!" );
-	Engine.Start();
+    Engine.SetTitle( "Yukkuri game" );
+    Engine.Start();
  
-	Engine.SetTitle( "Quitting..." );
+    Engine.SetTitle( "Quitting..." );
  
-	return 0;
+    return 0;
 }
  
-void CMyEngine::AdditionalInit()
+
+void Yukkuri::AdditionalInit()
 {
-	// Load up additional data
-	
+    // Load up additional data    
+    img = LoadImage( "data/images/reimu_face_0.png" );
+    if( !img ) {
+        cout << endl << "Could not load all images. Please ensure Res folder is populated" << endl;
+        exit( 1 );
+    }
+    
+    units.CreateUnit( PLY, (e_unitDir)( (rand() % 7 + 1) ), getScreenW() / 2, getScreenH()/2 );
+    
 }
  
-void CMyEngine::Think( const int& iElapsedTime )
+void Yukkuri::Think( const int& iElapsedTime )
 {
-	// Do time-based calculations
+    // Do time-based calculations
+    if ( player_movex != 0 or player_movey != 0)
+        units.GetPlayer()->moveUnit( player_movex, player_movey );
 }
  
-void CMyEngine::Render( SDL_Surface* pDestSurface )
+void Yukkuri::Render( SDL_Surface* pDestSurface )
 {
-	// Display slick graphics on screen
+     // Display slick graphics on screen
+    for (int i = 0; i <= (units.GetUnitVecSize() - 1); i++) {
+        ApplySurface( units.GetUnit(i)->getUnitX(), units.GetUnit(i)->getUnitY(), img, pDestSurface, NULL);        
+    }    
 }
  
-void CMyEngine::KeyDown(const int& iKeyEnum)
-{        
+void Yukkuri::KeyDown(const int& iKeyEnum)
+{
+    
     switch (iKeyEnum)
     {
-    case SDLK_LEFT:
-      // Left arrow pressed
-      break;
-    case SDLK_RIGHT:
-      // Right arrow pressed
-      break;
-    case SDLK_UP:
-      // Up arrow pressed
-      break;
-    case SDLK_DOWN:
-      // Down arrow pressed
-      break;
+        case SDLK_LEFT:
+            // Left arrow pressed
+            player_movex = -1;
+            break;
+        case SDLK_RIGHT:
+            // Right arrow pressed
+            player_movex = 1;
+            break;
+        case SDLK_UP:
+            // Up arrow pressed
+            player_movey = -1;
+            break;
+        case SDLK_DOWN:
+            // Down arrow pressed
+            player_movey = 1;
+            break;
     }
 }
  
  
-void CMyEngine::KeyUp(const int& iKeyEnum)
+void Yukkuri::KeyUp(const int& iKeyEnum)
 {
-	switch (iKeyEnum)
-	{
-	case SDLK_LEFT:
-	  // Left arrow released
-	  break;
-	case SDLK_RIGHT:
-	  // Right arrow released
-	  break;
-	case SDLK_UP:
-	  // Up arrow released
-	  break;
-	case SDLK_DOWN:
-	  // Down arrow released
-	  break;
-	}
+    switch (iKeyEnum)
+    {
+    case SDLK_LEFT:
+      // Left arrow released
+      player_movex = 0;
+      break;
+    case SDLK_RIGHT:
+      // Right arrow released
+      player_movex = 0;
+      break;
+    case SDLK_UP:
+      // Up arrow released
+      player_movey = 0;
+      break;
+    case SDLK_DOWN:
+      // Down arrow released
+      player_movey = 0;
+      break;
+    }
 }
  
-void CMyEngine::MouseMoved(const int& iButton, 
-			   const int& iX, 
-			   const int& iY, 
-			   const int& iRelX, 
-			   const int& iRelY)
+void Yukkuri::MouseMoved(const int& iButton, 
+               const int& iX, 
+               const int& iY, 
+               const int& iRelX, 
+               const int& iRelY)
 {
-	// Handle mouse movement
+    // Handle mouse movement
  
-	// iX and iY are absolute screen positions
-	// iRelX and iRelY are screen position relative to last detected mouse movement
+    // iX and iY are absolute screen positions
+    // iRelX and iRelY are screen position relative to last detected mouse movement
 }
  
-void CMyEngine::MouseButtonUp(const int& iButton, 
-			      const int& iX, 
-			      const int& iY, 
-			      const int& iRelX, 
-			      const int& iRelY)
+void Yukkuri::MouseButtonUp(const int& iButton, 
+                  const int& iX, 
+                  const int& iY, 
+                  const int& iRelX, 
+                  const int& iRelY)
 {
-	// Handle mouse button released
+    // Handle mouse button released
 }
  
-void CMyEngine::MouseButtonDown(const int& iButton, 
-				const int& iX, 
-				const int& iY, 
-				const int& iRelX, 
-				const int& iRelY)
+void Yukkuri::MouseButtonDown(const int& iButton, 
+                const int& iX, 
+                const int& iY, 
+                const int& iRelX, 
+                const int& iRelY)
 {
-	// Handle mouse button pressed
+    // Handle mouse button pressed
 }
  
-void CMyEngine::WindowInactive()
+void Yukkuri::WindowInactive()
 {
-	// Pause game
+    // Pause game
 }
  
-void CMyEngine::WindowActive()
+void Yukkuri::WindowActive()
 {
-	// Un-pause game
+    // Un-pause game
 }
  
  
-void CMyEngine::End()
+void Yukkuri::End()
 {
-	// Clean up
+    // Clean up
 }

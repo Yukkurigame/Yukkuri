@@ -1,6 +1,12 @@
 #ifndef ENGINE_H
 #define ENGINE_H
  
+#define MAXIMUM_FRAME_RATE 80
+#define MINIMUM_FRAME_RATE 15
+#define UPDATE_INTERVAL (1.0 / MAXIMUM_FRAME_RATE)
+#define MAX_CYCLES_PER_FRAME (MAXIMUM_FRAME_RATE / MINIMUM_FRAME_RATE)
+
+ 
 #include <cstdlib>
 #include <iostream>
 using std::cout;
@@ -9,7 +15,6 @@ using std::endl;
 using std::string;
 
 #include "SDL/SDL.h"
-#include "SDL/SDL_image.h"
 #include "SDL/SDL_ttf.h"
 
 /** The base engine class. **/
@@ -17,8 +22,9 @@ class CEngine
 {
 private:
     /** Last iteration's tick value **/
+    long m_lTick;
     long m_lLastTick;
- 
+    
     /** Window width **/
     int m_iWidth;
     /** Window height **/
@@ -62,7 +68,7 @@ private:
 	SDL_Joystick *joystick;
 	
 protected:
-    void DoThink();
+    void DoThink( const int& iElapsedTicks );
     void DoRender();
  
     void SetSize(const int& iWidth, const int& iHeight);
@@ -152,12 +158,11 @@ public:
                      const int& iRelX, 
                      const int& iRelY) {}
  
-    void        SetTitle    (const char* czTitle);
-    const char*     GetTitle    ();
+    void        SetTitle( const char* czTitle );
+    const char*     GetTitle();
 
-    // Graphics Core    SDL_Surface* GetSurface    ();
-    SDL_Surface* LoadImage( string );
-    SDL_Rect GetTileClip( SDL_Surface*, int, int );
+    // Graphics Core    SDL_Surface* GetSurface();
+    //SDL_Rect GetTileClip( SDL_Surface*, int, int );
     void ApplySurface( int, int, SDL_Surface*, SDL_Surface* , SDL_Rect* );
 
     // Screen Core         int GetFPS();
@@ -167,7 +172,7 @@ public:
     /** Player move **/
     signed int player_movex;
     signed int player_movey;
-    
+     
 };
  
 #endif // ENGINE_H 

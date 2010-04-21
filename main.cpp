@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "yukkuri.h"
-//#include "output.h"
  
 
 // Entry point
@@ -23,29 +22,24 @@ int main(int argc, char* argv[])  // <- this must match exactly, since SDL rewri
 
 void Yukkuri::AdditionalInit()
 {
-    // Load up additional data    
-    img = LoadImage( "data/images/reimu_face_0.png" );
-    if( !img ) {
-        cout << endl << "Could not load all images. Please ensure Res folder is populated" << endl;
-        exit( 1 );
-    }
-    
+
     units.CreateUnit( PLY, (e_unitDir)( (rand() % 7 + 1) ), getScreenW() / 2, getScreenH()/2 );
-    
+        
 }
  
 void Yukkuri::Think( const int& iElapsedTime )
 {
     // Do time-based calculations
     if ( player_movex != 0 or player_movey != 0)
-        units.GetPlayer()->moveUnit( player_movex, player_movey );
+        units.GetPlayer()->moveUnit( player_movex, player_movey, iElapsedTime);
 }
  
 void Yukkuri::Render( SDL_Surface* pDestSurface )
 {
      // Display slick graphics on screen
     for (int i = 0; i <= (units.GetUnitVecSize() - 1); i++) {
-        ApplySurface( units.GetUnit(i)->getUnitX(), units.GetUnit(i)->getUnitY(), img, pDestSurface, NULL);        
+        Unit* unit = units.GetUnit(i);
+        ApplySurface( unit->getUnitX(), unit->getUnitY(), unit->getImage(), pDestSurface, unit->getUnitAnim());        
     }    
 }
  

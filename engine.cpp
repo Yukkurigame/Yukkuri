@@ -1,6 +1,4 @@
 #include "engine.h"
-//#include "output.h"
-//#include "loader.h"
  
 /** Default constructor. **/
 CEngine::CEngine()
@@ -38,7 +36,7 @@ void CEngine::SetSize(const int& iWidth, const int& iHeight)
 {
     m_iWidth  = iWidth;
     m_iHeight = iHeight;
-    m_pScreen = SDL_SetVideoMode( iWidth, iHeight, 0, SDL_SWSURFACE );
+    m_pScreen = SDL_SetVideoMode( iWidth, iHeight, 0, SDL_SWSURFACE);
 }
  
 /** Initialize SDL, the window and the additional data. **/
@@ -90,14 +88,19 @@ void CEngine::Init()
 /** The main loop. **/
 void CEngine::Start()
 {
-    m_lLastTick = SDL_GetTicks();
+    float m_dUpdIterations = 0.0f;
+    float m_sdCyclesLeft = 0.0f;
+    m_lLastTick = 0;
     m_bQuit = false;
     player_movex = 0;
     player_movey = 0;
- 
+    
     // Main loop: loop forever.
     while ( !m_bQuit )
     {
+        m_lTick = SDL_GetTicks();
+        long iElapsedTicks = m_lTick - m_lLastTick;
+        
         // Handle mouse and keyboard input
         HandleInput();
  
@@ -105,9 +108,20 @@ void CEngine::Start()
             // Release some system resources if the app. is minimized.
             //WaitMessage(); // pause the application until focus in regained
         } else {
+            m_dUpdIterations = (( iElapsedTicks ) + m_sdCyclesLeft);
+         
+            if (m_dUpdIterations > (MAX_CYCLES_PER_FRAME * UPDATE_INTERVAL))
+                m_dUpdIterations = (MAX_CYCLES_PER_FRAME * UPDATE_INTERVAL);
+            
             // Do some thinking
-            DoThink();
- 
+            while (m_dUpdIterations > UPDATE_INTERVAL) { // Update game state a variable number of times                
+                m_dUpdIterations -= UPDATE_INTERVAL;
+                DoThink( iElapsedTicks ); 
+            }
+            
+            m_sdCyclesLeft = m_dUpdIterations;
+            m_lLastTick =  m_lTick;
+            
             // Render stuff
             DoRender();
         }
@@ -217,10 +231,10 @@ void CEngine::DisplayFPS()
 
  
 /** Handles the updating routine. **/
-void CEngine::DoThink() 
+void CEngine::DoThink( const int& iElapsedTicks ) 
 {
-    long iElapsedTicks = SDL_GetTicks() - m_lLastTick;
-    m_lLastTick = SDL_GetTicks();
+    //long iElapsedTicks = SDL_GetTicks() - m_lLastTick;
+    //m_lLastTick = SDL_GetTicks();
  
     Think( iElapsedTicks );
  
@@ -238,7 +252,7 @@ void CEngine::DoRender()
         m_iFPSTickCounter = 0;
     }
  
-    SDL_FillRect( m_pScreen, 0, SDL_MapRGB( m_pScreen->format, 0, 0, 0 ) );
+    SDL_FillRect( m_pScreen, 0, SDL_MapRGB( m_pScreen->format, 0, 150, 0 ) );
  
     // Lock surface if needed
     if ( SDL_MUSTLOCK( m_pScreen ) )
@@ -293,42 +307,6 @@ SDL_Surface* CEngine::GetSurface()
 int CEngine::GetFPS()
 {
     return m_iCurrentFPS;
-}
-
-/** Load image file
-    @return A pointer to the SDL_Surface surface.
-**/
-SDL_Surface* CEngine::LoadImage( std::string filename )
-{
-    SDL_Surface* loadedImage = NULL;
-    SDL_Surface* optimizedImage = NULL;
-    loadedImage = IMG_Load( filename.c_str() );
-    
-    if( loadedImage != NULL )
-    {
-        if( loadedImage->format->Amask ) {
-            optimizedImage = SDL_DisplayFormatAlpha( loadedImage );
-        } else {
-            optimizedImage = SDL_DisplayFormat( loadedImage );
-        }
-        SDL_FreeSurface( loadedImage );
-    }
-
-    return optimizedImage;
-}
-
-/**
-**/
-SDL_Rect CEngine::GetTileClip( SDL_Surface* source, int slices, int rows = 1 )
-{
-    SDL_Rect temp_rect;
-    
-    temp_rect.x = 0; //( ( source->w )/slices );
-    temp_rect.y = 0; //( ( source->h) * (rows - 1) );
-    temp_rect.w = source->w; //(source->w)/slices;
-    temp_rect.h = source->h; //(source->h)/rows;
-    
-    return temp_rect;
 }
 
 /** Draw surface

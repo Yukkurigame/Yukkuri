@@ -3,9 +3,9 @@
 
 #include <vector>
 using std::vector;
-//#include <ctime>
 
 #include "engine.h"
+//#include "yloader.h"
 #include "unit.h"
 #include "unitmanager.h"
 
@@ -42,12 +42,13 @@ public:
     void WindowInactive();
     void WindowActive();
  
-    void End();
-    
+    void End();    
+
 protected:
-    SDL_Surface* img;
+    SDL_Surface* objects_sfc;
+    //SDL_Surface* img;
 private:
-    UnitManager units;     
+    UnitManager units;
     //gameState states;
 };
 

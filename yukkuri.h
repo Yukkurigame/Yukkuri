@@ -5,9 +5,9 @@
 using std::vector;
 
 #include "engine.h"
-//#include "yloader.h"
-#include "unit.h"
 #include "unitmanager.h"
+//#include "map.h"
+#include "Camera.h"
 
 #define pixel_Loc(A)    ( (A * 64) + 12 )
 
@@ -44,12 +44,13 @@ public:
  
     void End();    
 
+    void drawMap( SDL_Surface* Surf_Display, int MapX, int MapY );
+
 protected:
     SDL_Surface* objects_sfc;
-    //SDL_Surface* img;
 private:
     UnitManager units;
-    //gameState states;
+    //Map map;
 };
 
 #endif //YUKKURI_H

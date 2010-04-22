@@ -4,8 +4,8 @@
 CEngine::CEngine()
 {
     m_lLastTick        = 0;
-    m_iWidth        = 800;
-    m_iHeight        = 600;
+    //m_iWidth        = 800;
+    //m_iHeight        = 600;
     m_czTitle        = 0;
  
     m_pScreen        = 0;
@@ -32,11 +32,9 @@ CEngine::~CEngine()
     @param iWidth The width of the window
     @param iHeight The height of the window
 **/
-void CEngine::SetSize(const int& iWidth, const int& iHeight)
-{
-    m_iWidth  = iWidth;
-    m_iHeight = iHeight;
-    m_pScreen = SDL_SetVideoMode( iWidth, iHeight, 0, SDL_SWSURFACE);
+void CEngine::SetSize()
+{    
+    m_pScreen = SDL_SetVideoMode( WWIDTH, WHEIGHT, 0, SDL_SWSURFACE);
 }
  
 /** Initialize SDL, the window and the additional data. **/
@@ -54,7 +52,7 @@ void CEngine::Init()
     }
     
     // Attempt to create a window with the specified height and width.
-    SetSize( m_iWidth, m_iHeight );
+    SetSize( );
  
     // If we fail, return error.
     if ( m_pScreen == NULL ) {
@@ -307,16 +305,4 @@ SDL_Surface* CEngine::GetSurface()
 int CEngine::GetFPS()
 {
     return m_iCurrentFPS;
-}
-
-/** Draw surface
-**/
-void CEngine::ApplySurface( int x, int y, SDL_Surface* source, SDL_Surface* destination, SDL_Rect *clip = NULL )
-{
-    SDL_Rect offset;
-
-    offset.x = x;
-    offset.y = y;
-
-    SDL_BlitSurface( source, clip, destination, &offset );
 }

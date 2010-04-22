@@ -22,9 +22,12 @@ int main(int argc, char* argv[])  // <- this must match exactly, since SDL rewri
 
 void Yukkuri::AdditionalInit()
 {
-
-    units.CreateUnit( PLY, (e_unitDir)( (rand() % 7 + 1) ), getScreenW() / 2, getScreenH()/2 );
-        
+    //map.Init("map.map");
+    cout << "Additional Init" << endl;
+    units.CreateUnit( PLAYER, 0, 0 );
+    YCamera::CameraControl.SetTarget( units.GetPlayer()->getUnitpX(), units.GetPlayer()->getUnitpY());
+    units.CreateUnit( STATIC, 2, 2 );
+    
 }
  
 void Yukkuri::Think( const int& iElapsedTime )
@@ -37,10 +40,8 @@ void Yukkuri::Think( const int& iElapsedTime )
 void Yukkuri::Render( SDL_Surface* pDestSurface )
 {
      // Display slick graphics on screen
-    for (int i = 0; i <= (units.GetUnitVecSize() - 1); i++) {
-        Unit* unit = units.GetUnit(i);
-        ApplySurface( unit->getUnitX(), unit->getUnitY(), unit->getImage(), pDestSurface, unit->getUnitAnim());        
-    }    
+    units.DrawUnits( pDestSurface, YCamera::CameraControl.GetX(), YCamera::CameraControl.GetY() );
+
 }
  
 void Yukkuri::KeyDown(const int& iKeyEnum)

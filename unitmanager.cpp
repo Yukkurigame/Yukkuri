@@ -19,17 +19,23 @@ UnitManager::~UnitManager()
  * Build a unit according to criteria passed to the function and call
  * AddUnit to push it onto the stack
  **/
-void UnitManager::CreateUnit( enum e_unitID um_ID, enum e_unitDir um_Dir, int x, int y )
+void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 {
     Unit *temp = new Unit;
-
+    
+    temp->setUnitName("reimu");
+    //cout << "create unit image" << endl;
+    temp->setUnitImage( Graphics::graph.LoadImage( temp->getUnitName( ) ) );
+    //cout << "load unit animation" << endl;
+    Graphics::graph.LoadAnimation( temp->getUnitName( ), 11, 4, 79, 68 );    
+    //cout << "success" << endl;
+    
     temp->setUnitType( um_ID );
-    temp->setUnitDir( um_Dir );
     temp->setUnitPos( x, y );
     
     AddUnit( temp );
     
-    if(um_ID == PLY)
+    if(um_ID == PLAYER)
         um_player = temp;
     
     return;
@@ -46,4 +52,19 @@ Unit* UnitManager::GetUnit( unsigned int iIndex )
         return 0;
 
     return m_vUnits.at( iIndex );
+}
+
+SDL_Rect* UnitManager::getAnim( Unit* unit )
+{     
+    return Graphics::graph.GetAnim( unit->getUnitName( ), unit->getUnitAnim( ) );
+}
+
+
+void UnitManager::DrawUnits( SDL_Surface* pDestSurface, const float camX, const float camY )
+{
+    for (int i = 0; i < (int)m_vUnits.size(); i++) {
+        Graphics::graph.ApplySurface( m_vUnits[i]->getUnitX() - camX, m_vUnits[i]->getUnitY() - camY, 
+                                                           m_vUnits[i]->getUnitImage(), pDestSurface, getAnim( m_vUnits[i] ) );
+        
+    }
 }

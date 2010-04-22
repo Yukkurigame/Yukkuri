@@ -1,12 +1,7 @@
 #ifndef ENGINE_H
 #define ENGINE_H
- 
-#define MAXIMUM_FRAME_RATE 80
-#define MINIMUM_FRAME_RATE 15
-#define UPDATE_INTERVAL (1.0 / MAXIMUM_FRAME_RATE)
-#define MAX_CYCLES_PER_FRAME (MAXIMUM_FRAME_RATE / MINIMUM_FRAME_RATE)
 
- 
+#include "Define.h" 
 #include <cstdlib>
 #include <iostream>
 using std::cout;
@@ -14,7 +9,7 @@ using std::endl;
 #include <string>
 using std::string;
 
-#include "SDL/SDL.h"
+#include "SDL/SDL.h" 
 #include "SDL/SDL_ttf.h"
 
 /** The base engine class. **/
@@ -26,9 +21,9 @@ private:
     long m_lLastTick;
     
     /** Window width **/
-    int m_iWidth;
+    //int m_iWidth;
     /** Window height **/
-    int m_iHeight;
+    //int m_iHeight;
  
     /** Has quit been called? **/
     bool m_bQuit;
@@ -71,7 +66,7 @@ protected:
     void DoThink( const int& iElapsedTicks );
     void DoRender();
  
-    void SetSize(const int& iWidth, const int& iHeight);
+    void SetSize();
  
     void HandleInput();
     void DisplayFPS();
@@ -163,11 +158,10 @@ public:
 
     // Graphics Core    SDL_Surface* GetSurface();
     //SDL_Rect GetTileClip( SDL_Surface*, int, int );
-    void ApplySurface( int, int, SDL_Surface*, SDL_Surface* , SDL_Rect* );
 
     // Screen Core         int GetFPS();
-    int getScreenW() { return m_iWidth; }
-    int getScreenH() { return m_iHeight; }
+    int getScreenW() { return WWIDTH; }
+    int getScreenH() { return WHEIGHT; }
 
     /** Player move **/
     signed int player_movex;

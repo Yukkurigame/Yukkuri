@@ -14,9 +14,11 @@ LIBS= $(shell sdl-config --libs) -lSDL_image -lSDL_ttf
 DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1
 CFLAGS= -g -Wall $(DEFINES)
 
-SRCS =  main.cpp unit.cpp unitmanager.cpp yloader.cpp engine.cpp
+SRCS =   main.cpp unit.cpp unitmanager.cpp  yloader.cpp engine.cpp \
+         Camera.cpp Graphics.cpp
 
-OBJS =  main.o unit.o unitmanager.o yloader.o engine.o
+OBJS =  main.o unit.o unitmanager.o yloader.o engine.o \
+        Camera.o Graphics.o
 
 .cpp.o:
 	$(rm) $@
@@ -28,4 +30,4 @@ $(PROGNAME) : $(OBJS)
 	$(CC) $(CFLAGS)  -o $(PROGNAME) $(OBJS) $(LIBS)
 
 clean:
-	$(rm) $(OBJS) $(PROGNAME) core *~
+	$(rm) $(OBJS) $(PROGNAME)

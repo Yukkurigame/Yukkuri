@@ -5,14 +5,16 @@
 using std::vector;
 
 #include "unit.h"
+#include "Graphics.h"
 
 class UnitManager
 {
     public:
         UnitManager();
         virtual ~UnitManager();
-
-        void CreateUnit( enum e_unitID um_ID, enum e_unitDir um_Dir, int x, int y );
+        
+        void DrawUnits( SDL_Surface* pDestSurface, const float camX, const float camY );
+        void CreateUnit( enum e_unitID um_ID, int x, int y );
         Unit* GetUnit( unsigned int iIndex );
         Unit* GetPlayer() { return um_player; }
 
@@ -20,8 +22,9 @@ class UnitManager
 
     protected:
         void AddUnit( Unit* pUnit );
+        SDL_Rect* getAnim( Unit* );
         vector< Unit* > m_vUnits;
-        Unit* um_player;
+        Unit* um_player;        
 };
 
 #endif // UNITMANAGER_H 

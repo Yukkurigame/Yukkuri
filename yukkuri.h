@@ -7,7 +7,9 @@ using std::vector;
 #include "engine.h"
 #include "unitmanager.h"
 //#include "map.h"
+#include "yloader.h"
 #include "Camera.h"
+//#include "SDL_getenv.h"
 
 #define pixel_Loc(A)    ( (A * 64) + 12 )
 

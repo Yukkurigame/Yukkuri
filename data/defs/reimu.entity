@@ -1,0 +1,22 @@
+- !EntityDef
+    bloodcolor: [170, 55, 55]
+    damage: 3.0
+    animation:
+      - down: [0, 3]
+        growth: [40, 1]
+        left: [12, 3]
+        leftdown: [8, 3]
+        leftup: [16, 3]
+        raped: [36, 2]
+        raping: [32, 3]
+        right: [24, 3]
+        rightdown: [20, 3]
+        rightup: [28, 3]
+        up: [4, 3]
+    height: 69
+    hp: 10.0
+    image: reimu.png
+    meeting: 47
+    name: Reimu
+    speed: 80
+    width: 80

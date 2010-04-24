@@ -7,12 +7,13 @@ rm=/bin/rm -f
 CC= g++
 DEFS= $(shell sdl-config --cflags)
 PROGNAME= Yukkuri
-INCLUDES=  -I.
-LIBS= $(shell sdl-config --libs) -lSDL_image -lSDL_ttf
+INCLUDES=  -I. -Iyaml/include
+LIBS= $(shell sdl-config --libs) -lSDL_image -lSDL_ttf -Llibs/ -lyaml
 
 
 DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1
 CFLAGS= -g -Wall $(DEFINES)
+
 
 SRCS =   main.cpp unit.cpp unitmanager.cpp  yloader.cpp engine.cpp \
          Camera.cpp Graphics.cpp
@@ -24,10 +25,14 @@ OBJS =  main.o unit.o unitmanager.o yloader.o engine.o \
 	$(rm) $@
 	$(CC) $(CFLAGS) -c $*.cpp
 
-all: $(PROGNAME)
+all: yaml $(PROGNAME)
 
 $(PROGNAME) : $(OBJS)
 	$(CC) $(CFLAGS)  -o $(PROGNAME) $(OBJS) $(LIBS)
 
+yaml:
+	cd yaml/src && $(MAKE)
+
 clean:
 	$(rm) $(OBJS) $(PROGNAME)
+	cd yaml/src && $(MAKE) clean

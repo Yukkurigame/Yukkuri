@@ -33,7 +33,8 @@ CEngine::~CEngine()
     @param iHeight The height of the window
 **/
 void CEngine::SetSize()
-{    
+{
+    //putenv("SDL_VIDEODRIVER=fbcon") ;
     m_pScreen = SDL_SetVideoMode( WWIDTH, WHEIGHT, 0, SDL_SWSURFACE);
 }
  

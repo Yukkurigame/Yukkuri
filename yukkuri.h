@@ -6,8 +6,8 @@ using std::vector;
 
 #include "engine.h"
 #include "unitmanager.h"
+#include "ConfigManager.h"
 //#include "map.h"
-#include "yloader.h"
 #include "Camera.h"
 //#include "SDL_getenv.h"
 
@@ -52,6 +52,7 @@ protected:
     SDL_Surface* objects_sfc;
 private:
     UnitManager units;
+    
     //Map map;
 };
 

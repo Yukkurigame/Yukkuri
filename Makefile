@@ -16,10 +16,10 @@ CFLAGS= -g -Wall $(DEFINES)
 
 
 SRCS =   main.cpp unit.cpp unitmanager.cpp  yloader.cpp engine.cpp \
-         Camera.cpp Graphics.cpp
+         Camera.cpp Graphics.cpp ConfigManager.cpp
 
 OBJS =  main.o unit.o unitmanager.o yloader.o engine.o \
-        Camera.o Graphics.o
+        Camera.o Graphics.o ConfigManager.o
 
 .cpp.o:
 	$(rm) $@

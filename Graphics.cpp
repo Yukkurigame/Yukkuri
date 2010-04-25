@@ -27,7 +27,7 @@ SDL_Surface* Graphics::LoadImage(string name)
     return pImg;
 }
 
-void Graphics::ApplySurface( float x, float y, SDL_Surface* source, SDL_Surface* destination, SDL_Rect *clip = NULL )
+void Graphics::ApplySurface( double x, double y, SDL_Surface* source, SDL_Surface* destination, SDL_Rect *clip = NULL )
 {    
     SDL_Rect offset;
     offset.x = x;

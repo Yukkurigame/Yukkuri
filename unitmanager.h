@@ -20,7 +20,7 @@ class UnitManager
 
         int GetUnitVecSize() { return (int)m_vUnits.size();}
 
-    protected:
+    private:        
         void AddUnit( Unit* pUnit );
         SDL_Rect* getAnim( Unit* );
         vector< Unit* > m_vUnits;

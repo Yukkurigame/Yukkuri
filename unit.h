@@ -9,6 +9,8 @@ using std::cout;
 using std::endl;
 
 #include "SDL/SDL_image.h"
+#include "ConfigManager.h"
+#include "ConfigTypes.h"
 //#include "Graphics.h"
 //#include "yloader.h"
 
@@ -17,11 +19,11 @@ enum e_unitID { STATIC = 0, PLAYER, OBJECT, ENTITY};
 class Unit
 {
 public:
-   Unit();
-   virtual ~Unit();
+    Unit();
+    virtual ~Unit();
+    bool Create( string );
     void setUnitType( enum e_unitID t_Unit );
-    //void setUnitDir( enum e_unitDir t_Dir ) { Direction = t_Dir; }
-    void moveUnit(  signed int x, signed int y , const int& dt); //enum e_unitDir t_Dir );
+    void moveUnit(  signed int x, signed int y , const int& dt);
 
     void setUnitPos( int x, int y ) { setUnitX( x ); setUnitY( y ); }    
     void setUnitX( float x );
@@ -30,8 +32,8 @@ public:
     void setUnitAnim( int );
     int getUnitAnim() { return (const int)m_iAn; }
 
-    string getUnitName() { return UnitName; }
-    void setUnitName( string name );
+    string getUnitName() { return defs->Name; }
+    //void setUnitName( string name );
 
     float getUnitX() { return (const float)m_fX; }
     float getUnitY() { return (const float)m_fY; }
@@ -41,6 +43,12 @@ public:
     
     SDL_Surface* getUnitImage() {return m_Img;}
     void setUnitImage( SDL_Surface* );
+    string getUnitImageName( ) { return defs->image; }
+    
+    int getUnitWidth() { return defs->width; }
+    int getUnitHeight() { return defs->height; }
+    int getUnitImageCols() { return defs->imagecols; }
+    int getUnitImageRows() { return defs->imagerows; }
 
 private:
     float m_fX, m_fY, m_fdistance; 
@@ -49,6 +57,7 @@ private:
     string UnitName;
     e_unitID Type;
     SDL_Surface* m_Img;
+    EntityDef* defs;
         
 };
 

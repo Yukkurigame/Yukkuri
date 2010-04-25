@@ -4,11 +4,23 @@ Unit::Unit()
 {
     m_iAn = 0;
     m_fdistance = 0;
+    
+    
 }
 
 Unit::~Unit()
 {
 }
+
+bool Unit::Create( string name )
+{
+  //setUnitName(name);
+  defs = Config::conf.FindEntity(name);
+  if (!defs)
+      return false;
+  return true;
+}
+
 
 void Unit::setUnitType( enum e_unitID t_Unit )
 {
@@ -76,7 +88,9 @@ void Unit::setUnitImage( SDL_Surface* image)
     m_Img = image;
 }
 
+/*
 void Unit::setUnitName( string name )
 {
     UnitName = name;
 }
+*/

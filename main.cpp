@@ -24,7 +24,7 @@ void Yukkuri::AdditionalInit()
 {
     //map.Init("map.map");
     cout << "Additional Init" << endl;
-    YLoader::loader.LoadConfig("data/defs/reimu.entity");
+    Config::conf.LoadEntities();
     units.CreateUnit( PLAYER, 0, 0 );
     YCamera::CameraControl.SetTarget( units.GetPlayer()->getUnitpX(), units.GetPlayer()->getUnitpY());
     units.CreateUnit( STATIC, 2, 2 );

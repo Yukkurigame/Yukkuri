@@ -21,13 +21,17 @@ UnitManager::~UnitManager()
  **/
 void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 {
-    Unit *temp = new Unit;
+    Unit *temp = new Unit();
     
-    temp->setUnitName("reimu");
+    if( !temp->Create("reimu") ){
+        delete temp;
+        return;
+    }
     //cout << "create unit image" << endl;
-    temp->setUnitImage( Graphics::graph.LoadImage( temp->getUnitName( ) ) );
+    temp->setUnitImage( Graphics::graph.LoadImage( temp->getUnitImageName( ) ) );
     //cout << "load unit animation" << endl;
-    Graphics::graph.LoadAnimation( temp->getUnitName( ), 11, 4, 79, 68 );    
+    Graphics::graph.LoadAnimation( temp->getUnitName( ), temp->getUnitImageRows(), 
+                                                          temp->getUnitImageCols(), temp->getUnitWidth(), temp->getUnitHeight() );
     //cout << "success" << endl;
     
     temp->setUnitType( um_ID );

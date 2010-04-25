@@ -1,33 +1,25 @@
 #ifndef YCONFIGMANAGER_H
 #define YCONFIGMANAGER_H
 
+#include <sys/types.h>
+#include <dirent.h>
 #include <string>
 using std::string;
 #include <map>
 #include <vector>
+#include "ConfigTypes.h"
+#include "yloader.h"
 
-
-struct EntityDef {
-    string Name;
-    string image;
-    std::map < string, std::pair< int, int> > animation;
-    int height;
-    int width;
-    float hp;
-    int speed;     
-    float damage;
-    //int bloodcolor[3];
-    //int meeting;
-};
-/*
 class Config
 {
     public:
+        static Config conf;
         //void LoadAll();
-        //bool LoadConfig( string filename );
+        bool LoadEntities( );
         //bool LoadType( string filetype );
-        
-    private:            
-}
-*/
+        EntityDef* FindEntity( string );
+    private:
+        std::map < string, EntityDef > Entities;
+};
+
 #endif //YCONFIGMANAGER_H

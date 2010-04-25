@@ -18,7 +18,7 @@ class Graphics
         ~Graphics();
         static Graphics graph;
         SDL_Surface* LoadImage( std::string );
-        void ApplySurface( float, float, SDL_Surface*, SDL_Surface* , SDL_Rect* );
+        void ApplySurface( double, double, SDL_Surface*, SDL_Surface* , SDL_Rect* );
         void LoadAnimation( string name, int rows, int cols, int width, int height );        
         SDL_Rect* GetAnim( string name,  int num );
         

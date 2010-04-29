@@ -17,9 +17,9 @@ class Config
         //void LoadAll();
         bool LoadEntities( );
         //bool LoadType( string filetype );
-        EntityDef* FindEntity( string );
+        ConfigSet* FindEntity( string );
     private:
-        std::map < string, EntityDef > Entities;
+        std::map < string, ConfigSet > Entities;
 };
 
 #endif //YCONFIGMANAGER_H

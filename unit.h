@@ -32,7 +32,7 @@ public:
     void setUnitAnim( int );
     int getUnitAnim() { return (const int)m_iAn; }
 
-    string getUnitName() { return defs->Name; }
+    string getUnitName() { return defs->get("name"); }
     //void setUnitName( string name );
 
     float getUnitX() { return (const float)m_fX; }
@@ -43,12 +43,12 @@ public:
     
     SDL_Surface* getUnitImage() {return m_Img;}
     void setUnitImage( SDL_Surface* );
-    string getUnitImageName( ) { return defs->image; }
+    string getUnitImageName( ) { return defs->get("image"); }
     
-    int getUnitWidth() { return defs->width; }
-    int getUnitHeight() { return defs->height; }
-    int getUnitImageCols() { return defs->imagecols; }
-    int getUnitImageRows() { return defs->imagerows; }
+    int getUnitWidth() { return atoi((defs->get("width")).c_str()); }
+    int getUnitHeight() { return atoi((defs->get("height")).c_str()); }
+    int getUnitImageCols() { return atoi((defs->get("imagecols")).c_str()); }
+    int getUnitImageRows() { return atoi((defs->get("imagerows")).c_str()); }
 
 private:
     float m_fX, m_fY, m_fdistance; 
@@ -57,7 +57,7 @@ private:
     string UnitName;
     e_unitID Type;
     SDL_Surface* m_Img;
-    EntityDef* defs;
+    ConfigSet* defs;
         
 };
 

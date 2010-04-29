@@ -6,20 +6,14 @@ using std::string;
 #include <map>
 #include <vector>
 
-
-struct EntityDef {
-    string Name;
-    string image;
-    std::map < string, std::pair< int, int> > animation;
-    int height;
-    int width;
-    float hp;
-    int speed;     
-    float damage;
-    int imagecols;
-    int imagerows;
-    //int bloodcolor[3];
-    //int meeting;
+class ConfigSet
+{
+    public:
+        void set(std::string, std::string);
+        string get( std::string );
+        
+    private:
+        std::map <string, string> Strings;
 };
 
 #endif //YCONFIGTYPES_H

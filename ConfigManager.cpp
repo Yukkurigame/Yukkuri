@@ -21,14 +21,15 @@ bool Config::LoadEntities()
         cout << "bad directory" << endl;         
         return false;
     }
-    int success;
-    vector<EntityDef> pvec;
+    int success = 0;
+    vector<ConfigSet> pvec;
     for (vector<string>::iterator it=files.begin(); it < files.end(); it++){         
-        if( YLoader::loader.LoadConfig<EntityDef>( "data/defs/" + *it, &pvec ) )
+        if( YLoader::loader.LoadConfig( "data/defs/" + *it, &pvec ) )
             success++;
     }
-    for (vector<EntityDef>::iterator it=pvec.begin(); it < pvec.end(); it++){
-        //Entities(*it).Name
+    for (vector<ConfigSet>::iterator it=pvec.begin(); it < pvec.end(); it++){
+    	string name = (*it).get("name");
+    	Entities[name] = (*it);
     }
     cout << " done." << endl;
     cout << "Loaded " << success << " from " << files.size() << " config files." << endl;
@@ -37,9 +38,9 @@ bool Config::LoadEntities()
 
 
 
-EntityDef* Config::FindEntity( string name )
+ConfigSet* Config::FindEntity( string name )
 {
-    map < string, EntityDef>::iterator iter = Entities.find( name );
+    map < string, ConfigSet>::iterator iter = Entities.find( name );
     if( iter != Entities.end() )
         return &iter->second;
     return NULL;

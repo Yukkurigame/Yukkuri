@@ -2,26 +2,41 @@
 
 YLoader YLoader::loader; //global is bad, yes
 
-void operator >> (const YAML::Node& node, EntityDef& entity){
+void operator >> (const YAML::Node& node, ConfigSet& conf){
     //node["anim_distance"]
-    //node["bloodcolor"] 
-    node["damage"] >> entity.damage;
-    node["height"] >> entity.height;
-    node["hp"] >> entity.hp;
-    node["image"] >> entity.image;
+    //node["bloodcolor"]
+    for(YAML::Iterator i = node.begin(); i != node.end(); ++i){        
+        const YAML::Node & key   = i.first();
+        const YAML::Node & value = i.second();
+        YAML::CONTENT_TYPE type = value.GetType();
+        string out, k;
+        key >> k;        
+        switch (type){
+            case YAML::CT_SCALAR:
+                value >> out;
+                conf.set(k, out);
+                break;
+        }
+    }
+    //node["damage"] >> conf;    
+    /*node["damage"] >> conf.damage;
+    node["height"] >> conf.height;
+    node["hp"] >> conf.hp;
+    node["image"] >> conf.image;
     //node["meeting"]
-    node["name"] >> entity.Name;
-    node["speed"] >> entity.speed;
-    node["width"] >> entity.width;
-    node["image_cols"] >> entity.imagecols;
-    node["image_rows"] >> entity.imagerows;
+    node["name"] >> conf.Name;
+    node["speed"] >> conf.speed;
+    node["width"] >> conf.width;
+    node["image_cols"] >> conf.imagecols;
+    node["image_rows"] >> conf.imagerows;
     const YAML::Node &anim = node["animation"][0];
     for(YAML::Iterator i = anim.begin(); i != anim.end(); ++i){        
         const YAML::Node & key   = i.first();
         const YAML::Node & value = i.second();
         std::pair <int, int> values ( value[0], value[1] );
-        entity.animation[key] = values;
+        conf.animation[key] = values;
     }
+    */
 }
 
 /** Load image file
@@ -33,37 +48,37 @@ SDL_Surface* YLoader::LoadImage( std::string filename )
     SDL_Surface* optimizedImage = NULL;
     loadedImage = IMG_Load( filename.c_str() );
     
-    if( loadedImage != NULL )
-    {
+    if( loadedImage != NULL ){
         if( loadedImage->format->Amask ) {
             optimizedImage = SDL_DisplayFormatAlpha( loadedImage );
         } else {
             optimizedImage = SDL_DisplayFormat( loadedImage );
         }
         SDL_FreeSurface( loadedImage );
+    }else{
+        cout << "Could not load " << filename << endl;
+        return NULL;
     }
-
     return optimizedImage;
 }
 
-/*template< class T >
-bool YLoader::LoadConfig( std::string filename, vector< T > *pvec )
+bool YLoader::LoadConfig( std::string filename, vector< ConfigSet > *pvec )
 {
-   try{
+   try{   	    
         std::ifstream fin( filename.c_str() );
         YAML::Parser parser(fin);
         YAML::Node doc;
         parser.GetNextDocument(doc);
-        cout << "Doc node size is " << doc.size() << endl;
+        //cout << "Doc node size is " << doc.size() << endl;
         //Add way to process map files.
         for( unsigned int i =0; i< doc.size(); i++ ){
             //wtf??
             //string tag = doc[i].GetTag();
-            //if( tag == "!EntityDef"){
+            //if( tag == "!confDef"){
                 //cout << "Doc node tag: " << doc[i].GetTag() << endl;
-                T node;
+                ConfigSet node;
                 doc[i] >> node;
-                pvec->push_back(T);
+                pvec->push_back(node);
             //}else{
                 //cout << "Unprocessed tag: " << doc.GetTag() << endl;
             //}
@@ -71,7 +86,6 @@ bool YLoader::LoadConfig( std::string filename, vector< T > *pvec )
     }catch( YAML::ParserException &e ){
             cout << "YAML Exception caught in " << filename << ": " << e.what() << endl;
             return false;
-    }    
+    }        
     return true;    
 }
-*/

@@ -16,6 +16,8 @@
     height: 69
     hp: 10.0
     image: reimu.png
+    imagecols: 4
+    imagerows: 12
     meeting: 47
     name: Reimu
     speed: 80

@@ -23,7 +23,7 @@ void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 {
     Unit *temp = new Unit();
     
-    if( !temp->Create("reimu") ){
+    if( !temp->Create("Reimu") ){
         delete temp;
         return;
     }
@@ -31,7 +31,7 @@ void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
     temp->setUnitImage( Graphics::graph.LoadImage( temp->getUnitImageName( ) ) );
     //cout << "load unit animation" << endl;
     Graphics::graph.LoadAnimation( temp->getUnitName( ), temp->getUnitImageRows(), 
-                                                          temp->getUnitImageCols(), temp->getUnitWidth(), temp->getUnitHeight() );
+                                                          temp->getUnitImageCols(), temp->getUnitWidth(), temp->getUnitHeight());
     //cout << "success" << endl;
     
     temp->setUnitType( um_ID );

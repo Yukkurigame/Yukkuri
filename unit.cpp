@@ -88,6 +88,15 @@ void Unit::setUnitImage( SDL_Surface* image)
     m_Img = image;
 }
 
+double Unit::dist( Unit* target )
+{
+	float x = m_fX - target->getUnitX();
+	float y = m_fY - target->getUnitY();
+    return sqrt( ( x * x ) + ( y * y ) );
+}
+
+
+
 /*
 void Unit::setUnitName( string name )
 {

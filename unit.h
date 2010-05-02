@@ -11,8 +11,6 @@ using std::endl;
 #include "SDL/SDL_image.h"
 #include "ConfigManager.h"
 #include "ConfigTypes.h"
-//#include "Graphics.h"
-//#include "yloader.h"
 
 enum e_unitID { STATIC = 0, PLAYER, OBJECT, ENTITY};
 
@@ -24,6 +22,7 @@ public:
     bool Create( string );
     void setUnitType( enum e_unitID t_Unit );
     void moveUnit(  signed int x, signed int y , const int& dt);
+    double dist( Unit* );
 
     void setUnitPos( int x, int y ) { setUnitX( x ); setUnitY( y ); }    
     void setUnitX( float x );
@@ -51,7 +50,7 @@ public:
     int getUnitImageRows() { return atoi((defs->get("imagerows")).c_str()); }
 
 private:
-    float m_fX, m_fY, m_fdistance; 
+    float m_fX, m_fY, m_fdistance;
     int m_iAn;
     const static int m_animdistance = 20;
     string UnitName;

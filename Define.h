@@ -1,19 +1,20 @@
 #ifndef YDEFINE_H
 #define YDEFINE_H
 
-#define MAP_WIDTH	40
-#define MAP_HEIGHT 40
-
-#define TILE_SIZE	16
+//#define MAP_WIDTH	40
+//#define MAP_HEIGHT 40
+//#define TILE_SIZE	16
 
 #define WWIDTH	800
 #define	WHEIGHT 600
 
 #define MAXIMUM_FRAME_RATE 80
-#define MINIMUM_FRAME_RATE 15
+#define MINIMUM_FRAME_RATE 20
 #define UPDATE_INTERVAL (1.0 / MAXIMUM_FRAME_RATE)
 #define MAX_CYCLES_PER_FRAME (MAXIMUM_FRAME_RATE / MINIMUM_FRAME_RATE)
 
 #define IMAGEPATH "data/images/"
+
+#define DAY_LENGTH 100000
 
 #endif //YDEFINE_H

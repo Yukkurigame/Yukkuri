@@ -34,15 +34,20 @@ void Yukkuri::AdditionalInit()
 void Yukkuri::Think( const int& iElapsedTime )
 {
     // Do time-based calculations
+    daytime.update( iElapsedTime );
+    
     if ( player_movex != 0 or player_movey != 0)
         units.GetPlayer()->moveUnit( player_movex, player_movey, iElapsedTime);
+    
 }
  
 void Yukkuri::Render( SDL_Surface* pDestSurface )
 {
      // Display slick graphics on screen
     units.DrawUnits( pDestSurface, YCamera::CameraControl.GetX(), YCamera::CameraControl.GetY() );
-
+    
+    //drawing night last
+    daytime.draw( pDestSurface );
 }
  
 void Yukkuri::KeyDown(const int& iKeyEnum)

@@ -10,6 +10,7 @@ using std::vector;
 //#include "map.h"
 #include "Camera.h"
 //#include "SDL_getenv.h"
+#include "daytime.h"
 
 #define pixel_Loc(A)    ( (A * 64) + 12 )
 
@@ -52,6 +53,7 @@ protected:
     SDL_Surface* objects_sfc;
 private:
     UnitManager units;
+    DayTime daytime;
     
     //Map map;
 };

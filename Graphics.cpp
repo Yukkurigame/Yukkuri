@@ -74,3 +74,5 @@ SDL_Rect* Graphics::GetAnim( string name, int num )
 {
     return &Animations[name].at(num);
 }
+
+

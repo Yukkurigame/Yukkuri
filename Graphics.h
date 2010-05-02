@@ -21,11 +21,11 @@ class Graphics
         void ApplySurface( double, double, SDL_Surface*, SDL_Surface* , SDL_Rect* );
         void LoadAnimation( string name, int rows, int cols, int width, int height );        
         SDL_Rect* GetAnim( string name,  int num );
+        SDL_Rect GetSDLRect( int startx, int starty, int width, int height );        
         
     private:        
         void AddImage( SDL_Surface* , string );
-        SDL_Surface* GetImage( string );
-        SDL_Rect GetSDLRect( int startx, int starty, int width, int height );
+        SDL_Surface* GetImage( string );        
         
         map < string,  vector<SDL_Rect> > Animations;
         map < string, SDL_Surface* > LoadedImages;        

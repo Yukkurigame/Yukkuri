@@ -42,9 +42,10 @@ void Graphics::AddImage( SDL_Surface*  pImg, string name){
 SDL_Surface* Graphics::GetImage( string name){
     map <string, SDL_Surface* >::iterator it;
     it = LoadedImages.find(name);
-    if( !it->second )
-        return NULL;
-    return it->second;
+    if( it != LoadedImages.end() ){
+        return it->second;
+    }
+    return NULL;
 }
 
 void Graphics::LoadAnimation( string name,  int rows, int cols, int width, int height )

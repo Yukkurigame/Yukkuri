@@ -15,11 +15,13 @@ DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1
 CFLAGS= -g -Wall $(DEFINES)
 
 
-SRCS =   main.cpp unit.cpp unitmanager.cpp  yloader.cpp engine.cpp \
+SRCS =   main.cpp yloader.cpp engine.cpp \
+         Entity.cpp unit.cpp unitmanager.cpp \
          Camera.cpp Graphics.cpp ConfigManager.cpp ConfigTypes.cpp \
          daytime.cpp
 
-OBJS =  main.o unit.o unitmanager.o yloader.o engine.o \
+OBJS =  main.o yloader.o engine.o \
+        Entity.o unit.o unitmanager.o \
         Camera.o Graphics.o ConfigManager.o ConfigTypes.o \
         daytime.o
 

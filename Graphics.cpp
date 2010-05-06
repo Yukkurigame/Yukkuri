@@ -76,4 +76,28 @@ SDL_Rect* Graphics::GetAnim( string name, int num )
     return &Animations[name].at(num);
 }
 
+Uint32 getpixel(SDL_Surface *surface, int x, int y)
+{
+    int bpp = surface->format->BytesPerPixel;
+    /* Здесь p - это адрес пиксела, который мы хотим получить */
+    Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
+    switch(bpp) {
+    case 1:
+        return *p;
+    case 2:
+        return *(Uint16 *)p;
+    case 3:
+        if(SDL_BYTEORDER == SDL_BIG_ENDIAN)
+            return p[0] << 16 | p[1] << 8 | p[2];
+        else
+            return p[0] | p[1] << 8 | p[2] << 16;
+    case 4:
+        return *(Uint32 *)p;
+    default:
+        return 0;       /* нидолжно выполниться, но позволяет избежать предупреждений */
+    }
+}
 
+void Graphics::SetAlpha( SDL_Surface* sfc, int alpha){
+	SDL_SetAlpha( sfc, SDL_SRCALPHA, alpha );	
+} 

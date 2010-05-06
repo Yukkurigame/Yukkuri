@@ -21,7 +21,16 @@ UnitManager::~UnitManager()
  **/
 void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 {
-    Unit *temp = new Unit();
+    Unit *temp;
+    switch(um_ID){            
+        case 2:
+            temp = new Entity();
+            break;
+        default:
+            temp = new Unit();
+            break;
+	}
+	 
     
     if( !temp->Create("Reimu") ){
         delete temp;
@@ -43,6 +52,13 @@ void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
         um_player = temp;
     
     return;
+}
+
+void UnitManager::tick( const int& dt )
+{
+    for (int i = 0; i < (int)m_vUnits.size(); i++) {
+        m_vUnits[i]->update( dt );        
+    }
 }
 
 void UnitManager::AddUnit( Unit* pUnit )

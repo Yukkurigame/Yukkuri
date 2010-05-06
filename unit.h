@@ -12,15 +12,16 @@ using std::endl;
 #include "ConfigManager.h"
 #include "ConfigTypes.h"
 
-enum e_unitID { STATIC = 0, PLAYER, OBJECT, ENTITY};
+enum e_unitID { STATIC = 0, PLAYER, ENTITY, OBJECT};
 
 class Unit
 {
 public:
     Unit();
-    virtual ~Unit();
+    virtual ~Unit();    
     bool Create( string );
     void setUnitType( enum e_unitID t_Unit );
+    virtual void update(const int&) {};
     void moveUnit(  signed int x, signed int y , const int& dt);
     double dist( Unit* );
 

@@ -4,8 +4,6 @@ Unit::Unit()
 {
     m_iAn = 0;
     m_fdistance = 0;
-    
-    
 }
 
 Unit::~Unit()
@@ -37,7 +35,7 @@ void Unit::moveUnit( signed int x, signed int y, const int& dt )
 {     
     if( x != 0 || y != 0 )
     {
-        int l = sqrt( x * x)  + sqrt( y * y );
+        float l = sqrt( x * x  +  y * y );
         //    speed = abs(self.dfn.speed * self.fed * 2) #(self.dfn.speed * self.world.map.speed(self.x, self.y))
         float speed = 80.0f * ( dt / 1000.0f);
         if( speed < 0.05f ) 
@@ -94,12 +92,3 @@ double Unit::dist( Unit* target )
 	float y = m_fY - target->getUnitY();
     return sqrt( ( x * x ) + ( y * y ) );
 }
-
-
-
-/*
-void Unit::setUnitName( string name )
-{
-    UnitName = name;
-}
-*/

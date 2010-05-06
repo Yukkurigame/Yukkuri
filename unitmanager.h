@@ -5,6 +5,7 @@
 using std::vector;
 
 #include "unit.h"
+#include "Entity.h"
 #include "Graphics.h"
 
 class UnitManager
@@ -17,6 +18,8 @@ class UnitManager
         void CreateUnit( enum e_unitID um_ID, int x, int y );
         Unit* GetUnit( unsigned int iIndex );
         Unit* GetPlayer() { return um_player; }
+        
+        void tick( const int& );
 
         int GetUnitVecSize() { return (int)m_vUnits.size();}
 

@@ -27,7 +27,7 @@ void Yukkuri::AdditionalInit()
     Config::conf.LoadEntities();
     units.CreateUnit( PLAYER, 0, 0 );
     YCamera::CameraControl.SetTarget( units.GetPlayer()->getUnitpX(), units.GetPlayer()->getUnitpY());
-    units.CreateUnit( STATIC, 2, 2 );
+    units.CreateUnit( ENTITY, 2, 2 );
     
 }
  
@@ -35,6 +35,8 @@ void Yukkuri::Think( const int& iElapsedTime )
 {
     // Do time-based calculations
     daytime.update( iElapsedTime );
+    
+    units.tick( iElapsedTime );
     
     if ( player_movex != 0 or player_movey != 0)
         units.GetPlayer()->moveUnit( player_movex, player_movey, iElapsedTime);

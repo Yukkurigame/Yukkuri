@@ -19,7 +19,7 @@ class Config
         //bool LoadType( string filetype );
         ConfigSet* FindEntity( string );
     private:
-        std::map < string, ConfigSet > Entities;
+        std::map < string, ConfigSet > Entities; //Как-то это не хорошо, думаю надо делать new в Load и хранить указатели. 
 };
 
 #endif //YCONFIGMANAGER_H

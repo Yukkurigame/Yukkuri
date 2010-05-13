@@ -22,10 +22,10 @@ public:
     bool Create( string );
     void setUnitType( enum e_unitID t_Unit );
     virtual void update(const int&) {};
-    void moveUnit(  signed int x, signed int y , const int& dt);
+    virtual void moveUnit(  signed int x, signed int y , const int& dt) {};
     double dist( Unit* );
 
-    void setUnitPos( int x, int y ) { setUnitX( x ); setUnitY( y ); }    
+    void setUnitPos( float x, float y ) { setUnitX( x ); setUnitY( y ); }    
     void setUnitX( float x );
     void setUnitY( float y );
     
@@ -50,10 +50,12 @@ public:
     int getUnitImageCols() { return atoi((defs->get("imagecols")).c_str()); }
     int getUnitImageRows() { return atoi((defs->get("imagerows")).c_str()); }
 
-private:
-    float m_fX, m_fY, m_fdistance;
-    int m_iAn;
+protected:
+    float m_fX, m_fY;
     const static int m_animdistance = 20;
+    
+private:
+    int m_iAn;
     string UnitName;
     e_unitID Type;
     SDL_Surface* m_Img;

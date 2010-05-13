@@ -1,38 +1,11 @@
-#include "unit.h"
-
-Unit::Unit()
-{
-    m_iAn = 0;
-    m_fdistance = 0;
-}
-
-Unit::~Unit()
-{
-}
-
-bool Unit::Create( string name )
-{
-  //setUnitName(name);
-  defs = Config::conf.FindEntity(name);
-  if (!defs)
-      return false;
-  return true;
-}
-
-
-void Unit::setUnitType( enum e_unitID t_Unit )
-{
-        Type = t_Unit;        
-
-    return;
-}
+#include "Dynamic.h"
 
 /** Move the unit according to the eight cardinal directions.
     @return Boolean value represents a Collision (true)
     @remark 
 **/
-void Unit::moveUnit( signed int x, signed int y, const int& dt )
-{     
+void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
+{
     if( x != 0 || y != 0 )
     {
         float l = sqrt( x * x  +  y * y );
@@ -41,8 +14,8 @@ void Unit::moveUnit( signed int x, signed int y, const int& dt )
         if( speed < 0.05f ) 
             speed = 0.05f;
         float dx = speed * x / l;
-        float dy = speed * y / l;        
-        m_fdistance += sqrt( dx * dx + dy * dy );        
+        float dy = speed * y / l;
+        m_fdistance += sqrt( dx * dx + dy * dy );
         int anim; //FUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU
         if( dx < 0 && dy < 0 ) //UUUUUUUUUUUUUUUUUUUUUU
             anim = 16; //UUUUUUUUUUUUUUUUUUUUUU
@@ -62,33 +35,6 @@ void Unit::moveUnit( signed int x, signed int y, const int& dt )
             anim = 24; //UUUUUUUUUUUUUUUUUUUUUU
         setUnitAnim( anim +((const int)(m_fdistance / m_animdistance) % 4));
         m_fX += dx;
-        m_fY += dy;
+        m_fY += dy;        
     }
-}
-
-void Unit::setUnitX( float x )
-{
-        m_fX = x;
-}
-
-void Unit::setUnitY( float y )
-{
-    m_fY = y;
-}
-
-void Unit::setUnitAnim( int num )
-{
-    m_iAn = num;
-}
-
-void Unit::setUnitImage( SDL_Surface* image)
-{
-    m_Img = image;
-}
-
-double Unit::dist( Unit* target )
-{
-	float x = m_fX - target->getUnitX();
-	float y = m_fY - target->getUnitY();
-    return sqrt( ( x * x ) + ( y * y ) );
 }

@@ -143,10 +143,16 @@ void CEngine::HandleInput()
         {
         case SDL_KEYDOWN:
             // If escape is pressed set the Quit-flag
-            if (event.key.keysym.sym == SDLK_ESCAPE)
+            if( event.key.keysym.sym == SDLK_ESCAPE )
             {
                 m_bQuit = true;
                 break;
+            }
+            
+            if( event.key.keysym.sym == SDLK_s )
+            {
+            	string name = "screenshot.bmp";            	
+            	SDL_SaveBMP( m_pScreen, name.c_str());
             }
  
             KeyDown( event.key.keysym.sym );
@@ -154,7 +160,8 @@ void CEngine::HandleInput()
  
         case SDL_KEYUP:
             KeyUp( event.key.keysym.sym );
-            break;
+            break; 
+ 
  
         case SDL_JOYAXISMOTION:  /* Handle Joystick Motion */
                 if( event.jaxis.axis == 0) /* Left-right movement */

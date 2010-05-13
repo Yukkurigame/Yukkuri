@@ -22,7 +22,8 @@ class Graphics
         void LoadAnimation( string name, int rows, int cols, int width, int height );        
         SDL_Rect* GetAnim( string name,  int num );
         SDL_Rect GetSDLRect( int startx, int starty, int width, int height );
-        void SetAlpha( SDL_Surface* , int ); 
+        void SetAlpha( SDL_Surface* , int );
+        
         
     private:        
         void AddImage( SDL_Surface* , string );

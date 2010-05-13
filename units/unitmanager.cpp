@@ -22,7 +22,10 @@ UnitManager::~UnitManager()
 void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 {
     Unit *temp;
-    switch(um_ID){            
+    switch(um_ID){
+    	case 1:
+    	    temp = new Player();
+    	    break;
         case 2:
             temp = new Entity();
             break;
@@ -57,7 +60,7 @@ void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 void UnitManager::tick( const int& dt )
 {
     for (int i = 0; i < (int)m_vUnits.size(); i++) {
-        m_vUnits[i]->update( dt );        
+        m_vUnits[i]->update( dt );
     }
 }
 

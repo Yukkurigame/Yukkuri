@@ -13,11 +13,15 @@ Unit::~Unit()
 
 bool Unit::Create( string name )
 {
-  //setUnitName(name);
-  defs = Config::conf.FindEntity(name);
-  if (!defs)
-      return false;
-  return true;
+    //setUnitName(name);
+    defs = Config::conf.FindEntity(name);
+    //TODO: в топку все конфиг-классы, загружать напрямую.
+    //string test;
+    //test = Config::conf.getString( "image" );
+    //cout << test.c_str() << endl;
+    if (!defs)
+        return false;
+    return true;
 }
 
 void Unit::setUnitType( enum e_unitID t_Unit )

@@ -1,4 +1,4 @@
-PROGNAME= yaml
+PROGNAME= yamlparcer
 
 SRC = aliascontent.cpp conversion.cpp emitter.cpp emitterstate.cpp \
 	emitterutils.cpp exp.cpp iterator.cpp map.cpp node.cpp null.cpp \
@@ -30,7 +30,7 @@ default: $(OUT)
 	$(CCC) $(INCLUDES) $(CCFLAGS) -c $< -o $@
 
 $(OUT): $(OBJ)
-	mkdir $(OUTDIR)
+	mkdir -p $(OUTDIR)
 	ar rcs $(OUTDIR)$(OUT) $(OBJ)
 
 clean:

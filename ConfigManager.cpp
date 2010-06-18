@@ -2,6 +2,49 @@
 
 Config Config::conf; //global is bad, yes
 
+Config::Config()
+{
+	//FIXME: too many classes.
+	Luaconf = new LuaConfig;
+}
+
+bool Config::Load( string name )
+{
+	Luaconf->OpenConfig( name );
+	return true;
+}
+
+bool Config::LoadAll( string type )
+{
+	string dirname = "data/defs/";
+    DIR *dp;
+    struct dirent *ep;
+    dp = opendir (dirname.c_str());
+    if( dp != NULL ){
+        while ( (ep = readdir( dp ) ) != NULL) {
+            string fname = string(ep->d_name);
+            if(fname.substr(fname.find_last_of(".") + 1) == "entity")
+                Load( dirname + fname );
+        }
+        closedir(dp);
+    }else{
+        cout << "[FAIL]" << endl;
+        cout << "bad directory" << endl;
+        return false;
+    }
+	return true;
+}
+
+string Config::getString( string name )
+{
+	return Luaconf->getString( name );
+}
+
+double Config::getNumber( string name )
+{
+	return Luaconf->getNumber( name );
+}
+
 bool Config::LoadEntities()
 {
     cout << "Load entities";
@@ -35,8 +78,6 @@ bool Config::LoadEntities()
     cout << "Loaded " << success << " from " << files.size() << " config files." << endl;
     return true;
 }
-
-
 
 ConfigSet* Config::FindEntity( string name )
 {

@@ -3,18 +3,41 @@
 YLoader YLoader::loader; //global is bad, yes
 
 void operator >> (const YAML::Node& node, ConfigSet& conf){
-    //node["anim_distance"]
-    //node["bloodcolor"]
-    for(YAML::Iterator i = node.begin(); i != node.end(); ++i){        
+
+    for(YAML::Iterator i = node.begin(); i != node.end(); ++i){
         const YAML::Node & key   = i.first();
         const YAML::Node & value = i.second();
         YAML::CONTENT_TYPE type = value.GetType();
-        string out, k;
-        key >> k;        
+        string k, out;
+        key >> k;
         switch (type){
             case YAML::CT_SCALAR:
                 value >> out;
                 conf.set(k, out);
+                break;
+            case YAML::CT_SEQUENCE:
+                cout << "Sequence: " << " size " << value.size() << endl;
+                    if( value.size() > 1 ){
+                    	//std::vector < int > vec;
+                        //for( YAML::Iterator it=value.begin(); it!=value.end(); ++it ) {
+                            //std::string scalar;
+                            //std
+                            //scalar = yamlParce(*it);
+                        
+                             //*it >> scalar;
+                            //cout << "Found scalar: " << scalar << endl;
+                        //}
+                    }else{
+                        //type = value[0].GetType( );
+                        //if( type == YAML::CT_MAP ){
+                        //}
+                    }
+                    //conf.set(k, )
+                break;
+            case YAML::CT_MAP:
+                cout  << "Map: " << " size " << value.size() << endl;
+                break;
+            case YAML::CT_NONE:
                 break;
         }
     }

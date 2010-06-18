@@ -25,6 +25,7 @@ void Yukkuri::AdditionalInit()
     //map.Init("map.map");
     cout << "Additional Init" << endl;
     Config::conf.LoadEntities();
+    Config::conf.LoadAll( "entity" );
     units.CreateUnit( PLAYER, 0, 0 );
     YCamera::CameraControl.SetTarget( units.GetPlayer()->getUnitpX(), units.GetPlayer()->getUnitpY());
     for( int i=0; i < ( rand() % 20 ); i++){

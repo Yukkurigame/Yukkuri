@@ -26,6 +26,7 @@ class YLoader
         
         bool LoadConfig( std::string filename, vector< ConfigSet > *pvec );
         
+        
 };
 
 #endif //YUKKURILOADER_H

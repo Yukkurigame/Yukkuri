@@ -5,7 +5,7 @@ VPATH = ./units
 DEFS= $(shell sdl-config --cflags)
 PROGNAME= Yukkuri
 INCLUDES=  -I. -Iyaml/include -Iunits
-LIBS= $(shell sdl-config --libs) -lSDL_image -lSDL_ttf -Llibs/ -lyaml
+LIBS= $(shell sdl-config --libs) -lSDL_image -lSDL_ttf -Llibs -lyamlparcer -llua
 
 
 DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1
@@ -18,11 +18,8 @@ UNITS =  unitmanager.cpp unit.cpp Dynamic.cpp Entity.cpp Player.cpp
 SRCS =   main.cpp yloader.cpp engine.cpp \
          $(UNITS) \
          Camera.cpp Graphics.cpp ConfigManager.cpp ConfigTypes.cpp \
-         daytime.cpp
+         daytime.cpp Luaconfig.cpp
 
-#OBJS =  main.o yloader.o engine.o \
-#        Camera.o Graphics.o ConfigManager.o ConfigTypes.o \
-#        daytime.o
 OBJS = $(SRCS:.cpp=.o)
 
 .cpp.o:

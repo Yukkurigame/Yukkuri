@@ -15,10 +15,10 @@ SDL_Surface* Graphics::LoadImage(string name)
     pImg = GetImage( name );
     if( !pImg ){
         //Not in cache. Try to load.        
-        pImg = YLoader::loader.LoadImage(IMAGEPATH+name);
+        pImg = YLoader::loader.LoadImage( IMAGEPATH + name );
         if( !pImg){
             //Not loaded. Load default.
-            pImg = LoadImage("white.png");
+            pImg = LoadImage( "white.png" );
         }else{
             //Add in cache.
             AddImage( pImg, name);

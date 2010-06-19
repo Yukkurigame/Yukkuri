@@ -9,9 +9,6 @@ using std::cout;
 using std::endl;
 
 #include "Dynamic.h"
-//#include "SDL/SDL_image.h"
-//#include "ConfigManager.h"
-//#include "ConfigTypes.h"
 
 
 class Entity: public DynamicUnit

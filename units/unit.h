@@ -9,7 +9,8 @@ using std::cout;
 using std::endl;
 
 #include "SDL/SDL_image.h"
-#include "ConfigManager.h"
+//#include "ConfigManager.h"
+#include "Luaconfig.h"
 #include "ConfigTypes.h"
 
 enum e_unitID { STATIC = 0, PLAYER, ENTITY, OBJECT};
@@ -19,7 +20,7 @@ class Unit
 public:
     Unit();
     virtual ~Unit();    
-    bool Create( string );
+    bool Create( );
     void setUnitType( enum e_unitID t_Unit );
     virtual void update(const int&) {};
     virtual void moveUnit(  signed int x, signed int y , const int& dt) {};
@@ -28,12 +29,10 @@ public:
     void setUnitPos( float x, float y ) { setUnitX( x ); setUnitY( y ); }    
     void setUnitX( float x );
     void setUnitY( float y );
-    
-    void setUnitAnim( int );
     int getUnitAnim() { return (const int)m_iAn; }
 
-    string getUnitName() { return defs->get("name"); }
-    //void setUnitName( string name );
+    void setUnitAnim( int );
+    string getUnitName() { return defs->Name; }
 
     float getUnitX() { return (const float)m_fX; }
     float getUnitY() { return (const float)m_fY; }
@@ -43,23 +42,25 @@ public:
     
     SDL_Surface* getUnitImage() {return m_Img;}
     void setUnitImage( SDL_Surface* );
-    string getUnitImageName( ) { return defs->get("image"); }
+    string getUnitImageName( ) { return defs->imageName;  }
     
-    int getUnitWidth() { return atoi((defs->get("width")).c_str()); }
-    int getUnitHeight() { return atoi((defs->get("height")).c_str()); }
-    int getUnitImageCols() { return atoi((defs->get("imagecols")).c_str()); }
-    int getUnitImageRows() { return atoi((defs->get("imagerows")).c_str()); }
+    int getUnitWidth() { return defs->width; }
+    int getUnitHeight() { return defs->height; }
+    int getUnitImageCols() { return defs->imagecols; }
+    int getUnitImageRows() { return defs->imagerows; }
+
+    void setPlayer( bool pl ) { player = pl; }
+    bool isPlayer( ) { return player; }
 
 protected:
     float m_fX, m_fY;
-    const static int m_animdistance = 20;
     
 private:
     int m_iAn;
-    string UnitName;
+    bool player;
     e_unitID Type;
     SDL_Surface* m_Img;
-    ConfigSet* defs;
+    EntityDefs* defs;
         
 };
 

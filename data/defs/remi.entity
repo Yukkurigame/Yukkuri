@@ -1,0 +1,25 @@
+- !EntityDef
+    bloodcolor: [175, 170, 125]
+    damage: 3.0
+    animation:
+        down: [0, 1]
+        growth: [0, 1]
+        left: [0, 1]
+        leftdown: [0, 1]
+        leftup: [0, 1]
+        raped: [0, 1]
+        raping: [0, 1]
+        right: [0, 1]
+        rightdown: [0, 1]
+        rightup: [0, 1]
+        up: [0, 1]
+    height: 69
+    hp: 10.0
+    image: remi_0.png
+    imagecols: 1
+    imagerows: 1
+    meeting: 2.2
+    name: Remi
+    predator: true
+    speed: 80
+    width: 80

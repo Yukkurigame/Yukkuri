@@ -2,23 +2,23 @@
     bloodcolor: [170, 55, 55]
     damage: 3.0
     animation:
-      - down: [0, 3]
-        growth: [40, 1]
-        left: [12, 3]
-        leftdown: [8, 3]
-        leftup: [16, 3]
-        raped: [36, 2]
-        raping: [32, 3]
-        right: [24, 3]
-        rightdown: [20, 3]
-        rightup: [28, 3]
-        up: [4, 3]
+        down: [0, 4]
+        growth: [40, 2]
+        left: [12, 4]
+        leftdown: [8, 4]
+        leftup: [16, 4]
+        raped: [36, 3]
+        raping: [32, 4]
+        right: [24, 4]
+        rightdown: [20, 4]
+        rightup: [28, 4]
+        up: [4, 4]
     height: 69
     hp: 10.0
     image: reimu.png
     imagecols: 4
     imagerows: 12
-    meeting: 47
+    meeting: 47.0
     name: Reimu
     speed: 80
     width: 80

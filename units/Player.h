@@ -8,14 +8,12 @@ using std::string;
 using std::cout;
 using std::endl;
 
-//#include "SDL/SDL_image.h"
-//#include "ConfigManager.h"
-//#include "ConfigTypes.h"
 #include "Dynamic.h"
 
 class Player : public DynamicUnit 
 {
-    //Player();
+public:
+    Player();
         
 };
 

@@ -1,5 +1,6 @@
 #include "ConfigManager.h"
 
+/*
 Config Config::conf; //global is bad, yes
 
 Config::Config()
@@ -10,21 +11,28 @@ Config::Config()
 
 bool Config::Load( string name )
 {
+	//TODO: More debug
 	Luaconf->OpenConfig( name );
 	return true;
 }
 
 bool Config::LoadAll( string type )
 {
+	cout << "Loading " << type.c_str() << endl;
 	string dirname = "data/defs/";
     DIR *dp;
     struct dirent *ep;
     dp = opendir (dirname.c_str());
+    int success = 0;
+    int files = 0;
     if( dp != NULL ){
         while ( (ep = readdir( dp ) ) != NULL) {
             string fname = string(ep->d_name);
-            if(fname.substr(fname.find_last_of(".") + 1) == "entity")
-                Load( dirname + fname );
+            if(fname.substr(fname.find_last_of(".") + 1) == "entity"){
+            	files++;
+                if ( Load( dirname + fname ) )
+                	success++;
+            }
         }
         closedir(dp);
     }else{
@@ -32,6 +40,9 @@ bool Config::LoadAll( string type )
         cout << "bad directory" << endl;
         return false;
     }
+    cout << " done." << endl;
+    cout << "Loaded " << success << " from " << files << " config files." << endl;
+    return true;
 	return true;
 }
 
@@ -44,8 +55,9 @@ double Config::getNumber( string name )
 {
 	return Luaconf->getNumber( name );
 }
+*/
 
-bool Config::LoadEntities()
+/*bool Config::LoadEntities()
 {
     cout << "Load entities";
     DIR *dp;
@@ -78,7 +90,9 @@ bool Config::LoadEntities()
     cout << "Loaded " << success << " from " << files.size() << " config files." << endl;
     return true;
 }
+*/
 
+/*
 ConfigSet* Config::FindEntity( string name )
 {
     map < string, ConfigSet>::iterator iter = Entities.find( name );
@@ -86,4 +100,4 @@ ConfigSet* Config::FindEntity( string name )
         return &iter->second;
     return NULL;
 }
-
+*/

@@ -5,22 +5,26 @@ Unit::Unit()
     m_iAn = 0;
     m_fX = 0.0;
     m_fY = 0.0;
+    player = false;
 }
 
 Unit::~Unit()
 {
 }
 
-bool Unit::Create( string name )
+bool Unit::Create( )
 {
-    //setUnitName(name);
-    defs = Config::conf.FindEntity(name);
-    //TODO: в топку все конфиг-классы, загружать напрямую.
-    //string test;
-    //test = Config::conf.getString( "image" );
-    //cout << test.c_str() << endl;
-    if (!defs)
-        return false;
+	//FIXME: where is my debug??
+	string name = LuaConfig::conf.getRandom("meeting");
+	cout << name.c_str() << endl;
+	defs = new EntityDefs;
+	LuaConfig::conf.setDefault(name);
+	LuaConfig::conf.getValue( "name", defs->Name );
+	LuaConfig::conf.getValue( "image", defs->imageName );
+	LuaConfig::conf.getValue( "height", defs->height );
+	LuaConfig::conf.getValue( "width", defs->width );
+	LuaConfig::conf.getValue( "imagecols", defs->imagecols );
+	LuaConfig::conf.getValue( "imagerows", defs->imagerows );
     return true;
 }
 

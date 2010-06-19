@@ -2,6 +2,7 @@
 
 YLoader YLoader::loader; //global is bad, yes
 
+/*
 void operator >> (const YAML::Node& node, ConfigSet& conf){
 
     for(YAML::Iterator i = node.begin(); i != node.end(); ++i){
@@ -24,7 +25,7 @@ void operator >> (const YAML::Node& node, ConfigSet& conf){
                             //std
                             //scalar = yamlParce(*it);
                         
-                             //*it >> scalar;
+                             // *it >> scalar;
                             //cout << "Found scalar: " << scalar << endl;
                         //}
                     }else{
@@ -42,7 +43,7 @@ void operator >> (const YAML::Node& node, ConfigSet& conf){
         }
     }
     //node["damage"] >> conf;    
-    /*node["damage"] >> conf.damage;
+    *//*node["damage"] >> conf.damage;
     node["height"] >> conf.height;
     node["hp"] >> conf.hp;
     node["image"] >> conf.image;
@@ -60,7 +61,9 @@ void operator >> (const YAML::Node& node, ConfigSet& conf){
         conf.animation[key] = values;
     }
     */
+/*
 }
+*/
 
 /** Load image file
     @return A pointer to the SDL_Surface surface.
@@ -85,6 +88,7 @@ SDL_Surface* YLoader::LoadImage( std::string filename )
     return optimizedImage;
 }
 
+/*
 bool YLoader::LoadConfig( std::string filename, vector< ConfigSet > *pvec )
 {
    try{   	    
@@ -112,3 +116,4 @@ bool YLoader::LoadConfig( std::string filename, vector< ConfigSet > *pvec )
     }        
     return true;    
 }
+*/

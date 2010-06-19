@@ -35,7 +35,7 @@ void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 	}
 	 
     
-    if( !temp->Create("Reimu") ){
+    if( !temp->Create() ){
         delete temp;
         return;
     }
@@ -52,6 +52,7 @@ void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
     AddUnit( temp );
     
     if(um_ID == PLAYER)
+    	temp->setPlayer(true);
         um_player = temp;
     
     return;

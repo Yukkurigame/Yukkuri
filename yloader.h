@@ -15,8 +15,8 @@ using std::map;
 
 #include "SDL/SDL_image.h"
 #include "Graphics.h"
-#include"yaml.h"
-#include "ConfigTypes.h"
+//#include"yaml.h"
+//#include "ConfigTypes.h"
 
 class YLoader
 {
@@ -24,7 +24,7 @@ class YLoader
         static YLoader loader;
         SDL_Surface* LoadImage( std::string );
         
-        bool LoadConfig( std::string filename, vector< ConfigSet > *pvec );
+        //bool LoadConfig( std::string filename, vector< ConfigSet > *pvec );
         
         
 };

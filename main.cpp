@@ -24,13 +24,13 @@ void Yukkuri::AdditionalInit()
 {
     //map.Init("map.map");
     cout << "Additional Init" << endl;
-    Config::conf.LoadEntities();
-    Config::conf.LoadAll( "entity" );
-    units.CreateUnit( PLAYER, 0, 0 );
-    YCamera::CameraControl.SetTarget( units.GetPlayer()->getUnitpX(), units.GetPlayer()->getUnitpY());
+    //Config::conf.LoadEntities();
+    LuaConfig::conf.LoadAll( "entity" );
     for( int i=0; i < ( rand() % 20 ); i++){
         units.CreateUnit( ENTITY, 2, 2 );
     }
+    units.CreateUnit( PLAYER, 0, 0 );
+    YCamera::CameraControl.SetTarget( units.GetPlayer()->getUnitpX(), units.GetPlayer()->getUnitpY());
 }
  
 void Yukkuri::Think( const int& iElapsedTime )

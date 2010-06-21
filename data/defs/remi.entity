@@ -15,11 +15,11 @@
         up: [0, 1]
     height: 69
     hp: 10.0
-    image: remi_0.png
+    image: remi_1.png
     imagecols: 1
     imagerows: 1
     meeting: 2.2
     name: Remi
     predator: true
     speed: 80
-    width: 80
+    width: 111

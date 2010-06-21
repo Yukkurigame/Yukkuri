@@ -26,7 +26,7 @@ void Yukkuri::AdditionalInit()
     cout << "Additional Init" << endl;
     //Config::conf.LoadEntities();
     LuaConfig::conf.LoadAll( "entity" );
-    for( int i=0; i < ( rand() % 20 ); i++){
+    for( int i=0; i < ( rand() % 100 ); i++){
         units.CreateUnit( ENTITY, 2, 2 );
     }
     units.CreateUnit( PLAYER, 0, 0 );

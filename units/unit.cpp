@@ -10,15 +10,17 @@ Unit::Unit()
 
 Unit::~Unit()
 {
+
 }
 
 bool Unit::Create( )
 {
+
 	//FIXME: where is my debug??
-	string name = LuaConfig::conf.getRandom("meeting");
-	cout << name.c_str() << endl;
 	defs = new EntityDefs;
-	LuaConfig::conf.setDefault(name);
+	//FIXME: setdefault with unitname it's bad
+	setUnitName();
+	LuaConfig::conf.setDefault(UnitName);
 	LuaConfig::conf.getValue( "name", defs->Name );
 	LuaConfig::conf.getValue( "image", defs->imageName );
 	LuaConfig::conf.getValue( "height", defs->height );
@@ -33,6 +35,12 @@ void Unit::setUnitType( enum e_unitID t_Unit )
         Type = t_Unit;        
 
     return;
+}
+
+void Unit::setUnitName( )
+{
+	UnitName = LuaConfig::conf.getRandom("meeting");
+	cout << UnitName.c_str() << endl;
 }
 
 void Unit::setUnitX( float x )
@@ -50,9 +58,13 @@ void Unit::setUnitAnim( int num )
     m_iAn = num;
 }
 
-void Unit::setUnitImage( SDL_Surface* image)
+bool Unit::setUnitImage( SDL_Surface* image)
 {
-    m_Img = image;
+	if( image != NULL ){
+		m_Img = image;
+		return true;
+	}
+	return false;
 }
 
 double Unit::dist( Unit* target )

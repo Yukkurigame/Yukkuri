@@ -13,7 +13,7 @@
         rightdown: [0, 1]
         rightup: [0, 1]
         up: [0, 1]
-    height: 69
+    height: 80
     hp: 10.0
     image: marisa_face_0.png
     imagecols: 1
@@ -21,4 +21,4 @@
     meeting: 39.93
     name: Marisa
     speed: 80
-    width: 80
+    width: 90

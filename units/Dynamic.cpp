@@ -3,13 +3,24 @@
 
 DynamicUnit::DynamicUnit()
 {
-	loadAnimation();
+
 }
+
 
 bool DynamicUnit::loadAnimation()
 {
-	//Ололо, если брать возвращаемый бул, то у первого загружаемого юнита пропадает анимация. wtf?
+	std::map < string, std::vector <int> > AnimTmp;
+	//FIXME: setdefault with unitname it's bad
+	LuaConfig::conf.setDefault(UnitName);
 	LuaConfig::conf.getValue( "animation", AnimTmp );
+	copy(AnimTmp["down"].begin(), AnimTmp["down"].begin()+2, Animdef.down);
+	copy(AnimTmp["leftdown"].begin(), AnimTmp["leftdown"].begin()+2, Animdef.leftdown);
+	copy(AnimTmp["left"].begin(), AnimTmp["left"].begin()+2, Animdef.left);
+	copy(AnimTmp["leftup"].begin(), AnimTmp["leftup"].begin()+2, Animdef.leftup);
+	copy(AnimTmp["up"].begin(), AnimTmp["up"].begin()+2, Animdef.up);
+	copy(AnimTmp["right"].begin(), AnimTmp["right"].begin()+2, Animdef.right);
+	copy(AnimTmp["rightdown"].begin(), AnimTmp["rightdown"].begin()+2, Animdef.rightdown);
+	copy(AnimTmp["rightup"].begin(), AnimTmp["rightup"].begin()+2, Animdef.rightup);
 	return true;
 }
 
@@ -30,21 +41,21 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
         float dy = speed * y / l;
         m_fdistance += sqrt( dx * dx + dy * dy );
         if( dx < 0 && dy < 0 ) 			//FUUUU
-            anim = AnimTmp["leftup"];	//UUUUU
+            anim = Animdef.leftup;		//UUUUU
         else if( dx < 0 && dy > 0 ) 	//UUUUU
-            anim = AnimTmp["leftdown"]; //UUUUU
+            anim = Animdef.leftdown;	//UUUUU
         else if( dx > 0 && dy < 0 ) 	//UUUUU
-            anim = AnimTmp["rightup"]; 	//UUUUU
+            anim = Animdef.rightup; 	//UUUUU
         else if( dx > 0 && dy > 0 ) 	//UUUUU
-            anim = AnimTmp["rightdown"];//UUUUU
+            anim = Animdef.rightdown;	//UUUUU
         else if( dy < 0 ) 				//UUUUU
-            anim = AnimTmp["up"]; 		//UUUUU
+            anim = Animdef.up;	 		//UUUUU
         else if( dy > 0 ) 				//UUUUU
-            anim = AnimTmp["down"]; 	//UUUUU
+            anim = Animdef.down;	 	//UUUUU
         else if( dx < 0 ) 				//UUUUU
-            anim = AnimTmp["left"]; 	//UUUUU
+            anim = Animdef.left;	 	//UUUUU
         else if( dx > 0 ) 				//UUUUU
-            anim = AnimTmp["right"];	//UUUUU
+            anim = Animdef.right;		//UUUUU
         setUnitAnim( anim[0] + ( anim[1] > 1 ? (const int)(m_fdistance / m_animdistance) % anim[1] : 0 ));
         m_fX += dx;
         m_fY += dy;        

@@ -15,7 +15,6 @@ using std::map;
 
 #include "SDL/SDL_image.h"
 #include "Graphics.h"
-//#include"yaml.h"
 //#include "ConfigTypes.h"
 
 class YLoader

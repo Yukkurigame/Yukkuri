@@ -32,14 +32,16 @@ struct EntityDefs
 };
 
 //TODO: ororoshenkiroro
-struct Animation
+struct AnimationDefs
 {
 	int down[2];
 	int leftdown[2];
 	int left[2];
 	int leftup[2];
 	int up[2];
+	int rightup[2];
 	int right[2];
+    int rightdown[2];
 };
 
 #endif //YCONFIGTYPES_H

@@ -4,8 +4,8 @@ CC= g++
 VPATH = ./units
 DEFS= $(shell sdl-config --cflags)
 PROGNAME= Yukkuri
-INCLUDES=  -I. -Iunits #-Iyaml/include
-LIBS= $(shell sdl-config --libs) -lSDL_image -lSDL_ttf -Llibs  -llua #-lyamlparcer
+INCLUDES=  -I. -Iunits
+LIBS= $(shell sdl-config --libs) -lSDL_image -lSDL_ttf -Llibs  -llua
 
 
 DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1
@@ -29,14 +29,11 @@ OBJS = $(SRCS:.cpp=.o)
 
 #$*.cpp
 
-all: $(PROGNAME) #yaml
+all: $(PROGNAME)
 
 $(PROGNAME) : $(OBJS)
 	$(CC) $(CFLAGS)  -o $(PROGNAME) $(OBJS) $(LIBS)
 
-#yaml:
-#	cd yaml/src && $(MAKE)
 
 clean:
 	$(rm) $(OBJS) $(PROGNAME)
-	#cd yaml/src && $(MAKE) clean

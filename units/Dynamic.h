@@ -13,15 +13,14 @@ public:
 
 
 protected:
-	std::map < string, std::vector <int> > AnimTmp;
+	AnimationDefs Animdef;
 	bool loadAnimation();
     float m_fdistance;
     const static int m_animdistance = 20;
 
 private:
     //TODO: change in to int[2]
-    std::vector <int> anim;
-
+    int* anim;
 };
 
 #endif //DYNAMIC_UNIT_H

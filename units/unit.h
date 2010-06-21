@@ -20,18 +20,22 @@ class Unit
 public:
     Unit();
     virtual ~Unit();    
-    bool Create( );
-    void setUnitType( enum e_unitID t_Unit );
     virtual void update(const int&) {};
     virtual void moveUnit(  signed int x, signed int y , const int& dt) {};
+
     double dist( Unit* );
 
+    bool Create( );
+    virtual bool loadAnimation( ) { return true; }
+    void setUnitType( enum e_unitID t_Unit );
     void setUnitPos( float x, float y ) { setUnitX( x ); setUnitY( y ); }    
     void setUnitX( float x );
     void setUnitY( float y );
     int getUnitAnim() { return (const int)m_iAn; }
 
     void setUnitAnim( int );
+
+    void setUnitName();
     string getUnitName() { return defs->Name; }
 
     float getUnitX() { return (const float)m_fX; }
@@ -41,7 +45,7 @@ public:
     e_unitID getUnitType() { return Type; }
     
     SDL_Surface* getUnitImage() {return m_Img;}
-    void setUnitImage( SDL_Surface* );
+    bool setUnitImage( SDL_Surface* );
     string getUnitImageName( ) { return defs->imageName;  }
     
     int getUnitWidth() { return defs->width; }
@@ -54,6 +58,7 @@ public:
 
 protected:
     float m_fX, m_fY;
+    string UnitName;
     
 private:
     int m_iAn;

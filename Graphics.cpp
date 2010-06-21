@@ -17,8 +17,8 @@ SDL_Surface* Graphics::LoadImage(string name)
         //Not in cache. Try to load.        
         pImg = YLoader::loader.LoadImage( IMAGEPATH + name );
         if( !pImg){
-            //Not loaded. Load default.
-            pImg = LoadImage( "white.png" );
+            //Not loaded. Break. // Load default.
+            pImg = NULL; //LoadImage( "white.png" );
         }else{
             //Add in cache.
             AddImage( pImg, name);
@@ -73,6 +73,7 @@ SDL_Rect Graphics::GetSDLRect( int startx, int starty, int width, int height )
 
 SDL_Rect* Graphics::GetAnim( string name, int num )
 {
+	//FIXME: Add check for correct index.
     return &Animations[name].at(num);
 }
 

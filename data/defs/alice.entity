@@ -13,9 +13,9 @@
         rightdown: [0, 1]
         rightup: [0, 1]
         up: [0, 1]
-    height: 69
+    height: 74
     hp: 10.0
-    image: alice_0.png
+    image: alice_1.png
     imagecols: 1
     imagerows: 1
     meeting: 10.0

@@ -48,7 +48,7 @@ function getOneFromSeveral( field, config )
         local el =  j / 100.0
         max = max + el
         if ( min < rnd and rnd <= max ) then
-            return "Reimu"
+            return i
         end
     end
 end

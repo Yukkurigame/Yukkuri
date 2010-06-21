@@ -33,14 +33,15 @@ void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
             temp = new Unit();
             break;
 	}
-	 
     
-    if( !temp->Create() ){
+    if( !temp->Create() ||
+    	!temp->loadAnimation() ||
+    	!temp->setUnitImage( Graphics::graph.LoadImage( temp->getUnitImageName( ) ) ) )
+    {
         delete temp;
         return;
     }
-    //cout << "create unit image" << endl;
-    temp->setUnitImage( Graphics::graph.LoadImage( temp->getUnitImageName( ) ) );
+
     //cout << "load unit animation" << endl;
     Graphics::graph.LoadAnimation( temp->getUnitName( ), temp->getUnitImageRows(), 
                                                           temp->getUnitImageCols(), temp->getUnitWidth(), temp->getUnitHeight());

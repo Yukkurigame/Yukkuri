@@ -3,8 +3,33 @@
 local configs = {}
 local default = nil
 
+---function load( filename )
+---    if package.loaded.yaml == nil then require 'yaml' end
+---    print("Load " .. filename)
+---    local file, err = io.open(filename, "r")
+    --- no print on assert. wtf?
+---    if file == nil then
+---        print(err .. ' in ' .. filename)
+---        return
+---    end
+---    local filedata = file:read("*all")    
+---    local yamldata = yaml.load(filedata)
+---    file:close()
+---    for i in ipairs(yamldata) do
+---        if yamldata[i].name == nil then break end
+---        local name = string.lower(yamldata[i].name)
+---        if configs[name] ~= nil then
+---            print("Config with name " .. name .. " already loaded. Skipped.\n")
+---            break
+---        end
+---        if default == nil then
+---            default = name
+---        end
+---        configs[string.lower(name)] = yamldata[i]
+---    end    
+---end
+
 function load( filename )
-    if package.loaded.yaml == nil then require 'yaml' end
     print("Load " .. filename)
     local file, err = io.open(filename, "r")
     --- no print on assert. wtf?
@@ -12,12 +37,12 @@ function load( filename )
         print(err .. ' in ' .. filename)
         return
     end
-    local filedata = file:read("*all")    
-    local yamldata = yaml.load(filedata)
-    file:close()
-    for i in ipairs(yamldata) do
-        if yamldata[i].name == nil then break end
-        local name = string.lower(yamldata[i].name)
+    local filedata = file:read("*all")
+    local data = assert(loadstring('return ' .. filedata))()
+    file:close()    
+    for i in pairs(data) do         
+        if data[i].name == nil then break end
+        local name = string.lower(data[i].name)
         if configs[name] ~= nil then
             print("Config with name " .. name .. " already loaded. Skipped.\n")
             break
@@ -25,8 +50,8 @@ function load( filename )
         if default == nil then
             default = name
         end
-        configs[string.lower(name)] = yamldata[i]
-    end    
+        configs[string.lower(name)] = data[i]
+    end
 end
 
 function get( value, config )

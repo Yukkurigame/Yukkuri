@@ -19,7 +19,6 @@ protected:
     const static int m_animdistance = 20;
 
 private:
-    //TODO: change in to int[2]
     int* anim;
 };
 

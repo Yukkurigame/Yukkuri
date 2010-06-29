@@ -10,9 +10,8 @@ DynamicUnit::DynamicUnit()
 bool DynamicUnit::loadAnimation()
 {
 	std::map < string, std::vector <int> > AnimTmp;
-	//FIXME: setdefault with unitname it's bad
-	LuaConfig::conf.setDefault(UnitName);
-	LuaConfig::conf.getValue( "animation", AnimTmp );
+	//FIXME: it's so long
+	LuaConfig::conf.getValue( "animation", UnitName, "entity", AnimTmp );
 	copy(AnimTmp["down"].begin(), AnimTmp["down"].begin()+2, Animdef.down);
 	copy(AnimTmp["leftdown"].begin(), AnimTmp["leftdown"].begin()+2, Animdef.leftdown);
 	copy(AnimTmp["left"].begin(), AnimTmp["left"].begin()+2, Animdef.left);

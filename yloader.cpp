@@ -1,6 +1,7 @@
-#include "yloader.h"
+/*#include "yloader.h"
 
 YLoader YLoader::loader; //global is bad, yes
+*/
 
 /*
 void operator >> (const YAML::Node& node, ConfigSet& conf){
@@ -68,6 +69,7 @@ void operator >> (const YAML::Node& node, ConfigSet& conf){
 /** Load image file
     @return A pointer to the SDL_Surface surface.
 **/
+/*
 SDL_Surface* YLoader::LoadImage( std::string filename )
 {
     SDL_Surface* loadedImage = NULL;
@@ -87,6 +89,7 @@ SDL_Surface* YLoader::LoadImage( std::string filename )
     }
     return optimizedImage;
 }
+*/
 
 /*
 bool YLoader::LoadConfig( std::string filename, vector< ConfigSet > *pvec )

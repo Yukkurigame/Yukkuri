@@ -14,7 +14,9 @@
 #define MAX_CYCLES_PER_FRAME (MAXIMUM_FRAME_RATE / MINIMUM_FRAME_RATE)
 
 #define IMAGEPATH "data/images/"
+#define DEFAULT_IMAGE "white.png"
 
 #define DAY_LENGTH 100000
+
 
 #endif //YDEFINE_H

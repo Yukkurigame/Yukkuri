@@ -16,17 +16,18 @@ Unit::~Unit()
 bool Unit::Create( )
 {
 
+	setUnitName();
+
 	//FIXME: where is my debug??
 	defs = new EntityDefs;
-	//FIXME: setdefault with unitname it's bad
-	setUnitName();
-	LuaConfig::conf.setDefault(UnitName);
-	LuaConfig::conf.getValue( "name", defs->Name );
-	LuaConfig::conf.getValue( "image", defs->imageName );
-	LuaConfig::conf.getValue( "height", defs->height );
-	LuaConfig::conf.getValue( "width", defs->width );
-	LuaConfig::conf.getValue( "imagecols", defs->imagecols );
-	LuaConfig::conf.getValue( "imagerows", defs->imagerows );
+	//FIXME: It,s so long
+	string type = "entity";
+	LuaConfig::conf.getValue( "name", UnitName, type, defs->Name );
+	LuaConfig::conf.getValue( "image", UnitName, type, defs->imageName );
+	LuaConfig::conf.getValue( "height", UnitName, type, defs->height );
+	LuaConfig::conf.getValue( "width", UnitName, type, defs->width );
+	LuaConfig::conf.getValue( "imagecols", UnitName, type, defs->imagecols );
+	LuaConfig::conf.getValue( "imagerows", UnitName, type, defs->imagerows );
     return true;
 }
 
@@ -39,8 +40,7 @@ void Unit::setUnitType( enum e_unitID t_Unit )
 
 void Unit::setUnitName( )
 {
-	UnitName = LuaConfig::conf.getRandom("meeting");
-	cout << UnitName.c_str() << endl;
+	UnitName = LuaConfig::conf.getRandom("meeting", "entity");
 }
 
 void Unit::setUnitX( float x )
@@ -58,7 +58,7 @@ void Unit::setUnitAnim( int num )
     m_iAn = num;
 }
 
-bool Unit::setUnitImage( SDL_Surface* image)
+bool Unit::setUnitImage( Texture* image)
 {
 	if( image != NULL ){
 		m_Img = image;

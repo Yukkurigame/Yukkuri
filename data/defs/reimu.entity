@@ -1,4 +1,4 @@
-{EntityDef = {
+{Entity = {
 	bloodcolor = {170, 55, 55},
 	damage = 3.0,
 	animation = {
@@ -14,7 +14,7 @@
 		rightup = {28, 4},
 		up = {4, 4}
 	},
-	height = 69,
+	height = 70,
 	hp = 10.0,
 	image = "reimu.png",
 	imagecols = 4,

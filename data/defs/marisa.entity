@@ -1,4 +1,4 @@
-{EntityDef = {
+{Entity = {
 	bloodcolor = {50, 50, 50},
 	damage = 3.0,
 	animation = {

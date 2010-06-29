@@ -8,8 +8,7 @@ using std::string;
 using std::cout;
 using std::endl;
 
-#include "SDL/SDL_image.h"
-//#include "ConfigManager.h"
+#include "GraphicsTypes.h" //FIXME: disable
 #include "Luaconfig.h"
 #include "ConfigTypes.h"
 
@@ -44,9 +43,11 @@ public:
     float* getUnitpY() { return &m_fY; }
     e_unitID getUnitType() { return Type; }
     
-    SDL_Surface* getUnitImage() {return m_Img;}
-    bool setUnitImage( SDL_Surface* );
+    //как-то это не хорошо, почему картинка хранится в юните? структ какой придумать что ли.
+    Texture* getUnitImage() {return m_Img;}
+    bool setUnitImage( Texture* );
     string getUnitImageName( ) { return defs->imageName;  }
+
     
     int getUnitWidth() { return defs->width; }
     int getUnitHeight() { return defs->height; }
@@ -64,7 +65,7 @@ private:
     int m_iAn;
     bool player;
     e_unitID Type;
-    SDL_Surface* m_Img;
+    Texture* m_Img;
     EntityDefs* defs;
         
 };

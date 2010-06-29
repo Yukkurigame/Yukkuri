@@ -9,22 +9,19 @@ using std::endl;
 #include <string>
 using std::string;
 
-#include "SDL/SDL.h" 
+#include "SDL/SDL.h"
 #include "SDL/SDL_ttf.h"
+#include "Graphics.h"
 
 /** The base engine class. **/
 class CEngine  
 {
 private:
-    /** Last iteration's tick value **/
+
+	/** Last iteration's tick value **/
     long m_lTick;
     long m_lLastTick;
     
-    /** Window width **/
-    //int m_iWidth;
-    /** Window height **/
-    //int m_iHeight;
- 
     /** Has quit been called? **/
     bool m_bQuit;
  
@@ -70,6 +67,7 @@ protected:
  
     void HandleInput();
     void DisplayFPS();
+
  
 public:
     CEngine();
@@ -88,7 +86,7 @@ public:
     /** OVERLOADED - All the games rendering. 
         @param pDestSurface The main screen surface.
     **/
-    virtual void Render        ( SDL_Surface* pDestSurface ) {}
+    virtual void Render        (  ) {}
  
     /** OVERLOADED - Allocated data that should be cleaned up. **/
     virtual void End        () {}
@@ -160,6 +158,7 @@ public:
     //SDL_Rect GetTileClip( SDL_Surface*, int, int );
 
     // Screen Core         int GetFPS();
+    char* GetFPSText();
     int getScreenW() { return WWIDTH; }
     int getScreenH() { return WHEIGHT; }
 

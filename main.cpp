@@ -7,7 +7,6 @@
 int main(int argc, char* argv[])  // <- this must match exactly, since SDL rewrites it
 {
     Yukkuri Engine;
-    //print_d( "Strat engine" );
     
     Engine.Init();
  
@@ -24,6 +23,7 @@ void Yukkuri::AdditionalInit()
 {
     //map.Init("map.map");
     cout << "Additional Init" << endl;
+    Graphics::graph.LoadTTFont("Monospace", 12);
     //Config::conf.LoadEntities();
     LuaConfig::conf.LoadAll( "entity" );
     for( int i=0; i < ( rand() % 100 ); i++){
@@ -45,13 +45,19 @@ void Yukkuri::Think( const int& iElapsedTime )
     
 }
  
-void Yukkuri::Render( SDL_Surface* pDestSurface )
+void Yukkuri::Render( )
 {
+	Graphics::graph.CleanGLScene();
      // Display slick graphics on screen
-    units.DrawUnits( pDestSurface, YCamera::CameraControl.GetX(), YCamera::CameraControl.GetY() );
+    units.DrawUnits( YCamera::CameraControl.GetX(), YCamera::CameraControl.GetY() );
     
+    //cout << GetFPS() << endl;
     //drawing night last
-    daytime.draw( pDestSurface );
+    //daytime.draw( pDestSurface );
+
+    //Draw to screen
+    Graphics::graph.PrintText("Monospace", 5, 24, GetFPSText());
+    Graphics::graph.DrawGLScene( );
 }
  
 void Yukkuri::KeyDown(const int& iKeyEnum)

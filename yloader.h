@@ -1,4 +1,4 @@
-#ifndef YUKKURILOADER_H
+/*#ifndef YUKKURILOADER_H
 #define YUKKURILOADER_H
 
 #include <cstdlib>
@@ -15,8 +15,8 @@ using std::map;
 
 #include "SDL/SDL_image.h"
 #include "Graphics.h"
-//#include "ConfigTypes.h"
 
+//TODO: Он по моему не нужен.
 class YLoader
 {
     public:
@@ -29,3 +29,4 @@ class YLoader
 };
 
 #endif //YUKKURILOADER_H
+*/

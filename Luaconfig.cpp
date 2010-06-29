@@ -27,7 +27,7 @@ LuaStackChecker::~LuaStackChecker()
 
 bool LuaConfig::LoadAll( string type )
 {
-	cout << "Loading " << type.c_str() << endl;
+	pdbg(3, "Loading " + type + "\n");
 	string dirname = "data/defs/";
     DIR *dp;
     struct dirent *ep;
@@ -45,13 +45,15 @@ bool LuaConfig::LoadAll( string type )
         }
         closedir(dp);
     }else{
-        cout << "[FAIL]" << endl;
-        cout << "bad directory" << endl;
+    	pdbg(3, "\tFAIL]\n");
+    	pdbg(3, "Bad directory.\n");
         return false;
     }
-    cout << " done." << endl;
-    cout << "Loaded " << success << " from " << files << " config files." << endl;
-    return true;
+    pdbg(3, "Done.\n");
+    //FIXME: debug print
+    char dbg[50];
+    sprintf(dbg, "Loaded %d from %d config files.\n", success, files);
+    pdbg(3, dbg);
 	return true;
 }
 
@@ -59,7 +61,7 @@ LuaConfig::LuaConfig( )
 {
 	Lconf = lua_open();
     luaL_openlibs(Lconf);
-    luaL_loadfile(Lconf, "data/scripts/yamlconf.lua"); //TODO add SCRIPTPATH
+    luaL_loadfile(Lconf, "data/scripts/configs.lua"); //TODO add SCRIPTPATH
     lua_pcall( Lconf, 0, LUA_MULTRET, 0 );
 }
 
@@ -72,18 +74,6 @@ bool LuaConfig::OpenConfig( std::string filename )
 	//Load config file from yaml
 	lua_getfield( Lconf, LUA_GLOBALSINDEX, "load" );
 	lua_pushstring( Lconf, filename.c_str() );
-	stat = lua_pcall( Lconf, 1, 0, 0 );
-	if( stat )
-			return false;
-	return true;
-}
-
-bool LuaConfig::setDefault( std::string name )
-{
-	LuaStackChecker sc(Lconf, __FILE__, __LINE__);
-	int stat;
-	lua_getfield( Lconf, LUA_GLOBALSINDEX, "setDefault" );
-	lua_pushstring( Lconf, name.c_str() );
 	stat = lua_pcall( Lconf, 1, 0, 0 );
 	if( stat )
 			return false;
@@ -103,12 +93,13 @@ bool LuaConfig::execFunction( std::string function, std::string param )
 	return true;
 }
 
-string LuaConfig::getRandom( string field )
+string LuaConfig::getRandom( string field, string config )
 {
 	LuaStackChecker sc( Lconf, __FILE__, __LINE__ );
 	lua_getfield( Lconf, LUA_GLOBALSINDEX, "getOneFromSeveral" );
 	lua_pushstring( Lconf, field.c_str() );
-	lua_call( Lconf, 1, 1 );
+	lua_pushstring( Lconf, config.c_str() );
+	lua_call( Lconf, 2, 1 );
 	string ret = "";
 	if( lua_isstring(Lconf, -1) ){
 		ret = lua_tostring(Lconf, -1);

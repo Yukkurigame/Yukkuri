@@ -42,8 +42,8 @@ void DayTime::update( const int& dt )
 }
 
 void DayTime::draw( SDL_Surface* pDestSurface ){
-	if( ldark != dark )
-        Graphics::graph.SetAlpha( sfield, dark );
-    Graphics::graph.ApplySurface( 0, 0, sfield, pDestSurface, NULL );
+	//if( ldark != dark )
+        //Graphics::graph.SetAlpha( sfield, dark );
+    //Graphics::graph.ApplySurface( 0, 0, sfield, pDestSurface, NULL );
 	ldark = dark;
 }

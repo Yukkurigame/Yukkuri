@@ -20,10 +20,7 @@ using std::string;
 #include <vector>
 #include <map>
 
-#include <iostream>
-using std::cout;
-using std::endl;
-
+#include "debug.h"
 
 class LuaStackChecker
 {
@@ -50,10 +47,9 @@ public:
 	bool OpenConfig( string );
 	bool LoadAll( string );
 
-	bool setDefault( string );
 	bool execFunction( string, string );
 
-	string getRandom( string field );
+	string getRandom( string field, string config );
 
 	template<typename T>
 	bool getValue( lua_State* L, int index, T& ret);
@@ -115,12 +111,14 @@ public:
 	}
 
 	template<typename T>
-	bool getValue( string field, T& ret)
+	bool getValue( string field, string subconfig, string config, T& ret)
 	{
 		LuaStackChecker sc( Lconf, __FILE__, __LINE__ );
 		lua_getfield( Lconf, LUA_GLOBALSINDEX, "get" );
 		lua_pushstring( Lconf, field.c_str() );
-		lua_call( Lconf, 1, 1 );
+		lua_pushstring( Lconf, subconfig.c_str() );
+		lua_pushstring( Lconf, config.c_str() );
+		lua_call( Lconf, 3, 1 );
 		bool res = getValue( Lconf, -1, ret );
 		lua_pop( Lconf, 1 );
 		return res;

@@ -6,20 +6,19 @@ using std::vector;
 
 #include "engine.h"
 #include "unitmanager.h"
-#include "ConfigManager.h"
 //#include "map.h"
 #include "Camera.h"
 //#include "SDL_getenv.h"
 #include "daytime.h"
 
-#define pixel_Loc(A)    ( (A * 64) + 12 )
+//#define pixel_Loc(A)    ( (A * 64) + 12 )
 
 class Yukkuri: public CEngine
 {
 public:
     void AdditionalInit ();
     void Think        ( const int& iElapsedTime );
-    void Render        ( SDL_Surface* pDestSurface );
+    void Render        (  );
  
     void KeyUp          (const int& iKeyEnum);
     void KeyDown        (const int& iKeyEnum);
@@ -47,15 +46,13 @@ public:
  
     void End();    
 
-    void drawMap( SDL_Surface* Surf_Display, int MapX, int MapY );
+    //void drawMap( SDL_Surface* Surf_Display, int MapX, int MapY );
 
 protected:
-    SDL_Surface* objects_sfc;
+    //SDL_Surface* objects_sfc;
 private:
     UnitManager units;
     DayTime daytime;
-    
-    //Map map;
 };
 
 #endif //YUKKURI_H

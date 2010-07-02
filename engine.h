@@ -9,8 +9,7 @@ using std::endl;
 #include <string>
 using std::string;
 
-#include "SDL/SDL.h"
-#include "SDL/SDL_ttf.h"
+//#include "SDL/SDL.h"
 #include "Graphics.h"
 
 /** The base engine class. **/
@@ -28,9 +27,6 @@ private:
     /** The title of the window **/
     const char* m_czTitle;
  
-    /** Screen surface **/
-    SDL_Surface* m_pScreen;
- 
     /** Is the window minimized? **/
     bool m_bMinimized;
  
@@ -44,18 +40,9 @@ private:
 	/** Stores the last calculated frame rate. **/
 	int m_iCurrentFPS;
 	
-	/** FPS Surface **/
-	SDL_Surface* m_pFPSDisp;
-	
-	/** FPS Font **/
-	TTF_Font* m_pFPSFont;
-	
-	/** FPS Surface **/
+	/** FPS Text **/
 	char* m_sFPStext;
 	
-	/** FPS Display Toggle **/
-	bool m_bFPStoggle;
-
    /** SDL joystick **/	
 	SDL_Joystick *joystick;
 	
@@ -64,10 +51,8 @@ protected:
     void DoRender();
  
     void SetSize();
- 
-    void HandleInput();
-    void DisplayFPS();
 
+    void HandleInput();
  
 public:
     CEngine();
@@ -153,9 +138,6 @@ public:
  
     void        SetTitle( const char* czTitle );
     const char*     GetTitle();
-
-    // Graphics Core    SDL_Surface* GetSurface();
-    //SDL_Rect GetTileClip( SDL_Surface*, int, int );
 
     // Screen Core         int GetFPS();
     char* GetFPSText();

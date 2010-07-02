@@ -2,6 +2,7 @@
 #define DYNAMIC_UNIT_H
 
 #include "unit.h"
+#include "stdlib.h"
 #include <map>
 #include <vector>
 

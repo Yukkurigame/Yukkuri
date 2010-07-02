@@ -22,6 +22,10 @@ using std::string;
 
 #include "debug.h"
 
+//TODO: Create right execute function,
+//bool ef( string function, vector<string> params, T& ret);
+//FIXME: already have prototype, just overcome fucking laziness and write it!!
+
 class LuaStackChecker
 {
 public:
@@ -50,6 +54,9 @@ public:
 	bool execFunction( string, string );
 
 	string getRandom( string field, string config );
+
+	bool getSubconfigs( string config, std::vector< string >& ret );
+
 
 	template<typename T>
 	bool getValue( lua_State* L, int index, T& ret);

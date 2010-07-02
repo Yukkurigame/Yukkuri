@@ -1,0 +1,34 @@
+{
+	"Widget",
+	{
+		name = "time",
+		type = 2,
+		x = 530,
+		y = 0,
+		width = 263,
+		height = 60,
+		textx = 40,
+		texty = 40,
+		fontsize = 26,
+		bg = "timebg.png",
+		font = "DejaVuSans"
+	},
+	{
+		name = "fps",
+		type = 2,
+		textx = 10,
+		texty = 30,
+		fontsize = 20,
+		font = "DejaVuSans"
+	},
+	{
+		name = "test",
+		type = 0,
+		x = 0,
+		y = 0,
+		width = 263,
+		height = 60,
+		bg = "test.png",
+		children = {}
+	}
+}

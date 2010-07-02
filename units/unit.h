@@ -8,7 +8,7 @@ using std::string;
 using std::cout;
 using std::endl;
 
-#include "GraphicsTypes.h" //FIXME: disable
+#include "GraphicsTypes.h" //TODO: disable
 #include "Luaconfig.h"
 #include "ConfigTypes.h"
 
@@ -44,7 +44,7 @@ public:
     e_unitID getUnitType() { return Type; }
     
     //как-то это не хорошо, почему картинка хранится в юните? структ какой придумать что ли.
-    Texture* getUnitImage() {return m_Img;}
+    inline Texture* getUnitImage() {return m_Img;}
     bool setUnitImage( Texture* );
     string getUnitImageName( ) { return defs->imageName;  }
 

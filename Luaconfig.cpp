@@ -25,38 +25,6 @@ LuaStackChecker::~LuaStackChecker()
 	}
 }
 
-bool LuaConfig::LoadAll( string type )
-{
-	pdbg(3, "Loading " + type + "\n");
-	string dirname = "data/defs/";
-    DIR *dp;
-    struct dirent *ep;
-    dp = opendir (dirname.c_str());
-    int success = 0;
-    int files = 0;
-    if( dp != NULL ){
-        while ( (ep = readdir( dp ) ) != NULL) {
-            string fname = string(ep->d_name);
-            if(fname.substr(fname.find_last_of(".") + 1) == "entity"){
-            	files++;
-                if ( OpenConfig( dirname + fname ) )
-                	success++;
-            }
-        }
-        closedir(dp);
-    }else{
-    	pdbg(3, "\tFAIL]\n");
-    	pdbg(3, "Bad directory.\n");
-        return false;
-    }
-    pdbg(3, "Done.\n");
-    //FIXME: debug print
-    char dbg[50];
-    sprintf(dbg, "Loaded %d from %d config files.\n", success, files);
-    pdbg(3, dbg);
-	return true;
-}
-
 LuaConfig::LuaConfig( )
 {
 	Lconf = lua_open();
@@ -65,8 +33,43 @@ LuaConfig::LuaConfig( )
     lua_pcall( Lconf, 0, LUA_MULTRET, 0 );
 }
 
+LuaConfig::~LuaConfig( )
+{
+	lua_close(Lconf);
+}
 
-//TODO: Create execute function
+bool LuaConfig::LoadAll( string type )
+{
+	debug(3, "Loading " + type + "\n");
+	string dirname = "data/defs/"; //TODO: DEFSPATH
+    DIR *dp;
+    struct dirent *ep;
+    dp = opendir (dirname.c_str());
+    int success = 0;
+    int files = 0;
+    if( dp != NULL ){
+        while ( (ep = readdir( dp ) ) != NULL) {
+            string fname = string(ep->d_name);
+            if(fname.substr(fname.find_last_of(".") + 1) == type){
+            	files++;
+                if ( OpenConfig( dirname + fname ) )
+                	success++;
+            }
+        }
+        closedir(dp);
+    }else{
+    	debug(3, "\tFAIL\n");
+    	debug(3, "Bad directory.\n");
+        return false;
+    }
+    //pdbg(3, "Done.\n");
+    //FIXME: debug print
+    char dbg[38];
+    sprintf(dbg, "Loaded %d from %d config files.\n", success, files);
+    debug(3, dbg);
+	return true;
+}
+
 bool LuaConfig::OpenConfig( std::string filename )
 {
 	LuaStackChecker sc(Lconf, __FILE__, __LINE__);
@@ -80,6 +83,7 @@ bool LuaConfig::OpenConfig( std::string filename )
 	return true;
 }
 
+//TODO: Create right execute function
 bool LuaConfig::execFunction( std::string function, std::string param )
 {
 	LuaStackChecker sc(Lconf, __FILE__, __LINE__);
@@ -108,16 +112,31 @@ string LuaConfig::getRandom( string field, string config )
 	return ret;
 }
 
-LuaConfig::~LuaConfig( )
+bool LuaConfig::getSubconfigs( string config, std::vector< string >& ret )
 {
-	lua_close(Lconf);
+	LuaStackChecker sc( Lconf, __FILE__, __LINE__ );
+	lua_getfield( Lconf, LUA_GLOBALSINDEX, "getSubconfigsList" );
+	lua_pushstring( Lconf, config.c_str() );
+	lua_call( Lconf, 1, 1 );
+	bool res = getValue( Lconf, -1, ret );
+	lua_pop( Lconf, 1 );
+	return res;
 }
-
 
 template<> bool LuaConfig::getValue( lua_State* L, int index, bool& ret)
 {
 	if( lua_isboolean(L, index) ){
 		ret = lua_toboolean(L, index) != 0;
+		return true;
+	}
+	return false;
+}
+
+//FIXME: Но зачем
+template<> bool LuaConfig::getValue( lua_State* L, int index, float& ret)
+{
+	if( lua_isnumber(L, index) ){
+		ret = lua_tonumber(L, index);
 		return true;
 	}
 	return false;

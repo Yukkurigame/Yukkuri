@@ -2,8 +2,9 @@
 #define TIMEOFDAY_H
 
 #include <math.h>
-#include <SDL/SDL.h> //for SDL_Rect
 #include "Graphics.h"
+#include "Interface.h"	//FUUUU
+#include "Widgets.h"		//UUUUU
 #include "Define.h"
 
 class DayTime
@@ -12,15 +13,18 @@ class DayTime
         DayTime();
         ~DayTime();
         void update( const int& dt );
-        void draw( SDL_Surface* pDestSurface );
-        int getDay( ){ return Day; }        
+        void draw( );
+        int getDay( ){ return Day; }
+        void loadInterface();
         
     private:
+        Widget*	text;
+
         int Day;
         float time;
         bool days_update;
-        SDL_Surface* sfield;
-        int dark, ldark;        
+        Sprite* sfield;
+        int dark, ldark;
 };
 
 #endif //TIMEOFDAY_H

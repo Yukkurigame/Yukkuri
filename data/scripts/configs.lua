@@ -11,14 +11,18 @@ function load( filename )
         return
     end
     local filedata = file:read("*all")
-    local data = assert(loadstring('return ' .. filedata))()
-    file:close()    
-    for i,j in pairs(data) do
-        ctype = string.lower(i)
+    local data = assert(loadstring('return ' .. filedata))()    
+    file:close()
+    ctype = string.lower(data[1])
+    table.remove(data,1)
+    for i,j in ipairs(data) do
         if configs[ctype] == nil then
             configs[ctype] = {}
         end
-        if j.name == nil then break end
+        if j.name == nil then
+            print( i .. " in " .. filename ..  ": no name given. Skipped.")
+            break        
+        end        
         local name = string.lower(j.name)
         if configs[ctype][name] ~= nil then
             print("Config with name " .. name .. " already loaded. Skipped.\n")
@@ -34,8 +38,16 @@ function get( value, subconfig, config )
         print("Config " .. ctype .. " does not exist")  
         return
     end
-    ret = configs[ctype][string.lower(subconfig)][value]        
+    ret = configs[ctype][string.lower(subconfig)][value]
     return ret
+end
+
+function getSubconfigsList( config )
+    t = {}
+    for i,j in pairs(configs[string.lower(config)]) do
+        table.insert(t, i)        
+    end
+    return t
 end
 
 function getOneFromSeveral( field, config )
@@ -59,11 +71,3 @@ function getOneFromSeveral( field, config )
         end
     end
 end
-
-
----function setDefault( value )    
----    if configs[string.lower(value)] ~= nil then    
----        default = string.lower(value)
----    end
----end
-

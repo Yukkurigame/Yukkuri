@@ -23,12 +23,22 @@ void Yukkuri::AdditionalInit()
 {
     //map.Init("map.map");
     cout << "Additional Init" << endl;
-    Graphics::graph.LoadTTFont("Monospace", 12);
-    //Config::conf.LoadEntities();
+
+    //Graphics::graph.LoadTTFont("DejaVuSans", LOADEDFONTSIZE);
+    Graphics::graph.LoadAllTTFonts( LOADEDFONTSIZE );
+
+    LuaConfig::conf.LoadAll( "widget" );
+    UI::yui.LoadAllWidgets( );
+
+    daytime.loadInterface();
+
     LuaConfig::conf.LoadAll( "entity" );
+
     for( int i=0; i < ( rand() % 100 ); i++){
         units.CreateUnit( ENTITY, 2, 2 );
     }
+
+    //FIXME: input blocked if player loads first
     units.CreateUnit( PLAYER, 0, 0 );
     YCamera::CameraControl.SetTarget( units.GetPlayer()->getUnitpX(), units.GetPlayer()->getUnitpY());
 }
@@ -51,12 +61,18 @@ void Yukkuri::Render( )
      // Display slick graphics on screen
     units.DrawUnits( YCamera::CameraControl.GetX(), YCamera::CameraControl.GetY() );
     
-    //cout << GetFPS() << endl;
+
     //drawing night last
-    //daytime.draw( pDestSurface );
+    daytime.draw( );
+
+
+    UI::yui.GetWidget("fps")->setText(GetFPSText());
+
+    //draw interface
+    UI::yui.DrawWidgets( );
+
 
     //Draw to screen
-    Graphics::graph.PrintText("Monospace", 5, 24, GetFPSText());
     Graphics::graph.DrawGLScene( );
 }
  

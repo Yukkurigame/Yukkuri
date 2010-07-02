@@ -4,12 +4,12 @@ CC= g++
 VPATH = ./units ./graphics
 DEFS= $(shell sdl-config --cflags)
 PROGNAME= Yukkuri
-INCLUDES=  -I. -Iunits -Igraphics
-LIBS= $(shell sdl-config --libs) -lSDL_image -lSDL_ttf -lGL -Llibs  -llua
+INCLUDES=  -I. -Iunits -Igraphics -I/usr/local/include/freetype2
+LIBS= $(shell sdl-config --libs) -lSDL_image -lSDL_ttf -framework OpenGL -Llibs  -llua -lfreetype
 
 
 DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1
-CFLAGS= -g -Wall $(DEFINES)
+CFLAGS= -g -Wall $(DEFINES) 
 
 
 
@@ -39,3 +39,4 @@ $(PROGNAME) : $(OBJS)
 
 clean:
 	$(rm) $(OBJS) $(PROGNAME)
+	

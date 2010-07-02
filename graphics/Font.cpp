@@ -22,14 +22,14 @@ void make_dlist( FT_Face face, int ch, GLuint list_base, GLuint * tex_base )
 
 	//Load the Glyph for our character.
 	if( FT_Load_Glyph( face, FT_Get_Char_Index( face, ch ), FT_LOAD_DEFAULT ) ){
-		pdbg(4, "FT_Load_Glyph failed\n");
+		debug(4, "FT_Load_Glyph failed\n");
 		return;
 	}
 
 	//Move the face's glyph into a Glyph object.
     FT_Glyph glyph;
     if(FT_Get_Glyph( face->glyph, &glyph )){
-    	pdbg(4, "FT_Get_Glyph failed\n");
+    	debug(4, "FT_Get_Glyph failed\n");
     	return;
     }
 
@@ -137,12 +137,7 @@ void font_data::clean() {
 
 bool font_data::load(const char * fname, unsigned int h) {
 
-	//Как же это напряжно
-	//FIXME: cruve
-	string dbg;
-	dbg = "Loading font ";
-	dbg += fname;
-	pdbg(3, dbg+ "\n");
+	debug(3, "Loading font " +  (string)fname + "\n");
 
 	//cout << "Loading " << fname << " font." << endl;
 
@@ -154,9 +149,7 @@ bool font_data::load(const char * fname, unsigned int h) {
 	//Create and initilize a freetype font library.
 	FT_Library library;
 	if( FT_Init_FreeType( &library ) ){
-		dbg = "FT_Init_FreeType failed in ";
-		dbg += fname;
-		pdbg(3, dbg + "\n");
+		debug(3, "FT_Init_FreeType failed in " +  (string)fname + "\n");
 		return false;
 	}
 
@@ -168,10 +161,7 @@ bool font_data::load(const char * fname, unsigned int h) {
 	//Of all the places where the code might die, this is the most likely,
 	//as FT_New_Face will die if the font file does not exist or is somehow broken.
 	if( FT_New_Face( library, fname, 0, &face ) ){
-		dbg = "FT_New_Face failed in ";
-		dbg += fname;
-		dbg += " (there is probably a problem with your font file)\n";
-		pdbg(3, dbg);
+		debug( 3, "FT_New_Face failed in " + (string)fname + " (there is probably a problem with your font file)\n" );
 		return false;
 	}
 

@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <string>
 
-inline void pdbg( int level, std::string txt )
+inline void debug( int level, std::string txt )
 {
 #ifdef DEBUG
 	if( level <= DEBUGLEVEL )

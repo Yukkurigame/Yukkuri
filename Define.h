@@ -16,7 +16,9 @@
 #define IMAGEPATH "data/images/"
 #define DEFAULT_IMAGE "white.png"
 
-#define DAY_LENGTH 100000
+#define DAY_LENGTH 20
+
+#define LOADEDFONTSIZE 30
 
 
 #endif //YDEFINE_H

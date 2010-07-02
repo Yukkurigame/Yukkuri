@@ -6,13 +6,9 @@ CEngine::CEngine()
 	m_lLastTick = 0;
 	m_czTitle = 0;
  
-	m_pScreen = 0;
-	m_pFPSDisp = 0;
- 
 	m_iFPSTickCounter = 0;
 	m_iFPSCounter = 0;
 	m_iCurrentFPS = 0;
-	m_bFPStoggle = true;
 	m_sFPStext = new char[16];
  
 	m_bMinimized = false;
@@ -21,21 +17,17 @@ CEngine::CEngine()
 /** Destructor. **/
 CEngine::~CEngine()
 {
-	TTF_CloseFont( m_pFPSFont );
-	TTF_Quit();
 	SDL_Quit();
 }
  
 /** Sets the height and width of the window.
-	@param iWidth The width of the window
-	@param iHeight The height of the window
+ * 	Dummy
 **/
 void CEngine::SetSize()
 {
-	//putenv("SDL_VIDEODRIVER=fbcon") ;
-	m_pScreen = SDL_SetVideoMode( WWIDTH, WHEIGHT, 0, SDL_OPENGL );
+
 }
- 
+
 /** Initialize SDL, the window and the additional data. **/
 void CEngine::Init()
 {
@@ -52,25 +44,19 @@ void CEngine::Init()
 
 	Graphics::graph.openglInit( );
 
-	// Attempt to create a window with the specified height and width.
-	SetSize( );
 
-	Graphics::graph.openglSetup( WWIDTH, WHEIGHT );
- 
+	//SetSize( );
+
+
+	// Attempt to create a window with the specified height and width.
 	// If we fail, return error.
-	if ( m_pScreen == NULL ) {
+	if ( !SDL_SetVideoMode( WWIDTH, WHEIGHT, 0, SDL_OPENGL ) ) {
 		cout << "[FAIL]" << endl;
 		cout << "Unable to set up video: " << SDL_GetError() << endl;
 		exit( 1 );
 	}
 
-	if( TTF_Init() < 0 ) {
-		cout << "[FAIL]" << endl;
-		cout << "Unable to initialize SDL_ttf: " << SDL_GetError() << endl;
-		exit( 1 );
-	}
-
-	m_pFPSFont = TTF_OpenFont( "data/shared/Monospace.ttf", 15 );
+	Graphics::graph.openglSetup( WWIDTH, WHEIGHT );
 
 	cout << "Done" << endl;
    
@@ -95,12 +81,13 @@ void CEngine::Start()
 	m_bQuit = false;
 	player_movex = 0;
 	player_movey = 0;
+	long iElapsedTicks;
 
 	// Main loop: loop forever.
 	while ( !m_bQuit )
 	{
 		m_lTick = SDL_GetTicks();
-		long iElapsedTicks = m_lTick - m_lLastTick;
+		iElapsedTicks = m_lTick - m_lLastTick;
 
 		// Handle mouse and keyboard input
 		HandleInput();
@@ -153,8 +140,8 @@ void CEngine::HandleInput()
 
 			if( event.key.keysym.sym == SDLK_s )
 			{
-				string name = "screenshot.bmp";
-				SDL_SaveBMP( m_pScreen, name.c_str());
+				//string name = "screenshot.bmp";
+				Graphics::graph.SaveScreenshot("screenshot.bmp");
 			}
  
 			KeyDown( event.key.keysym.sym );
@@ -168,6 +155,7 @@ void CEngine::HandleInput()
 		case SDL_JOYAXISMOTION:  /* Handle Joystick Motion */
 				if( event.jaxis.axis == 0) /* Left-right movement */
 				{
+					//TODO: it's cruve
 					player_movex = ( event.jaxis.value > 0 ? 1 : (event.jaxis.value < 0 ? -1 : 0));
 				}
 				if( event.jaxis.axis == 1)  /* Up-Down movement */
@@ -223,27 +211,9 @@ void CEngine::HandleInput()
 
 }
 
-/**Display framerate**/
-void CEngine::DisplayFPS()
-{
-	//SDL_Rect offset;
-	//SDL_Color tColor = { 255, 0, 0 };
-
-	//sprintf( m_sFPStext, "FPS: %d", GetFPS() );
-	//m_pFPSDisp = TTF_RenderText_Solid( m_pFPSFont, m_sFPStext, tColor );
-	//offset.x = 0;
-	//offset.y = 10;
-
-	//SDL_BlitSurface( m_pFPSDisp, NULL, m_pScreen, &offset );
-} 
-
- 
 /** Handles the updating routine. **/
 void CEngine::DoThink( const int& iElapsedTicks ) 
 {
-	//long iElapsedTicks = SDL_GetTicks() - m_lLastTick;
-	//m_lLastTick = SDL_GetTicks();
- 
 	Think( iElapsedTicks );
  
 	m_iFPSTickCounter += iElapsedTicks;
@@ -260,24 +230,8 @@ void CEngine::DoRender()
 		m_iFPSTickCounter = 0;
 	}
  
-	//SDL_FillRect( m_pScreen, 0, SDL_MapRGB( m_pScreen->format, 0, 150, 0 ) );
- 
-	// Lock surface if needed
-	//if ( SDL_MUSTLOCK( m_pScreen ) )
-		//if ( SDL_LockSurface( m_pScreen ) < 0 )
-			//return;
- 
-	Render(  ); //GetSurface()
+	Render(  );
 
-	if( m_bFPStoggle )
-		DisplayFPS();
-
-	// Unlock if needed
-	//if ( SDL_MUSTLOCK( m_pScreen ) )
-		//SDL_UnlockSurface( m_pScreen );
- 
-	// Tell SDL to update the whole gScreen
-	//SDL_Flip( m_pScreen );
 	SDL_Delay(1);
 }
  
@@ -297,15 +251,6 @@ void CEngine::SetTitle(const char* czTitle)
 const char* CEngine::GetTitle()
 {
 	return m_czTitle;
-}
- 
-/** Retrieve the main screen surface.
-	@return A pointer to the SDL_Surface surface
-	@remark The surface is not validated internally.
-**/
-SDL_Surface* CEngine::GetSurface()
-{ 
-	return m_pScreen;
 }
  
 /** Get the current FPS.

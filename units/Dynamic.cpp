@@ -3,7 +3,7 @@
 
 DynamicUnit::DynamicUnit()
 {
-
+	m_fdistance = 0;
 }
 
 
@@ -55,7 +55,7 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
             anim = Animdef.left;	 	//UUUUU
         else if( dx > 0 ) 				//UUUUU
             anim = Animdef.right;		//UUUUU
-        setUnitAnim( anim[0] + ( anim[1] > 1 ? (const int)(m_fdistance / m_animdistance) % anim[1] : 0 ));
+        setUnitAnim( anim[0] + ( anim[1] > 1 ? ( static_cast<int>(m_fdistance) / m_animdistance) % anim[1] : 0 ) );
         m_fX += dx;
         m_fY += dy;        
     }

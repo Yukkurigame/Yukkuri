@@ -97,8 +97,8 @@ void UnitManager::DrawUnits( const float camX, const float camY )
 		Unit* u = m_vUnits[i];
 		Graphics::graph.DrawGLTexture( u->getUnitImage( ),
 				Graphics::graph.GetVertex( u->getUnitX( ) - camX, u->getUnitY( ) - camY, 0.0,
-											u->getUnitWidth( ), u->getUnitHeight( ) ),
-				Graphics::graph.GetAnimation( u->getUnitName( ), u->getUnitAnim( ) )
+											u->getUnitWidth( ), u->getUnitHeight( ), 1 ),
+				Graphics::graph.GetAnimation( u->getUnitName( ), u->getUnitAnim( ) ), &u->getUnitImage( )->clr
 				);
 
 		//Graphics::graph.GetCoordinates( 0.0, 0.0, u->getUnitWidth(), u->getUnitHeight(),

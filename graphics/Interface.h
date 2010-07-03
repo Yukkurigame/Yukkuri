@@ -34,7 +34,9 @@ private:
 
 	void DeleteWidget( string name );
 
-	std::map< string, Widget*> widgets;
+	std::vector< Widget* > widgets;
+
+	//std::map< string, Widget*> widgets;
 
 };
 

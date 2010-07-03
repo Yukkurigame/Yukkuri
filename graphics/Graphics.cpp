@@ -204,14 +204,14 @@ bool Graphics::LoadTTFont( string dir, string name, int size )
 	return true;
 }
 
-void Graphics::PrintText( string fontname, float size, float x, float y, string text)
+void Graphics::PrintText( string fontname, float size, float x, float y, const int* color, string text)
 {
 	font_data* font = GetFont(fontname);
 	if(!font){
 		debug( 3,"Font " + fontname + " not found.\n" );
 		return;
 	}
-	PrintText( *font, x, y, size, text.c_str() );
+	PrintText( *font, x, y, size, color, text.c_str() );
 }
 
 /// A fairly straight forward function that pushes
@@ -266,9 +266,9 @@ Sprite* Graphics::CreateGLSprite( float x, float y, float z, float texX, float t
 		sprite->tex = tex;
 		sprite->coordinates = coords;
 		sprite->col = &sprite->tex->clr;
-	}
-
-	if(!sprite->col){
+	}else{
+		sprite->tex = NULL;
+		sprite->coordinates = NULL;
 		sprite->col = new Color( );
 	}
 
@@ -296,9 +296,9 @@ coord2farr* Graphics::GetCoordinates(float x1, float y1, float x2, float y2,
 	c = new coord2farr();
 
 	float cx1 = x1 / width;
-	float cx2 = x2/width;  //( x1 + x2 ) / width;
+	float cx2 = ( x1 + x2 ) / width; //x2/width;
 	float cy1 = y1 / height;
-	float cy2 = y2/height; // ( y1 + y2 ) / height;
+	float cy2 = ( y1 + y2 ) / height; //y2/height;
 
 	if(mirrored){
 		c->lt.x = cx2;
@@ -383,11 +383,9 @@ void Graphics::LoadAnimation( string name, int rows, int cols, int width, int he
 	//Animations.erase( Animations.find(name) );
 	for( int row = 0; row < rows; ++row ){
 		for( int col = 0; col < cols; ++col ){
-			int cw = col *  width + col;
-			int rh = row * height + row;
 			Animations[name].push_back(
-					GetCoordinates( cw , rh,
-							cw  + width, rh  + height,
+					GetCoordinates( col *  width + col , row * height + row,
+							width, height,
 							texw, texh, 0)
 				);
 	   }
@@ -484,7 +482,7 @@ font_data* Graphics::GetFont( string name )
 	return NULL;
 }
 
-void Graphics::PrintText(const font_data &ft_font, float x, float y, float size, const char *str)
+void Graphics::PrintText(const font_data &ft_font, float x, float y, float size, const int* color, const char *str)
 {
 
 	if( str == NULL )
@@ -537,7 +535,7 @@ void Graphics::PrintText(const font_data &ft_font, float x, float y, float size,
 	}*/
 
 	glPushAttrib(GL_LIST_BIT | GL_CURRENT_BIT  | GL_ENABLE_BIT | GL_TRANSFORM_BIT);
-	glColor3ub(0,0,0); //TODO: colored fonts
+	glColor3ub(color[0],color[1],color[2]);
 	glScalef(multipler,-1*multipler,1); //Reversed text. wtf?
 	glMatrixMode(GL_MODELVIEW);
 	glDisable(GL_LIGHTING);

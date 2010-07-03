@@ -39,7 +39,7 @@ class Graphics
 
 		void LoadAllTTFonts( int size );
 		bool LoadTTFont( string dir, string filename, int size );
-		void PrintText(string font, float size, float x, float y, string text);
+		void PrintText(string font, float size, float x, float y, const int* color, string text);
 
 		inline Sprite* CreateGLSprite( float x, float y, float z, float width, float height ){
 			return CreateGLSprite( x, y, z, 0, 0, width, height, NULL);
@@ -71,7 +71,7 @@ class Graphics
 		SDL_Surface* OpenImage( std::string );
 
 		font_data* GetFont( string name );
-		void PrintText(const font_data &ft_font, float x, float y, float size, const char *str);
+		void PrintText(const font_data &ft_font, float x, float y, float size, const int* color, const char *str);
 
 		map < string, vector<coord2farr*> > Animations;
 		map < string, Texture* > LoadedGLTextures;

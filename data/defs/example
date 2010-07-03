@@ -1,0 +1,119 @@
+--- Some config files description here.
+
+--- Structure:
+{
+	"ConfigType",
+	{element1},
+	{element2},
+	{	
+		subelement1 = "value",
+		subelement2 = 3,
+		subelement3 = 24.5,
+		subelement4 = {
+			subsubelements
+		}
+	}
+},
+
+--- Name field in elements is required.
+
+--- Config types
+--- //TODO: entity description.
+
+--- Widget:
+--- Widgets has some types(variable type).
+--- All unspecified fields are 0 by default.
+--- children - it's array of widget names. 
+{
+	"Widget",
+	{
+		--- A null widget.
+		--- Nothig. Only position.
+		name = "null",
+		type = 0,
+		x = 1,
+		y = 1,
+		width = 1,
+		height = 1,
+		children = {
+		}
+	},
+	{
+		--- A blank widget
+		--- Widget with background only. If background property not defined, it's will be filled by one color.
+		name = "blank",
+		type = 1,
+		x = 1,
+		y = 1,
+		width = 1,
+		height = 1,		
+		bgimage = "filename",
+		--- Left top corner position of sprite in image.
+		bgposx = 1,
+		bgposy = 1,
+		children = {
+		}
+	},
+	{
+		--- A text widget
+		--- Widget with textline and background. If background not defined, it's transparent.
+		name = "text",
+		type = 1,
+		x = 1,
+		y = 1,
+		width = 1,
+		height = 1,
+		bgimage = "filename",
+		bgposx = 1,
+		bgposy = 1,
+		--- Text position calculated from top left corner of widget and besides {0,0} - it's down left corner. 
+		text = "textstring",
+		textx = 1.0,
+		texty = 1.0,
+		font = "True type font file name without .ttf",
+		fontsize = 1,
+		--- Color array: red, green, blue.
+		fontcolor = { 1, 1, 1 },
+		children = {
+		}
+	},
+	{
+		--- A bar widget
+		--- Bar widget with text string. If background not defined, it's transparent.
+		name = "bar",
+		type = 1,
+		x = 1,
+		y = 1,
+		width = 1,
+		height = 1,
+		bgimage = "filename",
+		bgposx = 1,
+		bgposy = 1,
+		--- Text position calculated from top left corner of widget.
+		text = "textstring",
+		textx = 1.0,
+		texty = 1.0,
+		font = "True type font file name without .ttf",
+		fontsize = 1,
+		--- Color array: red, green, blue.
+		fontcolor = { 1, 1, 1 },
+		--- Bar consists from progress line and cover(decorative element, for example sprite with a transparent center and frame on sides),
+		--- which is drawn on top of final sprite. Cover places only in 0,0 of sprite.
+		source = "Source image file for top image",
+		--- Position of cover's sprite top left corner in source
+		topimgx = 1, 
+		topimgy = 1,
+		--- Position of progress line top left corner
+		barx = 1,
+		bary = 1,
+		--- Width of progress line. Widget width if not defined.
+		barwidth = 1,
+		--- Height of progress line. Widget Height if not defined.
+		barheight = 1,
+		--- Progress line color array: red, green, blue.
+		barcolor = { 1, 1, 1},
+		children = {
+		}
+	},
+}
+

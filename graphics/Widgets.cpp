@@ -11,6 +11,7 @@ Widget::Widget()
 	height = 0;
 	posx = 0;
 	posy = 0;
+	posz = 1;
 	visible = true;
 	parent = NULL;
 	background = NULL;
@@ -31,7 +32,7 @@ bool Widget::create( string name, int x, int y )
 	tex = Graphics::graph.LoadGLTexture( name );
 	bgimg[0] = x;
 	bgimg[1] = y;
-	background = Graphics::graph.CreateGLSprite(posx, posy, 0, bgimg[0], bgimg[1], width, height, tex);
+	background = Graphics::graph.CreateGLSprite(posx, posy, posz, bgimg[0], bgimg[1], width, height, tex);
 	if(!background)
 		return false;
 	return true;
@@ -42,6 +43,9 @@ void Widget::setParent( Widget* p )
 	parent = p;
 	posx = posx + p->posx;
 	posy = posy + p->posy;
+	posz = posz - 0.5 + p->posz;
+	if( background )
+		background->vertices->z = posz;
 }
 
 void Widget::addChild( Widget* child )
@@ -94,7 +98,7 @@ void TextWidget::draw( )
 		return;
 	if(background)
 		Graphics::graph.DrawGLTexture( background );
-	Graphics::graph.PrintText( FontName, FontSize, posx+textx, posy+texty, FontColor, Text + AddText );
+	Graphics::graph.PrintText( FontName, FontSize, posx+textx, posy+texty, posz, FontColor, Text + AddText );
 }
 
 BarWidget::BarWidget()
@@ -127,8 +131,8 @@ void BarWidget::createBar( string name, int* pos)
 		barwidth = width;
 	tex = Graphics::graph.LoadGLTexture( name );
 	//FIXME: bar without top.
-	top = Graphics::graph.CreateGLSprite(posx, posy, 0, pos[0], pos[1], width, height, tex);
-	bar = Graphics::graph.CreateGLSprite(barstartx, posy + pos[3], 0, barwidth, pos[5]);
+	top = Graphics::graph.CreateGLSprite(posx, posy, posz+0.1, pos[0], pos[1], width, height, tex);
+	bar = Graphics::graph.CreateGLSprite(barstartx, posy + pos[3], posz, barwidth, pos[5]);
 	if( bar ){
 		bar->col->r = pos[6];
 		bar->col->g = pos[7];
@@ -153,6 +157,13 @@ void BarWidget::setBarSize( int size )
 	int x = barstartx + barwidth * s;
 	bar->vertices->rt.x = x;
 	bar->vertices->rb.x = x;
+}
+
+void BarWidget::setParent( Widget* p)
+{
+	Widget::setParent( p );
+	bar->vertices->z = getZ();
+	top->vertices->z = getZ() + 0.01;
 }
 
 void BarWidget::draw( )

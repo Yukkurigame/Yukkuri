@@ -27,7 +27,13 @@ public:
 	void setType( wType t ){ type = t; }
 	wType getType( ){ return type; }
 
-	void setParent( Widget* p );
+	void setZ( float z ){
+		//Widgets are upper than all
+		posz = ( 0.5 + z * 0.1 );
+	}
+	float getZ( ){ return posz; }
+
+	virtual void setParent( Widget* p );
 
 	void addChild( Widget* child );
 
@@ -51,6 +57,7 @@ public:
 	virtual void setBarValue( int val ) {};
 
 protected:
+	float posz;
 	wType type;
 	Sprite* background;
 	int bgimg[2];
@@ -98,6 +105,9 @@ public:
 		else
 			barmaxvalue = 1;
 	}
+
+	void setParent( Widget* p );
+
 	void draw( );
 
 protected:

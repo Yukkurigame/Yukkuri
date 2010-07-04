@@ -70,6 +70,10 @@ Widget* UI::LoadWidget( string name )
 	LuaConfig::conf.getValue("width", name, "widget", w->width );
 	LuaConfig::conf.getValue("height", name, "widget", w->height );
 
+	int z = 0;
+	LuaConfig::conf.getValue("depth", name, "widget", z );
+	w->setZ( z );
+
 
 	if(w->getType() != NONE){
 		string imgname;

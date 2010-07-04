@@ -36,10 +36,6 @@ void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 
 	if( !temp->Create() ||
 		!temp->setUnitImage( Graphics::graph.LoadGLTexture( temp->getUnitImageName( ) ) ) ||
-		//!temp->setUnitSprite( Graphics::graph.CreateGLSprite( 0.0, 0.0, 0.0, 0.0, 0.0,
-								//temp->getUnitWidth(), temp->getUnitHeight(),
-								//Graphics::graph.LoadGLTexture( temp->getUnitImageName( ) ), 0 )
-							//)// ||
 		!temp->loadAnimation()
 	)
 	{
@@ -100,15 +96,5 @@ void UnitManager::DrawUnits( const float camX, const float camY )
 											u->getUnitWidth( ), u->getUnitHeight( ), 1 ),
 				Graphics::graph.GetAnimation( u->getUnitName( ), u->getUnitAnim( ) ), &u->getUnitImage( )->clr
 				);
-
-		//Graphics::graph.GetCoordinates( 0.0, 0.0, u->getUnitWidth(), u->getUnitHeight(),
-										//u->getUnitImage()->w, u->getUnitImage()->h, 0 )
-		//Graphics::graph.CreateGLSprite( u->getUnitX() - camX, u->getUnitY() - camY, 0.0, 0.0, 0.0,
-										//u->getUnitWidth(), u->getUnitHeight(), u->getUnitImage(), 0 )
-		//Graphics::graph.DrawGLTexture(u->getUnitX() - camX, u->getUnitY() - camY, u->getUnitImage(),
-										//u->getUnitWidth(), u->getUnitHeight() );
-		//Graphics::graph.ApplySurface( m_vUnits[i]->getUnitX() - camX, m_vUnits[i]->getUnitY() - camY,
-										//m_vUnits[i]->getUnitImage(), pDestSurface, getAnim( m_vUnits[i] ) );
-
 	}
 }

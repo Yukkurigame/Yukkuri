@@ -24,9 +24,6 @@ void Yukkuri::AdditionalInit()
     //map.Init("map.map");
     cout << "Additional Init" << endl;
 
-    //Graphics::graph.LoadTTFont("DejaVuSans", LOADEDFONTSIZE);
-    Graphics::graph.LoadAllTTFonts( LOADEDFONTSIZE );
-
     LuaConfig::conf.LoadAll( "widget" );
     UI::yui.LoadAllWidgets( );
 

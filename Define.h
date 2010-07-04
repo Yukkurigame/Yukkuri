@@ -18,7 +18,4 @@
 
 #define DAY_LENGTH 20
 
-#define LOADEDFONTSIZE 30
-
-
 #endif //YDEFINE_H

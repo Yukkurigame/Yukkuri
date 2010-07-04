@@ -20,21 +20,28 @@ void Graphics::openglSetup( int wwidth, int wheight )
 
 	glViewport( 0, 0, wwidth, wheight );
 
-	glClear( GL_COLOR_BUFFER_BIT );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-	glClearColor( 0.25, 0.43, 0.0, 0.0f );
+	glTranslatef(0.0f, 0.0f, 6.0f);
 
-	glClearDepth( 1.0f );
+	glClearColor( 0.25, 0.43, 0.0, -1.0 );
+
+	glClearDepth( 10.0f );
+
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+
 
 	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	glEnable(GL_BLEND);
 
+
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
 
-	glOrtho(0.0f, wwidth, wheight, 0.0f, -1.0f, 0.0f);
+	glOrtho(0.0, wwidth, wheight, 0.0, -1.0, 1.0);
 
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
@@ -196,7 +203,7 @@ bool Graphics::LoadTTFont( string dir, string name, int size )
 	font = new font_data();
 	//FIXME: it's cruved;
 	if( font->load( filename.c_str() , size ) ){
-		LoadedFonts[name] = font;
+		LoadedFonts[name][size] = font;
 	}else{
 		delete font;
 		return false;
@@ -204,14 +211,14 @@ bool Graphics::LoadTTFont( string dir, string name, int size )
 	return true;
 }
 
-void Graphics::PrintText( string fontname, float size, float x, float y, const int* color, string text)
+void Graphics::PrintText( string fontname, float size, float x, float y, float z, const int* color, string text)
 {
-	font_data* font = GetFont(fontname);
+	font_data* font = GetFont(fontname, size);
 	if(!font){
 		debug( 3,"Font " + fontname + " not found.\n" );
 		return;
 	}
-	PrintText( *font, x, y, size, color, text.c_str() );
+	PrintText( *font, x, y, z, size, color, text.c_str() );
 }
 
 /// A fairly straight forward function that pushes
@@ -362,7 +369,7 @@ vertex3farr* Graphics::GetVertex(float x, float y, float z, float width, float h
 	v->rt.x = xp;
 	v->rt.y = yp;
 
-	v->z = 0.0f; //TODO: z-index groups: interface, units, map
+	v->z = z;
 
 	return v;
 }
@@ -400,7 +407,7 @@ void Graphics::DrawGLScene()
 
 void Graphics::CleanGLScene()
 {
-	glClear( GL_COLOR_BUFFER_BIT );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 }
 
 bool Graphics::SaveScreenshot(const char *FileName)
@@ -472,24 +479,36 @@ SDL_Surface* Graphics::OpenImage( string filename )
     return optimizedImage;
 }
 
-font_data* Graphics::GetFont( string name )
+font_data* Graphics::GetFont( string name, int size  )
 {
-	map <string, font_data* >::iterator it;
-	it = LoadedFonts.find(name);
-	if( it != LoadedFonts.end() ){
-		return it->second;
+	//Как-то коряво получилось.
+	if( LoadedFonts.count(name) > 0 ){
+		if( LoadedFonts[name].count(size) ){
+			return LoadedFonts[name][size];
+		}else{
+			if( LoadTTFont( "data/shared/", name, size ) ) //TODO: add FONTPATH
+				return LoadedFonts[name][size];
+		}
+	//map <string, font_data* >::iterator it;
+	//it = LoadedFonts.find(name);
+	//if( it != LoadedFonts.end() ){
+		//return it->second;
+	//}
+	}else{
+		if( LoadTTFont( "data/shared/", name, size ) ) //TODO: add FONTPATH
+			return LoadedFonts[name][size];
 	}
 	return NULL;
 }
 
-void Graphics::PrintText(const font_data &ft_font, float x, float y, float size, const int* color, const char *str)
+void Graphics::PrintText(const font_data &ft_font, float x, float y, float z, float size, const int* color, const char *str)
 {
 
 	if( str == NULL )
 		return;
 
 	//Костыль по-моему
-	float multipler = size/LOADEDFONTSIZE;
+	//float multipler = size/LOADEDFONTSIZE;
 
 	// We want a coordinate system where things coresponding to window pixels.
 	//pushScreenCoordinateMatrix();
@@ -536,7 +555,7 @@ void Graphics::PrintText(const font_data &ft_font, float x, float y, float size,
 
 	glPushAttrib(GL_LIST_BIT | GL_CURRENT_BIT  | GL_ENABLE_BIT | GL_TRANSFORM_BIT);
 	glColor3ub(color[0],color[1],color[2]);
-	glScalef(multipler,-1*multipler,1); //Reversed text. wtf?
+	glScalef(1,-1,1); //glScalef(multipler,-1*multipler,1); //Reversed text. wtf?
 	glMatrixMode(GL_MODELVIEW);
 	glDisable(GL_LIGHTING);
 	glEnable(GL_TEXTURE_2D);
@@ -553,7 +572,7 @@ void Graphics::PrintText(const font_data &ft_font, float x, float y, float size,
 	for( unsigned int i=0; i<lines.size(); ++i) {
 		glPushMatrix();
 		glLoadIdentity();
-		glTranslatef(x,y-h*i,0);
+		glTranslatef( x, y - h * i, z );
 		glMultMatrixf(modelview_matrix);
 	//  The commented out raster position stuff can be useful if you need to
 	//  know the length of the text that you are creating.
@@ -567,7 +586,8 @@ void Graphics::PrintText(const font_data &ft_font, float x, float y, float size,
 		glPopMatrix();
 	}
 
-	glScalef(1/multipler,-1/multipler,1); //Reversed text. wtf?
+	//glScalef(1/multipler,-1/multipler,1); //Reversed text. wtf?
+	glScalef(1,-1,1); //Reversed text. wtf?
 
 	glPopAttrib();
 

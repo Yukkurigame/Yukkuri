@@ -139,8 +139,6 @@ bool font_data::load(const char * fname, unsigned int h) {
 
 	debug(3, "Loading font " +  (string)fname + "\n");
 
-	//cout << "Loading " << fname << " font." << endl;
-
 	//Allocate some memory to store the texture ids.
 	textures = new GLuint[128];
 
@@ -164,6 +162,9 @@ bool font_data::load(const char * fname, unsigned int h) {
 		debug( 3, "FT_New_Face failed in " + (string)fname + " (there is probably a problem with your font file)\n" );
 		return false;
 	}
+
+	//Encoding
+	FT_Select_Charmap(face, FT_ENCODING_UNICODE);
 
 	//For some twisted reason, Freetype measures font size
 	//in terms of 1/64ths of pixels.  Thus, to make a font

@@ -25,10 +25,11 @@
 		font = "DejaVuSans",
 	},
 	{
-		name = "pstats", --- Хак такой хак
+		name = "pstats", --- Хак такой хак.
 		type = 1,
 		x = 0,
 		y = 0,
+		depth = 1,
 		width = 200,
 		height = 300,
 		bgposx = 265,
@@ -47,9 +48,10 @@
 		type = 2,
 		text = "Level: ",
 		textx = 20,
-		texty = 45,		
-		fontsize = 20,
-		fontcolor = { 0, 0, 0 },
+		texty = 45,
+		depth = 1,
+		fontsize = 18,
+		fontcolor = { 0, 0, 0 },		
 		font = "LiberationSerif-Regular",
 	},
 	{
@@ -58,7 +60,7 @@
 		text = "Age: ",
 		textx = 20,
 		texty = 70,		
-		fontsize = 20,
+		fontsize = 18,
 		fontcolor = { 0, 0, 0 },
 		font = "LiberationSerif-Regular",
 	},

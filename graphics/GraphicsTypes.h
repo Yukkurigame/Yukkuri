@@ -7,7 +7,7 @@
 #ifndef GRAPHICSTYPES_H_
 #define GRAPHICSTYPES_H_
 
-#include "SDL_opengl.h"
+#include "SDL/SDL_opengl.h"
 
 struct Color
 {

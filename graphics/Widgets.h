@@ -20,7 +20,7 @@ class Widget
 {
 public:
 	Widget();
-	~Widget();
+	virtual ~Widget();
 
 	virtual bool create( string, int x=0, int y=0 );
 

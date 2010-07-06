@@ -14,7 +14,7 @@
 #include <freetype/ftglyph.h>
 #include <freetype/ftoutln.h>
 #include <freetype/fttrigon.h>
-#include "SDL_opengl.h"
+#include "SDL/SDL_opengl.h"
 //#include <GL/gl.h>
 //#include <GL/glu.h>
 

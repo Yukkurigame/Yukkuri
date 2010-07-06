@@ -41,7 +41,7 @@ void DayTime::update( const int& dt )
 			text->setText("Midnight");
 	}else if( time > 18 ){
 		float p = (time - 18) / 4.0;
-		dark = 128 * p;
+		dark = 128 * static_cast<int>(p);
 		if(time > 20){
 			if(text)
 				text->setText("Twilight");

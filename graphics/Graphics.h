@@ -2,7 +2,7 @@
 #define GRAPHICS_H
 
 #include "SDL/SDL_image.h"
-#include "SDL_opengl.h"
+#include "SDL/SDL_opengl.h"
 #include "GraphicsTypes.h"
 #include "Font.h"
 #include "Define.h"
@@ -39,7 +39,7 @@ class Graphics
 
 		void LoadAllTTFonts( int size );
 		bool LoadTTFont( string dir, string filename, int size );
-		void PrintText(string font, float size, float x, float y, float z, const int* color, string text);
+		void PrintText(string font, int size, float x, float y, float z, const int* color, string text);
 
 		inline Sprite* CreateGLSprite( float x, float y, float z, float width, float height ){
 			return CreateGLSprite( x, y, z, 0, 0, width, height, NULL);
@@ -71,7 +71,7 @@ class Graphics
 		SDL_Surface* OpenImage( std::string );
 
 		font_data* GetFont( string name, int size);
-		void PrintText(const font_data &ft_font, float x, float y, float z, float size, const int* color, const char *str);
+		void PrintText(const font_data &ft_font, float x, float y, float z, int size, const int* color, const char *str);
 
 		map < string, vector<coord2farr*> > Animations;
 		map < string, Texture* > LoadedGLTextures;

@@ -1,23 +1,23 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "yukkuri.h"
- 
+
 
 // Entry point
 int main(int argc, char* argv[])  // <- this must match exactly, since SDL rewrites it
 {
     Yukkuri Engine;
-    
+
     Engine.Init();
- 
+
     Engine.SetTitle( "Yukkuri game" );
     Engine.Start();
- 
+
     Engine.SetTitle( "Quitting..." );
- 
+
     return 0;
 }
- 
+
 
 void Yukkuri::AdditionalInit()
 {
@@ -39,25 +39,25 @@ void Yukkuri::AdditionalInit()
     units.CreateUnit( PLAYER, 0, 0 );
     YCamera::CameraControl.SetTarget( units.GetPlayer()->getUnitpX(), units.GetPlayer()->getUnitpY());
 }
- 
+
 void Yukkuri::Think( const int& iElapsedTime )
 {
     // Do time-based calculations
     daytime.update( iElapsedTime );
-    
+
     units.tick( iElapsedTime );
-    
+
     if ( player_movex != 0 or player_movey != 0)
        units.GetPlayer()->moveUnit( player_movex, player_movey, iElapsedTime);
-    
+
 }
- 
+
 void Yukkuri::Render( )
 {
 	Graphics::graph.CleanGLScene();
      // Display slick graphics on screen
     units.DrawUnits( YCamera::CameraControl.GetX(), YCamera::CameraControl.GetY() );
-    
+
 
     //drawing night last
     daytime.draw( );
@@ -72,10 +72,10 @@ void Yukkuri::Render( )
     //Draw to screen
     Graphics::graph.DrawGLScene( );
 }
- 
+
 void Yukkuri::KeyDown(const int& iKeyEnum)
 {
-    
+
     switch (iKeyEnum)
     {
         case SDLK_LEFT:
@@ -96,8 +96,8 @@ void Yukkuri::KeyDown(const int& iKeyEnum)
             break;
     }
 }
- 
- 
+
+
 void Yukkuri::KeyUp(const int& iKeyEnum)
 {
     switch (iKeyEnum)
@@ -120,48 +120,48 @@ void Yukkuri::KeyUp(const int& iKeyEnum)
       break;
     }
 }
- 
-void Yukkuri::MouseMoved(const int& iButton, 
-               const int& iX, 
-               const int& iY, 
-               const int& iRelX, 
+
+void Yukkuri::MouseMoved(const int& iButton,
+               const int& iX,
+               const int& iY,
+               const int& iRelX,
                const int& iRelY)
 {
     // Handle mouse movement
- 
+
     // iX and iY are absolute screen positions
     // iRelX and iRelY are screen position relative to last detected mouse movement
 }
- 
-void Yukkuri::MouseButtonUp(const int& iButton, 
-                  const int& iX, 
-                  const int& iY, 
-                  const int& iRelX, 
+
+void Yukkuri::MouseButtonUp(const int& iButton,
+                  const int& iX,
+                  const int& iY,
+                  const int& iRelX,
                   const int& iRelY)
 {
     // Handle mouse button released
 }
- 
-void Yukkuri::MouseButtonDown(const int& iButton, 
-                const int& iX, 
-                const int& iY, 
-                const int& iRelX, 
+
+void Yukkuri::MouseButtonDown(const int& iButton,
+                const int& iX,
+                const int& iY,
+                const int& iRelX,
                 const int& iRelY)
 {
     // Handle mouse button pressed
 }
- 
+
 void Yukkuri::WindowInactive()
 {
     // Pause game
 }
- 
+
 void Yukkuri::WindowActive()
 {
     // Un-pause game
 }
- 
- 
+
+
 void Yukkuri::End()
 {
     // Clean up

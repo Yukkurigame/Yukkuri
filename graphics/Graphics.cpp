@@ -127,7 +127,7 @@ void Graphics::DrawGLTexture( Texture* tex, vertex3farr* vertices, coord2farr* c
 	if(tex){
 		glBindTexture( GL_TEXTURE_2D, *tex->texture );
 	}else{
-		glBindTexture( GL_TEXTURE_2D, NULL );
+		glBindTexture( GL_TEXTURE_2D, 0 );
 	}
 	//Sprite color
 	glColor4ub(col->r,col->g,col->b,col->a);
@@ -211,7 +211,7 @@ bool Graphics::LoadTTFont( string dir, string name, int size )
 	return true;
 }
 
-void Graphics::PrintText( string fontname, float size, float x, float y, float z, const int* color, string text)
+void Graphics::PrintText( string fontname, int size, float x, float y, float z, const int* color, string text)
 {
 	font_data* font = GetFont(fontname, size);
 	if(!font){
@@ -501,7 +501,7 @@ font_data* Graphics::GetFont( string name, int size  )
 	return NULL;
 }
 
-void Graphics::PrintText(const font_data &ft_font, float x, float y, float z, float size, const int* color, const char *str)
+void Graphics::PrintText(const font_data &ft_font, float x, float y, float z, int size, const int* color, const char *str)
 {
 
 	if( str == NULL )

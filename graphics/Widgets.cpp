@@ -154,7 +154,7 @@ void BarWidget::setBarSize( int size )
 	if( size > barmaxvalue )
 		size = barmaxvalue;
 	float s = size / barmaxvalue;
-	int x = barstartx + barwidth * s;
+	float x = barstartx + barwidth * s;
 	bar->vertices->rt.x = x;
 	bar->vertices->rb.x = x;
 }

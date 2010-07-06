@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Yukkuri" />
+		<Option makefile="Makefile.win" />
+		<Option makefile_is_custom="1" />
+		<Option execution_dir="..\cpp" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin\Debug\Yukkuri" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="Build" />
+				<Option object_output="obj\Debug\" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin\Release\Yukkuri" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="Build" />
+				<Option object_output="obj\Release\" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="Camera.cpp" />
+		<Unit filename="Camera.h" />
+		<Unit filename="ConfigTypes.h" />
+		<Unit filename="Define.h" />
+		<Unit filename="Luaconfig.cpp" />
+		<Unit filename="Luaconfig.h" />
+		<Unit filename="daytime.cpp" />
+		<Unit filename="daytime.h" />
+		<Unit filename="debug.h" />
+		<Unit filename="engine.cpp" />
+		<Unit filename="engine.h" />
+		<Unit filename="graphics\Font.cpp" />
+		<Unit filename="graphics\Font.h" />
+		<Unit filename="graphics\Graphics.cpp" />
+		<Unit filename="graphics\Graphics.h" />
+		<Unit filename="graphics\GraphicsTypes.h" />
+		<Unit filename="graphics\Interface.cpp" />
+		<Unit filename="graphics\Interface.h" />
+		<Unit filename="graphics\Widgets.cpp" />
+		<Unit filename="graphics\Widgets.h" />
+		<Unit filename="includes.win\SDL\SDL.h" />
+		<Unit filename="includes.win\SDL\SDL_active.h" />
+		<Unit filename="includes.win\SDL\SDL_audio.h" />
+		<Unit filename="includes.win\SDL\SDL_byteorder.h" />
+		<Unit filename="includes.win\SDL\SDL_cdrom.h" />
+		<Unit filename="includes.win\SDL\SDL_config.h" />
+		<Unit filename="includes.win\SDL\SDL_copying.h" />
+		<Unit filename="includes.win\SDL\SDL_cpuinfo.h" />
+		<Unit filename="includes.win\SDL\SDL_endian.h" />
+		<Unit filename="includes.win\SDL\SDL_error.h" />
+		<Unit filename="includes.win\SDL\SDL_events.h" />
+		<Unit filename="includes.win\SDL\SDL_getenv.h" />
+		<Unit filename="includes.win\SDL\SDL_image.h" />
+		<Unit filename="includes.win\SDL\SDL_joystick.h" />
+		<Unit filename="includes.win\SDL\SDL_keyboard.h" />
+		<Unit filename="includes.win\SDL\SDL_keysym.h" />
+		<Unit filename="includes.win\SDL\SDL_loadso.h" />
+		<Unit filename="includes.win\SDL\SDL_main.h" />
+		<Unit filename="includes.win\SDL\SDL_mouse.h" />
+		<Unit filename="includes.win\SDL\SDL_mutex.h" />
+		<Unit filename="includes.win\SDL\SDL_name.h" />
+		<Unit filename="includes.win\SDL\SDL_opengl.h" />
+		<Unit filename="includes.win\SDL\SDL_platform.h" />
+		<Unit filename="includes.win\SDL\SDL_quit.h" />
+		<Unit filename="includes.win\SDL\SDL_rwops.h" />
+		<Unit filename="includes.win\SDL\SDL_stdinc.h" />
+		<Unit filename="includes.win\SDL\SDL_syswm.h" />
+		<Unit filename="includes.win\SDL\SDL_thread.h" />
+		<Unit filename="includes.win\SDL\SDL_timer.h" />
+		<Unit filename="includes.win\SDL\SDL_types.h" />
+		<Unit filename="includes.win\SDL\SDL_version.h" />
+		<Unit filename="includes.win\SDL\SDL_video.h" />
+		<Unit filename="includes.win\SDL\begin_code.h" />
+		<Unit filename="includes.win\SDL\close_code.h" />
+		<Unit filename="includes.win\freetype\config\ftconfig.h" />
+		<Unit filename="includes.win\freetype\config\ftheader.h" />
+		<Unit filename="includes.win\freetype\config\ftmodule.h" />
+		<Unit filename="includes.win\freetype\config\ftoption.h" />
+		<Unit filename="includes.win\freetype\config\ftstdlib.h" />
+		<Unit filename="includes.win\freetype\freetype.h" />
+		<Unit filename="includes.win\freetype\ftadvanc.h" />
+		<Unit filename="includes.win\freetype\ftbbox.h" />
+		<Unit filename="includes.win\freetype\ftbdf.h" />
+		<Unit filename="includes.win\freetype\ftbitmap.h" />
+		<Unit filename="includes.win\freetype\ftcache.h" />
+		<Unit filename="includes.win\freetype\ftchapters.h" />
+		<Unit filename="includes.win\freetype\ftcid.h" />
+		<Unit filename="includes.win\freetype\fterrdef.h" />
+		<Unit filename="includes.win\freetype\fterrors.h" />
+		<Unit filename="includes.win\freetype\ftgasp.h" />
+		<Unit filename="includes.win\freetype\ftglyph.h" />
+		<Unit filename="includes.win\freetype\ftgxval.h" />
+		<Unit filename="includes.win\freetype\ftgzip.h" />
+		<Unit filename="includes.win\freetype\ftimage.h" />
+		<Unit filename="includes.win\freetype\ftincrem.h" />
+		<Unit filename="includes.win\freetype\ftlcdfil.h" />
+		<Unit filename="includes.win\freetype\ftlist.h" />
+		<Unit filename="includes.win\freetype\ftlzw.h" />
+		<Unit filename="includes.win\freetype\ftmac.h" />
+		<Unit filename="includes.win\freetype\ftmm.h" />
+		<Unit filename="includes.win\freetype\ftmodapi.h" />
+		<Unit filename="includes.win\freetype\ftmoderr.h" />
+		<Unit filename="includes.win\freetype\ftotval.h" />
+		<Unit filename="includes.win\freetype\ftoutln.h" />
+		<Unit filename="includes.win\freetype\ftpfr.h" />
+		<Unit filename="includes.win\freetype\ftrender.h" />
+		<Unit filename="includes.win\freetype\ftsizes.h" />
+		<Unit filename="includes.win\freetype\ftsnames.h" />
+		<Unit filename="includes.win\freetype\ftstroke.h" />
+		<Unit filename="includes.win\freetype\ftsynth.h" />
+		<Unit filename="includes.win\freetype\ftsystem.h" />
+		<Unit filename="includes.win\freetype\fttrigon.h" />
+		<Unit filename="includes.win\freetype\fttypes.h" />
+		<Unit filename="includes.win\freetype\ftwinfnt.h" />
+		<Unit filename="includes.win\freetype\ftxf86.h" />
+		<Unit filename="includes.win\freetype\internal\autohint.h" />
+		<Unit filename="includes.win\freetype\internal\ftcalc.h" />
+		<Unit filename="includes.win\freetype\internal\ftdebug.h" />
+		<Unit filename="includes.win\freetype\internal\ftdriver.h" />
+		<Unit filename="includes.win\freetype\internal\ftgloadr.h" />
+		<Unit filename="includes.win\freetype\internal\ftmemory.h" />
+		<Unit filename="includes.win\freetype\internal\ftobjs.h" />
+		<Unit filename="includes.win\freetype\internal\ftpic.h" />
+		<Unit filename="includes.win\freetype\internal\ftrfork.h" />
+		<Unit filename="includes.win\freetype\internal\ftserv.h" />
+		<Unit filename="includes.win\freetype\internal\ftstream.h" />
+		<Unit filename="includes.win\freetype\internal\fttrace.h" />
+		<Unit filename="includes.win\freetype\internal\ftvalid.h" />
+		<Unit filename="includes.win\freetype\internal\internal.h" />
+		<Unit filename="includes.win\freetype\internal\pcftypes.h" />
+		<Unit filename="includes.win\freetype\internal\psaux.h" />
+		<Unit filename="includes.win\freetype\internal\pshints.h" />
+		<Unit filename="includes.win\freetype\internal\services\svbdf.h" />
+		<Unit filename="includes.win\freetype\internal\services\svcid.h" />
+		<Unit filename="includes.win\freetype\internal\services\svgldict.h" />
+		<Unit filename="includes.win\freetype\internal\services\svgxval.h" />
+		<Unit filename="includes.win\freetype\internal\services\svkern.h" />
+		<Unit filename="includes.win\freetype\internal\services\svmm.h" />
+		<Unit filename="includes.win\freetype\internal\services\svotval.h" />
+		<Unit filename="includes.win\freetype\internal\services\svpfr.h" />
+		<Unit filename="includes.win\freetype\internal\services\svpostnm.h" />
+		<Unit filename="includes.win\freetype\internal\services\svpscmap.h" />
+		<Unit filename="includes.win\freetype\internal\services\svpsinfo.h" />
+		<Unit filename="includes.win\freetype\internal\services\svsfnt.h" />
+		<Unit filename="includes.win\freetype\internal\services\svttcmap.h" />
+		<Unit filename="includes.win\freetype\internal\services\svtteng.h" />
+		<Unit filename="includes.win\freetype\internal\services\svttglyf.h" />
+		<Unit filename="includes.win\freetype\internal\services\svwinfnt.h" />
+		<Unit filename="includes.win\freetype\internal\services\svxf86nm.h" />
+		<Unit filename="includes.win\freetype\internal\sfnt.h" />
+		<Unit filename="includes.win\freetype\internal\t1types.h" />
+		<Unit filename="includes.win\freetype\internal\tttypes.h" />
+		<Unit filename="includes.win\freetype\t1tables.h" />
+		<Unit filename="includes.win\freetype\ttnameid.h" />
+		<Unit filename="includes.win\freetype\tttables.h" />
+		<Unit filename="includes.win\freetype\tttags.h" />
+		<Unit filename="includes.win\freetype\ttunpat.h" />
+		<Unit filename="includes.win\ft2build.h" />
+		<Unit filename="includes.win\lauxlib.h" />
+		<Unit filename="includes.win\lua.h" />
+		<Unit filename="includes.win\lua.hpp" />
+		<Unit filename="includes.win\luaconf.h" />
+		<Unit filename="includes.win\lualib.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="units\Dynamic.cpp" />
+		<Unit filename="units\Dynamic.h" />
+		<Unit filename="units\Entity.cpp" />
+		<Unit filename="units\Entity.h" />
+		<Unit filename="units\Player.cpp" />
+		<Unit filename="units\Player.h" />
+		<Unit filename="units\unit.cpp" />
+		<Unit filename="units\unit.h" />
+		<Unit filename="units\unitmanager.cpp" />
+		<Unit filename="units\unitmanager.h" />
+		<Unit filename="yloader.cpp" />
+		<Unit filename="yukkuri.h" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

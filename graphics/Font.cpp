@@ -8,14 +8,17 @@
 
 inline int next_p2( int a )
 {
-	int rval=1;
+	int rval=2;
 	while(rval<a) rval<<=1;
 	return rval;
 }
 
 ///Create a display list coresponding to the give character.
-void make_dlist( FT_Face face, int ch, GLuint list_base, GLuint * tex_base )
+void make_dlist( FT_Face face, unsigned int ch, GLuint list_base, GLuint * tex_base )
 {
+
+	//FIXME: Когда-нибудь я это перепишу.
+	//По текстуре на символ - не хорошо.
 
 	//The first thing we do is get FreeType to render our character
 	//into a bitmap.  This actually requires a couple of FreeType commands:
@@ -57,14 +60,14 @@ void make_dlist( FT_Face face, int ch, GLuint list_base, GLuint * tex_base )
 	//We use the ?: operator so that value which we use
 	//will be 0 if we are in the padding zone, and whatever
 	//is the the Freetype bitmap otherwise.
-	for(int j=0; j <height;j++) {
-		for(int i=0; i < width; i++){
-			expanded_data[2*(i+j*width)]= expanded_data[2*(i+j*width)+1] =
-				(i>=bitmap.width || j>=bitmap.rows) ?
-				0 : bitmap.buffer[i + bitmap.width*j];
+	for( int j=0; j < height; j++ ){
+		for( int i=0; i < width; i++ ){
+	        expanded_data[2*(i+j*width)] = 255;
+	        expanded_data[2*(i+j*width)+1] =
+	                (i>=bitmap.width || j>=bitmap.rows) ?
+	                0 : bitmap.buffer[i + bitmap.width*j];
 		}
 	}
-
 
 	//Now we just setup some texture paramaters.
     glBindTexture( GL_TEXTURE_2D, tex_base[ch]);
@@ -127,11 +130,14 @@ void make_dlist( FT_Face face, int ch, GLuint list_base, GLuint * tex_base )
 
 	//Finish the display list
 	glEndList();
+
+	//Fix memory leak
+	FT_Done_Glyph(glyph);
 }
 
 void font_data::clean() {
-	glDeleteLists(list_base,128);
-	glDeleteTextures(128,textures);
+	glDeleteLists( list_base, 256 ); //128
+	glDeleteTextures( 256, textures ); //128
 	delete [] textures;
 }
 
@@ -140,7 +146,7 @@ bool font_data::load(const char * fname, unsigned int h) {
 	debug(3, "Loading font " +  (string)fname + "\n");
 
 	//Allocate some memory to store the texture ids.
-	textures = new GLuint[128];
+	textures = new GLuint[256]; //128
 
 	this->h=h;
 
@@ -163,23 +169,23 @@ bool font_data::load(const char * fname, unsigned int h) {
 		return false;
 	}
 
-	//Encoding
-	FT_Select_Charmap(face, FT_ENCODING_UNICODE);
-
 	//For some twisted reason, Freetype measures font size
 	//in terms of 1/64ths of pixels.  Thus, to make a font
 	//h pixels high, we need to request a size of h*64.
 	//(h << 6 is just a prettier way of writting h*64)
 	FT_Set_Char_Size( face, h << 6, h << 6, 96, 96);
 
+	//Encoding
+	FT_Select_Charmap(face, FT_ENCODING_UNICODE);
+
 	//Here we ask opengl to allocate resources for
 	//all the textures and displays lists which we
 	//are about to create.
-	list_base = glGenLists(128);
-	glGenTextures( 128, textures );
+	list_base = glGenLists(256); //128
+	glGenTextures( 256, textures ); //128
 
 	//This is where we actually create each of the fonts display lists.
-	for( unsigned int i=0; i<128; ++i )
+	for( unsigned int i=0; i<256; ++i ) //128
 		make_dlist( face, i, list_base, textures );
 
 	//We don't need the face information now that the display

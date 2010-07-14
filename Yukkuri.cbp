@@ -36,10 +36,14 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="Bindings.cpp" />
+		<Unit filename="Bindings.h" />
 		<Unit filename="Camera.cpp" />
 		<Unit filename="Camera.h" />
 		<Unit filename="ConfigTypes.h" />
 		<Unit filename="Define.h" />
+		<Unit filename="Lua.cpp" />
+		<Unit filename="Lua.h" />
 		<Unit filename="Luaconfig.cpp" />
 		<Unit filename="Luaconfig.h" />
 		<Unit filename="daytime.cpp" />
@@ -190,7 +194,6 @@
 		<Unit filename="units\unit.h" />
 		<Unit filename="units\unitmanager.cpp" />
 		<Unit filename="units\unitmanager.h" />
-		<Unit filename="yloader.cpp" />
 		<Unit filename="yukkuri.h" />
 		<Extensions>
 			<code_completion />

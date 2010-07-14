@@ -5,7 +5,7 @@ VPATH = ./units ./graphics
 DEFS= $(shell sdl-config --cflags)
 PROGNAME= Yukkuri
 INCLUDES=  -I. -Iunits -Igraphics -I/usr/local/include/freetype2
-LIBS= $(shell sdl-config --libs) -lSDL_image -lSDL_ttf -framework OpenGL -Llibs  -llua -lfreetype
+LIBS= $(shell sdl-config --libs) -lSDL_image -framework OpenGL -Llibs  -llua -lfreetype
 
 
 DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1
@@ -16,7 +16,7 @@ CFLAGS= -g -Wall $(DEFINES)
 UNITS =  unitmanager.cpp unit.cpp Dynamic.cpp Entity.cpp Player.cpp
 GRAPHICS = Font.cpp Graphics.cpp Interface.cpp Widgets.cpp 
 
-SRCS =   main.cpp engine.cpp Luaconfig.cpp \
+SRCS =   main.cpp engine.cpp Lua.cpp Luaconfig.cpp Bindings.cpp \
          $(UNITS) \
          $(GRAPHICS) \
          Camera.cpp daytime.cpp

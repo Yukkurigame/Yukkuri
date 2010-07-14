@@ -18,16 +18,17 @@ class Unit
 {
 public:
     Unit();
-    virtual ~Unit();    
+    virtual ~Unit();
     virtual void update(const int&) {};
-    virtual void moveUnit(  signed int x, signed int y , const int& dt) {};
+    virtual void moveUnit( signed int x, signed int y, const int& dt ) {};
+    virtual void moveUnit( short axis, signed int val ) {};
 
     double dist( Unit* );
 
     bool Create( );
     virtual bool loadAnimation( ) { return true; }
     void setUnitType( enum e_unitID t_Unit );
-    void setUnitPos( float x, float y ) { setUnitX( x ); setUnitY( y ); }    
+    void setUnitPos( float x, float y ) { setUnitX( x ); setUnitY( y ); }
     void setUnitX( float x );
     void setUnitY( float y );
     int getUnitAnim() { return (const int)m_iAn; }
@@ -42,13 +43,13 @@ public:
     float* getUnitpX() { return &m_fX; }
     float* getUnitpY() { return &m_fY; }
     e_unitID getUnitType() { return Type; }
-    
+
     //как-то это не хорошо, почему картинка хранится в юните? структ какой придумать что ли.
     inline Texture* getUnitImage() {return m_Img;}
     bool setUnitImage( Texture* );
     string getUnitImageName( ) { return defs->imageName;  }
 
-    
+
     int getUnitWidth() { return defs->width; }
     int getUnitHeight() { return defs->height; }
     int getUnitImageCols() { return defs->imagecols; }
@@ -60,14 +61,14 @@ public:
 protected:
     float m_fX, m_fY;
     string UnitName;
-    
+
 private:
     int m_iAn;
     bool player;
     e_unitID Type;
     Texture* m_Img;
     EntityDefs* defs;
-        
+
 };
 
 #endif //UNIT_H

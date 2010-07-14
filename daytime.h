@@ -9,22 +9,24 @@
 
 class DayTime
 {
-    public:
-        DayTime();
-        ~DayTime();
-        void update( const int& dt );
-        void draw( );
-        int getDay( ){ return Day; }
-        void loadInterface();
-        
-    private:
-        Widget*	text;
+public:
+	DayTime();
+	~DayTime();
+	void update( const int& dt );
+	void draw( );
+	int getDay( ){ return Day; }
+	void loadInterface();
 
-        int Day;
-        float time;
-        bool days_update;
-        Sprite* sfield;
-        int dark, ldark;
+private:
+	Widget*	text;
+
+	int Day;
+	float time;
+	bool days_update;
+	Sprite* sfield;
+	int dark, ldark;
+	//TODO: Можно делать красивые штуки, как в питоновской версии, вот только нужно ли?
+	//Каждому углу свою прозрачность и свой цвет.
 };
 
 #endif //TIMEOFDAY_H

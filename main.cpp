@@ -6,163 +6,101 @@
 // Entry point
 int main(int argc, char* argv[])  // <- this must match exactly, since SDL rewrites it
 {
-    Yukkuri Engine;
+	Yukkuri Engine;
 
-    Engine.Init();
+	Engine.Init();
 
-    Engine.SetTitle( "Yukkuri game" );
-    Engine.Start();
+	Engine.SetTitle( "Yukkuri game" );
+	Engine.Start();
 
-    Engine.SetTitle( "Quitting..." );
+	Engine.SetTitle( "Quitting..." );
 
-    return 0;
+	return 0;
 }
 
 
 void Yukkuri::AdditionalInit()
 {
-    //map.Init("map.map");
-    cout << "Additional Init" << endl;
+	//map.Init("map.map");
+	cout << "Additional Init" << endl;
 
-    LuaConfig::conf.LoadAll( "widget" );
-    UI::yui.LoadAllWidgets( );
+	LuaConfig::conf.LoadAll( "config" );
 
-    daytime.loadInterface();
+	Bindings::bnd.setEngine( this );
 
-    LuaConfig::conf.LoadAll( "entity" );
+	Bindings::bnd.LoadKeys();
 
-    for( int i=0; i < ( rand() % 100 ); i++){
-        units.CreateUnit( ENTITY, 2, 2 );
-    }
+	LuaConfig::conf.LoadAll( "widget" );
+	UI::yui.LoadAllWidgets( );
 
-    //FIXME: input blocked if player loads first
-    units.CreateUnit( PLAYER, 0, 0 );
-    YCamera::CameraControl.SetTarget( units.GetPlayer()->getUnitpX(), units.GetPlayer()->getUnitpY());
+	daytime.loadInterface();
+
+	LuaConfig::conf.LoadAll( "entity" );
+
+	units = &UnitManager::units;
+
+	for( int i=0; i < ( rand() % 100 ); i++){
+		units->CreateUnit( ENTITY, 2, 2 );
+	}
+
+	//FIXME: input blocked if player loads first
+	units->CreateUnit( PLAYER, 0, 0 );
+	YCamera::CameraControl.SetTarget( units->GetPlayer()->getUnitpX(), units->GetPlayer()->getUnitpY());
 }
 
-void Yukkuri::Think( const int& iElapsedTime )
+void Yukkuri::Think( const int& ElapsedTime )
 {
-    // Do time-based calculations
-    daytime.update( iElapsedTime );
-
-    units.tick( iElapsedTime );
-
-    if ( player_movex != 0 or player_movey != 0)
-       units.GetPlayer()->moveUnit( player_movex, player_movey, iElapsedTime);
+	// Do time-based calculations
+	units->tick( ElapsedTime );
+	daytime.update( ElapsedTime );
 
 }
 
 void Yukkuri::Render( )
 {
-	Graphics::graph.CleanGLScene();
-     // Display slick graphics on screen
-    units.DrawUnits( YCamera::CameraControl.GetX(), YCamera::CameraControl.GetY() );
+	Graphics::graph.CleanGLScene( );
 
+	// Display slick graphics on screen
+	units->DrawUnits( YCamera::CameraControl.GetX(), YCamera::CameraControl.GetY() );
 
-    //drawing night last
-    daytime.draw( );
+	daytime.draw( );
 
+	UI::yui.GetWidget("fps")->setText(GetFPSText());
+	UI::yui.DrawWidgets( );
 
-    UI::yui.GetWidget("fps")->setText(GetFPSText());
-
-    //draw interface
-    UI::yui.DrawWidgets( );
-
-
-    //Draw to screen
-    Graphics::graph.DrawGLScene( );
+	//Draw to screen
+	Graphics::graph.DrawGLScene( );
 }
 
-void Yukkuri::KeyDown(const int& iKeyEnum)
+void Yukkuri::MouseMoved( const int& Button, const int& X, const int& Y, const int& RelX, const int& RelY )
 {
+	// Handle mouse movement
 
-    switch (iKeyEnum)
-    {
-        case SDLK_LEFT:
-            // Left arrow pressed
-            player_movex = -1;
-            break;
-        case SDLK_RIGHT:
-            // Right arrow pressed
-            player_movex = 1;
-            break;
-        case SDLK_UP:
-            // Up arrow pressed
-            player_movey = -1;
-            break;
-        case SDLK_DOWN:
-            // Down arrow pressed
-            player_movey = 1;
-            break;
-    }
+	// X and Y are absolute screen positions
+	// RelX and RelY are screen position relative to last detected mouse movement
 }
 
-
-void Yukkuri::KeyUp(const int& iKeyEnum)
+void Yukkuri::MouseButtonUp( const int& Button, const int& X, const int& Y, const int& RelX, const int& RelY )
 {
-    switch (iKeyEnum)
-    {
-    case SDLK_LEFT:
-      // Left arrow released
-      player_movex = 0;
-      break;
-    case SDLK_RIGHT:
-      // Right arrow released
-      player_movex = 0;
-      break;
-    case SDLK_UP:
-      // Up arrow released
-      player_movey = 0;
-      break;
-    case SDLK_DOWN:
-      // Down arrow released
-      player_movey = 0;
-      break;
-    }
+	// Handle mouse button released
 }
 
-void Yukkuri::MouseMoved(const int& iButton,
-               const int& iX,
-               const int& iY,
-               const int& iRelX,
-               const int& iRelY)
+void Yukkuri::MouseButtonDown( const int& Button, const int& X, const int& Y, const int& RelX, const int& RelY )
 {
-    // Handle mouse movement
-
-    // iX and iY are absolute screen positions
-    // iRelX and iRelY are screen position relative to last detected mouse movement
-}
-
-void Yukkuri::MouseButtonUp(const int& iButton,
-                  const int& iX,
-                  const int& iY,
-                  const int& iRelX,
-                  const int& iRelY)
-{
-    // Handle mouse button released
-}
-
-void Yukkuri::MouseButtonDown(const int& iButton,
-                const int& iX,
-                const int& iY,
-                const int& iRelX,
-                const int& iRelY)
-{
-    // Handle mouse button pressed
+	// Handle mouse button pressed
 }
 
 void Yukkuri::WindowInactive()
 {
-    // Pause game
+	// Pause game
 }
 
 void Yukkuri::WindowActive()
 {
-    // Un-pause game
+	// Un-pause game
 }
-
 
 void Yukkuri::End()
 {
-    // Clean up
+	// Clean up
 }

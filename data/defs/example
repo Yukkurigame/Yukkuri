@@ -21,6 +21,7 @@
 --- //TODO: entity description.
 
 --- Widget:
+--- *.widget
 --- Widgets has some types(variable type).
 --- All unspecified fields are 0 by default.
 --- children - it's array of widget names. 
@@ -117,3 +118,19 @@
 	},
 }
 
+--- Keybindings
+--- *.config
+{
+	"Bindings",
+	{
+		name = "name",
+		keys = {
+			--- Enumeration of the keys here.
+			--- Format: key = "action" 
+			up = "up",
+			down = "down",
+			joyaxis10 = "up",
+			esc = "exit",
+		}
+	}
+}

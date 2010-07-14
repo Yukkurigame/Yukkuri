@@ -5,6 +5,7 @@
 using std::vector;
 
 #include "engine.h"
+#include "Bindings.h"
 #include "unitmanager.h"
 //#include "map.h"
 #include "Interface.h"
@@ -15,42 +16,22 @@ using std::vector;
 class Yukkuri: public CEngine
 {
 public:
-    void AdditionalInit ();
-    void Think        ( const int& iElapsedTime );
-    void Render        (  );
- 
-    void KeyUp          (const int& iKeyEnum);
-    void KeyDown        (const int& iKeyEnum);
- 
-    void MouseMoved     (const int& iButton, 
-                 const int& iX, 
-                 const int& iY, 
-                 const int& iRelX, 
-                     const int& iRelY);
- 
-    void MouseButtonUp  (const int& iButton, 
-                 const int& iX, 
-                 const int& iY, 
-                 const int& iRelX, 
-                     const int& iRelY);
- 
-    void MouseButtonDown(const int& iButton, 
-                 const int& iX, 
-                 const int& iY, 
-                 const int& iRelX, 
-                     const int& iRelY);
- 
-    void WindowInactive();
-    void WindowActive();
- 
-    void End();
+	void AdditionalInit ();
+	void Think( const int& ElapsedTime );
+	void Render( );
 
-protected:
+	void MouseMoved( const int& Button, const int& X, const int& Y, const int& RelX, const int& RelY );
+	void MouseButtonUp( const int& Button, const int& X, const int& Y, const int& RelX, const int& RelY );
+	void MouseButtonDown( const int& Button, const int& X, const int& Y, const int& RelX, const int& RelY );
 
+	void WindowInactive( );
+	void WindowActive( );
+
+	void End();
 
 private:
-    UnitManager units;
-    DayTime daytime;
+	UnitManager* units;
+	DayTime daytime;
 };
 
 #endif //YUKKURI_H

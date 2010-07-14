@@ -7,7 +7,7 @@
 		y = 0,
 		width = 263,
 		height = 60,
-		textx = 40,
+		textx = 50,
 		texty = 40,
 		fontsize = 26,
 		bgimage = "misc.png",		

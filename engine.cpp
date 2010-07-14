@@ -1,25 +1,25 @@
 #include "engine.h"
- 
+
 /** Default constructor. **/
 CEngine::CEngine()
 {
-	m_lLastTick = 0;
-	m_czTitle = 0;
- 
-	m_iFPSTickCounter = 0;
-	m_iFPSCounter = 0;
-	m_iCurrentFPS = 0;
-	m_sFPStext = new char[16];
- 
-	m_bMinimized = false;
+	LastTick = 0;
+	Title = 0;
+
+	FPSTickCounter = 0;
+	FPSCounter = 0;
+	CurrentFPS = 0;
+	FPStext = new char[16];
+
+	Minimized = false;
 }
- 
+
 /** Destructor. **/
 CEngine::~CEngine()
 {
 	SDL_Quit();
 }
- 
+
 /** Sets the height and width of the window.
  * 	Dummy
 **/
@@ -44,10 +44,6 @@ void CEngine::Init()
 
 	Graphics::graph.openglInit( );
 
-
-	//SetSize( );
-
-
 	// Attempt to create a window with the specified height and width.
 	// If we fail, return error.
 	if ( !SDL_SetVideoMode( WWIDTH, WHEIGHT, 0, SDL_OPENGL ) ) {
@@ -59,7 +55,7 @@ void CEngine::Init()
 	Graphics::graph.openglSetup( WWIDTH, WHEIGHT );
 
 	cout << "Done" << endl;
-   
+
 	if( SDL_NumJoysticks() > 0 ){
 		cout << SDL_NumJoysticks() << " joysticks were found:" << endl;
 		for( int i=0; i < SDL_NumJoysticks(); i++ )
@@ -71,53 +67,63 @@ void CEngine::Init()
 	AdditionalInit();
 
 }
- 
+
 /** The main loop. **/
 void CEngine::Start()
 {
-	float m_dUpdIterations = 0.0f;
-	float m_sdCyclesLeft = 0.0f;
-	m_lLastTick = 0;
-	m_bQuit = false;
-	player_movex = 0;
-	player_movey = 0;
-	long iElapsedTicks;
+	float UpdIterations = 0.0f;
+	float CyclesLeft = 0.0f;
+	LastTick = 0;
+	EndLoop = false;
+	long ElapsedTicks;
 
-	// Main loop: loop forever.
-	while ( !m_bQuit )
-	{
-		m_lTick = SDL_GetTicks();
-		iElapsedTicks = m_lTick - m_lLastTick;
+	// Main loop.
+	while( !EndLoop ){
+
+		Tick = SDL_GetTicks();
+		if(Tick - FPSTickCounter >= 250){
+		    float seconds = (Tick - FPSTickCounter) / 1000.0;
+		    CurrentFPS = FPSCounter / seconds;
+		    FPSTickCounter = Tick;
+		    FPSCounter = 0;
+		}
+
+		ElapsedTicks = Tick - LastTick;
 
 		// Handle mouse and keyboard input
 		HandleInput();
- 
-		if ( m_bMinimized ) {
+
+		if( Minimized ){
 			// Release some system resources if the app. is minimized.
 			//WaitMessage(); // pause the application until focus in regained
-		} else {
-			m_dUpdIterations = (( iElapsedTicks ) + m_sdCyclesLeft);
+		}else{
+			UpdIterations = ElapsedTicks + CyclesLeft;
 
-			if (m_dUpdIterations > (MAX_CYCLES_PER_FRAME * UPDATE_INTERVAL))
-				m_dUpdIterations = (MAX_CYCLES_PER_FRAME * UPDATE_INTERVAL);
+			if (UpdIterations > (MAX_CYCLES_PER_FRAME * UPDATE_INTERVAL))
+				UpdIterations = (MAX_CYCLES_PER_FRAME * UPDATE_INTERVAL);
 
 			// Do some thinking
-			while (m_dUpdIterations > UPDATE_INTERVAL) { // Update game state a variable number of times
-				m_dUpdIterations -= UPDATE_INTERVAL;
-				DoThink( iElapsedTicks );
+			while (UpdIterations > UPDATE_INTERVAL) { // Update game state a variable number of times
+				UpdIterations -= UPDATE_INTERVAL;
+				DoThink( ElapsedTicks );
 			}
 
-			m_sdCyclesLeft = m_dUpdIterations;
-			m_lLastTick =  m_lTick;
+			CyclesLeft = UpdIterations;
+			LastTick = Tick;
 
 			// Render stuff
 			DoRender();
 		}
 	}
- 
+
 	End();
 }
- 
+
+void CEngine::Quit( )
+{
+	EndLoop = true;
+}
+
 /** Handles all controller inputs.
 	@remark This function is called once per frame.
 **/
@@ -128,144 +134,142 @@ void CEngine::HandleInput()
 
 	while ( SDL_PollEvent( &event ) )
 	{
-		switch ( event.type )
-		{
-		case SDL_KEYDOWN:
-			// If escape is pressed set the Quit-flag
-			if( event.key.keysym.sym == SDLK_ESCAPE )
-			{
-				m_bQuit = true;
+		int evnt = 0;
+		short down = 1;
+		switch( event.type ){
+
+			case SDL_QUIT:
+				Quit( );
 				break;
-			}
 
-			if( event.key.keysym.sym == SDLK_s )
-			{
-				//string name = "screenshot.bmp";
-				Graphics::graph.SaveScreenshot("screenshot.bmp");
-			}
- 
-			KeyDown( event.key.keysym.sym );
-			break;
- 
-		case SDL_KEYUP:
-			KeyUp( event.key.keysym.sym );
-			break;
- 
- 
-		case SDL_JOYAXISMOTION:  /* Handle Joystick Motion */
-				if( event.jaxis.axis == 0) /* Left-right movement */
-				{
-					//TODO: it's cruve
-					player_movex = ( event.jaxis.value > 0 ? 1 : (event.jaxis.value < 0 ? -1 : 0));
+			case SDL_ACTIVEEVENT:
+				if( event.active.state & SDL_APPACTIVE ){
+					if( event.active.gain ){
+						Minimized = false;
+						WindowActive( );
+					}else{
+						Minimized = true;
+						WindowInactive( );
+					}
 				}
-				if( event.jaxis.axis == 1)  /* Up-Down movement */
-				{
-					player_movey = ( event.jaxis.value > 0 ? 1 : (event.jaxis.value < 0 ? -1 : 0));
-				}
-			break;
+				break;
 
-		case SDL_QUIT:
-			m_bQuit = true;
-			break;
- 
-		case SDL_MOUSEMOTION:
-			MouseMoved(
-				event.button.button,
-				event.motion.x,
-				event.motion.y,
-				event.motion.xrel,
-				event.motion.yrel);
-			break;
- 
-		case SDL_MOUSEBUTTONUP:
-			MouseButtonUp(
-				event.button.button,
-				event.motion.x,
-				event.motion.y,
-				event.motion.xrel,
-				event.motion.yrel);
-			break;
- 
-		case SDL_MOUSEBUTTONDOWN:
-			MouseButtonDown(
-				event.button.button,
-				event.motion.x,
-				event.motion.y,
-				event.motion.xrel,
-				event.motion.yrel);
-			break;
- 
-		case SDL_ACTIVEEVENT:
-			if ( event.active.state & SDL_APPACTIVE ) {
-				if ( event.active.gain ) {
-					m_bMinimized = false;
-					WindowActive();
-				} else {
-					m_bMinimized = true;
-					WindowInactive();
+			case SDL_KEYUP:
+				down = 0;	//Yes, no break.
+			case SDL_KEYDOWN:
+				evnt = event.key.keysym.sym;
+				break;			//It's break for both SDL_KEY events.
+
+			case SDL_JOYAXISMOTION:
+				evnt = SDLK_LAST; //;
+				if( event.jaxis.axis == 0){ // Left-right movement
+					//left, right, release
+					if( event.jaxis.value > 0 )
+						++evnt;
+					else if( event.jaxis.value < 0 )
+						evnt +=2;
+					else{
+						++evnt;
+						down = 0;
+					}
 				}
-			}
-			break;
+				if( event.jaxis.axis == 1){ //Up-Down movement
+					//up, down, release
+					evnt += 2;
+					if( event.jaxis.value > 0 )
+						++evnt;
+					else if( event.jaxis.value < 0 )
+						evnt +=2;
+					else{
+						++evnt;
+						down = 0;
+					}
+				}
+				break;
+
+				/*
+				case SDL_MOUSEMOTION:
+					MouseMoved(
+						event.button.button,
+						event.motion.x,
+						event.motion.y,
+						event.motion.xrel,
+						event.motion.yrel);
+					break;
+
+				case SDL_MOUSEBUTTONUP:
+					MouseButtonUp(
+						event.button.button,
+						event.motion.x,
+						event.motion.y,
+						event.motion.xrel,
+						event.motion.yrel);
+					break;
+
+				case SDL_MOUSEBUTTONDOWN:
+					MouseButtonDown(
+						event.button.button,
+						event.motion.x,
+						event.motion.y,
+						event.motion.xrel,
+						event.motion.yrel);
+					break;
+				*/
+
 		} // switch
+
+		if( evnt > 0 )
+			Bindings::bnd.process( evnt, down );
+
 	} // while (handling input)
 
 }
 
 /** Handles the updating routine. **/
-void CEngine::DoThink( const int& iElapsedTicks ) 
+void CEngine::DoThink( const int& ElapsedTicks )
 {
-	Think( iElapsedTicks );
- 
-	m_iFPSTickCounter += iElapsedTicks;
+	Think( ElapsedTicks );
 }
- 
+
 /** Handles the rendering and FPS calculations. **/
 void CEngine::DoRender()
 {
-	++m_iFPSCounter;
-	if ( m_iFPSTickCounter >= 1000 )
-	{
-		m_iCurrentFPS = m_iFPSCounter;
-		m_iFPSCounter = 0;
-		m_iFPSTickCounter = 0;
-	}
- 
+	++FPSCounter;
+
 	Render(  );
 
 	SDL_Delay(1);
 }
- 
-/** Sets the title of the window 
-	@param czTitle A character array that contains the text that the window title should be set to.
+
+/** Sets the title of the window
+	@param title A character array that contains the text that the window title should be set to.
 **/
-void CEngine::SetTitle(const char* czTitle)
+void CEngine::SetTitle(const char* title)
 {
-	m_czTitle = czTitle;
-	SDL_WM_SetCaption( czTitle, 0 );
+	Title = title;
+	SDL_WM_SetCaption( Title, 0 );
 }
- 
+
 /** Retrieve the title of the application window.
 	@return The last set windows title as a character array.
 	@remark Only the last set title is returned. If another application has changed the window title, then that title won't be returned.
 **/
 const char* CEngine::GetTitle()
 {
-	return m_czTitle;
+	return Title;
 }
- 
+
 /** Get the current FPS.
 	@return The number of drawn frames in the last second.
 	@remark The FPS is only updated once each second.
 **/
-int CEngine::GetFPS()
+float CEngine::GetFPS()
 {
-	return m_iCurrentFPS;
+	return CurrentFPS;
 }
 
 char* CEngine::GetFPSText()
 {
-	sprintf( m_sFPStext, "FPS: %d", GetFPS() );
-	return m_sFPStext;
+	sprintf( FPStext, "FPS: %0.1f", GetFPS() );
+	return FPStext;
 }
-
-

@@ -1,5 +1,7 @@
 #include "unitmanager.h"
 
+UnitManager UnitManager::units;
+
 UnitManager::UnitManager()
 {
 
@@ -7,12 +9,12 @@ UnitManager::UnitManager()
 
 UnitManager::~UnitManager()
 {
-	while( m_vUnits.size() > 0 )
+	while( Units.size() > 0 )
 	{
-		if ( m_vUnits.back() != 0 ) {
-			delete m_vUnits.back();
+		if ( Units.back() != 0 ) {
+			delete Units.back();
 		}
-		m_vUnits.pop_back();
+		Units.pop_back();
 	}
 }
 /**
@@ -56,29 +58,29 @@ void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 
 	if(um_ID == PLAYER)
 		temp->setPlayer(true);
-		um_player = temp;
+		player = temp;
 
 	return;
 }
 
 void UnitManager::tick( const int& dt )
 {
-	for (int i = 0; i < (int)m_vUnits.size(); i++) {
-		m_vUnits[i]->update( dt );
+	for (int i = 0; i < (int)Units.size(); i++) {
+		Units[i]->update( dt );
 	}
 }
 
-void UnitManager::AddUnit( Unit* pUnit )
+void UnitManager::AddUnit( Unit* unit )
 {
-	m_vUnits.push_back( pUnit );
+	Units.push_back( unit );
 }
 
-Unit* UnitManager::GetUnit( unsigned int iIndex )
+Unit* UnitManager::GetUnit( unsigned int index )
 {
-	if ( iIndex < 0 || iIndex > m_vUnits.size() )
+	if ( index < 0 || index > Units.size() )
 		return 0;
 
-	return m_vUnits.at( iIndex );
+	return Units.at( index );
 }
 
 coord2farr* UnitManager::getAnim( Unit* unit )
@@ -86,11 +88,11 @@ coord2farr* UnitManager::getAnim( Unit* unit )
 	return Graphics::graph.GetAnimation( unit->getUnitName( ), unit->getUnitAnim( ) );
 }
 
-
 void UnitManager::DrawUnits( const float camX, const float camY )
 {
-	for (int i = 0; i < (int)m_vUnits.size(); i++) {
-		Unit* u = m_vUnits[i];
+	Unit* u = NULL;
+	for (int i = 0; i < (int)Units.size(); i++) {
+		u = Units[i];
 		Graphics::graph.DrawGLTexture( u->getUnitImage( ),
 				Graphics::graph.GetVertex( u->getUnitX( ) - camX, u->getUnitY( ) - camY, 0.0,
 											u->getUnitWidth( ), u->getUnitHeight( ), 1 ),

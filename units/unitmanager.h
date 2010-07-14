@@ -14,21 +14,23 @@ class UnitManager
     public:
         UnitManager();
         virtual ~UnitManager();
-        
+
+        static UnitManager units;
+
         void DrawUnits( const float camX, const float camY );
         void CreateUnit( enum e_unitID um_ID, int x, int y );
         Unit* GetUnit( unsigned int iIndex );
-        Unit* GetPlayer() { return um_player; }
-        
+        Unit* GetPlayer() { return player; }
+
         void tick( const int& );
 
-        int GetUnitVecSize() { return (int)m_vUnits.size();}
+        int GetUnitVecSize() { return (int)Units.size();}
 
-    private:        
+    private:
         void AddUnit( Unit* pUnit );
         coord2farr* getAnim( Unit* );
-        vector< Unit* > m_vUnits;
-        Unit* um_player;        
+        vector< Unit* > Units;
+        Unit* player;
 };
 
-#endif // UNITMANAGER_H 
+#endif // UNITMANAGER_H

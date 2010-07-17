@@ -20,10 +20,16 @@ using std::string;
 class LuaConfig : LuaMain
 {
 public:
-	LuaConfig( );
-	~LuaConfig( );
+	static LuaConfig* Instance( ){
+		if( !conf )
+			conf = new LuaConfig();
+		return conf;
+	}
 
-	static LuaConfig conf;
+	static void Destroy( ){
+		delete conf;
+		conf = 0;
+	}
 
 	bool OpenConfig( string );
 	bool LoadAll( string );
@@ -40,6 +46,10 @@ public:
 		bool res = execFunction("get", prm, prmsz, ret);
 		return res;
 	}
+private:
+	LuaConfig( );
+	~LuaConfig( );
+	static LuaConfig* conf;
 
 };
 

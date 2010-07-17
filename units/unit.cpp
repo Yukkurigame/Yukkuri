@@ -5,12 +5,12 @@ Unit::Unit()
     m_iAn = 0;
     m_fX = 0.0;
     m_fY = 0.0;
-    player = false;
+    //player = false;
 }
 
 Unit::~Unit()
 {
-
+	delete defs;
 }
 
 bool Unit::Create( )
@@ -22,25 +22,26 @@ bool Unit::Create( )
 	defs = new EntityDefs;
 	//FIXME: It,s so long
 	string type = "entity";
-	LuaConfig::conf.getValue( "name", UnitName, type, defs->Name );
-	LuaConfig::conf.getValue( "image", UnitName, type, defs->imageName );
-	LuaConfig::conf.getValue( "height", UnitName, type, defs->height );
-	LuaConfig::conf.getValue( "width", UnitName, type, defs->width );
-	LuaConfig::conf.getValue( "imagecols", UnitName, type, defs->imagecols );
-	LuaConfig::conf.getValue( "imagerows", UnitName, type, defs->imagerows );
+	LuaConfig* conf = LuaConfig::Instance();
+	conf->getValue( "name", UnitName, type, defs->Name );
+	conf->getValue( "image", UnitName, type, defs->imageName );
+	conf->getValue( "height", UnitName, type, defs->height );
+	conf->getValue( "width", UnitName, type, defs->width );
+	conf->getValue( "imagecols", UnitName, type, defs->imagecols );
+	conf->getValue( "imagerows", UnitName, type, defs->imagerows );
     return true;
 }
 
 void Unit::setUnitType( enum e_unitID t_Unit )
 {
-        Type = t_Unit;        
+        Type = t_Unit;
 
     return;
 }
 
 void Unit::setUnitName( )
 {
-	UnitName = LuaConfig::conf.getRandom("meeting", "entity");
+	UnitName = LuaConfig::Instance()->getRandom("meeting", "entity");
 }
 
 void Unit::setUnitX( float x )

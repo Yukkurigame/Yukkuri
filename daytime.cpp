@@ -1,10 +1,11 @@
 #include "daytime.h"
+#include "unitmanager.h"
 
 DayTime::DayTime()
 {
 	Day = 1;
 	time = 10.0;
-	sfield = Graphics::graph.CreateGLSprite(0, 0, 0, WWIDTH, WHEIGHT );
+	sfield = Graphics::Instance()->CreateGLSprite(0, 0, 0, WWIDTH, WHEIGHT );
 	sfield->col->r = 0;
 	sfield->col->g = 0;
 	sfield->col->b = 0;
@@ -13,7 +14,7 @@ DayTime::DayTime()
 
 DayTime::~DayTime()
 {
-	Graphics::graph.FreeGLSprite(sfield);
+	Graphics::Instance()->FreeGLSprite(sfield);
 }
 
 void DayTime::loadInterface()
@@ -28,14 +29,15 @@ void DayTime::update( const int& dt )
 	if( time > 22 or time < 2){
 		if( dark != 128 )
 			dark = 128;
-		if ( time > 0.0f ){
-			if( !days_update ){
+		if ( time < 2 ){
+			if( !Updated ){
 				Day++;
-				days_update = true;
+				UnitManager::units.grow();
+				Updated = true;
 			}
 		}else{
-			if( days_update )
-				days_update = false;
+			if( Updated )
+				Updated = false;
 		}
 		if(text)
 			text->setText("Midnight");
@@ -80,6 +82,6 @@ void DayTime::draw( ){
 		sfield->col->a = dark;
 	}
 	if(dark)
-		Graphics::graph.DrawGLTexture( sfield );
+		Graphics::Instance()->DrawGLTexture( sfield );
 	ldark = dark;
 }

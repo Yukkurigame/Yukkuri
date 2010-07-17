@@ -22,7 +22,7 @@ public:
 	Widget();
 	virtual ~Widget();
 
-	virtual bool create( string, int x=0, int y=0 );
+	virtual bool create( string name, string text, int x=0, int y=0 );
 
 	void setType( wType t ){ type = t; }
 	wType getType( ){ return type; }
@@ -57,6 +57,7 @@ public:
 	virtual void setBarValue( int val ) {};
 
 protected:
+	Graphics* graph;
 	float posz;
 	wType type;
 	Sprite* background;
@@ -71,13 +72,13 @@ class TextWidget: public Widget
 public:
 	TextWidget( );
 
-	bool create( string name, int x=0, int y=0 );
+	bool create( string name, string text, int x=0, int y=0 );
 
 	void setFont( string name, int size ){ FontName = name; FontSize = size; }
 	void setFontColor( int r, int g, int b );
 	//FIXME: как-то это все переделать задавать Text 1 раз
 	//FIXME: А AddText менять.
-	void setText( string text ){ Text = text; }
+	void setText( string text ){ AddText = text; }
 	void setTextPosition( float x, float y ){ textx = x; texty = y; }
 	void draw( );
 
@@ -96,10 +97,10 @@ class BarWidget: public TextWidget
 {
 public:
 	BarWidget( );
-	bool create( string name, int x=0, int y=0 );
+	/*bool create( string name, int x=0, int y=0 );*/
 	void createBar( string name, int* position );
-	void setBarSize( int size );
-	void setBarValue( int val ){
+	void setBarValue( int size );
+	void setBarSize( int val ){
 		if( val > 0 )
 			barmaxvalue = val;
 		else
@@ -116,6 +117,7 @@ protected:
 	Sprite* top;
 
 private:
+	int barvalue;
 	int barmaxvalue; // in units
 	float barstartx;
 	float barwidth; // in pixels

@@ -201,9 +201,9 @@ void Bindings::process( int num, short down )
 		Binds::movePlayerLeft(down);
 	}else if( Binds[Keys[num]] == "right" ){
 		Binds::movePlayerRight(down);
-	}else if( Binds[Keys[num]] == "exit" ){
+	}else if( Binds[Keys[num]] == "exit" && down ){
 			Binds::exit( engine );
-	}else if( Binds[Keys[num]] == "screenshot" ){
+	}else if( Binds[Keys[num]] == "screenshot" && down ){
 			Binds::screenshot( );
 	}
 }
@@ -212,7 +212,7 @@ void Bindings::LoadKeys( )
 {
 	string subconfig = "game";
 	string config = "bindings";
-	LuaConfig::conf.getValue( "keys", subconfig, config, Binds );
+	LuaConfig::Instance()->getValue( "keys", subconfig, config, Binds );
 }
 
 void Binds::movePlayerUp( short down )
@@ -237,7 +237,7 @@ void Binds::movePlayerRight( short down )
 
 void Binds::screenshot( )
 {
-	Graphics::graph.SaveScreenshot( "screenshot" );
+	Graphics::Instance()->SaveScreenshot( );
 }
 
 void Binds::exit( const void* e )

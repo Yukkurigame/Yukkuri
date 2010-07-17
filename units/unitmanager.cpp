@@ -4,7 +4,7 @@ UnitManager UnitManager::units;
 
 UnitManager::UnitManager()
 {
-
+	graph = Graphics::Instance();
 }
 
 UnitManager::~UnitManager()
@@ -37,7 +37,7 @@ void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 	}
 
 	if( !temp->Create() ||
-		!temp->setUnitImage( Graphics::graph.LoadGLTexture( temp->getUnitImageName( ) ) ) ||
+		!temp->setUnitImage( graph->LoadGLTexture( temp->getUnitImageName( ) ) ) ||
 		!temp->loadAnimation()
 	)
 	{
@@ -46,7 +46,7 @@ void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 	}
 
 	//cout << "load unit animation" << endl;
-	Graphics::graph.LoadAnimation( temp->getUnitName(), temp->getUnitImageRows(),
+	graph->LoadAnimation( temp->getUnitName(), temp->getUnitImageRows(),
 								temp->getUnitImageCols(), temp->getUnitWidth(), temp->getUnitHeight(),
 								temp->getUnitImage()->w, temp->getUnitImage()->h);
 	//cout << "success" << endl;
@@ -56,9 +56,10 @@ void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 
 	AddUnit( temp );
 
-	if(um_ID == PLAYER)
-		temp->setPlayer(true);
+	if(um_ID == PLAYER){
+		//temp->setPlayer(true);
 		player = temp;
+	}
 
 	return;
 }
@@ -69,6 +70,14 @@ void UnitManager::tick( const int& dt )
 		Units[i]->update( dt );
 	}
 }
+
+void UnitManager::grow( )
+{
+	for (int i = 0; i < (int)Units.size(); i++) {
+		Units[i]->grow( );
+	}
+}
+
 
 void UnitManager::AddUnit( Unit* unit )
 {
@@ -85,7 +94,7 @@ Unit* UnitManager::GetUnit( unsigned int index )
 
 coord2farr* UnitManager::getAnim( Unit* unit )
 {
-	return Graphics::graph.GetAnimation( unit->getUnitName( ), unit->getUnitAnim( ) );
+	return graph->GetAnimation( unit->getUnitName( ), unit->getUnitAnim( ) );
 }
 
 void UnitManager::DrawUnits( const float camX, const float camY )
@@ -93,10 +102,10 @@ void UnitManager::DrawUnits( const float camX, const float camY )
 	Unit* u = NULL;
 	for (int i = 0; i < (int)Units.size(); i++) {
 		u = Units[i];
-		Graphics::graph.DrawGLTexture( u->getUnitImage( ),
-				Graphics::graph.GetVertex( u->getUnitX( ) - camX, u->getUnitY( ) - camY, 0.0,
+		graph->DrawGLTexture( u->getUnitImage( ),
+				graph->GetVertex( u->getUnitX( ) - camX, u->getUnitY( ) - camY, 0.0,
 											u->getUnitWidth( ), u->getUnitHeight( ), 1 ),
-				Graphics::graph.GetAnimation( u->getUnitName( ), u->getUnitAnim( ) ), &u->getUnitImage( )->clr
-				);
+				graph->GetAnimation( u->getUnitName( ), u->getUnitAnim( ) ), &u->getUnitImage( )->clr
+			);
 	}
 }

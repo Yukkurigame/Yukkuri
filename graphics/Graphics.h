@@ -21,61 +21,77 @@ using std::string;
 
 class Graphics
 {
-	public:
-		static Graphics graph;
+public:
+	static Graphics* Instance( ){
+		if( !graph )
+			graph = new Graphics();
+		return graph;
+	}
 
-		~Graphics();
+	static void Destroy( ){
+		delete graph;
+		graph = 0;
+	}
 
-		void openglInit();
-		void openglSetup( int wwidth, int wheight );
+	bool SetScreen( SDL_Surface* s );
 
-		Texture* LoadGLTexture( string name );
-		void FreeGLTexture( Texture* );
+	void openglInit();
+	void openglSetup( int wwidth, int wheight );
 
-		inline void DrawGLTexture( Sprite* s ){
-			DrawGLTexture( s->tex, s->vertices, s->coordinates, s->col );
-		}
-		void DrawGLTexture( Texture* tex, vertex3farr* vertices, coord2farr* coordinates, Color* col );
+	Texture* LoadGLTexture( string name );
+	void FreeGLTexture( Texture* );
 
-		void LoadAllTTFonts( int size );
-		bool LoadTTFont( string dir, string filename, int size );
-		void PrintText(string font, int size, float x, float y, float z, const int* color, string text);
+	inline void DrawGLTexture( Sprite* s ){
+		DrawGLTexture( s->tex, s->vertices, s->coordinates, s->col );
+	}
+	void DrawGLTexture( Texture* tex, vertex3farr* vertices, coord2farr* coordinates, Color* col );
 
-		inline Sprite* CreateGLSprite( float x, float y, float z, float width, float height ){
-			return CreateGLSprite( x, y, z, 0, 0, width, height, NULL);
-		}
-		inline Sprite* CreateGLSprite( float x, float y, float z, float width, float height, Texture* tex ){
-			return CreateGLSprite( x, y, z, 0, 0, width, height, tex);
-		}
-		Sprite* CreateGLSprite( float x, float y, float z, float texX, float texY,
-								float width, float height, Texture* tex, short mirrored = 0, short centered =0 );
+	void LoadAllTTFonts( int size );
+	bool LoadTTFont( string dir, string filename, int size );
+	void PrintText(string font, int size, float x, float y, float z, const int* color, string text);
 
-		void FreeGLSprite( Sprite* );
+	inline Sprite* CreateGLSprite( float x, float y, float z, float width, float height ){
+		return CreateGLSprite( x, y, z, 0, 0, width, height, NULL);
+	}
+	inline Sprite* CreateGLSprite( float x, float y, float z, float width, float height, Texture* tex ){
+		return CreateGLSprite( x, y, z, 0, 0, width, height, tex);
+	}
+	Sprite* CreateGLSprite( float x, float y, float z, float texX, float texY,
+							float width, float height, Texture* tex, short mirrored = 0, short centered =0 );
 
-		coord2farr* GetCoordinates(float x1, float y1, float x2, float y2, float width, float height, short mirrored);
-		vertex3farr* GetVertex(float x, float y, float z, float width, float height, short centered);
+	void FreeGLSprite( Sprite* );
 
-		coord2farr* GetAnimation( string , unsigned int );
-		void LoadAnimation( string name, int rows, int cols, int width, int height, int texw, int texh );
+	coord2farr* GetCoordinates(float x1, float y1, float x2, float y2, float width, float height, short mirrored);
+	vertex3farr* GetVertex(float x, float y, float z, float width, float height, short centered);
 
-		void DrawGLScene();
-		void CleanGLScene();
+	coord2farr* GetAnimation( string , unsigned int );
+	void LoadAnimation( string name, int rows, int cols, int width, int height, int texw, int texh );
 
-		bool SaveScreenshot(const char *FileName);
+	void DrawGLScene();
+	void CleanGLScene();
 
-	private:
-		void AddGLTexture( Texture* , string );
-		Texture* getGLTexture( string );
+	bool SaveScreenshot( );
 
-		SDL_Surface* LoadImage( std::string );
-		SDL_Surface* OpenImage( std::string );
+private:
+	Graphics() {};
+	~Graphics();
+	Graphics( const Graphics& );
+	Graphics& operator=(const Graphics&);
+	static Graphics* graph;
 
-		font_data* GetFont( string name, int size);
-		void PrintText(const font_data &ft_font, float x, float y, float z, int size, const int* color, const char *str);
+	SDL_Surface* screen;
+	void AddGLTexture( Texture* , string );
+	Texture* getGLTexture( string );
 
-		map < string, vector<coord2farr*> > Animations;
-		map < string, Texture* > LoadedGLTextures;
-		map < string, map< int, font_data*> > LoadedFonts;
+	SDL_Surface* LoadImage( std::string );
+	SDL_Surface* OpenImage( std::string );
+
+	font_data* GetFont( string name, int size);
+	void PrintText(const font_data &ft_font, float x, float y, float z, int size, const int* color, const char *str);
+
+	map < string, vector<coord2farr*> > Animations;
+	map < string, Texture* > LoadedGLTextures;
+	map < string, map< int, font_data*> > LoadedFonts;
 
 };
 

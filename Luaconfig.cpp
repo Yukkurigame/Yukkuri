@@ -6,7 +6,7 @@
 
 #include "Luaconfig.h"
 
-LuaConfig LuaConfig::conf; //global is bad, yes
+LuaConfig* LuaConfig::conf = 0;
 
 LuaConfig::LuaConfig( )
 {

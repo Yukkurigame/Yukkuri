@@ -19,14 +19,16 @@ class UnitManager
 
         void DrawUnits( const float camX, const float camY );
         void CreateUnit( enum e_unitID um_ID, int x, int y );
-        Unit* GetUnit( unsigned int iIndex );
+        Unit* GetUnit( unsigned int Index );
         Unit* GetPlayer() { return player; }
 
         void tick( const int& );
+        void grow( ); //FUUUUU
 
         int GetUnitVecSize() { return (int)Units.size();}
 
     private:
+        Graphics* graph;
         void AddUnit( Unit* pUnit );
         coord2farr* getAnim( Unit* );
         vector< Unit* > Units;

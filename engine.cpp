@@ -42,17 +42,17 @@ void CEngine::Init()
 		exit( 1 );
 	}
 
-	Graphics::graph.openglInit( );
+	Graphics::Instance()->openglInit( );
 
 	// Attempt to create a window with the specified height and width.
 	// If we fail, return error.
-	if ( !SDL_SetVideoMode( WWIDTH, WHEIGHT, 0, SDL_OPENGL ) ) {
+	if ( !Graphics::Instance()->SetScreen( SDL_SetVideoMode( WWIDTH, WHEIGHT, 0, SDL_OPENGL ) ) ) {
 		cout << "[FAIL]" << endl;
 		cout << "Unable to set up video: " << SDL_GetError() << endl;
 		exit( 1 );
 	}
 
-	Graphics::graph.openglSetup( WWIDTH, WHEIGHT );
+	Graphics::Instance()->openglSetup( WWIDTH, WHEIGHT );
 
 	cout << "Done" << endl;
 

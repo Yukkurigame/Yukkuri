@@ -7,6 +7,7 @@
 
 Widget::Widget()
 {
+	graph = Graphics::Instance();
 	width = 0;
 	height = 0;
 	posx = 0;
@@ -21,18 +22,19 @@ Widget::Widget()
 
 Widget::~Widget()
 {
-	Graphics::graph.FreeGLSprite( background );
+	graph->FreeGLSprite( background );
 	parent = NULL;
 	children.clear();
 }
 
-bool Widget::create( string name, int x, int y )
+bool Widget::create( string name, string text, int x, int y )
 {
+	//FIXME: text not used it is bad;
 	Texture* tex;
-	tex = Graphics::graph.LoadGLTexture( name );
+	tex = graph->LoadGLTexture( name );
 	bgimg[0] = x;
 	bgimg[1] = y;
-	background = Graphics::graph.CreateGLSprite(posx, posy, posz, bgimg[0], bgimg[1], width, height, tex);
+	background = graph->CreateGLSprite(posx, posy, posz, bgimg[0], bgimg[1], width, height, tex);
 	if(!background)
 		return false;
 	return true;
@@ -59,7 +61,7 @@ void Widget::draw( )
 		return;
 	if(!this->background)
 		return;
-	Graphics::graph.DrawGLTexture( background );
+	graph->DrawGLTexture( background );
 }
 
 TextWidget::TextWidget()
@@ -72,14 +74,15 @@ TextWidget::TextWidget()
 	setFontColor(0, 0, 0);
 }
 
-bool TextWidget::create( string name, int x, int y )
+bool TextWidget::create( string name, string text, int x, int y )
 {
 	if( name == "" ){
 		background = NULL;
 	}else{
-		if( !Widget::create( name, x, y ) )
+		if( !Widget::create( name, text, x, y ) )
 			background = NULL;
 	}
+	Text = text;
 	return true;
 }
 
@@ -97,8 +100,8 @@ void TextWidget::draw( )
 	if( this->FontName == "" )
 		return;
 	if(background)
-		Graphics::graph.DrawGLTexture( background );
-	Graphics::graph.PrintText( FontName, FontSize, posx+textx, posy+texty, posz, FontColor, Text + AddText );
+		graph->DrawGLTexture( background );
+	graph->PrintText( FontName, FontSize, posx+textx, posy+texty, posz, FontColor, Text + AddText );
 }
 
 BarWidget::BarWidget()
@@ -110,17 +113,6 @@ BarWidget::BarWidget()
 	barstartx = 0;
 }
 
-bool BarWidget::create( string name, int x, int y )
-{
-	if( name == "" ){
-		background = NULL;
-	}else{
-		if( !Widget::create( name, x, y ) )
-			background = NULL;
-	}
-	return true;
-}
-
 void BarWidget::createBar( string name, int* pos)
 {
 	Texture* tex;
@@ -129,10 +121,10 @@ void BarWidget::createBar( string name, int* pos)
 		barwidth = pos[4];
 	else
 		barwidth = width;
-	tex = Graphics::graph.LoadGLTexture( name );
+	tex = graph->LoadGLTexture( name );
 	//FIXME: bar without top.
-	top = Graphics::graph.CreateGLSprite(posx, posy, posz+0.1, pos[0], pos[1], width, height, tex);
-	bar = Graphics::graph.CreateGLSprite(barstartx, posy + pos[3], posz, barwidth, pos[5]);
+	top = graph->CreateGLSprite(posx, posy, posz+0.1, pos[0], pos[1], width, height, tex);
+	bar = graph->CreateGLSprite(barstartx, posy + pos[3], posz, barwidth, pos[5]);
 	if( bar ){
 		bar->col->r = pos[6];
 		bar->col->g = pos[7];
@@ -142,18 +134,21 @@ void BarWidget::createBar( string name, int* pos)
 	setBarSize(1);
 }
 
-void BarWidget::setBarSize( int size )
+void BarWidget::setBarValue( int value )
 {
+	if( value == barvalue )
+		return;
+	barvalue = value;
 	{//Output text;
 		char str[25];
-		sprintf( str,"%d/%d", size, barmaxvalue );
+		sprintf( str,"%d/%d", value, barmaxvalue );
 		AddText = str;
 	}
-	if( size < 0 )
-		size = 0;
-	if( size > barmaxvalue )
-		size = barmaxvalue;
-	float s = size / barmaxvalue;
+	if( value < 0 )
+		value = 0;
+	if( value > barmaxvalue )
+		value = barmaxvalue;
+	float s = static_cast<float>(value) / static_cast<float>(barmaxvalue);
 	float x = barstartx + barwidth * s;
 	bar->vertices->rt.x = x;
 	bar->vertices->rb.x = x;
@@ -171,6 +166,6 @@ void BarWidget::draw( )
 	if(!this->visible)
 			return;
 	TextWidget::draw();
-	Graphics::graph.DrawGLTexture( bar );
-	Graphics::graph.DrawGLTexture( top );
+	graph->DrawGLTexture( bar );
+	graph->DrawGLTexture( top );
 }

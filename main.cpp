@@ -24,28 +24,28 @@ void Yukkuri::AdditionalInit()
 	//map.Init("map.map");
 	cout << "Additional Init" << endl;
 
-	LuaConfig::conf.LoadAll( "config" );
+	LuaConfig::Instance()->LoadAll( "config" );
 
 	Bindings::bnd.setEngine( this );
 
 	Bindings::bnd.LoadKeys();
 
-	LuaConfig::conf.LoadAll( "widget" );
+	LuaConfig::Instance()->LoadAll( "widget" );
 	UI::yui.LoadAllWidgets( );
 
 	daytime.loadInterface();
 
-	LuaConfig::conf.LoadAll( "entity" );
+	LuaConfig::Instance()->LoadAll( "entity" );
 
 	units = &UnitManager::units;
+
+	units->CreateUnit( PLAYER, 0, 0 );
+	YCamera::CameraControl.SetTarget( units->GetPlayer()->getUnitpX(), units->GetPlayer()->getUnitpY());
 
 	for( int i=0; i < ( rand() % 100 ); i++){
 		units->CreateUnit( ENTITY, 2, 2 );
 	}
 
-	//FIXME: input blocked if player loads first
-	units->CreateUnit( PLAYER, 0, 0 );
-	YCamera::CameraControl.SetTarget( units->GetPlayer()->getUnitpX(), units->GetPlayer()->getUnitpY());
 }
 
 void Yukkuri::Think( const int& ElapsedTime )
@@ -58,7 +58,7 @@ void Yukkuri::Think( const int& ElapsedTime )
 
 void Yukkuri::Render( )
 {
-	Graphics::graph.CleanGLScene( );
+	Graphics::Instance()->CleanGLScene( );
 
 	// Display slick graphics on screen
 	units->DrawUnits( YCamera::CameraControl.GetX(), YCamera::CameraControl.GetY() );
@@ -69,7 +69,7 @@ void Yukkuri::Render( )
 	UI::yui.DrawWidgets( );
 
 	//Draw to screen
-	Graphics::graph.DrawGLScene( );
+	Graphics::Instance()->DrawGLScene( );
 }
 
 void Yukkuri::MouseMoved( const int& Button, const int& X, const int& Y, const int& RelX, const int& RelY )
@@ -102,5 +102,6 @@ void Yukkuri::WindowActive()
 
 void Yukkuri::End()
 {
-	// Clean up
+	LuaConfig::Destroy();
+	Graphics::Destroy();
 }

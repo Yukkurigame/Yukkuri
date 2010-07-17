@@ -20,6 +20,7 @@ public:
     Unit();
     virtual ~Unit();
     virtual void update(const int&) {};
+    virtual void grow() {};
     virtual void moveUnit( signed int x, signed int y, const int& dt ) {};
     virtual void moveUnit( short axis, signed int val ) {};
 
@@ -55,16 +56,18 @@ public:
     int getUnitImageCols() { return defs->imagecols; }
     int getUnitImageRows() { return defs->imagerows; }
 
-    void setPlayer( bool pl ) { player = pl; }
+    /*void setPlayer( bool pl ) { player = pl; }
     bool isPlayer( ) { return player; }
+    */
 
 protected:
     float m_fX, m_fY;
     string UnitName;
 
 private:
+    float scale;
     int m_iAn;
-    bool player;
+    //bool player;
     e_unitID Type;
     Texture* m_Img;
     EntityDefs* defs;

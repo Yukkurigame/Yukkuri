@@ -17,6 +17,7 @@ public:
 
     void moveUnit( short axis, signed int val );
     void update( const int& );
+    void grow( );
 
 
 private:

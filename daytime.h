@@ -22,7 +22,7 @@ private:
 
 	int Day;
 	float time;
-	bool days_update;
+	bool Updated;
 	Sprite* sfield;
 	int dark, ldark;
 	//TODO: Можно делать красивые штуки, как в питоновской версии, вот только нужно ли?

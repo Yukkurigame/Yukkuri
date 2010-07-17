@@ -19,7 +19,7 @@ UI::~UI( )
 void UI::LoadAllWidgets( )
 {
 	std::vector< string > v;
-	LuaConfig::conf.getSubconfigs("widget", v);
+	LuaConfig::Instance()->getSubconfigs("widget", v);
 	for(std::vector <string>::iterator it = v.begin(); it != v.end(); ++it ){
 		LoadWidget( (*it) );
 	}
@@ -29,10 +29,9 @@ void UI::LoadAllWidgets( )
 Widget* UI::LoadWidget( string name )
 {
 	Widget* w;
+	LuaConfig* conf = LuaConfig::Instance();
 
 	//FIXME: shi! This fufuuunction is so HUUUUUUUUUUUUUUUUUUUGE.
-
-	//TDOD: specification to widgets configs
 
 	debug(5, "Loading widget " + name + "\n");
 
@@ -43,7 +42,7 @@ Widget* UI::LoadWidget( string name )
 	}
 
 	int type;
-	LuaConfig::conf.getValue("type", name, "widget", type );
+	conf->getValue("type", name, "widget", type );
 
 	switch(type){
 		case BLANK:
@@ -64,25 +63,27 @@ Widget* UI::LoadWidget( string name )
 			break;
 	}
 
-	LuaConfig::conf.getValue("name", name, "widget", w->name );
-	LuaConfig::conf.getValue("x", name, "widget", w->posx );
-	LuaConfig::conf.getValue("y", name, "widget", w->posy );
-	LuaConfig::conf.getValue("width", name, "widget", w->width );
-	LuaConfig::conf.getValue("height", name, "widget", w->height );
+	conf->getValue("name", name, "widget", w->name );
+	conf->getValue("x", name, "widget", w->posx );
+	conf->getValue("y", name, "widget", w->posy );
+	conf->getValue("width", name, "widget", w->width );
+	conf->getValue("height", name, "widget", w->height );
 
 	int z = 0;
-	LuaConfig::conf.getValue("depth", name, "widget", z );
+	conf->getValue("depth", name, "widget", z );
 	w->setZ( z );
 
 
 	if(w->getType() != NONE){
 		string imgname;
+		string text;
 		int bgx, bgy;
-		LuaConfig::conf.getValue("bgimage", name, "widget", imgname );
-		LuaConfig::conf.getValue("bgposx", name, "widget", bgx );
-		LuaConfig::conf.getValue("bgposy", name, "widget", bgy );
+		conf->getValue("bgimage", name, "widget", imgname );
+		conf->getValue("text", name, "widget", text );
+		conf->getValue("bgposx", name, "widget", bgx );
+		conf->getValue("bgposy", name, "widget", bgy );
 
-		if(!w->create(imgname, bgx, bgy)){
+		if(!w->create(imgname, text, bgx, bgy)){
 			return NULL;
 		}
 
@@ -92,18 +93,15 @@ Widget* UI::LoadWidget( string name )
 			textx = texty = 0;
 			int fontsize = 12;
 			vector<int> vcolor;
-			string text;
 
-			LuaConfig::conf.getValue("text", name, "widget", text );
-			LuaConfig::conf.getValue("textx", name, "widget", textx );
-			LuaConfig::conf.getValue("texty", name, "widget", texty );
-			LuaConfig::conf.getValue("font", name, "widget", font );
-			LuaConfig::conf.getValue("fontsize", name, "widget", fontsize );
-			LuaConfig::conf.getValue("fontcolor", name, "widget", vcolor );
+			conf->getValue("textx", name, "widget", textx );
+			conf->getValue("texty", name, "widget", texty );
+			conf->getValue("font", name, "widget", font );
+			conf->getValue("fontsize", name, "widget", fontsize );
+			conf->getValue("fontcolor", name, "widget", vcolor );
 
 			w->setFont(font, fontsize);
 			w->setTextPosition(textx, texty);
-			w->setText(text);
 			if( vcolor.size( ) > 2 )
 				w->setFontColor(vcolor[0], vcolor[1], vcolor[2]);
 
@@ -113,14 +111,14 @@ Widget* UI::LoadWidget( string name )
 				vcolor.clear();
 				//Order: topimgx, topimgy, barx, bary, barwidth, barheight
 				//Ya, it's cruve, but it's simple
-				LuaConfig::conf.getValue( "topimgx", name, "widget", position[0] );
-				LuaConfig::conf.getValue( "topimgy", name, "widget", position[1] );
-				LuaConfig::conf.getValue( "barx", name, "widget", position[2] );
-				LuaConfig::conf.getValue( "bary", name, "widget", position[3] );
-				LuaConfig::conf.getValue( "barwidth", name, "widget", position[4] );
-				LuaConfig::conf.getValue( "barheight", name, "widget", position[5] );
-				LuaConfig::conf.getValue( "source", name, "widget", imgname );
-				LuaConfig::conf.getValue( "barcolor", name, "widget", vcolor );
+				conf->getValue( "topimgx", name, "widget", position[0] );
+				conf->getValue( "topimgy", name, "widget", position[1] );
+				conf->getValue( "barx", name, "widget", position[2] );
+				conf->getValue( "bary", name, "widget", position[3] );
+				conf->getValue( "barwidth", name, "widget", position[4] );
+				conf->getValue( "barheight", name, "widget", position[5] );
+				conf->getValue( "source", name, "widget", imgname );
+				conf->getValue( "barcolor", name, "widget", vcolor );
 				if( vcolor.size( ) > 2 ){
 					position[6] = vcolor[0]; //r
 					position[7] = vcolor[1]; //g
@@ -137,7 +135,7 @@ Widget* UI::LoadWidget( string name )
 	widgets.push_back(w);
 
 	std::vector < string > childs;
-	LuaConfig::conf.getValue("children", name, "widget", childs);
+	conf->getValue("children", name, "widget", childs);
 	for(std::vector <string>::iterator it = childs.begin(); it != childs.end(); ++it ){
 		Widget* cld = LoadWidget( (*it) );
 		if(cld){

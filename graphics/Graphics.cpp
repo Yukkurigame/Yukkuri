@@ -1,12 +1,37 @@
 #include "Graphics.h"
+#include "pngfuncs.h"
+#include <cstdio>
+#include <sys/stat.h>
 
-Graphics Graphics::graph;
+Graphics* Graphics::graph = 0;
 
-Graphics::~Graphics()
+/*Generate screenshot name. From MPlayer */
+static int Exists( char *name )
 {
-	//FIXME: плохо так. Надо glDeleteTextures( 1, &texture );
-	//LoadedImages.clear();
-	//Animations.clear();
+    struct stat dummy;
+    if( stat( name, &dummy ) == 0 )
+    	return 1;
+    return 0;
+}
+
+static void GenerateName( char* name )
+{
+	int iter = 0;
+	do{
+		snprintf( name, 50, "screenshot%03d.png", ++iter);
+	}while( Exists( name ) && iter < 1000 );
+	if( Exists( name ) ){
+		name[0] = '\0';
+	}
+}
+
+bool Graphics::SetScreen( SDL_Surface* s )
+{
+	if( s == NULL )
+		return false;
+
+	screen = s;
+	return true;
 }
 
 void Graphics::openglInit( )
@@ -117,9 +142,11 @@ Texture* Graphics::LoadGLTexture( string name )
 
 void Graphics::FreeGLTexture( Texture* tex )
 {
-	//FIXME: segfault
-	glDeleteTextures( 1, tex->texture );
-	//delete tex;
+	if( tex ){
+		if( tex->texture )
+			glDeleteTextures( 1, tex->texture );
+		delete tex;
+	}
 }
 
 void Graphics::DrawGLTexture( Texture* tex, vertex3farr* vertices, coord2farr* coordinates, Color* col)
@@ -286,13 +313,16 @@ Sprite* Graphics::CreateGLSprite( float x, float y, float z, float texX, float t
 
 void Graphics::FreeGLSprite( Sprite* spr )
 {
-	//FIXME: it's memory rain
-	if(!spr->tex || spr->col != &spr->tex->clr )
-		delete spr->col;
-	FreeGLTexture( spr->tex );
-	delete spr->vertices;
-	delete spr->coordinates;
-	delete spr;
+	if( spr ){
+		if(!spr->tex || spr->col != &spr->tex->clr )
+			delete spr->col;
+		//All textures deleted on exit;
+		//if( spr->tex )
+			//FreeGLTexture( spr->tex );
+		delete spr->vertices;
+		delete spr->coordinates;
+		delete spr;
+	}
 }
 
 coord2farr* Graphics::GetCoordinates(float x1, float y1, float x2, float y2,
@@ -410,10 +440,76 @@ void Graphics::CleanGLScene()
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 }
 
-bool Graphics::SaveScreenshot(const char *FileName)
+bool Graphics::SaveScreenshot( )
 {
-	//No screenshot;
-	return false;
+	char Filename[52];
+	int stride;
+	GLubyte* pixels;
+	GLubyte* swapline;
+	Uint32 rmask, gmask, bmask, amask;
+	SDL_Surface* output;
+
+	GenerateName( Filename );
+	if( Filename[0] == '\0' ){
+		debug(3, "Can not get screenshot name. Too many screenshots in folder.");
+		return false;
+	}
+
+	#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+	rmask = 0xff000000; gmask = 0x00ff0000; bmask = 0x0000ff00; amask = 0x000000ff;
+	#else
+	rmask = 0x000000ff; gmask = 0x0000ff00; bmask = 0x00ff0000; amask = 0xff000000;
+	#endif
+
+	stride = screen->w * 4;
+	pixels = (GLubyte *) malloc(stride * screen->h);
+	swapline = (GLubyte *) malloc(stride);
+	glReadBuffer(GL_FRONT);
+	glReadPixels(0, 0, screen->w, screen->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+	// vertical flip
+	for( int row = 0; row < screen->h/2; ++row ){
+		memcpy( swapline, pixels + row * stride, stride );
+		memcpy( pixels + row * stride, pixels + ( screen->h - row - 1 ) * stride, stride );
+		memcpy( pixels + ( screen->h - row -1 ) * stride, swapline, stride );
+	}
+	free( swapline );
+
+	output = SDL_CreateRGBSurfaceFrom( pixels, screen->w, screen->h, 32, screen->pitch, rmask, gmask, bmask, amask );
+
+	if( png_save_surface(Filename, output) < 0 ){
+		free( pixels );
+		SDL_FreeSurface( output );
+		return false;
+	}
+	free( pixels );
+	SDL_FreeSurface( output );
+	return true;
+}
+
+Graphics::~Graphics()
+{
+	for( map< string, vector<coord2farr*> >::iterator it = Animations.begin(), end = Animations.end();
+			it != end; ++it ){
+		for( vector<coord2farr*>::iterator vit = it->second.begin(), vend = it->second.end(); vit != vend; ++vit ){
+			delete (*vit);
+		}
+		it->second.clear();
+	}
+	Animations.clear();
+	for( map< string, Texture* >::iterator it = LoadedGLTextures.begin(), end = LoadedGLTextures.end();
+			it != end; ++it ){
+		FreeGLTexture( it->second );
+	}
+	LoadedGLTextures.clear();
+	for( map< string, map< int, font_data*> >::iterator it = LoadedFonts.begin(), end = LoadedFonts.end();
+			it != end; ++it ){
+		for( map< int, font_data*>::iterator vit = it->second.begin(), vend = it->second.end(); vit != vend; ++vit ){
+			vit->second->clean();
+			delete vit->second;
+		}
+		it->second.clear();
+	}
+	LoadedFonts.clear();
 }
 
 void Graphics::AddGLTexture( Texture* texture, string name)
@@ -489,11 +585,6 @@ font_data* Graphics::GetFont( string name, int size  )
 			if( LoadTTFont( "data/shared/", name, size ) ) //TODO: add FONTPATH
 				return LoadedFonts[name][size];
 		}
-	//map <string, font_data* >::iterator it;
-	//it = LoadedFonts.find(name);
-	//if( it != LoadedFonts.end() ){
-		//return it->second;
-	//}
 	}else{
 		if( LoadTTFont( "data/shared/", name, size ) ) //TODO: add FONTPATH
 			return LoadedFonts[name][size];
@@ -594,3 +685,4 @@ void Graphics::PrintText(const font_data &ft_font, float x, float y, float z, in
 	//pop_projection_matrix();
 
 }
+

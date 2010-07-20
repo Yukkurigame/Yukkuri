@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "Interface.h"
+#include "unitmanager.h"
 
 Player::Player()
 {
@@ -27,10 +28,27 @@ void Player::moveUnit( short axis, signed int val )
 
 void Player::update( const int& dt )
 {
+	AnimatedUnit::update( dt );
 	DynamicUnit::moveUnit( moveX, moveY, dt );
 	UI::yui.GetWidget( "phpbar" )->setBarValue( stat.hp );
 	UI::yui.GetWidget( "pexpbar" )->setBarValue( stat.exp );
 	UI::yui.GetWidget( "pfedbar" )->setBarValue( stat.fed * 100 );
+}
+
+void Player::attack( )
+{
+	Unit* victim = NULL;
+	victim = UnitManager::units.closer( this, "entity", 120.0 );
+	if( victim )
+		this->attackUnit( victim );
+}
+
+void Player::eat( )
+{
+	Unit* victim = NULL;
+	victim = UnitManager::units.closer( this, "plant" );
+	if( victim )
+		DynamicUnit::eat( victim );
 }
 
 void Player::grow( )
@@ -39,4 +57,9 @@ void Player::grow( )
 	char d[15];
 	sprintf( d, "%d", stat.days );
 	UI::yui.GetWidget( "pdays" )->setText( d );
+}
+
+void Player::toggleInterface( )
+{
+	UI::yui.GetWidget( "pstats" )->toggleVisibility( );
 }

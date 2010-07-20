@@ -13,7 +13,7 @@ CFLAGS= -g -Wall $(DEFINES)
 
 
 
-UNITS =  unitmanager.cpp unit.cpp Dynamic.cpp Entity.cpp Player.cpp
+UNITS =  unitmanager.cpp unit.cpp Animated.cpp Plant.cpp Dynamic.cpp Entity.cpp Player.cpp
 GRAPHICS = Font.cpp Graphics.cpp Interface.cpp Widgets.cpp pngfuncs.c
 
 

@@ -2,67 +2,83 @@
 
 Unit::Unit()
 {
-    m_iAn = 0;
-    m_fX = 0.0;
-    m_fY = 0.0;
-    //player = false;
+	Anim = 0;
+	X = 0.0;
+	Y = 0.0;
+	Scale = 1.0;
+	UnitName = "";
+	Type = "";
+	Deleted = false;
 }
 
 Unit::~Unit()
 {
+	delete Image;
 	delete defs;
 }
 
 bool Unit::Create( )
 {
 
-	setUnitName();
+	//string type = "entity";
+
+	setUnitName( Type );
 
 	//FIXME: where is my debug??
 	defs = new EntityDefs;
 	//FIXME: It,s so long
-	string type = "entity";
-	LuaConfig* conf = LuaConfig::Instance();
-	conf->getValue( "name", UnitName, type, defs->Name );
-	conf->getValue( "image", UnitName, type, defs->imageName );
-	conf->getValue( "height", UnitName, type, defs->height );
-	conf->getValue( "width", UnitName, type, defs->width );
-	conf->getValue( "imagecols", UnitName, type, defs->imagecols );
-	conf->getValue( "imagerows", UnitName, type, defs->imagerows );
-    return true;
+	getConfigValue( "name", defs->Name );
+	if( defs->Name != UnitName )
+		UnitName = defs->Name;
+	getConfigValue( "image", defs->imageName );
+	getConfigValue( "height", defs->height );
+	getConfigValue( "width", defs->width );
+	getConfigValue( "imagecols", defs->imagecols );
+	getConfigValue( "imagerows", defs->imagerows );
+	return true;
 }
 
-void Unit::setUnitType( enum e_unitID t_Unit )
+void Unit::Delete( )
 {
-        Type = t_Unit;
-
-    return;
+	Deleted = true;
 }
 
-void Unit::setUnitName( )
+void Unit::setUnitType( enum e_unitID type )
 {
-	UnitName = LuaConfig::Instance()->getRandom("meeting", "entity");
+	switch( type ){
+		case PLANT:
+			Type = "plant";
+			break;
+		default:
+			Type = "entity";
+			break;
+	}
+}
+
+void Unit::setUnitName( string type )
+{
+	UnitName = LuaConfig::Instance()->getRandom("meeting", type);
 }
 
 void Unit::setUnitX( float x )
 {
-        m_fX = x;
+	X = x;
 }
 
 void Unit::setUnitY( float y )
 {
-    m_fY = y;
+	Y = y;
 }
 
 void Unit::setUnitAnim( int num )
 {
-    m_iAn = num;
+	Anim = num;
 }
 
 bool Unit::setUnitImage( Texture* image)
 {
 	if( image != NULL ){
-		m_Img = image;
+		Image = image;
 		return true;
 	}
 	return false;
@@ -70,7 +86,7 @@ bool Unit::setUnitImage( Texture* image)
 
 double Unit::dist( Unit* target )
 {
-	float x = m_fX - target->getUnitX();
-	float y = m_fY - target->getUnitY();
-    return sqrt( ( x * x ) + ( y * y ) );
+	float x = X - target->getUnitX();
+	float y = Y - target->getUnitY();
+	return sqrt( ( x * x ) + ( y * y ) );
 }

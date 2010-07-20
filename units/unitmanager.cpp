@@ -31,10 +31,15 @@ void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 		case 2:
 			temp = new Entity();
 			break;
+		case 3:
+			temp = new Plant();
+			break;
 		default:
 			temp = new Unit();
 			break;
 	}
+
+	temp->setUnitType( um_ID );
 
 	if( !temp->Create() ||
 		!temp->setUnitImage( graph->LoadGLTexture( temp->getUnitImageName( ) ) ) ||
@@ -45,19 +50,15 @@ void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 		return;
 	}
 
-	//cout << "load unit animation" << endl;
 	graph->LoadAnimation( temp->getUnitName(), temp->getUnitImageRows(),
 								temp->getUnitImageCols(), temp->getUnitWidth(), temp->getUnitHeight(),
 								temp->getUnitImage()->w, temp->getUnitImage()->h);
-	//cout << "success" << endl;
 
-	temp->setUnitType( um_ID );
 	temp->setUnitPos( x, y );
 
 	AddUnit( temp );
 
 	if(um_ID == PLAYER){
-		//temp->setPlayer(true);
 		player = temp;
 	}
 
@@ -66,9 +67,32 @@ void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 
 void UnitManager::tick( const int& dt )
 {
-	for (int i = 0; i < (int)Units.size(); i++) {
-		Units[i]->update( dt );
+	for( vector<Unit*>::iterator it = Units.begin(), end = Units.end(); it != end; ++it ){
+		if( (*it)->isDeleted( ) ){
+			delete (*it);
+			(*it) = NULL;
+			Units.erase( it );
+		}else{
+			(*it)->update( dt );
+		}
 	}
+}
+
+Unit* UnitManager::closer( Unit* u, string type, float limit )
+{
+	//FIXME: quick and dirty
+	Unit* ret = NULL;
+	int distance = 9000;
+	for (int i = 0; i < (int)Units.size(); i++) {
+		if( Units[i] != u && Units[i]->getUnitType() == type ){
+			int dist = u->dist(Units[i]);
+			if( dist < limit && dist < distance ){
+				distance = dist;
+				ret = Units[i];
+			}
+		}
+	}
+	return ret;
 }
 
 void UnitManager::grow( )

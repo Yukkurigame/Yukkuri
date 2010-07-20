@@ -187,6 +187,12 @@ void CEngine::HandleInput()
 				}
 				break;
 
+			case SDL_JOYBUTTONUP:
+				down = 0;
+			case SDL_JOYBUTTONDOWN:
+				evnt = SDLK_LAST + 7 + event.jbutton.button;
+				break;
+
 				/*
 				case SDL_MOUSEMOTION:
 					MouseMoved(

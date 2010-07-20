@@ -75,21 +75,23 @@ void Graphics::openglSetup( int wwidth, int wheight )
 Texture* Graphics::LoadGLTexture( string name )
 {
 	Texture* tex;
+	Texture* cached;
 	SDL_Surface* surface;
 	GLuint* image;
 	GLint  nOfColors;
 	GLenum texture_format;
 
-	tex = getGLTexture(name);
+	cached = getGLTexture(name);
 
-	if( !tex || !tex->texture ){
+	if( !cached || !cached->texture ){
 
-		tex = new Texture();
+		cached = new Texture();
 
 		surface = LoadImage(name);
 
 		if( !surface ){
 			debug(3, name + " not loaded");
+			delete cached;
 			return NULL;
 		}
 
@@ -110,8 +112,8 @@ Texture* Graphics::LoadGLTexture( string name )
 			// this error should not go unhandled
 		}
 
-		tex->w = surface->w;
-		tex->h = surface->h;
+		cached->w = surface->w;
+		cached->h = surface->h;
 
 		// Have OpenGL generate a texture object handle for us
 		image = new GLuint();
@@ -128,14 +130,17 @@ Texture* Graphics::LoadGLTexture( string name )
 		glTexImage2D( GL_TEXTURE_2D, 0, nOfColors, surface->w, surface->h, 0,
 		                      texture_format, GL_UNSIGNED_BYTE, surface->pixels );
 
-		tex->texture = image;
+		cached->texture = image;
 
 		if( surface )
 			SDL_FreeSurface( surface );
 
-		AddGLTexture(tex, name);
+		AddGLTexture(cached, name);
 
 	}
+
+	tex = new Texture( cached );
+
 
 	return tex;
 }

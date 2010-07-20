@@ -15,18 +15,20 @@ using std::endl;
 class Entity: public DynamicUnit
 {
 public:
-    Entity();
+    Entity( );
+    void Die( );
     void setPathTarget(float, float);
     void update( const int& );
+    void takeAction( );
     void move( const int& );
-    void stopMove(){ force_go = false; };
-    void startMove(){ force_go = true; };
-    bool isMoved(){ return force_go; };
+    void stopMove(){ ForceGo = false; };
+    void startMove(){ ForceGo = true; };
+    bool isMoved(){ return ForceGo; };
 
 private:
     float gotoX, gotoY;
-    bool force_go;
-    
+    bool ForceGo;
+
 };
 
 #endif //ENTITY_H

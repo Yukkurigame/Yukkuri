@@ -37,6 +37,8 @@ public:
 
 	void addChild( Widget* child );
 
+	void toggleVisibility( );
+
 	virtual void draw();
 
 	//FIXME: как-то не хорошо так публично.
@@ -45,7 +47,6 @@ public:
 	float height;
 	float posx;
 	float posy;
-	bool visible;
 
 	virtual void setFont( string, int ) {};
 	virtual void setFontColor( int r, int g, int b ) {};
@@ -57,6 +58,7 @@ public:
 	virtual void setBarValue( int val ) {};
 
 protected:
+	bool visible;
 	Graphics* graph;
 	float posz;
 	wType type;

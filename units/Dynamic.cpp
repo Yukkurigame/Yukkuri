@@ -1,10 +1,11 @@
 #include "Dynamic.h"
-#include "daytime.h"
 
 
 DynamicUnit::DynamicUnit()
 {
 	TotalDistance = 0;
+	anim = NULL;
+	Attacked = NULL;
 }
 
 
@@ -12,7 +13,7 @@ bool DynamicUnit::loadAnimation()
 {
 	std::map < string, std::vector <int> > AnimTmp;
 	//FIXME: it's so long
-	LuaConfig::Instance()->getValue( "animation", UnitName, "entity", AnimTmp );
+	getConfigValue( "animation", AnimTmp );
 	copy(AnimTmp["down"].begin(), AnimTmp["down"].begin()+2, Animdef.down);
 	copy(AnimTmp["leftdown"].begin(), AnimTmp["leftdown"].begin()+2, Animdef.leftdown);
 	copy(AnimTmp["left"].begin(), AnimTmp["left"].begin()+2, Animdef.left);
@@ -34,7 +35,6 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 	{
 		float l = sqrt( x * x  +  y * y );
 		//	speed = abs(self.dfn.speed * self.fed * 2) #(self.dfn.speed * self.world.map.speed(self.x, self.y))
-		//float speed = 80.0f * ( dt / 1000.0f);
 		float speed = abs( stat.speed * stat.fed ) * ( dt / 1000.0f ) / l;
 		if( speed < 0.05f )
 			speed = 0.05f;
@@ -59,21 +59,86 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 		else if( dx > 0 ) 				//UUUUU
 			anim = Animdef.right;		//UUUUU
 		setUnitAnim( anim[0] + ( anim[1] > 1 ? ( static_cast<int>(TotalDistance) / m_animdistance) % anim[1] : 0 ) );
-		m_fX += dx;
-		m_fY += dy;
+		X += dx;
+		Y += dy;
 		if( stat.fed > 0.01 )
-			stat.fed -= distance / 10000;
+			stat.fed -= distance / 20000;
 	}
 }
 
 void DynamicUnit::grow( )
 {
 	stat.days++;
-	stat.exp += 5;
+	stat.exp += 10 * stat.level;
+}
+
+void DynamicUnit::eat( Unit* victim )
+{
+	//TODO: пересмотреть надо бы
+	if( !victim->isEdible( ) )
+		return;
+	float dmg = stat.damage / stat.fed;
+	victim->hit( dmg );
+	if( stat.fed >= 0.8 && stat.fed < 1.0 && stat.hp < stat.hpMax ){
+		float hpAdd = dmg / stat.level;
+		if( (stat.hp + hpAdd) > stat.hpMax )
+			stat.hp = stat.hpMax;
+		else
+			stat.hp += hpAdd;
+	}
+	if( stat.fed >= 1.0 ){
+		stat.fed = 1.0;
+		if( stat.hp < stat.hpMax ){
+			float hpAdd = dmg;
+			if( ( stat.hp + hpAdd ) > stat.hpMax )
+				stat.hp = stat.hpMax;
+			else
+				stat.hp += hpAdd;
+		}
+	}else{
+		float n = victim->getNutritive();
+		float fedAdd = dmg * 0.01 * n / stat.level;
+		if( ( stat.fed + fedAdd ) > 1.0 )
+			stat.fed = 1.0;
+		else
+			stat.fed += fedAdd;
+	}
+}
+
+void DynamicUnit::takeAction( )
+{
+	AnimatedUnit::takeAction();
+	stat.fed -= 0.002 * stat.level;
+	if( Attacked ){
+		if( Attacked->getUnitStats()->hp <= 0 || dist(Attacked) >= 1000 ){
+			Attacked = NULL;
+		}
+	}
+}
+
+void DynamicUnit::attackUnit( Unit* victim )
+{
+	if( victim == this )
+		return;
+	if( stat.fed > 0.01 )
+		stat.fed -= 0.001;
+    float dmg =  stat.damage * stat.fed;
+    if( dmg < 0.4 )
+        dmg = 0.4;
+    DynamicUnit* dvictim = dynamic_cast<DynamicUnit*>(victim);
+    if( dvictim && dvictim->Attacker() != this )
+    	dvictim->Attacker( this );
+	victim->hit( dmg );
+}
+
+void DynamicUnit::hit( float damage )
+{
+	this->getUnitImage()->clr.set( 255, 0, 0 );
+	stat.hp -= damage;
 }
 
 void DynamicUnit::setFirstFrame( )
 {
-	if( anim )
+	if( anim != NULL )
 		setUnitAnim( anim[0] );
 }

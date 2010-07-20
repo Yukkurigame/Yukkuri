@@ -8,9 +8,6 @@
 #define BINDINGS_H_
 
 #include "SDL_keysym.h"
-#include "Luaconfig.h"
-#include "unitmanager.h"
-#include "Graphics.h"
 
 #include "debug.h"
 
@@ -51,6 +48,9 @@ namespace Binds
 	void movePlayerDown( short down );
 	void movePlayerLeft( short down );
 	void movePlayerRight( short down );
+	void playerAttackUnit( );
+	void playerToggleInterface( );
+	void playerEat(  );
 	void screenshot( );
 	void exit( const void* e );
 }

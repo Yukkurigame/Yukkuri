@@ -4,18 +4,49 @@ Entity::Entity()
 {
 	gotoX = 0.0;
 	gotoY = 0.0;
-	force_go = false;
+	ForceGo = false;
+	Attacked = NULL;
 }
 
+void Entity::Die( )
+{
+	this->Delete();
+}
 
 void Entity::update( const int& dt )
 {
-	if( !isMoved() ){
-		float x = getUnitX() + ( -150 + ( rand() % 300 ) );
-		float y = getUnitY() - ( -150 + ( rand() % 300 ) );
-		setPathTarget(x, y);
+	if( stat.hp <= 0 ){
+		Die( );
+		return;
+	}
+	AnimatedUnit::update( dt );
+	if( Attacked ){
+		float dst = dist(Attacked);
+		if( stat.hp * 3 <= stat.hpMax && dst < 500 ){ //Run away
+			signed int px = (( Attacked->getUnitX() > this->X ) ? -1 : 1);
+			signed int py = (( Attacked->getUnitY() > this->Y ) ? -1 : 1);
+			setPathTarget( this->X + 500 * px, this->Y + 500 * py );
+		}else if( dst  > Scale * 100 ){ //Get closer
+			setPathTarget( Attacked->getUnitX(), Attacked->getUnitY() );
+		}
 	}
 	move( dt );
+}
+
+void Entity::takeAction( )
+{
+	DynamicUnit::takeAction( );
+	if( Attacked ){
+		if( dist(Attacked) < Scale * 100 ){
+			attackUnit( Attacked );
+		}
+	}else{
+		if( !isMoved() ){
+			float x = getUnitX() + ( -150 + ( rand() % 300 ) );
+			float y = getUnitY() - ( -150 + ( rand() % 300 ) );
+			setPathTarget(x, y);
+		}
+	}
 }
 
 void Entity::move( const int& dt )

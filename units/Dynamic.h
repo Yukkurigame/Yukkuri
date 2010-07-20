@@ -1,7 +1,7 @@
 #ifndef DYNAMIC_UNIT_H
 #define DYNAMIC_UNIT_H
 
-#include "unit.h"
+#include "Animated.h"
 #include "stdlib.h"
 #include <map>
 #include <vector>
@@ -23,27 +23,37 @@ struct stats{
 	}
 };
 
-class DynamicUnit: public Unit
+class DynamicUnit: public AnimatedUnit
 {
 public:
 	DynamicUnit();
+	stats* getUnitStats( ) { return &stat; }
 	void moveUnit(  signed int x, signed int y , const int& dt);
 	void grow();
+	void eat( Unit* Victim );
 
-	void setFirstFrame( );
+	void takeAction( );
+
+	DynamicUnit* Attacker( ) { return Attacked; }
+	void Attacker( DynamicUnit* a ) { Attacked = a; }
+	void attackUnit( Unit* victim );
+	void hit( float damage );
+
+	void setFirstFrame(  );
 	//void levelUp
 
 
 protected:
 	AnimationDefs Animdef;
 	bool loadAnimation();
-    float TotalDistance;
-    const static int m_animdistance = 20;
-    stats stat;
+	DynamicUnit* Attacked;
+	float TotalDistance;
+	const static int m_animdistance = 20;
+	stats stat;
 
 
 private:
-    int* anim;
+	int* anim;
 };
 
 #endif //DYNAMIC_UNIT_H

@@ -18,6 +18,13 @@ struct Color
 	Color(): r(255), b(255), g(255), a(255) {};
 	Color(unsigned int r, unsigned int b, unsigned int g): r(r), b(b), g(g), a(255) {};
 	Color(unsigned int r, unsigned int b, unsigned int g, unsigned int a): r(r), b(b), g(g), a(a) {};
+	bool isMax( ){
+		if( r != 255 || g != 255 || b != 255 ) return false;
+		return true;
+	}
+	void set( unsigned int c ) { r = g = b = c; }
+	void set( unsigned int cr, unsigned int cg, unsigned int cb ) { r = cr, g = cg, b = cb; }
+	void set( unsigned int cr, unsigned int cg, unsigned int cb, unsigned int ca ) { r = cr, g = cg, b = cb; a = ca; }
 };
 
 struct Texture
@@ -26,6 +33,14 @@ struct Texture
 	int w;
 	int h;
 	Color clr;
+	Texture() { texture = NULL; w = 0; h = 0; }
+	Texture( Texture* o ){
+		texture = o->texture;
+		w = o->w;
+		h = o->h;
+		clr = o->clr;
+	}
+
 };
 
 struct s2f

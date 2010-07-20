@@ -37,7 +37,7 @@ function get( value, subconfig, config )
     if configs[ctype] == nil then
         print("Config " .. ctype .. " does not exist")  
         return
-    end
+    end    
     ret = configs[ctype][string.lower(subconfig)][value]
     return ret
 end

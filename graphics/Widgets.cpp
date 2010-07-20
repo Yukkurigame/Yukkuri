@@ -55,6 +55,18 @@ void Widget::addChild( Widget* child )
 	children.push_back( child );
 }
 
+void Widget::toggleVisibility( )
+{
+	if( this->visible ){
+		visible = false;
+	}else{
+		visible = true;
+	}
+	for( int i = 0, end = children.size(); i < end; ++i ){
+		children[i]->toggleVisibility();
+	}
+}
+
 void Widget::draw( )
 {
 	if(!this->visible)

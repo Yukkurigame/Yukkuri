@@ -5,6 +5,7 @@
 using std::vector;
 
 #include "unit.h"
+#include "Plant.h"
 #include "Entity.h"
 #include "Player.h"
 #include "Graphics.h"
@@ -23,6 +24,8 @@ class UnitManager
         Unit* GetPlayer() { return player; }
 
         void tick( const int& );
+
+        Unit* closer( Unit* u, string type, float limit = 100.0 );
         void grow( ); //FUUUUU
 
         int GetUnitVecSize() { return (int)Units.size();}

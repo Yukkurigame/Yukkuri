@@ -17,8 +17,12 @@ public:
 
     void moveUnit( short axis, signed int val );
     void update( const int& );
+    void attack( );
+    void eat( );
     void grow( );
 
+    //TODO: Это все вообще бы в луа перенести.
+    void toggleInterface( );
 
 private:
     signed int moveX;

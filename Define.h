@@ -18,4 +18,6 @@
 
 #define DAY_LENGTH 20
 
+#define ACTION_INTERVAL 3000
+
 #endif //YDEFINE_H

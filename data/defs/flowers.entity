@@ -1,0 +1,14 @@
+{
+	"Plant",
+	{
+		height = 60,
+		hp = 20.0,
+		image = "flowers.png",
+		imagecols = 4,
+		imagerows = 1,
+		meeting = 100.0,
+		name = "Flower",
+		nutritive = 4.0,
+		width = 60
+	}
+}

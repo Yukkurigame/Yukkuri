@@ -249,7 +249,7 @@ class Yukkuri(Entity):
 
     def dead(self):
         killer = None
-        if self.attacked:            
+        if self.attacked:
             killer = self.attacked
             killer.exp += self.max_hp*killer.stats["Int"]/killer.level
             killer.kills += 1
@@ -569,10 +569,10 @@ class Yukkuri(Entity):
 
     def delete(self, killer=None):
         self.world.spawner.count -= 1
-        if self.party:            
+        if self.party:
             self.party.leave(self, killer)
         if self.dialogue.started:
-            self.dialogue.leave()        
+            self.dialogue.leave()
         self.kill()
 
 class Player(Yukkuri):

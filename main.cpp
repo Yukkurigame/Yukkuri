@@ -107,5 +107,7 @@ void Yukkuri::WindowActive()
 void Yukkuri::End()
 {
 	LuaConfig::Destroy();
-	Graphics::Destroy();
+	//FIXME: графика уничтожается, а потом начинают уничтожаться спрайты, да.
+	//теги: ололо-сегфолты
+	//Graphics::Destroy();
 }

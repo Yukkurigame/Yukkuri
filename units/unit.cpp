@@ -13,7 +13,7 @@ Unit::Unit()
 
 Unit::~Unit()
 {
-	delete Image;
+	//delete Image;
 	delete defs;
 }
 

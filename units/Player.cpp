@@ -2,6 +2,7 @@
 #include "Interface.h"
 #include "unitmanager.h"
 
+
 Player::Player()
 {
 	moveX = 0;

@@ -12,7 +12,7 @@ UnitManager::~UnitManager()
 	while( Units.size() > 0 )
 	{
 		if ( Units.back() != 0 ) {
-			delete Units.back();
+			DeleteUnit( Units.back() );
 		}
 		Units.pop_back();
 	}
@@ -65,12 +65,18 @@ void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 	return;
 }
 
+void UnitManager::DeleteUnit( Unit* u )
+{
+	graph->FreeGLSprite( u->getUnitImage() );
+	u->setUnitImage( NULL );
+	delete u;
+}
+
 void UnitManager::tick( const int& dt )
 {
-	for( vector<Unit*>::iterator it = Units.begin(), end = Units.end(); it != end; ++it ){
+	for( vector< Unit* >::iterator it = Units.begin(), end = Units.end(); it != end; ++it ){
 		if( (*it)->isDeleted( ) ){
-			delete (*it);
-			(*it) = NULL;
+			DeleteUnit( *it );
 			Units.erase( it );
 		}else{
 			(*it)->update( dt );

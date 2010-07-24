@@ -42,17 +42,17 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 		float dy = speed * y;// / l;
 		float distance = sqrt( dx * dx + dy * dy );
 		TotalDistance += distance;
-		if( dx < 0 && dy < 0 ) 			//FUUUU
+		if( dx < 0 && dy > 0 ) 			//FUUUU
 			anim = Animdef.leftup;		//UUUUU
-		else if( dx < 0 && dy > 0 ) 	//UUUUU
+		else if( dx < 0 && dy < 0 ) 	//UUUUU
 			anim = Animdef.leftdown;	//UUUUU
-		else if( dx > 0 && dy < 0 ) 	//UUUUU
-			anim = Animdef.rightup; 	//UUUUU
 		else if( dx > 0 && dy > 0 ) 	//UUUUU
+			anim = Animdef.rightup; 	//UUUUU
+		else if( dx > 0 && dy < 0 ) 	//UUUUU
 			anim = Animdef.rightdown;	//UUUUU
-		else if( dy < 0 ) 				//UUUUU
-			anim = Animdef.up;	 		//UUUUU
 		else if( dy > 0 ) 				//UUUUU
+			anim = Animdef.up;	 		//UUUUU
+		else if( dy < 0 ) 				//UUUUU
 			anim = Animdef.down;	 	//UUUUU
 		else if( dx < 0 ) 				//UUUUU
 			anim = Animdef.left;	 	//UUUUU

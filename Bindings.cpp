@@ -225,12 +225,12 @@ void Bindings::LoadKeys( )
 
 void Binds::movePlayerUp( short down )
 {
-	UnitManager::units.GetPlayer()->moveUnit( 0, down * -1 );
+	UnitManager::units.GetPlayer()->moveUnit( 0, down );
 }
 
 void Binds::movePlayerDown( short down )
 {
-	UnitManager::units.GetPlayer()->moveUnit( 0, down );
+	UnitManager::units.GetPlayer()->moveUnit( 0, down * -1 );
 }
 
 void Binds::movePlayerLeft( short down )

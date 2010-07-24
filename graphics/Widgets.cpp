@@ -43,8 +43,8 @@ bool Widget::create( string name, string text, int x, int y )
 void Widget::setParent( Widget* p )
 {
 	parent = p;
-	posx = posx + p->posx;
-	posy = posy + p->posy;
+	posx += p->posx;
+	posy = p->posy + p->height - posy;
 	posz = posz - 0.5 + p->posz;
 	if( background )
 		background->vertices->z = posz;
@@ -105,6 +105,12 @@ void TextWidget::setFontColor( int r, int g, int b )
 	FontColor[2] = b;
 }
 
+void TextWidget::setTextPosition( float x, float y )
+{
+	textx = x;
+	texty = height - y;
+}
+
 void TextWidget::draw( )
 {
 	if(!this->visible)
@@ -135,11 +141,12 @@ void BarWidget::createBar( string name, int* pos)
 		barwidth = width;
 	tex = graph->LoadGLTexture( name );
 	if( tex )
-		top = graph->CreateGLSprite(posx, posy, posz+0.1, pos[0], pos[1], width, height, tex);
-	bar = graph->CreateGLSprite(barstartx, posy + pos[3], posz, barwidth, pos[5]);
+		top = graph->CreateGLSprite( posx, posy, posz + 0.1, pos[0], pos[1], width, height, tex );
+	bar = graph->CreateGLSprite( barstartx, posy + pos[3], posz, barwidth, pos[5] );
 	if( bar ){
 		bar->clr->set( pos[6], pos[7], pos[8] );
 	}
+	setTextPosition( getTextX() + 5, getTextY() - height + pos[5] );
 	setBarValue(1);
 	setBarSize(1);
 }
@@ -166,10 +173,22 @@ void BarWidget::setBarValue( int value )
 
 void BarWidget::setParent( Widget* p)
 {
+	float y = p->posy + p->height - posy;
+	float barheight = bar->vertices->lt.y - bar->vertices->lb.y;
 	Widget::setParent( p );
+	bar->vertices->lb.y = y;
+	bar->vertices->rb.y = y;
+	bar->vertices->lt.y = y + barheight;
+	bar->vertices->rt.y = y + barheight;
 	bar->vertices->z = getZ();
-	if( top )
+	if( top ){
+		float bmy = y - barheight;
+		top->vertices->lb.y = bmy;
+		top->vertices->rb.y = bmy;
+		top->vertices->lt.y = bmy + height;
+		top->vertices->rt.y = bmy + height;
 		top->vertices->z = getZ() + 0.01;
+	}
 }
 
 void BarWidget::draw( )

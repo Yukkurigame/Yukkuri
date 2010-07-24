@@ -20,6 +20,7 @@ class UnitManager
 
         void DrawUnits( const float camX, const float camY );
         void CreateUnit( enum e_unitID um_ID, int x, int y );
+        void DeleteUnit( Unit* u );
         Unit* GetUnit( unsigned int Index );
         Unit* GetPlayer() { return player; }
 

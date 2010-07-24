@@ -42,6 +42,8 @@ void CEngine::Init()
 		exit( 1 );
 	}
 
+	SetTitle( "Loading..." );
+
 	Graphics::Instance()->openglInit( );
 
 	// Attempt to create a window with the specified height and width.

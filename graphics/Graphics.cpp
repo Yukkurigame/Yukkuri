@@ -1,7 +1,9 @@
 #include "Graphics.h"
 #include "pngfuncs.h"
+#include <iostream>
 #include <cstdio>
 #include <sys/stat.h>
+#include <dirent.h>
 
 Graphics* Graphics::graph = 0;
 
@@ -66,7 +68,7 @@ void Graphics::openglSetup( int wwidth, int wheight )
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
 
-	glOrtho(0.0, wwidth, wheight, 0.0, -1.0, 1.0);
+	glOrtho(0.0, wwidth, 0.0, wheight, -1.0, 1.0);
 
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
@@ -329,13 +331,16 @@ void Graphics::FreeGLSprite( Sprite* spr )
 		//All textures deleted on exit;
 		//if( spr->tex )
 			//FreeGLTexture( spr->tex );
-		if( spr->vertices )
+		if( spr->vertices ){
 			delete spr->vertices;
-		if( spr->coordinates )
-		delete spr->coordinates;
-		for( vector< Sprite* >::iterator it = GLSprites.begin(), end = GLSprites.end(); it != end; ++it ){
-			if( (*it) == spr ){
-				GLSprites.erase( it );
+		}
+		//FIXME: same coordinates
+		//if( spr->coordinates )
+			//delete spr->coordinates;
+		std::cout << GLSprites.size() << "! " << GLSprites.size() << " sprites! A-ha-ha-ha-ha... " << std::endl;
+		for( int i = 0, end = GLSprites.size(); i < end; ++i ){
+			if( GLSprites[i] == spr ){
+				GLSprites.erase( GLSprites.begin() + i );
 				break;
 			}
 		}
@@ -510,8 +515,8 @@ coord2farr* Graphics::GetCoordinates(float x1, float y1, float x2, float y2,
 
 	float cx1 = x1 / width;
 	float cx2 = ( x1 + x2 ) / width; //x2/width;
-	float cy1 = y1 / height;
-	float cy2 = ( y1 + y2 ) / height; //y2/height;
+	float cy2 = y1 / height;
+	float cy1 = ( y1 + y2 ) / height; //y2/height;
 
 	if(mirrored){
 		c->lt.x = cx2;
@@ -548,36 +553,6 @@ vertex3farr* Graphics::GetVertex( float x, float y, float z, float width, float 
 	v = new vertex3farr();
 
 	SetVertex( v, x, y, z, width, height, centered );
-
-	float xp, xm, yp, ym;
-
-	if(centered){
-		float halfwidth = width/2;
-		float halfheight = height/2;
-		xp = x + halfwidth;
-		xm = x - halfwidth;
-		yp = y + halfheight;
-		ym = y - halfheight;
-	}else{
-		xp = x + width;
-		xm = x;
-		yp = y + height;
-		ym = y;
-	}
-
-	v->lb.x = xm;
-	v->lb.y = ym;
-
-	v->lt.x = xm;
-	v->lt.y = yp;
-
-	v->rb.x = xp;
-	v->rb.y = ym;
-
-	v->rt.x = xp;
-	v->rt.y = yp;
-
-	v->z = z;
 
 	return v;
 }
@@ -653,9 +628,6 @@ void Graphics::PrintText(const font_data &ft_font, float x, float y, float z, in
 	if( str == NULL )
 		return;
 
-	//Костыль по-моему
-	//float multipler = size/LOADEDFONTSIZE;
-
 	// We want a coordinate system where things coresponding to window pixels.
 	//pushScreenCoordinateMatrix();
 
@@ -678,30 +650,8 @@ void Graphics::PrintText(const font_data &ft_font, float x, float y, float z, in
 		token = strtok(NULL, "\n");
 	}
 
-	//Here is some code to split the text that we have been
-	//given into a set of lines.
-	//const char *start_line=text;
-
-	//const char* c = text;
-
-	/*
-	for(;*c;++c) {
-		if(*c=='\n') {
-			string line;
-			for(const char *n=start_line;n<c;n++) line.append(1,*n);
-			lines.push_back(line);
-			start_line=c+1;
-		}
-	}
-	if(start_line) {
-		string line;
-		for(const char *n=start_line;n<c;n++) line.append(1,*n);
-		lines.push_back(line);
-	}*/
-
 	glPushAttrib(GL_LIST_BIT | GL_CURRENT_BIT  | GL_ENABLE_BIT | GL_TRANSFORM_BIT);
 	glColor3ub(color[0],color[1],color[2]);
-	glScalef(1,-1,1); //glScalef(multipler,-1*multipler,1); //Reversed text. wtf?
 	glMatrixMode(GL_MODELVIEW);
 	glDisable(GL_LIGHTING);
 	glEnable(GL_TEXTURE_2D);
@@ -731,9 +681,6 @@ void Graphics::PrintText(const font_data &ft_font, float x, float y, float z, in
 	//	float len=x-rpos[0];
 		glPopMatrix();
 	}
-
-	//glScalef(1/multipler,-1/multipler,1); //Reversed text. wtf?
-	glScalef(1,-1,1); //Reversed text. wtf?
 
 	glPopAttrib();
 

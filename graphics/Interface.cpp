@@ -100,8 +100,8 @@ Widget* UI::LoadWidget( string name )
 			conf->getValue("fontsize", name, "widget", fontsize );
 			conf->getValue("fontcolor", name, "widget", vcolor );
 
-			w->setFont(font, fontsize);
-			w->setTextPosition(textx, texty);
+			w->setFont( font, fontsize );
+			w->setTextPosition( textx, texty );
 			if( vcolor.size( ) > 2 )
 				w->setFontColor(vcolor[0], vcolor[1], vcolor[2]);
 

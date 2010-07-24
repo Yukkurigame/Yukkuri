@@ -9,8 +9,6 @@
 #include "debug.h"
 
 //TODO: add logger
-#include <string.h>
-#include <dirent.h>
 #include <map>
 using std::map;
 #include <vector>

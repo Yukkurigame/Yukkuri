@@ -78,10 +78,10 @@ public:
 
 	void setFont( string name, int size ){ FontName = name; FontSize = size; }
 	void setFontColor( int r, int g, int b );
-	//FIXME: как-то это все переделать задавать Text 1 раз
-	//FIXME: А AddText менять.
 	void setText( string text ){ AddText = text; }
-	void setTextPosition( float x, float y ){ textx = x; texty = y; }
+	void setTextPosition( float x, float y );
+	float getTextX( ){ return textx; }
+	float getTextY( ){ return texty; }
 	void draw( );
 
 protected:
@@ -123,7 +123,6 @@ private:
 	int barmaxvalue; // in units
 	float barstartx;
 	float barwidth; // in pixels
-
 };
 
 

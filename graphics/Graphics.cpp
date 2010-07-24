@@ -81,6 +81,9 @@ Texture* Graphics::LoadGLTexture( string name )
 	GLint  nOfColors;
 	GLenum texture_format;
 
+	if( name == "" )
+		return NULL;
+
 	cached = getGLTexture(name);
 
 	if( !cached || !cached->texture ){
@@ -304,14 +307,16 @@ Sprite* Graphics::CreateGLSprite( float x, float y, float z, float texX, float t
 
 		sprite->tex = tex;
 		sprite->coordinates = coords;
-		sprite->col = &sprite->tex->clr;
+		sprite->clr = &sprite->tex->clr;
 	}else{
 		sprite->tex = NULL;
 		sprite->coordinates = NULL;
-		sprite->col = new Color( );
+		sprite->clr = new Color( );
 	}
 
 	sprite->vertices = vertex;
+
+	GLSprites.push_back( sprite );
 
 	return sprite;
 }
@@ -319,63 +324,29 @@ Sprite* Graphics::CreateGLSprite( float x, float y, float z, float texX, float t
 void Graphics::FreeGLSprite( Sprite* spr )
 {
 	if( spr ){
-		if(!spr->tex || spr->col != &spr->tex->clr )
-			delete spr->col;
+		if(!spr->tex || spr->clr != &spr->tex->clr )
+			delete spr->clr;
 		//All textures deleted on exit;
 		//if( spr->tex )
 			//FreeGLTexture( spr->tex );
-		delete spr->vertices;
+		if( spr->vertices )
+			delete spr->vertices;
+		if( spr->coordinates )
 		delete spr->coordinates;
+		for( vector< Sprite* >::iterator it = GLSprites.begin(), end = GLSprites.end(); it != end; ++it ){
+			if( (*it) == spr ){
+				GLSprites.erase( it );
+				break;
+			}
+		}
 		delete spr;
+		spr = NULL;
+
 	}
 }
 
-coord2farr* Graphics::GetCoordinates(float x1, float y1, float x2, float y2,
-										float width, float height, short mirrored)
+void Graphics::SetVertex( vertex3farr* v, float x, float y, float z, float width, float height, short centered )
 {
-	coord2farr* c;
-
-	c = new coord2farr();
-
-	float cx1 = x1 / width;
-	float cx2 = ( x1 + x2 ) / width; //x2/width;
-	float cy1 = y1 / height;
-	float cy2 = ( y1 + y2 ) / height; //y2/height;
-
-	if(mirrored){
-		c->lt.x = cx2;
-		c->lt.y = cy2;
-
-		c->lb.x = cx2;
-		c->lb.y = cy1;
-
-		c->rt.x = cx1;
-		c->rt.y = cy2;
-
-		c->rb.x = cx1;
-		c->rb.y = cy1;
-	}else{
-		c->lt.x = cx1;
-		c->lt.y = cy2;
-
-		c->lb.x = cx1;
-		c->lb.y = cy1;
-
-		c->rt.x = cx2;
-		c->rt.y = cy2;
-
-		c->rb.x = cx2;
-		c->rb.y = cy1;
-	}
-
-	return c;
-}
-
-vertex3farr* Graphics::GetVertex(float x, float y, float z, float width, float height, short centered)
-{
-	vertex3farr* v;
-	v = new vertex3farr();
-
 	float xp, xm, yp, ym;
 
 	if(centered){
@@ -405,8 +376,6 @@ vertex3farr* Graphics::GetVertex(float x, float y, float z, float width, float h
 	v->rt.y = yp;
 
 	v->z = z;
-
-	return v;
 }
 
 coord2farr* Graphics::GetAnimation( string name, unsigned int num )
@@ -530,6 +499,87 @@ Texture* Graphics::getGLTexture( string name )
 		return it->second;
 	}
 	return NULL;
+}
+
+coord2farr* Graphics::GetCoordinates(float x1, float y1, float x2, float y2,
+										float width, float height, short mirrored)
+{
+	coord2farr* c;
+
+	c = new coord2farr();
+
+	float cx1 = x1 / width;
+	float cx2 = ( x1 + x2 ) / width; //x2/width;
+	float cy1 = y1 / height;
+	float cy2 = ( y1 + y2 ) / height; //y2/height;
+
+	if(mirrored){
+		c->lt.x = cx2;
+		c->lt.y = cy2;
+
+		c->lb.x = cx2;
+		c->lb.y = cy1;
+
+		c->rt.x = cx1;
+		c->rt.y = cy2;
+
+		c->rb.x = cx1;
+		c->rb.y = cy1;
+	}else{
+		c->lt.x = cx1;
+		c->lt.y = cy2;
+
+		c->lb.x = cx1;
+		c->lb.y = cy1;
+
+		c->rt.x = cx2;
+		c->rt.y = cy2;
+
+		c->rb.x = cx2;
+		c->rb.y = cy1;
+	}
+
+	return c;
+}
+
+vertex3farr* Graphics::GetVertex( float x, float y, float z, float width, float height, short centered )
+{
+	vertex3farr* v;
+	v = new vertex3farr();
+
+	SetVertex( v, x, y, z, width, height, centered );
+
+	float xp, xm, yp, ym;
+
+	if(centered){
+		float halfwidth = width/2;
+		float halfheight = height/2;
+		xp = x + halfwidth;
+		xm = x - halfwidth;
+		yp = y + halfheight;
+		ym = y - halfheight;
+	}else{
+		xp = x + width;
+		xm = x;
+		yp = y + height;
+		ym = y;
+	}
+
+	v->lb.x = xm;
+	v->lb.y = ym;
+
+	v->lt.x = xm;
+	v->lt.y = yp;
+
+	v->rb.x = xp;
+	v->rb.y = ym;
+
+	v->rt.x = xp;
+	v->rt.y = yp;
+
+	v->z = z;
+
+	return v;
 }
 
 

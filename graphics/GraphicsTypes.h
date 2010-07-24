@@ -73,12 +73,12 @@ struct Sprite
 	Texture* tex;
 	vertex3farr* vertices;
 	coord2farr* coordinates;
-	Color* col;
+	Color* clr;
 	Sprite(){
 		tex = NULL;
 		vertices = NULL;
 		coordinates = NULL;
-		col = NULL;
+		clr = NULL;
 	}
 };
 

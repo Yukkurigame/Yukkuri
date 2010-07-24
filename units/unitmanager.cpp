@@ -42,7 +42,7 @@ void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 	temp->setUnitType( um_ID );
 
 	if( !temp->Create() ||
-		!temp->setUnitImage( graph->LoadGLTexture( temp->getUnitImageName( ) ) ) ||
+		!temp->setUnitImage( graph->CreateGLSprite( temp->getUnitImageName( ) ) ) ||
 		!temp->loadAnimation()
 	)
 	{
@@ -52,7 +52,7 @@ void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 
 	graph->LoadAnimation( temp->getUnitName(), temp->getUnitImageRows(),
 								temp->getUnitImageCols(), temp->getUnitWidth(), temp->getUnitHeight(),
-								temp->getUnitImage()->w, temp->getUnitImage()->h);
+								temp->getUnitImage()->tex->w, temp->getUnitImage()->tex->h);
 
 	temp->setUnitPos( x, y );
 
@@ -126,10 +126,14 @@ void UnitManager::DrawUnits( const float camX, const float camY )
 	Unit* u = NULL;
 	for (int i = 0; i < (int)Units.size(); i++) {
 		u = Units[i];
-		graph->DrawGLTexture( u->getUnitImage( ),
-				graph->GetVertex( u->getUnitX( ) - camX, u->getUnitY( ) - camY, 0.0,
+		graph->SetVertex( u->getUnitImage( )->vertices, u->getUnitX( ) - camX, u->getUnitY( ) - camY, 0.0,
+				u->getUnitWidth( ), u->getUnitHeight( ), 1 );
+		u->getUnitImage()->coordinates = graph->GetAnimation( u->getUnitName( ), u->getUnitAnim( ) );
+		graph->DrawGLTexture( u->getUnitImage( ) );
+				/*graph->GetVertex( u->getUnitX( ) - camX, u->getUnitY( ) - camY, 0.0,
 											u->getUnitWidth( ), u->getUnitHeight( ), 1 ),
 				graph->GetAnimation( u->getUnitName( ), u->getUnitAnim( ) ), &u->getUnitImage( )->clr
-			);
+				*/
+
 	}
 }

@@ -134,13 +134,11 @@ void BarWidget::createBar( string name, int* pos)
 	else
 		barwidth = width;
 	tex = graph->LoadGLTexture( name );
-	//FIXME: bar without top.
-	top = graph->CreateGLSprite(posx, posy, posz+0.1, pos[0], pos[1], width, height, tex);
+	if( tex )
+		top = graph->CreateGLSprite(posx, posy, posz+0.1, pos[0], pos[1], width, height, tex);
 	bar = graph->CreateGLSprite(barstartx, posy + pos[3], posz, barwidth, pos[5]);
 	if( bar ){
-		bar->col->r = pos[6];
-		bar->col->g = pos[7];
-		bar->col->b = pos[8];
+		bar->clr->set( pos[6], pos[7], pos[8] );
 	}
 	setBarValue(1);
 	setBarSize(1);
@@ -170,7 +168,8 @@ void BarWidget::setParent( Widget* p)
 {
 	Widget::setParent( p );
 	bar->vertices->z = getZ();
-	top->vertices->z = getZ() + 0.01;
+	if( top )
+		top->vertices->z = getZ() + 0.01;
 }
 
 void BarWidget::draw( )
@@ -179,5 +178,6 @@ void BarWidget::draw( )
 			return;
 	TextWidget::draw();
 	graph->DrawGLTexture( bar );
-	graph->DrawGLTexture( top );
+	if( top )
+		graph->DrawGLTexture( top );
 }

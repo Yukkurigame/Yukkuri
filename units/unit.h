@@ -53,8 +53,8 @@ public:
     }
 
     //как-то это не хорошо, почему картинка хранится в юните? структ какой придумать что ли.
-    inline Texture* getUnitImage() {return Image;}
-    bool setUnitImage( Texture* );
+    inline Sprite* getUnitImage() {return Image;}
+    bool setUnitImage( Sprite* );
     string getUnitImageName( ) { return defs->imageName;  }
 
 
@@ -75,7 +75,7 @@ private:
     string UnitName;
     int Anim;
     string Type;
-    Texture* Image;
+    Sprite* Image;
     EntityDefs* defs;
     bool Deleted;
 

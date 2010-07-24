@@ -6,10 +6,7 @@ DayTime::DayTime()
 	Day = 1;
 	time = 10.0;
 	sfield = Graphics::Instance()->CreateGLSprite(0, 0, 0, WWIDTH, WHEIGHT );
-	sfield->col->r = 0;
-	sfield->col->g = 0;
-	sfield->col->b = 0;
-	sfield->col->a = 255;
+	sfield->clr->set( 0, 0, 0, 255 );
 }
 
 DayTime::~DayTime()
@@ -79,7 +76,7 @@ void DayTime::update( const int& dt )
 
 void DayTime::draw( ){
 	if( ldark != dark ){
-		sfield->col->a = dark;
+		sfield->clr->a = dark;
 	}
 	if(dark)
 		Graphics::Instance()->DrawGLTexture( sfield );

@@ -108,7 +108,8 @@ void DynamicUnit::eat( Unit* victim )
 void DynamicUnit::takeAction( )
 {
 	AnimatedUnit::takeAction();
-	stat.fed -= 0.002 * stat.level;
+	if( stat.fed > 0.01 )
+			stat.fed -= 0.002 * stat.level;
 	if( Attacked ){
 		if( Attacked->getUnitStats()->hp <= 0 || dist(Attacked) >= 1000 ){
 			Attacked = NULL;
@@ -133,7 +134,7 @@ void DynamicUnit::attackUnit( Unit* victim )
 
 void DynamicUnit::hit( float damage )
 {
-	this->getUnitImage()->clr.set( 255, 0, 0 );
+	this->getUnitImage()->clr->set( 255, 0, 0 );
 	stat.hp -= damage;
 }
 

@@ -75,7 +75,7 @@ void Unit::setUnitAnim( int num )
 	Anim = num;
 }
 
-bool Unit::setUnitImage( Texture* image)
+bool Unit::setUnitImage( Sprite* image)
 {
 	if( image != NULL ){
 		Image = image;

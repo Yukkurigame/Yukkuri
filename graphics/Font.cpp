@@ -5,16 +5,10 @@
  */
 
 #include "Font.h"
-
-inline int next_p2( int a )
-{
-	int rval=2;
-	while(rval<a) rval<<=1;
-	return rval;
-}
+#include "GraphicsTypes.h"
 
 ///Create a display list coresponding to the give character.
-void make_dlist( FT_Face face, unsigned int ch, GLuint list_base, GLuint * tex_base )
+void make_dlist( FT_Face face, unsigned int ch, Char* letter, GLuint list_base, GLuint * tex_base )
 {
 
 	//FIXME: Когда-нибудь я это перепишу.
@@ -30,15 +24,15 @@ void make_dlist( FT_Face face, unsigned int ch, GLuint list_base, GLuint * tex_b
 	}
 
 	//Move the face's glyph into a Glyph object.
-    FT_Glyph glyph;
-    if(FT_Get_Glyph( face->glyph, &glyph )){
-    	debug(4, "FT_Get_Glyph failed\n");
-    	return;
-    }
+	FT_Glyph glyph;
+	if(FT_Get_Glyph( face->glyph, &glyph )){
+		debug(4, "FT_Get_Glyph failed\n");
+		return;
+	}
 
 	//Convert the glyph to a bitmap.
 	FT_Glyph_To_Bitmap( &glyph, ft_render_mode_normal, 0, 1 );
-    FT_BitmapGlyph bitmap_glyph = (FT_BitmapGlyph)glyph;
+	FT_BitmapGlyph bitmap_glyph = (FT_BitmapGlyph)glyph;
 
 	//This reference will make accessing the bitmap easier
 	FT_Bitmap& bitmap=bitmap_glyph->bitmap;
@@ -49,8 +43,19 @@ void make_dlist( FT_Face face, unsigned int ch, GLuint list_base, GLuint * tex_b
 	int width = next_p2( bitmap.width );
 	int height = next_p2( bitmap.rows );
 
+	letter->gl = glyph;
+	letter->bm = bitmap;
+	//letter->bgl = bitmap_glyph;
+	//letter->left = bitmap_glyph->left;
+	letter->top = bitmap_glyph->top;
+	letter->horiAdvance = face->glyph->metrics.horiAdvance >> 6;
+	letter->horiBearingY = face->glyph->metrics.horiBearingY >> 6;
+	letter->vertAdvance = face->glyph->metrics.vertAdvance >> 6;
+	letter->vertBearingY = face->glyph->metrics.vertBearingY >> 6;
+	letter->height = bitmap.rows;
+
 	//Allocate memory for the texture data.
-	GLubyte* expanded_data = new GLubyte[ 2 * width * height];
+	GLubyte* expanded_data = new GLubyte[ 2 * width * height ];
 
 	//Here we fill in the data for the expanded bitmap.
 	//Notice that we are using two channel bitmap (one for
@@ -62,26 +67,27 @@ void make_dlist( FT_Face face, unsigned int ch, GLuint list_base, GLuint * tex_b
 	//is the the Freetype bitmap otherwise.
 	for( int j=0; j < height; j++ ){
 		for( int i=0; i < width; i++ ){
-	        expanded_data[2*(i+j*width)] = 255;
-	        expanded_data[2*(i+j*width)+1] =
-	                (i>=bitmap.width || j>=bitmap.rows) ?
-	                0 : bitmap.buffer[i + bitmap.width*j];
+			expanded_data[2*(i+j*width)] = 255;
+			expanded_data[2*(i+j*width)+1] =
+					(i>=bitmap.width || j>=bitmap.rows) ?
+					0 : bitmap.buffer[i + bitmap.width*j];
 		}
 	}
 
 	//Now we just setup some texture paramaters.
-    glBindTexture( GL_TEXTURE_2D, tex_base[ch]);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	glBindTexture( GL_TEXTURE_2D, tex_base[ch]);
+	glTexParameteri( GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR );
 
 	//Here we actually create the texture itself, notice
 	//that we are using GL_LUMINANCE_ALPHA to indicate that
 	//we are using 2 channel data.
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height,
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height,
 		  0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, expanded_data );
 
 	//With the texture created, we don't need to expanded data anymore
-    delete [] expanded_data;
+
+	delete [] expanded_data;
 
 	//So now we can create the display list
 	glNewList(list_base+ch,GL_COMPILE);
@@ -132,21 +138,27 @@ void make_dlist( FT_Face face, unsigned int ch, GLuint list_base, GLuint * tex_b
 	glEndList();
 
 	//Fix memory leak
-	FT_Done_Glyph(glyph);
+	//FT_Done_Glyph(glyph);
 }
 
 void font_data::clean() {
-	glDeleteLists( list_base, 256 ); //128
-	glDeleteTextures( 256, textures ); //128
+	for( unsigned int i = 0; i< CHARSIZE; ++i ){
+		FT_Done_Glyph( chars[i]->gl );
+		delete chars[i];
+	}
+	glDeleteLists( list_base, CHARSIZE );
+	glDeleteTextures( CHARSIZE, textures );
 	delete [] textures;
 }
 
 bool font_data::load(const char * fname, unsigned int h) {
 
-	debug(3, "Loading font " +  (string)fname + "\n");
+	char fs[4];
+	sprintf( fs, "%d", h );
+	debug( 3, "Loading font " +  (string)fname + ". Size: " + fs + "\n" );
 
 	//Allocate some memory to store the texture ids.
-	textures = new GLuint[256]; //128
+	textures = new GLuint[CHARSIZE];
 
 	this->h=h;
 
@@ -181,12 +193,14 @@ bool font_data::load(const char * fname, unsigned int h) {
 	//Here we ask opengl to allocate resources for
 	//all the textures and displays lists which we
 	//are about to create.
-	list_base = glGenLists(256); //128
-	glGenTextures( 256, textures ); //128
+	list_base = glGenLists(CHARSIZE);
+	glGenTextures( CHARSIZE, textures );
 
 	//This is where we actually create each of the fonts display lists.
-	for( unsigned int i=0; i<256; ++i ) //128
-		make_dlist( face, i, list_base, textures );
+	for( unsigned int i=0; i<CHARSIZE; ++i ){
+		chars[i] = new Char();
+		make_dlist( face, i, chars[i], list_base, textures );
+	}
 
 	//We don't need the face information now that the display
 	//lists have been created, so we free the assosiated resources.
@@ -196,4 +210,119 @@ bool font_data::load(const char * fname, unsigned int h) {
 	FT_Done_FreeType( library );
 
 	return true;
+}
+
+void font_data::print( Texture* tex, int* sw, int* sh, const char* str )
+{
+	GLuint* texture;
+	int width, height, swidth, sheight;
+	int lineheight;
+	int textlen;
+	std::vector< char* > lines;
+
+	width = swidth = height = sheight = lineheight = 0;
+
+	textlen = strlen( str );
+
+	char text[textlen];
+	strcpy( text, str );
+
+	//Split lines by /n and calculate size;
+	char* token;
+	token = strtok( text, "\n");
+	while( token != 0 ){
+		//int tmpheight = 0;
+		int tmpwidth = 0;
+		char* line = token;
+		for( unsigned int g = 0, e = strlen( line ); g < e; ++g ){
+			Char* tmpc = chars[ static_cast<int>(text[0]) ];
+			tmpwidth += tmpc->horiAdvance;
+			if( tmpc->height > lineheight ){
+				lineheight = tmpc->vertAdvance;
+			}
+		}
+		if( tmpwidth > swidth )
+			swidth = tmpwidth;
+		lines.push_back(line);
+		token = strtok(NULL, "\n");
+	}
+
+	sheight = lineheight * lines.size() + 1 ;
+
+	width = swidth;
+	height = sheight;
+
+	(*sw) = swidth;
+	(*sh) = sheight;
+
+	if( width && ( width & ( width - 1 ) ) )
+		width = next_p2( width );
+	if( height && ( height & ( height - 1 ) ) )
+		height = next_p2( height );
+
+	//Allocate memory for the texture data.
+	GLubyte* expanded_data = new GLubyte[ 2 * width * height ];
+
+	{
+		int linenum = 0;
+		int voffset = 0;
+		int numlines = lines.size();
+		textlen = strlen(lines[linenum]);
+		for( int j=0; j < height; j++ ){
+			Char* tmpc = NULL;
+			int charnum = 0;
+			int hoffset = 0;
+			int chartop = 0;
+			if( j >= lineheight + voffset + lineheight/4 ){ //line up
+				linenum++;
+				voffset += lineheight + lineheight/4;
+				if( linenum < numlines )
+					textlen = strlen(lines[linenum]);
+			}
+			for( int i=0; i < width; i++ ){
+				expanded_data[ 2 * ( i + j * width ) ] = 255; //Alpha
+				if( charnum >= textlen || linenum >= numlines ){
+					expanded_data[ 2 * ( i + j * width ) + 1 ] = 0;
+				}else{
+					if( !tmpc || i >= hoffset + tmpc->horiAdvance ){ //symbol up;
+						if( tmpc ){
+							if( ++charnum >= textlen ) continue;
+							hoffset += tmpc->horiAdvance;
+						}
+						tmpc = chars[ static_cast<int>( lines[linenum][charnum] ) ];
+						chartop = tmpc->top - lineheight;
+					}
+					expanded_data[ 2 * ( i + j * width ) + 1 ] =
+						( 	i - hoffset >= tmpc->bm.width ||
+							j + chartop - voffset < 0 || j + chartop - voffset >= tmpc->bm.rows // ||
+							) ?
+							0 : tmpc->bm.buffer[ i - hoffset + tmpc->bm.width * ( j + chartop - voffset ) ];
+				}
+			}
+		}
+
+		(*sh) += ( numlines + 1 ) * lineheight/4; //Add subline space to sprite;
+	}
+
+	texture = new GLuint;
+
+	//Now we just setup some texture paramaters.
+	glBindTexture( GL_TEXTURE_2D, *texture );
+	glTexParameteri( GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR );
+
+	//Here we actually create the texture itself, notice
+	//that we are using GL_LUMINANCE_ALPHA to indicate that
+	//we are using 2 channel data.
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height,
+		  0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, expanded_data );
+
+	//With the texture created, we don't need to expanded data anymore
+
+	delete [] expanded_data;
+
+	tex->texture = texture;
+	tex->w = width;
+	tex->h = height;
+
 }

@@ -7,23 +7,26 @@
 
 Graphics* Graphics::graph = 0;
 
-/*Generate screenshot name. From MPlayer */
-static int Exists( char *name )
+namespace Screenshot
 {
-    struct stat dummy;
-    if( stat( name, &dummy ) == 0 )
-    	return 1;
-    return 0;
-}
+	/*Generate screenshot name. From MPlayer */
+	static int Exists( char *name )
+	{
+		struct stat dummy;
+		if( stat( name, &dummy ) == 0 )
+			return 1;
+		return 0;
+	}
 
-static void GenerateName( char* name )
-{
-	int iter = 0;
-	do{
-		snprintf( name, 50, "screenshot%03d.png", ++iter);
-	}while( Exists( name ) && iter < 1000 );
-	if( Exists( name ) ){
-		name[0] = '\0';
+	static void GenerateName( char* name )
+	{
+		int iter = 0;
+		do{
+			snprintf( name, 50, "screenshot%03d.png", ++iter);
+		}while( Exists( name ) && iter < 1000 );
+		if( Exists( name ) ){
+			name[0] = '\0';
+		}
 	}
 }
 
@@ -72,6 +75,7 @@ void Graphics::openglSetup( int wwidth, int wheight )
 
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
+
 }
 
 Texture* Graphics::LoadGLTexture( string name )
@@ -255,7 +259,7 @@ void Graphics::PrintText( string fontname, int size, float x, float y, float z, 
 		debug( 3,"Font " + fontname + " not found.\n" );
 		return;
 	}
-	PrintText( *font, x, y, z, size, color, text.c_str() );
+	PrintText( *font, x, y, z, color, text.c_str() );
 }
 
 /// A fairly straight forward function that pushes
@@ -410,6 +414,7 @@ void Graphics::LoadAnimation( string name, int rows, int cols, int width, int he
 
 void Graphics::DrawGLScene()
 {
+	DrawGLTexture( testtexture );
 	glLoadIdentity();
 	SDL_GL_SwapBuffers();
 }
@@ -428,7 +433,7 @@ bool Graphics::SaveScreenshot( )
 	Uint32 rmask, gmask, bmask, amask;
 	SDL_Surface* output;
 
-	GenerateName( Filename );
+	Screenshot::GenerateName( Filename );
 	if( Filename[0] == '\0' ){
 		debug(3, "Can not get screenshot name. Too many screenshots in folder.");
 		return false;
@@ -465,7 +470,11 @@ bool Graphics::SaveScreenshot( )
 	return true;
 }
 
-Graphics::~Graphics()
+Graphics::Graphics( ){
+	testtexture = NULL;
+}
+
+Graphics::~Graphics( )
 {
 	for( map< string, vector<coord2farr*> >::iterator it = Animations.begin(), end = Animations.end();
 			it != end; ++it ){
@@ -514,9 +523,9 @@ coord2farr* Graphics::GetCoordinates(float x1, float y1, float x2, float y2,
 	c = new coord2farr();
 
 	float cx1 = x1 / width;
-	float cx2 = ( x1 + x2 ) / width; //x2/width;
+	float cx2 = ( x1 + x2 ) / width;
 	float cy2 = y1 / height;
-	float cy1 = ( y1 + y2 ) / height; //y2/height;
+	float cy1 = ( y1 + y2 ) / height;
 
 	if(mirrored){
 		c->lt.x = cx2;
@@ -607,22 +616,14 @@ SDL_Surface* Graphics::OpenImage( string filename )
 
 font_data* Graphics::GetFont( string name, int size  )
 {
-	//Как-то коряво получилось.
-	if( LoadedFonts.count(name) > 0 ){
-		if( LoadedFonts[name].count(size) ){
-			return LoadedFonts[name][size];
-		}else{
-			if( LoadTTFont( "data/shared/", name, size ) ) //TODO: add FONTPATH
-				return LoadedFonts[name][size];
-		}
-	}else{
-		if( LoadTTFont( "data/shared/", name, size ) ) //TODO: add FONTPATH
-			return LoadedFonts[name][size];
+	if( !LoadedFonts.count(name) || !LoadedFonts[name].count(size) ){
+		if( !LoadTTFont( "data/shared/", name, size ) ) //TODO: add FONTPATH
+			return NULL;
 	}
-	return NULL;
+	return LoadedFonts[name][size];
 }
 
-void Graphics::PrintText(const font_data &ft_font, float x, float y, float z, int size, const int* color, const char *str)
+void Graphics::PrintText(const font_data &ft_font, float x, float y, float z, const int* color, const char *str)
 {
 
 	if( str == NULL )
@@ -643,7 +644,7 @@ void Graphics::PrintText(const font_data &ft_font, float x, float y, float z, in
 
 	//Split lines by /n
 	char * token;
-	token = strtok(text, "\n"); //По моему так проще, чем предлагают.
+	token = strtok(text, "\n");
 	while( token != 0 ){
 		string line = token;
 		lines.push_back(line);
@@ -688,3 +689,36 @@ void Graphics::PrintText(const font_data &ft_font, float x, float y, float z, in
 
 }
 
+Sprite* Graphics::CreateTextTexture( font_data* ftfont, float x, float y, float z, const int* color, const char *str )
+{
+
+	Sprite* ret;
+	Texture* tex;
+	int width;
+	int height;
+
+	if( str == NULL )
+		return NULL;
+
+	ret = new Sprite();
+	ret = NULL;
+
+	width = height = 0;
+	tex = new Texture();
+	ftfont->print( tex, &width, &height, str );
+	tex->clr.set( color[0], color[1], color[2] );
+
+	ret = CreateGLSprite( x, y, z, 0, 0, width, height, tex );
+
+	return ret;
+}
+
+void Graphics::test( )
+{
+	int color[3];
+	color[0] = 255;
+	color[1] = 0;
+	color[2] = 0;
+	const char* string = "The \nquick brown \nfox jumps \nover the lazy \ndog.";
+	testtexture = CreateTextTexture( GetFont( "DejaVuSans", 30), 30, 30, 0, color, string );
+}

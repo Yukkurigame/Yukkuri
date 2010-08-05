@@ -50,6 +50,8 @@ void Yukkuri::AdditionalInit()
 		units->CreateUnit( PLANT, ( rand() % 300 ), ( rand() % 300 ) );
 	}
 
+	Graphics::Instance()->test();
+
 }
 
 void Yukkuri::Think( const int& ElapsedTime )

@@ -31,6 +31,8 @@ public:
 		graph = 0;
 	}
 
+	void test( );
+
 	bool SetScreen( SDL_Surface* s );
 
 	void openglInit();
@@ -40,6 +42,7 @@ public:
 	void FreeGLTexture( Texture* );
 
 	inline void DrawGLTexture( Sprite* s ){
+		if( !s ) return;
 		DrawGLTexture( s->tex, s->vertices, s->coordinates, s->clr );
 	}
 	void DrawGLTexture( Texture* tex, vertex3farr* vertices, coord2farr* coordinates, Color* col );
@@ -52,7 +55,7 @@ public:
 		return CreateGLSprite( LoadGLTexture( name ) );
 	}
 	inline Sprite* CreateGLSprite( Texture* tex ){
-		return CreateGLSprite( 0, 0, 0, 0, 0, 0, 0, tex );
+		return CreateGLSprite( 20, 20, 0, 0, 0, 0, 0, tex );
 	}
 	inline Sprite* CreateGLSprite( float x, float y, float z, float width, float height ){
 		return CreateGLSprite( x, y, z, 0, 0, width, height, NULL);
@@ -76,7 +79,7 @@ public:
 	bool SaveScreenshot( );
 
 private:
-	Graphics() {};
+	Graphics();
 	~Graphics();
 	Graphics( const Graphics& );
 	Graphics& operator=(const Graphics&);
@@ -93,12 +96,15 @@ private:
 	SDL_Surface* OpenImage( std::string );
 
 	font_data* GetFont( string name, int size);
-	void PrintText( const font_data &ft_font, float x, float y, float z, int size, const int* color, const char *str );
+	void PrintText( const font_data &ft_font, float x, float y, float z, const int* color, const char *str );
+	Sprite* CreateTextTexture( font_data* ftfont, float x, float y, float z, const int* color, const char *str);
 
 	vector < Sprite* > GLSprites;
 	map < string, vector<coord2farr*> > Animations;
 	map < string, Texture* > LoadedGLTextures;
 	map < string, map< int, font_data*> > LoadedFonts;
+
+	Sprite* testtexture;
 
 };
 

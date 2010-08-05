@@ -23,8 +23,8 @@ struct Color
 		return true;
 	}
 	void set( unsigned int c ) { r = g = b = c; }
-	void set( unsigned int cr, unsigned int cg, unsigned int cb ) { r = cr, g = cg, b = cb; }
-	void set( unsigned int cr, unsigned int cg, unsigned int cb, unsigned int ca ) { r = cr, g = cg, b = cb; a = ca; }
+	void set( unsigned int cr, unsigned int cg, unsigned int cb ) { r = cr; g = cg; b = cb; }
+	void set( unsigned int cr, unsigned int cg, unsigned int cb, unsigned int ca ) { r = cr; g = cg; b = cb; a = ca; }
 };
 
 struct Texture

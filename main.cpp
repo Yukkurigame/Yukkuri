@@ -49,9 +49,6 @@ void Yukkuri::AdditionalInit()
 	for( int i=0; i < ( rand() % 100 ); i++){
 		units->CreateUnit( PLANT, ( rand() % 300 ), ( rand() % 300 ) );
 	}
-
-	Graphics::Instance()->test();
-
 }
 
 void Yukkuri::Think( const int& ElapsedTime )

@@ -49,7 +49,8 @@ public:
 
 	void LoadAllTTFonts( int size );
 	bool LoadTTFont( string dir, string filename, int size );
-	void PrintText(string font, int size, float x, float y, float z, const int* color, string text);
+	Sprite* GetTextSprite( string font, int size, float x, float y, float z, Color* color, string text );
+	void ChangeTextSprite( Sprite* spr, string fontname, int size, string text );
 
 	inline Sprite* CreateGLSprite( string name ){
 		return CreateGLSprite( LoadGLTexture( name ) );
@@ -96,15 +97,13 @@ private:
 	SDL_Surface* OpenImage( std::string );
 
 	font_data* GetFont( string name, int size);
-	void PrintText( const font_data &ft_font, float x, float y, float z, const int* color, const char *str );
-	Sprite* CreateTextTexture( font_data* ftfont, float x, float y, float z, const int* color, const char *str);
+	Sprite* CreateTextTexture( font_data* ftfont, float x, float y, float z, Color* color, string str );
+
 
 	vector < Sprite* > GLSprites;
-	map < string, vector<coord2farr*> > Animations;
+	map < string, vector<coord2farr* > > Animations;
 	map < string, Texture* > LoadedGLTextures;
-	map < string, map< int, font_data*> > LoadedFonts;
-
-	Sprite* testtexture;
+	map < string, map< int, font_data* > > LoadedFonts;
 
 };
 

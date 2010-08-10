@@ -83,7 +83,7 @@ TextWidget::TextWidget()
 	textx = 0;
 	texty = 0;
 	Text = "";
-	setFontColor(0, 0, 0);
+	TextSprite = NULL;
 }
 
 bool TextWidget::create( string name, string text, int x, int y )
@@ -95,20 +95,38 @@ bool TextWidget::create( string name, string text, int x, int y )
 			background = NULL;
 	}
 	Text = text;
+	TextSprite = graph->CreateGLSprite( x, y, posz, 20, 20, width, height, NULL );
+	TextSprite->clr->set( 0 );
 	return true;
+}
+
+void TextWidget::setParent( Widget* p )
+{
+	float x = p->posx + posx + textx;
+	float y = p->posy + p->height - posy - texty;
+	Widget::setParent( p );
+	TextSprite->setPosition( x, y );
+	TextSprite->vertices->z = getZ();
 }
 
 void TextWidget::setFontColor( int r, int g, int b )
 {
-	FontColor[0] = r;
-	FontColor[1] = g;
-	FontColor[2] = b;
+	TextSprite->clr->set( r, g, b );
+}
+
+void TextWidget::setText( string text )
+{
+	if( AddText == text )
+		return;
+	AddText = text;
+	graph->ChangeTextSprite( TextSprite, FontName, FontSize, Text + AddText );
 }
 
 void TextWidget::setTextPosition( float x, float y )
 {
-	textx = x;
-	texty = height - y;
+	textx = posx + x;
+	texty = posy + height - y;
+	TextSprite->setPosition( textx, texty );
 }
 
 void TextWidget::draw( )
@@ -119,7 +137,8 @@ void TextWidget::draw( )
 		return;
 	if(background)
 		graph->DrawGLTexture( background );
-	graph->PrintText( FontName, FontSize, posx+textx, posy+texty, posz, FontColor, Text + AddText );
+	graph->DrawGLTexture( TextSprite );
+	//graph->PrintText( FontName, FontSize, posx+textx, posy+texty, posz, FontColor, Text + AddText );
 }
 
 BarWidget::BarWidget()
@@ -146,7 +165,7 @@ void BarWidget::createBar( string name, int* pos)
 	if( bar ){
 		bar->clr->set( pos[6], pos[7], pos[8] );
 	}
-	setTextPosition( getTextX() + 5, getTextY() - height + pos[5] );
+	setTextPosition( getTextX() - posx, getTextY() + pos[5] );
 	setBarValue(1);
 	setBarSize(1);
 }
@@ -158,35 +177,29 @@ void BarWidget::setBarValue( int value )
 	barvalue = value;
 	{//Output text;
 		char str[25];
-		sprintf( str,"%d/%d", value, barmaxvalue );
-		AddText = str;
+		sprintf( str, "%d/%d", value, barmaxvalue );
+		setText( str );
 	}
 	if( value < 0 )
 		value = 0;
 	if( value > barmaxvalue )
 		value = barmaxvalue;
 	float s = static_cast<float>(value) / static_cast<float>(barmaxvalue);
-	float x = barstartx + barwidth * s;
-	bar->vertices->rt.x = x;
-	bar->vertices->rb.x = x;
+	float x = barwidth * s;
+	bar->resize( x, -1 );
 }
 
-void BarWidget::setParent( Widget* p)
+void BarWidget::setParent( Widget* p )
 {
+	float bardelta = barstartx - posx;
+	float x = p->posx + posx;
 	float y = p->posy + p->height - posy;
 	float barheight = bar->vertices->lt.y - bar->vertices->lb.y;
-	Widget::setParent( p );
-	bar->vertices->lb.y = y;
-	bar->vertices->rb.y = y;
-	bar->vertices->lt.y = y + barheight;
-	bar->vertices->rt.y = y + barheight;
+	TextWidget::setParent( p );
+	bar->setPosition( x + bardelta, y );
 	bar->vertices->z = getZ();
 	if( top ){
-		float bmy = y - barheight;
-		top->vertices->lb.y = bmy;
-		top->vertices->rb.y = bmy;
-		top->vertices->lt.y = bmy + height;
-		top->vertices->rt.y = bmy + height;
+		top->setPosition( x, y - barheight );
 		top->vertices->z = getZ() + 0.01;
 	}
 }

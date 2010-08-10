@@ -22,9 +22,11 @@ struct Color
 		if( r != 255 || g != 255 || b != 255 ) return false;
 		return true;
 	}
+	void set( int c ) { r = g = b = c; }
 	void set( unsigned int c ) { r = g = b = c; }
 	void set( unsigned int cr, unsigned int cg, unsigned int cb ) { r = cr; g = cg; b = cb; }
 	void set( unsigned int cr, unsigned int cg, unsigned int cb, unsigned int ca ) { r = cr; g = cg; b = cb; a = ca; }
+	void set( Color* c ) { r = c->r; g = c->g; b = c->b; a = c->a; }
 };
 
 struct Texture
@@ -79,6 +81,20 @@ struct Sprite
 		vertices = NULL;
 		coordinates = NULL;
 		clr = NULL;
+	}
+	void resize( float w, float h ){
+		if( w >= 0 )
+			vertices->rb.x = vertices->rt.x = vertices->lb.x + w;
+		if( h >= 0 )
+			vertices->rt.y = vertices->lt.y = vertices->lb.y + h;
+	}
+	void setPosition( float x, float y ){
+		float width = vertices->rb.x - vertices->lb.x;
+		float height = vertices->rt.y - vertices->lb.y;
+		vertices->lb.x = vertices->lt.x = x;
+		vertices->lb.y = vertices->rb.y = y;
+		vertices->rb.x = vertices->rt.x = x + width;
+		vertices->lt.y = vertices->rt.y = y + height;
 	}
 };
 

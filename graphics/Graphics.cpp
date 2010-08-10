@@ -61,10 +61,9 @@ void Graphics::openglSetup( int wwidth, int wheight )
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 
-
 	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 
 
@@ -171,7 +170,7 @@ void Graphics::DrawGLTexture( Texture* tex, vertex3farr* vertices, coord2farr* c
 		glBindTexture( GL_TEXTURE_2D, 0 );
 	}
 	//Sprite color
-	glColor4ub(col->r,col->g,col->b,col->a);
+	glColor4ub( col->r, col->g, col->b, col->a );
 	if(coordinates){
 		glBegin( GL_QUADS );
 			//Bottom-left vertex (corner)
@@ -252,37 +251,42 @@ bool Graphics::LoadTTFont( string dir, string name, int size )
 	return true;
 }
 
-void Graphics::PrintText( string fontname, int size, float x, float y, float z, const int* color, string text)
+Sprite* Graphics::GetTextSprite( string fontname, int size, float x, float y, float z, Color* color, string text )
 {
-	font_data* font = GetFont(fontname, size);
+	font_data* font = GetFont( fontname, size );
 	if(!font){
 		debug( 3,"Font " + fontname + " not found.\n" );
-		return;
+		return NULL;
 	}
-	PrintText( *font, x, y, z, color, text.c_str() );
+	return CreateTextTexture( font, x, y, z, color, text );
 }
 
-/// A fairly straight forward function that pushes
-/// a projection matrix that will make object world
-/// coordinates identical to window coordinates.
-inline void pushScreenCoordinateMatrix() {
-	glPushAttrib(GL_TRANSFORM_BIT);
-	GLint	viewport[4];
-	glGetIntegerv(GL_VIEWPORT, viewport);
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	gluOrtho2D(viewport[0],viewport[2],viewport[1],viewport[3]);
-	glPopAttrib();
-}
+void Graphics::ChangeTextSprite( Sprite* spr, string fontname, int size, string text )
+{
+	int width;
+	int height;
+	font_data* font;
+	Texture* tex;
 
-/// Pops the projection matrix without changing the current
-/// MatrixMode.
-inline void pop_projection_matrix() {
-	glPushAttrib(GL_TRANSFORM_BIT);
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glPopAttrib();
+
+	font = GetFont( fontname, size );
+
+	{ //TODO: In thread
+
+		if( spr->tex )
+			FreeGLTexture( spr->tex );
+
+		width = height = 0;
+
+		tex = new Texture();
+		font->print( tex, &width, &height, text.c_str() );
+
+		spr->tex = tex;
+		spr->vertices->rt.y = spr->vertices->lt.y = spr->vertices->lb.y + height;
+		spr->vertices->rb.x = spr->vertices->rt.x = spr->vertices->lb.x + width;
+		delete spr->coordinates;
+		spr->coordinates = GetCoordinates( 0, 0, width, height, tex->w, tex->h, 0 );
+	}
 }
 
 /* This function creating sprite structure with texture.
@@ -414,7 +418,7 @@ void Graphics::LoadAnimation( string name, int rows, int cols, int width, int he
 
 void Graphics::DrawGLScene()
 {
-	DrawGLTexture( testtexture );
+	//DrawGLTexture( testtexture );
 	glLoadIdentity();
 	SDL_GL_SwapBuffers();
 }
@@ -471,7 +475,7 @@ bool Graphics::SaveScreenshot( )
 }
 
 Graphics::Graphics( ){
-	testtexture = NULL;
+	//testtexture = NULL;
 }
 
 Graphics::~Graphics( )
@@ -623,73 +627,7 @@ font_data* Graphics::GetFont( string name, int size  )
 	return LoadedFonts[name][size];
 }
 
-void Graphics::PrintText(const font_data &ft_font, float x, float y, float z, const int* color, const char *str)
-{
-
-	if( str == NULL )
-		return;
-
-	// We want a coordinate system where things coresponding to window pixels.
-	//pushScreenCoordinateMatrix();
-
-	GLuint font=ft_font.list_base;
-
-	float h=ft_font.h/.63f;	//We make the height about 1.5* that of
-
-	char text[256];	// Holds string
-
-	strcpy(text, str);
-
-	vector<string> lines;
-
-	//Split lines by /n
-	char * token;
-	token = strtok(text, "\n");
-	while( token != 0 ){
-		string line = token;
-		lines.push_back(line);
-		token = strtok(NULL, "\n");
-	}
-
-	glPushAttrib(GL_LIST_BIT | GL_CURRENT_BIT  | GL_ENABLE_BIT | GL_TRANSFORM_BIT);
-	glColor3ub(color[0],color[1],color[2]);
-	glMatrixMode(GL_MODELVIEW);
-	glDisable(GL_LIGHTING);
-	glEnable(GL_TEXTURE_2D);
-	glDisable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glListBase(font);
-
-	float modelview_matrix[16];
-
-	glGetFloatv(GL_MODELVIEW_MATRIX, modelview_matrix);
-
-	for( unsigned int i=0; i<lines.size(); ++i) {
-		glPushMatrix();
-		glLoadIdentity();
-		glTranslatef( x, y - h * i, z );
-		glMultMatrixf(modelview_matrix);
-	//  The commented out raster position stuff can be useful if you need to
-	//  know the length of the text that you are creating.
-	//  If you decide to use it make sure to also uncomment the glBitmap command
-	//  in make_dlist().
-	//	glRasterPos2f(0,0);
-		glCallLists(lines[i].length(), GL_UNSIGNED_BYTE, lines[i].c_str());
-	//	float rpos[4];
-	//	glGetFloatv(GL_CURRENT_RASTER_POSITION ,rpos);
-	//	float len=x-rpos[0];
-		glPopMatrix();
-	}
-
-	glPopAttrib();
-
-	//pop_projection_matrix();
-
-}
-
-Sprite* Graphics::CreateTextTexture( font_data* ftfont, float x, float y, float z, const int* color, const char *str )
+Sprite* Graphics::CreateTextTexture( font_data* ftfont, float x, float y, float z, Color* color, string str )
 {
 
 	Sprite* ret;
@@ -697,28 +635,20 @@ Sprite* Graphics::CreateTextTexture( font_data* ftfont, float x, float y, float 
 	int width;
 	int height;
 
-	if( str == NULL )
+	if( str == "" )
 		return NULL;
 
-	ret = new Sprite();
 	ret = NULL;
 
-	width = height = 0;
-	tex = new Texture();
-	ftfont->print( tex, &width, &height, str );
-	tex->clr.set( color[0], color[1], color[2] );
+	{ //TODO: In thread
+		width = height = 0;
 
-	ret = CreateGLSprite( x, y, z, 0, 0, width, height, tex );
+		tex = new Texture();
+		ftfont->print( tex, &width, &height, str.c_str() );
+		tex->clr.set( color );
+
+		ret = CreateGLSprite( x, y, z, 0, 0, width, height, tex );
+	}
 
 	return ret;
-}
-
-void Graphics::test( )
-{
-	int color[3];
-	color[0] = 255;
-	color[1] = 0;
-	color[2] = 0;
-	const char* string = "The \nquick brown \nfox jumps \nover the lazy \ndog.";
-	testtexture = CreateTextTexture( GetFont( "DejaVuSans", 30), 30, 30, 0, color, string );
 }

@@ -22,33 +22,19 @@ using std::string;
 
 #define CHARSIZE 256
 
-inline int next_p2( int a )
-{
-	int rval=2;
-	while(rval<a) rval<<=1;
-	return rval;
-}
-
 struct Char{
-	//FIXME: cleanup
 	FT_Glyph gl;
 	FT_Bitmap bm;
 	signed long horiAdvance;
-	signed long horiBearingY;
 	signed long vertAdvance;
-	signed long vertBearingY;
 	int top;
-	//int left;
 	int height;
-	Char( ) { horiAdvance = vertAdvance = vertBearingY = 0; top = height = 0; }
+	Char( ) { horiAdvance = vertAdvance = 0; top = height = 0; }
 };
 
 struct font_data {
 	float h;			// Font height.
-	GLuint * textures;	// Texture id's
-	GLuint list_base;	// First display list id
 	Char* chars[CHARSIZE];
-
 
 	//The init function will create a font of
 	//of the height h from the file fname.
@@ -56,6 +42,10 @@ struct font_data {
 
 	//Free all the resources assosiated with the font.
 	void clean();
+
+	//Calculate text size.
+	void size( int* w, int* h, const char* str );
+
 
 	//Print text string to sprite
 	void print( Texture* spr, int* sw, int* sh, const char* text );

@@ -76,9 +76,11 @@ public:
 
 	bool create( string name, string text, int x=0, int y=0 );
 
+	void setParent( Widget* p );
+
 	void setFont( string name, int size ){ FontName = name; FontSize = size; }
 	void setFontColor( int r, int g, int b );
-	void setText( string text ){ AddText = text; }
+	void setText( string text );
 	void setTextPosition( float x, float y );
 	float getTextX( ){ return textx; }
 	float getTextY( ){ return texty; }
@@ -88,11 +90,13 @@ protected:
 	string AddText;
 
 private:
+	Sprite* TextSprite;
 	float textx, texty;
 	string Text;
 	string FontName;
 	int FontSize;
-	int FontColor[3];
+	//Color FontColor;
+	//int FontColor[3];
 };
 
 class BarWidget: public TextWidget

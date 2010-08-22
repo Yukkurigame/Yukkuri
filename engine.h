@@ -46,8 +46,10 @@ private:
 	/** FPS Text **/
 	char* FPStext;
 
+#ifdef JOYSTICKENABLE
    /** SDL joystick **/
 	SDL_Joystick* joystick;
+#endif
 
 protected:
 	void DoThink( const int& iElapsedTicks );

@@ -32,13 +32,15 @@ Widget* UI::LoadWidget( string name )
 	LuaConfig* conf = LuaConfig::Instance();
 
 	//FIXME: shi! This fufuuunction is so HUUUUUUUUUUUUUUUUUUUGE.
+	//FIXME: not return NULL if not exists
 
 	debug(5, "Loading widget " + name + "\n");
 
 	//Prevent loop inheritance.
-	if( GetWidget( name ) ){
-		debug(5, "Widget with name " + name + " already exists\n");
-		return NULL;
+	w = GetWidget( name );
+	if( w ){
+		debug(5, "Widget with name " + name + " already exists.\n");
+		return w;
 	}
 
 	int type;
@@ -83,7 +85,7 @@ Widget* UI::LoadWidget( string name )
 		conf->getValue("bgposx", name, "widget", bgx );
 		conf->getValue("bgposy", name, "widget", bgy );
 
-		if(!w->create(imgname, text, bgx, bgy)){
+		if( !w->create(imgname, text, bgx, bgy )){
 			return NULL;
 		}
 

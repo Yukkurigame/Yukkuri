@@ -58,6 +58,7 @@ void CEngine::Init()
 
 	cout << "Done" << endl;
 
+#ifdef JOYSTICKENABLE
 	if( SDL_NumJoysticks() > 0 ){
 		cout << SDL_NumJoysticks() << " joysticks were found:" << endl;
 		for( int i=0; i < SDL_NumJoysticks(); i++ )
@@ -65,6 +66,10 @@ void CEngine::Init()
 		SDL_JoystickEventState(SDL_ENABLE);
 		joystick = SDL_JoystickOpen(0);
 	}
+#else
+	cout << "Joystick not enabled." << endl;
+#endif
+
 
 	AdditionalInit();
 
@@ -162,15 +167,16 @@ void CEngine::HandleInput()
 				evnt = event.key.keysym.sym;
 				break;			//It's break for both SDL_KEY events.
 
+#ifdef JOYSTICKENABLE
 			case SDL_JOYAXISMOTION:
-				evnt = SDLK_LAST; //;
+				evnt = SDLK_LAST;
 				if( event.jaxis.axis == 0){ // Left-right movement
 					//left, right, release
-					if( event.jaxis.value > 0 )
+					if( event.jaxis.value > JSSENS )
 						++evnt;
-					else if( event.jaxis.value < 0 )
+					else if( event.jaxis.value < -JSSENS )
 						evnt +=2;
-					else{
+					else if( event.jaxis.value == 0){
 						++evnt;
 						down = 0;
 					}
@@ -178,11 +184,11 @@ void CEngine::HandleInput()
 				if( event.jaxis.axis == 1){ //Up-Down movement
 					//up, down, release
 					evnt += 2;
-					if( event.jaxis.value > 0 )
+					if( event.jaxis.value > JSSENS )
 						++evnt;
-					else if( event.jaxis.value < 0 )
+					else if( event.jaxis.value < -JSSENS )
 						evnt +=2;
-					else{
+					else if( event.jaxis.value == 0){
 						++evnt;
 						down = 0;
 					}
@@ -194,6 +200,7 @@ void CEngine::HandleInput()
 			case SDL_JOYBUTTONDOWN:
 				evnt = SDLK_LAST + 7 + event.jbutton.button;
 				break;
+#endif
 
 				/*
 				case SDL_MOUSEMOTION:

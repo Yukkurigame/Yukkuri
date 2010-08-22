@@ -41,13 +41,6 @@ public:
 
 	virtual void draw();
 
-	//FIXME: как-то не хорошо так публично.
-	string name;
-	float width;
-	float height;
-	float posx;
-	float posy;
-
 	virtual void setFont( string, int ) {};
 	virtual void setFontColor( int r, int g, int b ) {};
 	virtual void setText( string ) {};
@@ -57,6 +50,13 @@ public:
 	virtual void setBarSize( int size ) {};
 	virtual void setBarValue( int val ) {};
 
+	//FIXME: как-то не хорошо так публично.
+	string name;
+	float width;
+	float height;
+	float posx;
+	float posy;
+
 protected:
 	bool visible;
 	Graphics* graph;
@@ -64,6 +64,7 @@ protected:
 	wType type;
 	Sprite* background;
 	int bgimg[2];
+
 private:
 	Widget* parent;
 	std::vector<Widget*> children;
@@ -73,6 +74,7 @@ class TextWidget: public Widget
 {
 public:
 	TextWidget( );
+	~TextWidget( );
 
 	bool create( string name, string text, int x=0, int y=0 );
 
@@ -90,20 +92,25 @@ protected:
 	string AddText;
 
 private:
+
+	void textPosition( float x, float y );
+
+	Sprite* StaticTextSprite;
 	Sprite* TextSprite;
 	float textx, texty;
 	string Text;
 	string FontName;
 	int FontSize;
-	//Color FontColor;
-	//int FontColor[3];
 };
 
 class BarWidget: public TextWidget
 {
 public:
 	BarWidget( );
+	~BarWidget( );
+
 	/*bool create( string name, int x=0, int y=0 );*/
+
 	void createBar( string name, int* position );
 	void setBarValue( int size );
 	void setBarSize( int val ){

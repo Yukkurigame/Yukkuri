@@ -44,11 +44,11 @@ struct font_data {
 	void clean();
 
 	//Calculate text size.
-	void size( int* w, int* h, const char* str );
+	void size( float* w, float* h, const char* str );
 
 
 	//Print text string to sprite
-	void print( Texture* spr, int* sw, int* sh, const char* text );
+	void print( Texture* spr, float* sw, float* sh, const char* text );
 };
 
 

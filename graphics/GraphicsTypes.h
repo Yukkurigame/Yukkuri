@@ -26,7 +26,7 @@ struct Color
 	void set( unsigned int c ) { r = g = b = c; }
 	void set( unsigned int cr, unsigned int cg, unsigned int cb ) { r = cr; g = cg; b = cb; }
 	void set( unsigned int cr, unsigned int cg, unsigned int cb, unsigned int ca ) { r = cr; g = cg; b = cb; a = ca; }
-	void set( Color* c ) { r = c->r; g = c->g; b = c->b; a = c->a; }
+	void set( Color* c ) { if( !c ) return; r = c->r; g = c->g; b = c->b; a = c->a; }
 };
 
 struct Texture
@@ -76,25 +76,40 @@ struct Sprite
 	vertex3farr* vertices;
 	coord2farr* coordinates;
 	Color* clr;
+	float width;
+	float height;
+	float posx;
+	float posy;
 	Sprite(){
 		tex = NULL;
 		vertices = NULL;
 		coordinates = NULL;
 		clr = NULL;
+		posx = posy = width = height = 0;
 	}
 	void resize( float w, float h ){
-		if( w >= 0 )
+		if( w >= 0 ){
 			vertices->rb.x = vertices->rt.x = vertices->lb.x + w;
-		if( h >= 0 )
+			width = w;
+		}
+		if( h >= 0 ){
 			vertices->rt.y = vertices->lt.y = vertices->lb.y + h;
+			height = h;
+		}
 	}
 	void setPosition( float x, float y ){
 		float width = vertices->rb.x - vertices->lb.x;
 		float height = vertices->rt.y - vertices->lb.y;
+		posx = x;
+		posy = y;
 		vertices->lb.x = vertices->lt.x = x;
 		vertices->lb.y = vertices->rb.y = y;
 		vertices->rb.x = vertices->rt.x = x + width;
 		vertices->lt.y = vertices->rt.y = y + height;
+	}
+	void setPosition( float x, float y, float z ){
+		setPosition( x, y );
+		vertices->z = z;
 	}
 };
 

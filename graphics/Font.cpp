@@ -109,7 +109,7 @@ bool font_data::load(const char * fname, unsigned int h) {
 	return true;
 }
 
-void font_data::size( int* w, int* h, const char* str )
+void font_data::size( float* w, float* h, const char* str )
 {
 	int swidth;
 	int textlen;
@@ -128,7 +128,7 @@ void font_data::size( int* w, int* h, const char* str )
 		int tmpwidth = 0;
 		char* line = token;
 		for( unsigned int g = 0, e = strlen( line ); g < e; ++g ){
-			Char* tmpc = chars[ static_cast<int>(text[0]) ];
+			Char* tmpc = chars[ static_cast<int>(text[g]) ];
 			tmpwidth += tmpc->horiAdvance;
 			if( tmpc->height > lineheight ){
 				lineheight = tmpc->vertAdvance;
@@ -146,7 +146,7 @@ void font_data::size( int* w, int* h, const char* str )
 		(*h) = (lineheight + lineheight/4) * nlines  + 1;
 }
 
-void font_data::print( Texture* tex, int* sw, int* sh, const char* str )
+void font_data::print( Texture* tex, float* sw, float* sh, const char* str )
 {
 	GLuint* texture;
 	int width, height, swidth, sheight;
@@ -171,7 +171,7 @@ void font_data::print( Texture* tex, int* sw, int* sh, const char* str )
 		int tmpwidth = 0;
 		char* line = token;
 		for( unsigned int g = 0, e = strlen( line ); g < e; ++g ){
-			Char* tmpc = chars[ static_cast<int>(text[0]) ];
+			Char* tmpc = chars[ static_cast<int>(text[g]) ];
 			tmpwidth += tmpc->horiAdvance;
 			if( tmpc->height > lineheight ){
 				lineheight = tmpc->vertAdvance;
@@ -217,7 +217,10 @@ void font_data::print( Texture* tex, int* sw, int* sh, const char* str )
 				}else{
 					if( !tmpc || i >= hoffset + tmpc->horiAdvance ){ //symbol up;
 						if( tmpc ){
-							if( ++charnum >= textlen ) continue;
+							if( ++charnum >= textlen ){
+								expanded_data[ 2 * ( i + j * width ) + 1 ] = 0;
+								continue;
+							}
 							hoffset += tmpc->horiAdvance;
 						}
 						tmpc = chars[ static_cast<int>( lines[linenum][charnum] ) ];

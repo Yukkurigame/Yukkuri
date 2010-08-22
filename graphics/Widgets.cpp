@@ -12,7 +12,7 @@ Widget::Widget()
 	height = 0;
 	posx = 0;
 	posy = 0;
-	posz = 1;
+	posz = 0;
 	visible = true;
 	parent = NULL;
 	background = NULL;
@@ -45,7 +45,7 @@ void Widget::setParent( Widget* p )
 	parent = p;
 	posx += p->posx;
 	posy = p->posy + p->height - posy;
-	posz = posz - 0.5 + p->posz;
+	posz = posz - 0.5 + p->posz + 0.1;
 	if( background )
 		background->vertices->z = posz;
 }
@@ -76,14 +76,21 @@ void Widget::draw( )
 	graph->DrawGLTexture( background );
 }
 
-TextWidget::TextWidget()
+TextWidget::TextWidget( )
 {
 	FontName = "DejaVuSans";
 	FontSize = 12;
 	textx = 0;
 	texty = 0;
 	Text = "";
+	StaticTextSprite = NULL;
 	TextSprite = NULL;
+}
+
+TextWidget::~TextWidget( )
+{
+	graph->FreeTextSprite( TextSprite );
+	graph->FreeTextSprite( StaticTextSprite );
 }
 
 bool TextWidget::create( string name, string text, int x, int y )
@@ -93,6 +100,10 @@ bool TextWidget::create( string name, string text, int x, int y )
 	}else{
 		if( !Widget::create( name, text, x, y ) )
 			background = NULL;
+	}
+	if( text != "" ){
+		StaticTextSprite = graph->CreateGLSprite( x, y, posz, 20, 20, width, height, NULL );
+		StaticTextSprite->clr->set( 0 );
 	}
 	Text = text;
 	TextSprite = graph->CreateGLSprite( x, y, posz, 20, 20, width, height, NULL );
@@ -105,12 +116,13 @@ void TextWidget::setParent( Widget* p )
 	float x = p->posx + posx + textx;
 	float y = p->posy + p->height - posy - texty;
 	Widget::setParent( p );
-	TextSprite->setPosition( x, y );
-	TextSprite->vertices->z = getZ();
+	textPosition( x, y );
 }
 
 void TextWidget::setFontColor( int r, int g, int b )
 {
+	if( StaticTextSprite )
+		StaticTextSprite->clr->set( r, g, b );
 	TextSprite->clr->set( r, g, b );
 }
 
@@ -118,15 +130,21 @@ void TextWidget::setText( string text )
 {
 	if( AddText == text )
 		return;
+	if( StaticTextSprite ){
+		if( Text != "" && !StaticTextSprite->tex ){
+			graph->ChangeTextSprite( StaticTextSprite, FontName, FontSize, Text, 1 );
+			TextSprite->setPosition( TextSprite->posx + StaticTextSprite->width, TextSprite->posy );
+		}
+	}
 	AddText = text;
-	graph->ChangeTextSprite( TextSprite, FontName, FontSize, Text + AddText );
+	graph->ChangeTextSprite( TextSprite, FontName, FontSize, AddText );
 }
 
 void TextWidget::setTextPosition( float x, float y )
 {
-	textx = posx + x;
-	texty = posy + height - y;
-	TextSprite->setPosition( textx, texty );
+	textx = x;
+	texty = y;
+	textPosition( posx + x, posy + height - y );
 }
 
 void TextWidget::draw( )
@@ -137,8 +155,20 @@ void TextWidget::draw( )
 		return;
 	if(background)
 		graph->DrawGLTexture( background );
+	if( StaticTextSprite )
+		graph->DrawGLTexture( StaticTextSprite );
 	graph->DrawGLTexture( TextSprite );
-	//graph->PrintText( FontName, FontSize, posx+textx, posy+texty, posz, FontColor, Text + AddText );
+}
+
+void TextWidget::textPosition( float x, float y )
+{
+	float txdelta;
+	txdelta = 0;
+	if( StaticTextSprite ){
+		StaticTextSprite->setPosition( x, y, getZ( ) );
+		txdelta = StaticTextSprite->width;
+	}
+	TextSprite->setPosition( x + txdelta, y, getZ( ) );
 }
 
 BarWidget::BarWidget()
@@ -148,6 +178,12 @@ BarWidget::BarWidget()
 	barwidth = 0;
 	barmaxvalue = 1;
 	barstartx = 0;
+}
+
+BarWidget::~BarWidget( )
+{
+	graph->FreeGLSprite( top );
+	graph->FreeGLSprite( bar );
 }
 
 void BarWidget::createBar( string name, int* pos)
@@ -165,7 +201,7 @@ void BarWidget::createBar( string name, int* pos)
 	if( bar ){
 		bar->clr->set( pos[6], pos[7], pos[8] );
 	}
-	setTextPosition( getTextX() - posx, getTextY() + pos[5] );
+	setTextPosition( getTextX() + 5, getTextY() - pos[5] );
 	setBarValue(1);
 	setBarSize(1);
 }
@@ -196,12 +232,9 @@ void BarWidget::setParent( Widget* p )
 	float y = p->posy + p->height - posy;
 	float barheight = bar->vertices->lt.y - bar->vertices->lb.y;
 	TextWidget::setParent( p );
-	bar->setPosition( x + bardelta, y );
-	bar->vertices->z = getZ();
-	if( top ){
-		top->setPosition( x, y - barheight );
-		top->vertices->z = getZ() + 0.01;
-	}
+	bar->setPosition( x + bardelta, y, getZ() );
+	if( top )
+		top->setPosition( x, y - barheight, getZ() + 0.01 );
 }
 
 void BarWidget::draw( )

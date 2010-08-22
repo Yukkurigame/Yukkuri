@@ -11,6 +11,7 @@ Player::Player()
 	sprintf( d, "%d", stat.days );
 	UI::yui.GetWidget( "pdays" )->setText( d );
 	sprintf( d, "%d", stat.level );
+	//FIXME: static.
 	UI::yui.GetWidget( "plevel" )->setText( d );
 	UI::yui.GetWidget( "phpbar" )->setBarSize( stat.hpMax );
 	UI::yui.GetWidget( "pexpbar" )->setBarSize( stat.expMax );

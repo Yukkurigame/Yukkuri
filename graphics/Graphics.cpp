@@ -66,6 +66,8 @@ void Graphics::openglSetup( int wwidth, int wheight )
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 
+	glEnable(GL_ALPHA_TEST); //It's work but with ugly border
+	glAlphaFunc(GL_NOTEQUAL, 0);
 
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
@@ -89,7 +91,7 @@ Texture* Graphics::LoadGLTexture( string name )
 	if( name == "" )
 		return NULL;
 
-	cached = getGLTexture(name);
+	cached = GetGLTexture(name);
 
 	if( !cached || !cached->texture ){
 
@@ -159,6 +161,7 @@ void Graphics::FreeGLTexture( Texture* tex )
 		if( tex->texture )
 			glDeleteTextures( 1, tex->texture );
 		delete tex;
+		tex = NULL;
 	}
 }
 
@@ -251,7 +254,8 @@ bool Graphics::LoadTTFont( string dir, string name, int size )
 	return true;
 }
 
-Sprite* Graphics::GetTextSprite( string fontname, int size, float x, float y, float z, Color* color, string text )
+Sprite* Graphics::CreateTextSprite( string fontname, int size, float x, float y, float z, Color* color, string text,
+		short cached )
 {
 	font_data* font = GetFont( fontname, size );
 	if(!font){
@@ -261,13 +265,14 @@ Sprite* Graphics::GetTextSprite( string fontname, int size, float x, float y, fl
 	return CreateTextTexture( font, x, y, z, color, text );
 }
 
-void Graphics::ChangeTextSprite( Sprite* spr, string fontname, int size, string text )
+void Graphics::ChangeTextSprite( Sprite* spr, string fontname, int size, string text, short cached )
 {
-	int width;
-	int height;
+	float width;
+	float height;
 	font_data* font;
 	Texture* tex;
 
+	tex = NULL;
 
 	font = GetFont( fontname, size );
 
@@ -278,15 +283,23 @@ void Graphics::ChangeTextSprite( Sprite* spr, string fontname, int size, string 
 
 		width = height = 0;
 
-		tex = new Texture();
-		font->print( tex, &width, &height, text.c_str() );
+		tex = GetTextTexture( font, text );
+		if( !tex ){
+			tex = new Texture();
+			font->print( tex, &width, &height, text.c_str() );
+		}else{
+			font->size( &width, &height, text.c_str() );
+		}
 
 		spr->tex = tex;
-		spr->vertices->rt.y = spr->vertices->lt.y = spr->vertices->lb.y + height;
-		spr->vertices->rb.x = spr->vertices->rt.x = spr->vertices->lb.x + width;
+		spr->resize( width, height );
 		delete spr->coordinates;
 		spr->coordinates = GetCoordinates( 0, 0, width, height, tex->w, tex->h, 0 );
+
+		if( cached )
+			SetTextTexture( tex, font, text );
 	}
+
 }
 
 /* This function creating sprite structure with texture.
@@ -308,13 +321,13 @@ Sprite* Graphics::CreateGLSprite( float x, float y, float z, float texX, float t
 
 	sprite = new Sprite();
 
+	//TODO: use sprite interface
 	//get vertex
 	vertex = GetVertex( x, y, z, width, height, centered );
 
 	if(tex){ //no image - no rectangle;
 		//get coordinates
 		coords = GetCoordinates( texX, texY, width, height, tex->w, tex->h, mirrored);
-
 		sprite->tex = tex;
 		sprite->coordinates = coords;
 		sprite->clr = &sprite->tex->clr;
@@ -325,6 +338,9 @@ Sprite* Graphics::CreateGLSprite( float x, float y, float z, float texX, float t
 	}
 
 	sprite->vertices = vertex;
+
+	sprite->width = width;
+	sprite->height = height;
 
 	GLSprites.push_back( sprite );
 
@@ -342,9 +358,8 @@ void Graphics::FreeGLSprite( Sprite* spr )
 		if( spr->vertices ){
 			delete spr->vertices;
 		}
-		//FIXME: same coordinates
-		//if( spr->coordinates )
-			//delete spr->coordinates;
+		if( spr->coordinates )
+			FreeCoordinates( spr->coordinates );
 		std::cout << GLSprites.size() << "! " << GLSprites.size() << " sprites! A-ha-ha-ha-ha... " << std::endl;
 		for( int i = 0, end = GLSprites.size(); i < end; ++i ){
 			if( GLSprites[i] == spr ){
@@ -356,6 +371,24 @@ void Graphics::FreeGLSprite( Sprite* spr )
 		spr = NULL;
 
 	}
+}
+
+void Graphics::FreeTextSprite( Sprite* spr )
+{
+	if( !spr )
+		return;
+	for( map < font_data*, map< string, Texture* > > ::iterator it = CachedTexts.begin(), end = CachedTexts.end();
+			it != end; ++it ){
+		for( map< string, Texture* >::iterator vit = it->second.begin(), vend = it->second.end(); vit != vend; ++vit ){
+			if( vit->second == spr->tex ){
+				it->second.erase(vit);
+				break;
+			}
+		}
+	}
+	FreeGLTexture( spr->tex );
+	FreeGLSprite( spr );
+	spr = NULL;
 }
 
 void Graphics::SetVertex( vertex3farr* v, float x, float y, float z, float width, float height, short centered )
@@ -475,7 +508,7 @@ bool Graphics::SaveScreenshot( )
 }
 
 Graphics::Graphics( ){
-	//testtexture = NULL;
+
 }
 
 Graphics::~Graphics( )
@@ -493,6 +526,14 @@ Graphics::~Graphics( )
 		FreeGLTexture( it->second );
 	}
 	LoadedGLTextures.clear();
+	for( map < font_data*, map< string, Texture* > > ::iterator it = CachedTexts.begin(), end = CachedTexts.end();
+			it != end; ++it ){
+		for( map< string, Texture* >::iterator vit = it->second.begin(), vend = it->second.end(); vit != vend; ++vit ){
+			FreeGLTexture(vit->second);
+		}
+		it->second.clear();
+	}
+	CachedTexts.clear();
 	for( map< string, map< int, font_data*> >::iterator it = LoadedFonts.begin(), end = LoadedFonts.end();
 			it != end; ++it ){
 		for( map< int, font_data*>::iterator vit = it->second.begin(), vend = it->second.end(); vit != vend; ++vit ){
@@ -509,7 +550,7 @@ void Graphics::AddGLTexture( Texture* texture, string name)
 	LoadedGLTextures[name] = texture;
 }
 
-Texture* Graphics::getGLTexture( string name )
+Texture* Graphics::GetGLTexture( string name )
 {
 	map <string, Texture* >::iterator it;
 	it = LoadedGLTextures.find(name);
@@ -560,6 +601,19 @@ coord2farr* Graphics::GetCoordinates(float x1, float y1, float x2, float y2,
 	return c;
 }
 
+void Graphics::FreeCoordinates( coord2farr* coord )
+{
+	for( map< string, vector<coord2farr*> >::iterator it = Animations.begin(), end = Animations.end();
+			it != end; ++it ){
+		for( vector<coord2farr*>::iterator vit = it->second.begin(), vend = it->second.end(); vit != vend; ++vit ){
+			if( coord == (*vit) )
+				return; //Chached coordinates deleted on exit;
+		}
+	}
+	delete coord;
+	coord = NULL;
+}
+
 vertex3farr* Graphics::GetVertex( float x, float y, float z, float width, float height, short centered )
 {
 	vertex3farr* v;
@@ -570,6 +624,22 @@ vertex3farr* Graphics::GetVertex( float x, float y, float z, float width, float 
 	return v;
 }
 
+Texture* Graphics::GetTextTexture( font_data* font, string text )
+{
+	if( CachedTexts.count(font) > 0 ){
+		if( CachedTexts[font].count(text) > 0 )
+			return CachedTexts[font][text];
+	}
+	return NULL;
+}
+
+void Graphics::SetTextTexture( Texture* tex, font_data* font, string text )
+{
+	if( CachedTexts.count(font) > 0  &&  CachedTexts[font].count(text) > 0 ){
+		FreeGLTexture( CachedTexts[font][text] );
+	}
+	CachedTexts[font][text] = tex;
+}
 
 SDL_Surface* Graphics::LoadImage( string name )
 {
@@ -627,13 +697,13 @@ font_data* Graphics::GetFont( string name, int size  )
 	return LoadedFonts[name][size];
 }
 
-Sprite* Graphics::CreateTextTexture( font_data* ftfont, float x, float y, float z, Color* color, string str )
+Sprite* Graphics::CreateTextTexture( font_data* ftfont, float x, float y, float z, Color* color, string str, short cached )
 {
 
 	Sprite* ret;
 	Texture* tex;
-	int width;
-	int height;
+	float width;
+	float height;
 
 	if( str == "" )
 		return NULL;
@@ -643,11 +713,20 @@ Sprite* Graphics::CreateTextTexture( font_data* ftfont, float x, float y, float 
 	{ //TODO: In thread
 		width = height = 0;
 
-		tex = new Texture();
-		ftfont->print( tex, &width, &height, str.c_str() );
-		tex->clr.set( color );
+		tex = GetTextTexture( ftfont, str );
+
+		if( !tex ){
+			tex = new Texture();
+			ftfont->print( tex, &width, &height, str.c_str() );
+			tex->clr.set( color );
+		}else{
+			ftfont->size( &width, &height, str.c_str() );
+		}
 
 		ret = CreateGLSprite( x, y, z, 0, 0, width, height, tex );
+
+		if( cached )
+			SetTextTexture( tex, ftfont, str );
 	}
 
 	return ret;

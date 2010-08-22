@@ -49,8 +49,8 @@ public:
 
 	void LoadAllTTFonts( int size );
 	bool LoadTTFont( string dir, string filename, int size );
-	Sprite* GetTextSprite( string font, int size, float x, float y, float z, Color* color, string text );
-	void ChangeTextSprite( Sprite* spr, string fontname, int size, string text );
+	Sprite* CreateTextSprite( string font, int size, float x, float y, float z, Color* color, string text, short cached=0 );
+	void ChangeTextSprite( Sprite* spr, string fontname, int size, string text, short cached=0 );
 
 	inline Sprite* CreateGLSprite( string name ){
 		return CreateGLSprite( LoadGLTexture( name ) );
@@ -68,6 +68,7 @@ public:
 							float width, float height, Texture* tex, short mirrored = 0, short centered =0 );
 
 	void FreeGLSprite( Sprite* );
+	void FreeTextSprite( Sprite* );
 
 	void SetVertex( vertex3farr* v, float x, float y, float z, float width, float height, short centered );
 
@@ -88,22 +89,28 @@ private:
 
 	SDL_Surface* screen;
 	void AddGLTexture( Texture* , string );
-	Texture* getGLTexture( string );
+	Texture* GetGLTexture( string );
 
 	coord2farr* GetCoordinates( float x1, float y1, float x2, float y2, float width, float height, short mirrored );
+	void FreeCoordinates( coord2farr* );
+
 	vertex3farr* GetVertex( float x, float y, float z, float width, float height, short centered );
+
+	Texture* GetTextTexture( font_data* font, string text );
+	void SetTextTexture( Texture* tex, font_data* font, string text );
 
 	SDL_Surface* LoadImage( std::string );
 	SDL_Surface* OpenImage( std::string );
 
 	font_data* GetFont( string name, int size);
-	Sprite* CreateTextTexture( font_data* ftfont, float x, float y, float z, Color* color, string str );
+	Sprite* CreateTextTexture( font_data* ftfont, float x, float y, float z, Color* color, string str, short cached=0 );
 
 
 	vector < Sprite* > GLSprites;
-	map < string, vector<coord2farr* > > Animations;
+	map < string, vector< coord2farr* > > Animations;
 	map < string, Texture* > LoadedGLTextures;
 	map < string, map< int, font_data* > > LoadedFonts;
+	map < font_data*, map< string, Texture* > > CachedTexts;
 
 };
 

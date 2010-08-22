@@ -1,9 +1,7 @@
 #ifndef YDEFINE_H
 #define YDEFINE_H
 
-//#define MAP_WIDTH	40
-//#define MAP_HEIGHT 40
-//#define TILE_SIZE	16
+//TODO: All to lua
 
 #define WWIDTH	800
 #define	WHEIGHT 600
@@ -19,5 +17,8 @@
 #define DAY_LENGTH 20
 
 #define ACTION_INTERVAL 3000
+
+//#define JOYSTICKENABLE
+//#define JSSENS 200
 
 #endif //YDEFINE_H

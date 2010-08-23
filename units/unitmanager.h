@@ -6,6 +6,7 @@ using std::vector;
 
 #include "unit.h"
 #include "Plant.h"
+#include "Corpse.h"
 #include "Entity.h"
 #include "Player.h"
 #include "Graphics.h"
@@ -18,8 +19,7 @@ class UnitManager
 
         static UnitManager units;
 
-        void DrawUnits( const float camX, const float camY );
-        void CreateUnit( enum e_unitID um_ID, int x, int y );
+        Unit* CreateUnit( enum e_unitID um_ID, int x, int y );
         void DeleteUnit( Unit* u );
         Unit* GetUnit( unsigned int Index );
         Unit* GetPlayer() { return player; }
@@ -27,7 +27,10 @@ class UnitManager
         void tick( const int& );
 
         Unit* closer( Unit* u, string type, float limit = 100.0 );
+        Unit* closer( Unit* u, vector< string >* types, float limit = 100.0 );
         void grow( ); //FUUUUU
+
+        void DrawUnits( );
 
         int GetUnitVecSize() { return (int)Units.size();}
 

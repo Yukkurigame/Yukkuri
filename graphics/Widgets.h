@@ -37,9 +37,7 @@ public:
 
 	void addChild( Widget* child );
 
-	void toggleVisibility( );
-
-	virtual void draw();
+	virtual void toggleVisibility( );
 
 	virtual void setFont( string, int ) {};
 	virtual void setFontColor( int r, int g, int b ) {};
@@ -86,7 +84,8 @@ public:
 	void setTextPosition( float x, float y );
 	float getTextX( ){ return textx; }
 	float getTextY( ){ return texty; }
-	void draw( );
+
+	void toggleVisibility( );
 
 protected:
 	string AddText;
@@ -122,7 +121,7 @@ public:
 
 	void setParent( Widget* p );
 
-	void draw( );
+	void toggleVisibility( );
 
 protected:
 	Sprite* bar;

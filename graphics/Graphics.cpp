@@ -1,5 +1,6 @@
 #include "Graphics.h"
 #include "pngfuncs.h"
+#include <algorithm>
 #include <iostream>
 #include <cstdio>
 #include <sys/stat.h>
@@ -28,6 +29,11 @@ namespace Screenshot
 			name[0] = '\0';
 		}
 	}
+}
+
+bool compareSprites( Sprite* s1, Sprite* s2 )
+{
+	return ( s1->vertices->z < s2->vertices->z );
 }
 
 bool Graphics::SetScreen( SDL_Surface* s )
@@ -326,7 +332,6 @@ Sprite* Graphics::CreateGLSprite( float x, float y, float z, float texX, float t
 	vertex = GetVertex( x, y, z, width, height, centered );
 
 	if(tex){ //no image - no rectangle;
-		//get coordinates
 		coords = GetCoordinates( texX, texY, width, height, tex->w, tex->h, mirrored);
 		sprite->tex = tex;
 		sprite->coordinates = coords;
@@ -342,7 +347,11 @@ Sprite* Graphics::CreateGLSprite( float x, float y, float z, float texX, float t
 	sprite->width = width;
 	sprite->height = height;
 
+	if(centered)
+		sprite->centered = true;
+
 	GLSprites.push_back( sprite );
+	sort(GLSprites.begin(), GLSprites.end(), compareSprites);
 
 	return sprite;
 }
@@ -427,10 +436,12 @@ void Graphics::SetVertex( vertex3farr* v, float x, float y, float z, float width
 coord2farr* Graphics::GetAnimation( string name, unsigned int num )
 {
 	//FIXME: Add check for correct index.
-	if( num < Animations[name].size() ){
-		return Animations[name].at(num);
-	}else{
-		return Animations[name].at(0);
+	if( Animations.count( name ) > 0) {
+		if( num < Animations[name].size() ){
+			return Animations[name].at(num);
+		}else{
+			return Animations[name].at(0);
+		}
 	}
 	return NULL;
 }
@@ -451,7 +462,16 @@ void Graphics::LoadAnimation( string name, int rows, int cols, int width, int he
 
 void Graphics::DrawGLScene()
 {
-	//DrawGLTexture( testtexture );
+	for( vector<Sprite*>::iterator it = GLSprites.begin(), end = GLSprites.end(); it != end; ++it ){
+		if( (*it)->visible ){
+			if( !(*it)->fixed )
+				(*it)->setPosition(
+						(*it)->posx - YCamera::CameraControl.GetX(),
+						(*it)->posy - YCamera::CameraControl.GetY()
+				);
+			DrawGLTexture( (*it) );
+		}
+	}
 	glLoadIdentity();
 	SDL_GL_SwapBuffers();
 }
@@ -564,6 +584,9 @@ coord2farr* Graphics::GetCoordinates(float x1, float y1, float x2, float y2,
 										float width, float height, short mirrored)
 {
 	coord2farr* c;
+
+	if( x1 == 0 && x2 == 0 && y1 == 0 && y2 == 0 )
+		return NULL;
 
 	c = new coord2farr();
 

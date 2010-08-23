@@ -6,6 +6,8 @@ DynamicUnit::DynamicUnit()
 	TotalDistance = 0;
 	anim = NULL;
 	Attacked = NULL;
+	//FIXME: get it from config
+	FoodTypes.push_back( "plant" );
 }
 
 

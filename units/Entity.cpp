@@ -1,4 +1,6 @@
 #include "Entity.h"
+#include "Corpse.h"
+#include "unitmanager.h"
 
 Entity::Entity()
 {
@@ -10,6 +12,17 @@ Entity::Entity()
 
 void Entity::Die( )
 {
+	Corpse* corpse;
+	corpse = dynamic_cast<Corpse*>( UnitManager::units.CreateUnit( CORPSE, getUnitX(), getUnitY() ) );
+	if( corpse ){
+		vector<int> bcolor;
+		getConfigValue( "bloodcolor", bcolor );
+		if( bcolor.size() >= 3 )
+			corpse->setBloodColor( bcolor[0], bcolor[1], bcolor[2] );
+		else if( bcolor.size() >= 1 )
+			corpse->setBloodColor( bcolor[0] );
+		corpse->setHP( this->stat.hpMax );
+	}
 	this->Delete();
 }
 
@@ -26,7 +39,7 @@ void Entity::update( const int& dt )
 			signed int px = (( Attacked->getUnitX() > this->X ) ? -1 : 1);
 			signed int py = (( Attacked->getUnitY() > this->Y ) ? -1 : 1);
 			setPathTarget( this->X + 500 * px, this->Y + 500 * py );
-		}else if( dst  > Scale * 100 ){ //Get closer
+		}else if( dst  > getUnitSize( ) * 100 ){ //Get closer
 			setPathTarget( Attacked->getUnitX(), Attacked->getUnitY() );
 		}
 	}
@@ -37,7 +50,7 @@ void Entity::takeAction( )
 {
 	DynamicUnit::takeAction( );
 	if( Attacked ){
-		if( dist(Attacked) < Scale * 100 ){
+		if( dist(Attacked) < getUnitSize( ) * 100 ){
 			attackUnit( Attacked );
 		}
 	}else{

@@ -21,9 +21,9 @@ UnitManager::~UnitManager()
  * Build a unit according to criteria passed to the function and call
  * AddUnit to push it onto the stack
  **/
-void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
+Unit* UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 {
-	Unit *temp;
+	Unit* temp;
 	switch(um_ID){
 		case 1:
 			temp = new Player();
@@ -33,6 +33,9 @@ void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 			break;
 		case 3:
 			temp = new Plant();
+			break;
+		case 4:
+			temp = new Corpse();
 			break;
 		default:
 			temp = new Unit();
@@ -47,7 +50,7 @@ void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 	)
 	{
 		delete temp;
-		return;
+		return NULL;
 	}
 
 	graph->LoadAnimation( temp->getUnitName(), temp->getUnitImageRows(),
@@ -55,6 +58,7 @@ void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 								temp->getUnitImage()->tex->w, temp->getUnitImage()->tex->h);
 
 	temp->setUnitPos( x, y );
+	temp->setUnitSize( 1 );
 
 	AddUnit( temp );
 
@@ -62,7 +66,7 @@ void UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 		player = temp;
 	}
 
-	return;
+	return temp;
 }
 
 void UnitManager::DeleteUnit( Unit* u )
@@ -101,6 +105,28 @@ Unit* UnitManager::closer( Unit* u, string type, float limit )
 	return ret;
 }
 
+Unit* UnitManager::closer( Unit* u, vector< string >* types, float limit )
+{
+	//FIXME: quick and dirty
+	Unit* ret = NULL;
+	int distance = 9000;
+	for (int i = 0; i < (int)Units.size(); i++) {
+		if( Units[i] != u ){
+			for( vector< string >::iterator it = types->begin(), end = types->end(); it != end; ++it ){
+				if( Units[i]->getUnitType() == (*it) ){
+					int dist = u->dist(Units[i]);
+					if( dist < limit && dist < distance ){
+						distance = dist;
+						ret = Units[i];
+					}
+					break;
+				}
+			}
+		}
+	}
+	return ret;
+}
+
 void UnitManager::grow( )
 {
 	for (int i = 0; i < (int)Units.size(); i++) {
@@ -127,19 +153,12 @@ coord2farr* UnitManager::getAnim( Unit* unit )
 	return graph->GetAnimation( unit->getUnitName( ), unit->getUnitAnim( ) );
 }
 
-void UnitManager::DrawUnits( const float camX, const float camY )
+void UnitManager::DrawUnits( )
 {
 	Unit* u = NULL;
 	for (int i = 0; i < (int)Units.size(); i++) {
 		u = Units[i];
-		graph->SetVertex( u->getUnitImage( )->vertices, u->getUnitX( ) - camX, u->getUnitY( ) - camY, 0.0,
-				u->getUnitWidth( ), u->getUnitHeight( ), 1 );
+		u->getUnitImage( )->setPosition( u->getUnitX( ), u->getUnitY( ) );
 		u->getUnitImage()->coordinates = graph->GetAnimation( u->getUnitName( ), u->getUnitAnim( ) );
-		graph->DrawGLTexture( u->getUnitImage( ) );
-				/*graph->GetVertex( u->getUnitX( ) - camX, u->getUnitY( ) - camY, 0.0,
-											u->getUnitWidth( ), u->getUnitHeight( ), 1 ),
-				graph->GetAnimation( u->getUnitName( ), u->getUnitAnim( ) ), &u->getUnitImage( )->clr
-				*/
-
 	}
 }

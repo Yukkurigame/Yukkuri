@@ -27,7 +27,6 @@ public:
 private:
     signed int moveX;
     signed int moveY;
-
 };
 
 #endif //PLAYER_H

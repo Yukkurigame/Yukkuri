@@ -5,6 +5,7 @@
 #include "SDL/SDL_opengl.h"
 #include "GraphicsTypes.h"
 #include "Font.h"
+#include "Camera.h"
 #include "Define.h"
 #include "debug.h"
 
@@ -41,12 +42,14 @@ public:
 	Texture* LoadGLTexture( string name );
 	void FreeGLTexture( Texture* );
 
+private:
 	inline void DrawGLTexture( Sprite* s ){
 		if( !s ) return;
 		DrawGLTexture( s->tex, s->vertices, s->coordinates, s->clr );
 	}
 	void DrawGLTexture( Texture* tex, vertex3farr* vertices, coord2farr* coordinates, Color* col );
 
+public:
 	void LoadAllTTFonts( int size );
 	bool LoadTTFont( string dir, string filename, int size );
 	Sprite* CreateTextSprite( string font, int size, float x, float y, float z, Color* color, string text, short cached=0 );

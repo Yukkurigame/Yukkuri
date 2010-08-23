@@ -12,7 +12,7 @@ using std::endl;
 #include "Luaconfig.h"
 #include "ConfigTypes.h"
 
-enum e_unitID { STATIC = 0, PLAYER, ENTITY, PLANT, OBJECT};
+enum e_unitID { STATIC = 0, PLAYER, ENTITY, PLANT, CORPSE, OBJECT};
 
 class Unit
 {
@@ -34,6 +34,7 @@ public:
     void setUnitPos( float x, float y ) { setUnitX( x ); setUnitY( y ); }
     void setUnitX( float x );
     void setUnitY( float y );
+    void setUnitSize( float size );
     int getUnitAnim() { return (const int)Anim; }
 
     void setUnitAnim( int );
@@ -43,6 +44,7 @@ public:
 
     float getUnitX() { return (const float)X; }
     float getUnitY() { return (const float)Y; }
+    float getUnitSize() { return Scale; }
     float* getUnitpX() { return &X; }
     float* getUnitpY() { return &Y; }
     string getUnitType() { return Type; }
@@ -69,13 +71,13 @@ public:
 
 protected:
     float X, Y;
-    float Scale;
 
 private:
     string UnitName;
     int Anim;
     string Type;
     Sprite* Image;
+    float Scale;
     EntityDefs* defs;
     bool Deleted;
 

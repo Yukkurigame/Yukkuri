@@ -44,6 +44,7 @@ public:
 
 
 protected:
+	std::vector< string > FoodTypes;
 	AnimationDefs Animdef;
 	bool loadAnimation();
 	DynamicUnit* Attacked;

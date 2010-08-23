@@ -12,6 +12,11 @@ struct EntityDefs
 	int height;
 	int imagecols;
 	int imagerows;
+	int imgoffsetx;
+	int imgoffsety;
+	EntityDefs() {
+		width = height = imagecols = imagerows = imgoffsetx = imgoffsety = 0;
+	}
 };
 
 //TODO: ororoshenkiroro
@@ -26,10 +31,8 @@ struct AnimationDefs
 	int right[2];
 	int rightdown[2];
 	AnimationDefs(){
-		down[0] = 0; down[1] = 0; leftdown[0] = 0; leftdown[1] = 0;
-		left[0] = 0; left[1] = 0; leftup[0] = 0; leftup[1] = 0; up[0] = 0; up[1] = 0;
-		rightup[0] = 0; rightup[1] = 0; right[0] = 0; right[1] = 0; rightdown[0] = 0; rightdown[1] = 0;
-
+		down[0] = down[1] = leftdown[0] = leftdown[1] = left[0] = left[1] =  leftup[0] = leftup[1] = 0;
+		up[0] = up[1] = rightup[0] = rightup[1] = right[0] = right[1] = rightdown[0] = rightdown[1] = 0;
 	}
 };
 

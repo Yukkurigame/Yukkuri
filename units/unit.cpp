@@ -35,6 +35,9 @@ bool Unit::Create( )
 	getConfigValue( "width", defs->width );
 	getConfigValue( "imagecols", defs->imagecols );
 	getConfigValue( "imagerows", defs->imagerows );
+	getConfigValue( "imgx", defs->imgoffsetx );
+	getConfigValue( "imgy", defs->imgoffsety );
+
 	return true;
 }
 
@@ -49,6 +52,9 @@ void Unit::setUnitType( enum e_unitID type )
 		case PLANT:
 			Type = "plant";
 			break;
+		case CORPSE:
+			Type = "corpse";
+			break;
 		default:
 			Type = "entity";
 			break;
@@ -57,6 +63,7 @@ void Unit::setUnitType( enum e_unitID type )
 
 void Unit::setUnitName( string type )
 {
+	//FIXME: it's bad.
 	UnitName = LuaConfig::Instance()->getRandom("meeting", type);
 }
 
@@ -70,6 +77,12 @@ void Unit::setUnitY( float y )
 	Y = y;
 }
 
+void Unit::setUnitSize( float size )
+{
+	Scale = size;
+	Image->resize( defs->width * Scale, defs->height * Scale );
+}
+
 void Unit::setUnitAnim( int num )
 {
 	Anim = num;
@@ -79,6 +92,8 @@ bool Unit::setUnitImage( Sprite* image)
 {
 	if( image != NULL ){
 		Image = image;
+		Image->centered = true;
+		Image->fixed = false;
 		return true;
 	}
 	return false;

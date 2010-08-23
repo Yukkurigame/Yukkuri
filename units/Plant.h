@@ -26,6 +26,8 @@ public:
 
 	void hit( float damage );
 
+	void setHP( float value ) { hp = value; }
+
 private:
 	float hp;
 	float nutritive;

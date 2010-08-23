@@ -80,12 +80,17 @@ struct Sprite
 	float height;
 	float posx;
 	float posy;
+	bool visible;
+	bool centered;
+	bool fixed;
 	Sprite(){
 		tex = NULL;
 		vertices = NULL;
 		coordinates = NULL;
 		clr = NULL;
 		posx = posy = width = height = 0;
+		fixed = visible = true;
+		centered = false;
 	}
 	void resize( float w, float h ){
 		if( w >= 0 ){
@@ -102,15 +107,31 @@ struct Sprite
 		float height = vertices->rt.y - vertices->lb.y;
 		posx = x;
 		posy = y;
-		vertices->lb.x = vertices->lt.x = x;
-		vertices->lb.y = vertices->rb.y = y;
-		vertices->rb.x = vertices->rt.x = x + width;
-		vertices->lt.y = vertices->rt.y = y + height;
+		if(centered){
+			float halfwidth = width/2;
+			float halfheight = height/2;
+			vertices->lb.x = vertices->lt.x = x - halfwidth;
+			vertices->lb.y = vertices->rb.y = y - halfheight;
+			vertices->rb.x = vertices->rt.x = x + halfwidth;
+			vertices->lt.y = vertices->rt.y = y + halfheight;
+		}else{
+			vertices->lb.x = vertices->lt.x = x;
+			vertices->lb.y = vertices->rb.y = y;
+			vertices->rb.x = vertices->rt.x = x + width;
+			vertices->lt.y = vertices->rt.y = y + height;
+		}
 	}
 	void setPosition( float x, float y, float z ){
 		setPosition( x, y );
 		vertices->z = z;
 	}
+	void toggleVisibility( ){
+		if( visible )
+			visible = false;
+		else
+			visible = true;
+	}
+
 };
 
 

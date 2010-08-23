@@ -28,7 +28,6 @@ public:
 
 	Widget* GetWidget( string name );
 
-	void DrawWidgets();
 
 private:
 

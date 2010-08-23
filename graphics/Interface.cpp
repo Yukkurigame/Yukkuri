@@ -157,11 +157,3 @@ Widget* UI::GetWidget( string name )
 	}
 	return NULL;
 }
-
-void UI::DrawWidgets( )
-{
-	for (std::vector< Widget* >::iterator it=widgets.begin() ; it != widgets.end(); it++ )
-		(*it)->draw();
-}
-
-

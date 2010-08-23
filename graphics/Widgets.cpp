@@ -57,23 +57,15 @@ void Widget::addChild( Widget* child )
 
 void Widget::toggleVisibility( )
 {
-	if( this->visible ){
+	if( this->visible )
 		visible = false;
-	}else{
+	else
 		visible = true;
-	}
+	if( this->background && this->background->visible != visible )
+		this->background->toggleVisibility( );
 	for( int i = 0, end = children.size(); i < end; ++i ){
 		children[i]->toggleVisibility();
 	}
-}
-
-void Widget::draw( )
-{
-	if(!this->visible)
-		return;
-	if(!this->background)
-		return;
-	graph->DrawGLTexture( background );
 }
 
 TextWidget::TextWidget( )
@@ -147,17 +139,13 @@ void TextWidget::setTextPosition( float x, float y )
 	textPosition( posx + x, posy + height - y );
 }
 
-void TextWidget::draw( )
+void TextWidget::toggleVisibility( )
 {
-	if(!this->visible)
-		return;
-	if( this->FontName == "" )
-		return;
-	if(background)
-		graph->DrawGLTexture( background );
-	if( StaticTextSprite )
-		graph->DrawGLTexture( StaticTextSprite );
-	graph->DrawGLTexture( TextSprite );
+	Widget::toggleVisibility( );
+	if( StaticTextSprite && StaticTextSprite->visible != visible )
+		StaticTextSprite->toggleVisibility( );
+	if( TextSprite && TextSprite->visible != visible )
+		TextSprite->toggleVisibility( );
 }
 
 void TextWidget::textPosition( float x, float y )
@@ -195,9 +183,9 @@ void BarWidget::createBar( string name, int* pos)
 	else
 		barwidth = width;
 	tex = graph->LoadGLTexture( name );
+	bar = graph->CreateGLSprite( barstartx, posy + pos[3], posz, barwidth, pos[5] );
 	if( tex )
 		top = graph->CreateGLSprite( posx, posy, posz + 0.1, pos[0], pos[1], width, height, tex );
-	bar = graph->CreateGLSprite( barstartx, posy + pos[3], posz, barwidth, pos[5] );
 	if( bar ){
 		bar->clr->set( pos[6], pos[7], pos[8] );
 	}
@@ -237,12 +225,11 @@ void BarWidget::setParent( Widget* p )
 		top->setPosition( x, y - barheight, getZ() + 0.01 );
 }
 
-void BarWidget::draw( )
+void BarWidget::toggleVisibility( )
 {
-	if(!this->visible)
-			return;
-	TextWidget::draw();
-	graph->DrawGLTexture( bar );
-	if( top )
-		graph->DrawGLTexture( top );
+	TextWidget::toggleVisibility( );
+	if( bar && bar->visible != visible )
+		bar->toggleVisibility( );
+	if( top && top->visible != visible )
+			top->toggleVisibility( );
 }

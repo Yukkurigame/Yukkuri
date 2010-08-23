@@ -1,0 +1,13 @@
+{
+	"Corpse",
+	{
+		height = 45,
+		image = "entitymisc.png",
+		imagecols = 2,
+		imagerows = 1,
+		meeting = 100.0,
+		name = "Corpse",
+		nutritive = 1.0,
+		width = 75,
+	}
+}

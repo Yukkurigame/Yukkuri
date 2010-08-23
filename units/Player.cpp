@@ -16,6 +16,8 @@ Player::Player()
 	UI::yui.GetWidget( "phpbar" )->setBarSize( stat.hpMax );
 	UI::yui.GetWidget( "pexpbar" )->setBarSize( stat.expMax );
 	UI::yui.GetWidget( "pfedbar" )->setBarSize( 100 );
+
+	FoodTypes.push_back( "corpse" );
 }
 
 void Player::moveUnit( short axis, signed int val )
@@ -48,7 +50,7 @@ void Player::attack( )
 void Player::eat( )
 {
 	Unit* victim = NULL;
-	victim = UnitManager::units.closer( this, "plant" );
+	victim = UnitManager::units.closer( this, &FoodTypes );
 	if( victim )
 		DynamicUnit::eat( victim );
 }

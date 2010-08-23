@@ -64,12 +64,11 @@ void Yukkuri::Render( )
 	Graphics::Instance()->CleanGLScene( );
 
 	// Display slick graphics on screen
-	units->DrawUnits( YCamera::CameraControl.GetX(), YCamera::CameraControl.GetY() );
+	units->DrawUnits( );
 
 	daytime.draw( );
 
 	UI::yui.GetWidget("fps")->setText(GetFPSText());
-	UI::yui.DrawWidgets( );
 
 	//Draw to screen
 	Graphics::Instance()->DrawGLScene( );

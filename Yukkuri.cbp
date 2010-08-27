@@ -46,6 +46,8 @@
 		<Unit filename="Lua.h" />
 		<Unit filename="Luaconfig.cpp" />
 		<Unit filename="Luaconfig.h" />
+		<Unit filename="Spawner.cpp" />
+		<Unit filename="Spawner.h" />
 		<Unit filename="daytime.cpp" />
 		<Unit filename="daytime.h" />
 		<Unit filename="debug.h" />
@@ -60,6 +62,10 @@
 		<Unit filename="graphics\Interface.h" />
 		<Unit filename="graphics\Widgets.cpp" />
 		<Unit filename="graphics\Widgets.h" />
+		<Unit filename="graphics\pngfuncs.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="graphics\pngfuncs.h" />
 		<Unit filename="includes.win\SDL\SDL.h" />
 		<Unit filename="includes.win\SDL\SDL_active.h" />
 		<Unit filename="includes.win\SDL\SDL_audio.h" />
@@ -184,10 +190,16 @@
 		<Unit filename="includes.win\luaconf.h" />
 		<Unit filename="includes.win\lualib.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="units\Animated.cpp" />
+		<Unit filename="units\Animated.h" />
+		<Unit filename="units\Corpse.cpp" />
+		<Unit filename="units\Corpse.h" />
 		<Unit filename="units\Dynamic.cpp" />
 		<Unit filename="units\Dynamic.h" />
 		<Unit filename="units\Entity.cpp" />
 		<Unit filename="units\Entity.h" />
+		<Unit filename="units\Plant.cpp" />
+		<Unit filename="units\Plant.h" />
 		<Unit filename="units\Player.cpp" />
 		<Unit filename="units\Player.h" />
 		<Unit filename="units\unit.cpp" />

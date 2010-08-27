@@ -1,0 +1,14 @@
+This version has not autotools support yet.
+To compile try
+    make
+To remove previous build try
+    make clean
+
+Requirements:
+    SDL
+    SDL_Image
+    libpng
+    freetype2
+    lua5.1
+You need to have development version of this packages for successfully build.
+If you have troubles with headers try to add your paths in Makefile.

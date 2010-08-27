@@ -40,4 +40,4 @@ $(PROGNAME) : $(OBJS)
 	$(CC) $(CFLAGS)  -o $(PROGNAME) $(OBJS) $(LIBS)
 
 clean:
-	$(rm) $(OBJS) $(PROGNAME)	
+	$(rm) $(OBJS) $(PROGNAME)

@@ -21,7 +21,12 @@ void Entity::Die( )
 			corpse->setBloodColor( bcolor[0], bcolor[1], bcolor[2] );
 		else if( bcolor.size() >= 1 )
 			corpse->setBloodColor( bcolor[0] );
-		corpse->setHP( this->stat.hpMax );
+		corpse->setHP( this->stat.hpMax * this->stat.fed / 2 );
+		corpse->setUnitSize( this->getUnitSize( ) );
+	}
+	if( this->Attacked ){
+		this->Attacked->expChange( this->stat.hpMax / this->stat.level );
+		this->Attacked->killsChange(1);
 	}
 	this->Delete();
 }
@@ -32,7 +37,7 @@ void Entity::update( const int& dt )
 		Die( );
 		return;
 	}
-	AnimatedUnit::update( dt );
+	DynamicUnit::update( dt );
 	if( Attacked ){
 		float dst = dist(Attacked);
 		if( stat.hp * 3 <= stat.hpMax && dst < 500 ){ //Run away

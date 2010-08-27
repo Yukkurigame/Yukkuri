@@ -21,10 +21,10 @@ UnitManager::~UnitManager()
  * Build a unit according to criteria passed to the function and call
  * AddUnit to push it onto the stack
  **/
-Unit* UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
+Unit* UnitManager::CreateUnit( enum unitType type, float x, float y )
 {
 	Unit* temp;
-	switch(um_ID){
+	switch(type){
 		case 1:
 			temp = new Player();
 			break;
@@ -42,7 +42,7 @@ Unit* UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 			break;
 	}
 
-	temp->setUnitType( um_ID );
+	temp->setUnitType( type );
 
 	if( !temp->Create() ||
 		!temp->setUnitImage( graph->CreateGLSprite( temp->getUnitImageName( ) ) ) ||
@@ -58,11 +58,11 @@ Unit* UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 								temp->getUnitImage()->tex->w, temp->getUnitImage()->tex->h);
 
 	temp->setUnitPos( x, y );
-	temp->setUnitSize( 1 );
 
 	AddUnit( temp );
+	ChangeUnitsSize( type, 1 );
 
-	if(um_ID == PLAYER){
+	if( type == PLAYER ){
 		player = temp;
 	}
 
@@ -71,21 +71,17 @@ Unit* UnitManager::CreateUnit( enum e_unitID um_ID, int x, int y )
 
 void UnitManager::DeleteUnit( Unit* u )
 {
+	ChangeUnitsSize( u->geteUnitType( ), -1 );
 	graph->FreeGLSprite( u->getUnitImage() );
 	u->setUnitImage( NULL );
 	delete u;
 }
 
-void UnitManager::tick( const int& dt )
+int UnitManager::GetUnitsSize( enum unitType type )
 {
-	for( vector< Unit* >::iterator it = Units.begin(), end = Units.end(); it != end; ++it ){
-		if( (*it)->isDeleted( ) ){
-			DeleteUnit( *it );
-			Units.erase( it );
-		}else{
-			(*it)->update( dt );
-		}
-	}
+	if( Size.count(type) > 0 )
+		return Size[type];
+	return 0;
 }
 
 Unit* UnitManager::closer( Unit* u, string type, float limit )
@@ -93,6 +89,7 @@ Unit* UnitManager::closer( Unit* u, string type, float limit )
 	//FIXME: quick and dirty
 	Unit* ret = NULL;
 	int distance = 9000;
+	limit *= u->getUnitSize();
 	for (int i = 0; i < (int)Units.size(); i++) {
 		if( Units[i] != u && Units[i]->getUnitType() == type ){
 			int dist = u->dist(Units[i]);
@@ -110,6 +107,7 @@ Unit* UnitManager::closer( Unit* u, vector< string >* types, float limit )
 	//FIXME: quick and dirty
 	Unit* ret = NULL;
 	int distance = 9000;
+	limit *= u->getUnitSize();
 	for (int i = 0; i < (int)Units.size(); i++) {
 		if( Units[i] != u ){
 			for( vector< string >::iterator it = types->begin(), end = types->end(); it != end; ++it ){
@@ -127,6 +125,18 @@ Unit* UnitManager::closer( Unit* u, vector< string >* types, float limit )
 	return ret;
 }
 
+void UnitManager::tick( const int& dt )
+{
+	for( vector< Unit* >::iterator it = Units.begin(), end = Units.end(); it != end; ++it ){
+		if( (*it)->isDeleted( ) ){
+			DeleteUnit( *it );
+			Units.erase( it );
+		}else{
+			(*it)->update( dt );
+		}
+	}
+}
+
 void UnitManager::grow( )
 {
 	for (int i = 0; i < (int)Units.size(); i++) {
@@ -135,22 +145,12 @@ void UnitManager::grow( )
 }
 
 
-void UnitManager::AddUnit( Unit* unit )
-{
-	Units.push_back( unit );
-}
-
 Unit* UnitManager::GetUnit( unsigned int index )
 {
 	if ( index < 0 || index > Units.size() )
 		return 0;
 
 	return Units.at( index );
-}
-
-coord2farr* UnitManager::getAnim( Unit* unit )
-{
-	return graph->GetAnimation( unit->getUnitName( ), unit->getUnitAnim( ) );
 }
 
 void UnitManager::DrawUnits( )
@@ -161,4 +161,24 @@ void UnitManager::DrawUnits( )
 		u->getUnitImage( )->setPosition( u->getUnitX( ), u->getUnitY( ) );
 		u->getUnitImage()->coordinates = graph->GetAnimation( u->getUnitName( ), u->getUnitAnim( ) );
 	}
+}
+
+void UnitManager::AddUnit( Unit* unit )
+{
+	Units.push_back( unit );
+}
+
+/*coord2farr* UnitManager::getAnim( Unit* unit )
+{
+	return graph->GetAnimation( unit->getUnitName( ), unit->getUnitAnim( ) );
+}
+*/
+
+void UnitManager::ChangeUnitsSize( enum unitType type, signed int size )
+{
+	if( Size.count(type) < 1 )
+		Size[type] = 0;
+	Size[type] += size;
+	if( Size[type] < 0 )
+		Size[type] = 0;
 }

@@ -1,10 +1,12 @@
 #include "unit.h"
+#include "unitmanager.h" //FUUUUUUUUUUUUU~
 
 Unit::Unit()
 {
 	Anim = 0;
 	X = 0.0;
 	Y = 0.0;
+	Z = 1;
 	Scale = 1.0;
 	UnitName = "";
 	Type = "";
@@ -46,8 +48,16 @@ void Unit::Delete( )
 	Deleted = true;
 }
 
-void Unit::setUnitType( enum e_unitID type )
+void Unit::update( const int& )
 {
+	if( dist( UnitManager::units.GetPlayer( ) ) > 2000 ){
+		this->Delete();
+	}
+}
+
+void Unit::setUnitType( enum unitType type )
+{
+	UnitType = type;
 	switch( type ){
 		case PLANT:
 			Type = "plant";
@@ -94,6 +104,8 @@ bool Unit::setUnitImage( Sprite* image)
 		Image = image;
 		Image->centered = true;
 		Image->fixed = false;
+		Image->vertices->z = Z;
+		setUnitSize(1);
 		return true;
 	}
 	return false;

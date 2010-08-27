@@ -1,6 +1,7 @@
 #ifndef UNITMANAGER_H
 #define UNITMANAGER_H
 
+#include <map>
 #include <vector>
 using std::vector;
 
@@ -19,10 +20,12 @@ class UnitManager
 
         static UnitManager units;
 
-        Unit* CreateUnit( enum e_unitID um_ID, int x, int y );
+        Unit* CreateUnit( enum unitType type, float x, float y );
         void DeleteUnit( Unit* u );
         Unit* GetUnit( unsigned int Index );
         Unit* GetPlayer() { return player; }
+        int GetUnitsSize( enum unitType type );
+        int GetUnitVecSize() { return (int)Units.size();}
 
         void tick( const int& );
 
@@ -32,13 +35,14 @@ class UnitManager
 
         void DrawUnits( );
 
-        int GetUnitVecSize() { return (int)Units.size();}
 
     private:
         Graphics* graph;
         void AddUnit( Unit* pUnit );
-        coord2farr* getAnim( Unit* );
+        //coord2farr* getAnim( Unit* );
+        void ChangeUnitsSize( enum unitType type, signed int size );
         vector< Unit* > Units;
+        std::map< enum unitType, int > Size;
         Unit* player;
 };
 

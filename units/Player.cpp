@@ -32,7 +32,7 @@ void Player::moveUnit( short axis, signed int val )
 
 void Player::update( const int& dt )
 {
-	AnimatedUnit::update( dt );
+	DynamicUnit::update( dt );
 	DynamicUnit::moveUnit( moveX, moveY, dt );
 	UI::yui.GetWidget( "phpbar" )->setBarValue( stat.hp );
 	UI::yui.GetWidget( "pexpbar" )->setBarValue( stat.exp );
@@ -61,6 +61,20 @@ void Player::grow( )
 	char d[15];
 	sprintf( d, "%d", stat.days );
 	UI::yui.GetWidget( "pdays" )->setText( d );
+}
+
+void Player::levelUp( int addlevel )
+{
+	DynamicUnit::levelUp( addlevel );
+	char d[4];
+	sprintf( d, "%d", stat.days );
+	UI::yui.GetWidget( "pdays" )->setText( d );
+	sprintf( d, "%d", stat.level );
+	//FIXME: static.
+	UI::yui.GetWidget( "plevel" )->setText( d );
+	UI::yui.GetWidget( "phpbar" )->setBarSize( stat.hpMax );
+	UI::yui.GetWidget( "pexpbar" )->setBarSize( stat.expMax );
+	UI::yui.GetWidget( "pfedbar" )->setBarSize( 100 );
 }
 
 void Player::toggleInterface( )

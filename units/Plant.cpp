@@ -22,6 +22,7 @@ bool Plant::Create( )
 
 void Plant::update( const int& dt )
 {
+	AnimatedUnit::update( dt );
 	if( hp <= 0 ){
 		Delete( );
 	}

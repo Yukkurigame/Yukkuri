@@ -17,7 +17,7 @@ UNITS =  unitmanager.cpp unit.cpp Animated.cpp Plant.cpp Corpse.cpp Dynamic.cpp 
 GRAPHICS = Font.cpp Graphics.cpp Interface.cpp Widgets.cpp pngfuncs.c
 
 
-SRCS =   main.cpp engine.cpp Lua.cpp Luaconfig.cpp Bindings.cpp\
+SRCS =   main.cpp engine.cpp Lua.cpp Luaconfig.cpp Bindings.cpp Spawner.cpp\
          $(UNITS) \
          $(GRAPHICS) \
          Camera.cpp daytime.cpp

@@ -5,7 +5,7 @@ DayTime::DayTime()
 {
 	Day = 1;
 	time = 10.0;
-	sfield = Graphics::Instance()->CreateGLSprite(0, 0, 0.1, WWIDTH, WHEIGHT );
+	sfield = Graphics::Instance()->CreateGLSprite(0, 0, 4, WWIDTH, WHEIGHT );
 	sfield->clr->set( 0, 0, 0, 255 );
 }
 

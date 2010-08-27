@@ -33,6 +33,8 @@ namespace Screenshot
 
 bool compareSprites( Sprite* s1, Sprite* s2 )
 {
+	if( s1->vertices->z == s2->vertices->z )
+		return ( s1->posy > s2->posy );
 	return ( s1->vertices->z < s2->vertices->z );
 }
 
@@ -64,21 +66,21 @@ void Graphics::openglSetup( int wwidth, int wheight )
 
 	glClearDepth( 10.0f );
 
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
+	//glEnable(GL_DEPTH_TEST);
+	//glDepthFunc(GL_LEQUAL);
 
 	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 
-	glEnable(GL_ALPHA_TEST); //It's work but with ugly border
-	glAlphaFunc(GL_NOTEQUAL, 0);
+	//glEnable(GL_ALPHA_TEST); //It's work but with ugly border
+	//glAlphaFunc(GL_NOTEQUAL, 0);
 
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
 
-	glOrtho(0.0, wwidth, 0.0, wheight, -1.0, 1.0);
+	glOrtho(0.0, wwidth, 0.0, wheight, -10.0, 1.0);
 
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
@@ -351,7 +353,6 @@ Sprite* Graphics::CreateGLSprite( float x, float y, float z, float texX, float t
 		sprite->centered = true;
 
 	GLSprites.push_back( sprite );
-	sort(GLSprites.begin(), GLSprites.end(), compareSprites);
 
 	return sprite;
 }
@@ -369,7 +370,7 @@ void Graphics::FreeGLSprite( Sprite* spr )
 		}
 		if( spr->coordinates )
 			FreeCoordinates( spr->coordinates );
-		std::cout << GLSprites.size() << "! " << GLSprites.size() << " sprites! A-ha-ha-ha-ha... " << std::endl;
+		//std::cout << GLSprites.size() << "! " << GLSprites.size() << " sprites! A-ha-ha-ha-ha... " << std::endl;
 		for( int i = 0, end = GLSprites.size(); i < end; ++i ){
 			if( GLSprites[i] == spr ){
 				GLSprites.erase( GLSprites.begin() + i );
@@ -462,6 +463,7 @@ void Graphics::LoadAnimation( string name, int rows, int cols, int width, int he
 
 void Graphics::DrawGLScene()
 {
+	sort(GLSprites.begin(), GLSprites.end(), compareSprites);
 	for( vector<Sprite*>::iterator it = GLSprites.begin(), end = GLSprites.end(); it != end; ++it ){
 		if( (*it)->visible ){
 			if( !(*it)->fixed )

@@ -27,11 +27,8 @@ public:
 	void setType( wType t ){ type = t; }
 	wType getType( ){ return type; }
 
-	void setZ( float z ){
-		//Widgets are upper than all
-		posz = ( 0.5 + z * 0.1 );
-	}
-	float getZ( ){ return posz; }
+	void setZ( float z ){ posz = z * 0.1; }
+	float getZ( ){ return posz + 5; } //5 - minimum widgets level TODO: in constants/configs
 
 	virtual void setParent( Widget* p );
 
@@ -58,12 +55,12 @@ public:
 protected:
 	bool visible;
 	Graphics* graph;
-	float posz;
-	wType type;
 	Sprite* background;
-	int bgimg[2];
 
 private:
+	wType type;
+	float posz;
+
 	Widget* parent;
 	std::vector<Widget*> children;
 };

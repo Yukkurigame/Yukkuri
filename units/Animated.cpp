@@ -14,6 +14,7 @@ AnimatedUnit::AnimatedUnit( )
 
 void AnimatedUnit::update( const int& dt )
 {
+	Unit::update( dt );
 	TimePassed += dt;
 	if( TimePassed >= TimeLimit ){
 		TimePassed = 0;

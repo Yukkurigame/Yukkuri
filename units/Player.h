@@ -21,6 +21,8 @@ public:
     void eat( );
     void grow( );
 
+    void levelUp( int addlevel );
+
     //TODO: Это все вообще бы в луа перенести.
     void toggleInterface( );
 

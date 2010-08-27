@@ -8,6 +8,7 @@
 Widget::Widget()
 {
 	graph = Graphics::Instance();
+	type = NONE;
 	width = 0;
 	height = 0;
 	posx = 0;
@@ -16,8 +17,6 @@ Widget::Widget()
 	visible = true;
 	parent = NULL;
 	background = NULL;
-	bgimg[0] = 0;
-	bgimg[1] = 0;
 }
 
 Widget::~Widget()
@@ -32,9 +31,7 @@ bool Widget::create( string name, string text, int x, int y )
 	//FIXME: text not used it is bad;
 	Texture* tex;
 	tex = graph->LoadGLTexture( name );
-	bgimg[0] = x;
-	bgimg[1] = y;
-	background = graph->CreateGLSprite(posx, posy, posz, bgimg[0], bgimg[1], width, height, tex);
+	background = graph->CreateGLSprite(posx, posy, getZ(), x, y, width, height, tex);
 	if(!background)
 		return false;
 	return true;
@@ -45,9 +42,9 @@ void Widget::setParent( Widget* p )
 	parent = p;
 	posx += p->posx;
 	posy = p->posy + p->height - posy;
-	posz = posz - 0.5 + p->posz + 0.1;
+	posz = posz + p->posz + 0.1;
 	if( background )
-		background->vertices->z = posz;
+		background->vertices->z = getZ();
 }
 
 void Widget::addChild( Widget* child )
@@ -94,11 +91,11 @@ bool TextWidget::create( string name, string text, int x, int y )
 			background = NULL;
 	}
 	if( text != "" ){
-		StaticTextSprite = graph->CreateGLSprite( x, y, posz, 20, 20, width, height, NULL );
+		StaticTextSprite = graph->CreateGLSprite( x, y, getZ(), 20, 20, width, height, NULL );
 		StaticTextSprite->clr->set( 0 );
 	}
 	Text = text;
-	TextSprite = graph->CreateGLSprite( x, y, posz, 20, 20, width, height, NULL );
+	TextSprite = graph->CreateGLSprite( x, y, getZ(), 20, 20, width, height, NULL );
 	TextSprite->clr->set( 0 );
 	return true;
 }
@@ -153,10 +150,10 @@ void TextWidget::textPosition( float x, float y )
 	float txdelta;
 	txdelta = 0;
 	if( StaticTextSprite ){
-		StaticTextSprite->setPosition( x, y, getZ( ) );
+		StaticTextSprite->setPosition( x, y, getZ( ) + 0.1 );
 		txdelta = StaticTextSprite->width;
 	}
-	TextSprite->setPosition( x + txdelta, y, getZ( ) );
+	TextSprite->setPosition( x + txdelta, y, getZ( ) + 0.1 );
 }
 
 BarWidget::BarWidget()
@@ -183,9 +180,9 @@ void BarWidget::createBar( string name, int* pos)
 	else
 		barwidth = width;
 	tex = graph->LoadGLTexture( name );
-	bar = graph->CreateGLSprite( barstartx, posy + pos[3], posz, barwidth, pos[5] );
+	bar = graph->CreateGLSprite( barstartx, posy + pos[3], getZ(), barwidth, pos[5] );
 	if( tex )
-		top = graph->CreateGLSprite( posx, posy, posz + 0.1, pos[0], pos[1], width, height, tex );
+		top = graph->CreateGLSprite( posx, posy, getZ() + 0.1, pos[0], pos[1], width, height, tex );
 	if( bar ){
 		bar->clr->set( pos[6], pos[7], pos[8] );
 	}

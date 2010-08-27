@@ -42,13 +42,6 @@ void Yukkuri::AdditionalInit()
 	units->CreateUnit( PLAYER, 0, 0 );
 	YCamera::CameraControl.SetTarget( units->GetPlayer()->getUnitpX(), units->GetPlayer()->getUnitpY());
 
-	for( int i=0; i < ( rand() % 100 ); i++){
-		units->CreateUnit( ENTITY, 2, 2 );
-	}
-
-	for( int i=0; i < ( rand() % 100 ); i++){
-		units->CreateUnit( PLANT, ( rand() % 300 ), ( rand() % 300 ) );
-	}
 }
 
 void Yukkuri::Think( const int& ElapsedTime )
@@ -56,7 +49,7 @@ void Yukkuri::Think( const int& ElapsedTime )
 	// Do time-based calculations
 	units->tick( ElapsedTime );
 	daytime.update( ElapsedTime );
-
+	spawner.Spawn();
 }
 
 void Yukkuri::Render( )

@@ -24,6 +24,10 @@ bool DynamicUnit::loadAnimation()
 	copy(AnimTmp["right"].begin(), AnimTmp["right"].begin()+2, Animdef.right);
 	copy(AnimTmp["rightdown"].begin(), AnimTmp["rightdown"].begin()+2, Animdef.rightdown);
 	copy(AnimTmp["rightup"].begin(), AnimTmp["rightup"].begin()+2, Animdef.rightup);
+
+	//FIXME: move from here
+	setUnitSize(0.35);
+
 	return true;
 }
 
@@ -105,6 +109,34 @@ void DynamicUnit::eat( Unit* victim )
 		else
 			stat.fed += fedAdd;
 	}
+}
+
+void DynamicUnit::levelUp( int addlevel )
+{
+	//FIXME: level not decreased;
+	float scale;
+	float hp;
+	for( int i = 1; i<= addlevel; ++i){
+		stat.level++;
+		scale = ( log( static_cast<float>(stat.level) ) / log( static_cast<float>(40) ) );
+		if( scale < 0.35 )
+			scale = 0.35;
+		else if( scale > 1.3 )
+			scale = 1.3;
+		setUnitSize( scale );
+		hp = stat.hp / stat.hpMax;
+		stat.exp = stat.exp - stat.expMax;
+		stat.hpMax += 10 * stat.level;
+		stat.expMax += stat.expMax + log( static_cast<float>(stat.level) / static_cast<float>(40) );
+		stat.hp = stat.hpMax * hp;
+	}
+}
+
+void DynamicUnit::update( const int& dt )
+{
+	AnimatedUnit::update( dt );
+	if( this->stat.exp >= this->stat.expMax )
+		levelUp(1);
 }
 
 void DynamicUnit::takeAction( )

@@ -12,6 +12,7 @@ using std::vector;
 #include "Camera.h"
 //#include "SDL_getenv.h"
 #include "daytime.h"
+#include "Spawner.h"
 
 class Yukkuri: public CEngine
 {
@@ -32,6 +33,7 @@ public:
 private:
 	UnitManager* units;
 	DayTime daytime;
+	Spawner spawner;
 };
 
 #endif //YUKKURI_H

@@ -1,6 +1,0 @@
-<form>
-    <item />
-    <entity />
-    <button name="ok" text='OK'/>
-    <button name="cancel" text='Close'/>
-</form>

@@ -1,27 +1,30 @@
-!EntityDef
-anchor_x: 24
-anchor_y: 8
-anim_distance: 10
-bloodcolor: !!python/tuple [215, 180, 70]
-color: '#ffffff'
-damage: 3.0
-down_anim: [flan_0]
-growth: [flan_0]
-height: 80
-hp: 10.0
-left_anim: [flan_0]
-leftdown_anim: [flan_0]
-leftup_anim: [flan_0]
-meeting: 0.87
-mini: flan_0.png
-name: Flan
-predator: true
-raped: [flan_0]
-rapespeed: 2
-raping: [flan_0]
-right_anim: [flan_1]
-rightdown_anim: [flan_0]
-rightup_anim: [flan_0]
-speed: 80
-up_anim: [flan_0]
-width: 85
+{
+	"Entity",
+	{
+		bloodcolor = {215, 180, 70},
+		damage = 3.0,
+		animation = {
+			down = {0, 1},
+			growth = {0, 1},
+			left = {0, 1},
+			leftdown = {0, 1},
+			leftup = {0, 1},
+			raped = {0, 1},
+			raping = {0, 1},
+			right = {0, 1},
+			rightdown = {0, 1},
+			rightup = {0, 1},
+			up = {0, 1}
+		},
+		height = 69,
+		hp = 10.0,
+		image = "flan_1.png",
+		imagecols = 1,
+		imagerows = 1,
+		meeting = 0.87,
+		name = "Flan",
+		predator = true,
+		speed = 80,
+		width = 84,
+	}
+}

@@ -1,6 +1,0 @@
-!ItemDef
-name: flowers
-image: flowers_0.png
-edible: True
-nutritive: 4.0
-hp: 20  

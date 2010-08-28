@@ -1,26 +1,29 @@
-!EntityDef
-anchor_x: 24
-anchor_y: 8
-anim_distance: 10
-bloodcolor: !!python/tuple [50, 50, 50]
-color: '#ffffff'
-damage: 3.0
-down_anim: [marisa_face_0]
-growth: [marisa_face_0]
-height: 100
-hp: 10.0
-left_anim: [marisa_face_0]
-leftdown_anim: [marisa_face_0]
-leftup_anim: [marisa_face_0]
-meeting: 39.93
-mini: marisa_0.png
-name: Marisa
-raped: [marisa_face_0]
-rapespeed: 3
-raping: [marisa_face_0]
-right_anim: [marisa_face_0]
-rightdown_anim: [marisa_face_0]
-rightup_anim: [marisa_face_0]
-speed: 80
-up_anim: [marisa_face_0]
-width: 90
+{
+	"Entity",
+	{
+		bloodcolor = {50, 50, 50},
+		damage = 3.0,
+		animation = {
+			down = {0, 1},
+			growth = {0, 1},
+			left = {0, 1},
+			leftdown = {0, 1},
+			leftup = {0, 1},
+			raped = {0, 1},
+			raping = {0, 1},
+			right = {0, 1},
+			rightdown = {0, 1},
+			rightup = {0, 1},
+			up = {0, 1}
+		},
+		height = 80,
+		hp = 10.0,
+		image = "marisa_face_0.png",
+		imagecols = 1,
+		imagerows = 1,
+		meeting = 39.93,
+		name = "Marisa",
+		speed = 80,
+		width = 90
+	}
+}

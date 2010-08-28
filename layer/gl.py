@@ -1,1 +1,0 @@
-from pyglet.gl import *

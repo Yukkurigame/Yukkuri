@@ -1,6 +1,0 @@
-!ItemDef
-edible: True
-image: dead.png
-name: dead
-nutritive: 0.8
-type: meat

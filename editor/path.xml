@@ -1,5 +1,0 @@
-<form>
-    <opendir name="path">
-        <text>Source files directory path:</text>
-    </opendir>
-</form>

@@ -1,25 +1,29 @@
-!EntityDef
-anim_distance: 10
-bloodcolor: !!python/tuple [170, 55, 55]
-color: '#ffffff'
-damage: 3.0
-down_anim: [0, 3]
-growth: [40, 1]
-height: 69
-hp: 10.0
-image: reimu.png
-left_anim: [12, 3]
-leftdown_anim: [8, 3]
-leftup_anim: [16, 3]
-meeting: 47
-mini: reimu_0.png
-name: Reimu
-raped: [36, 2]
-rapespeed: 5
-raping: [32, 3]
-right_anim: [24, 3]
-rightdown_anim: [20, 3]
-rightup_anim: [28, 3]
-speed: 80
-up_anim: [4, 3]
-width: 80
+{
+	"Entity",
+	{
+		bloodcolor = {170, 55, 55},
+		damage = 3.0,
+		animation = {
+			down = {0, 4},
+			growth = {40, 2},
+			left = {12, 4},
+			leftdown = {8, 4},
+			leftup = {16, 4},
+			raped = {36, 3},
+			raping = {32, 4},
+			right = {24, 4},
+			rightdown = {20, 4},
+			rightup = {28, 4},
+			up = {4, 4}
+		},
+		height = 70,
+		hp = 10.0,
+		image = "reimu.png",
+		imagecols = 4,
+		imagerows = 12,
+		meeting = 47.0,
+		name = "Reimu",
+		speed = 80,
+		width = 80,
+	}
+}

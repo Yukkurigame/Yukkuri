@@ -1,9 +1,0 @@
-- !Map
-    name: Main
-    map: grass.png
-    collision: grass.png
-    width: 800
-    height: 600
-    interactables:
-    - !Interactable { x: 400, y: 400, radius: 30, prompt: "Start here" }
-    - !Interactable { x: 400, y: 475, radius: 20, name: "player_home" }

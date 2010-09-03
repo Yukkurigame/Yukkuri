@@ -10,8 +10,8 @@ struct stats{
 	float hp;
 	float hpMax;
 	float fed;
-	int exp;
-	int expMax;
+	float exp;
+	float expMax;
 	float damage;
 	int level;
 	float speed;

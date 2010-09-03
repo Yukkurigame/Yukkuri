@@ -41,7 +41,7 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 	{
 		float l = sqrt( x * x  +  y * y );
 		//	speed = abs(self.dfn.speed * self.fed * 2) #(self.dfn.speed * self.world.map.speed(self.x, self.y))
-		float speed = abs( stat.speed * stat.fed ) * ( dt / 1000.0f ) / l;
+		float speed = fabs( stat.speed * stat.fed ) * ( dt / 1000.0f ) / l;
 		if( speed < 0.05f )
 			speed = 0.05f;
 		float dx = speed * x;// / l;

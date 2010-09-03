@@ -4,6 +4,7 @@
  *  Created on: 30.06.2010
  */
 #include "Widgets.h"
+#include "config.h"
 
 Widget::Widget()
 {
@@ -35,6 +36,12 @@ bool Widget::create( string name, string text, int x, int y )
 	if(!background)
 		return false;
 	return true;
+}
+
+float Widget::getZ( )
+{
+	extern MainConfig conf;
+	return posz + conf.widgetsPosZ;
 }
 
 void Widget::setParent( Widget* p )

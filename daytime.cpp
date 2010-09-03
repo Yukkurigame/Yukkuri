@@ -1,11 +1,14 @@
 #include "daytime.h"
 #include "unitmanager.h"
+#include "config.h"
+
+extern MainConfig conf;
 
 DayTime::DayTime()
 {
 	Day = 1;
 	time = 10.0;
-	sfield = Graphics::Instance()->CreateGLSprite(0, 0, 4, WWIDTH, WHEIGHT );
+	sfield = Graphics::Instance()->CreateGLSprite(0, 0, 4, conf.windowWidth, conf.windowHeight );
 	sfield->clr->set( 0, 0, 0, 255 );
 }
 
@@ -21,7 +24,7 @@ void DayTime::loadInterface()
 
 void DayTime::update( const int& dt )
 {
-	float hours = 24.0 * dt / (DAY_LENGTH * 10000);
+	float hours = 24.0 * dt / (conf.dayLength * 10000);
 	time = fmod( time + hours , 24.0 );
 	if( time > 22 or time < 2){
 		if( dark != 128 )

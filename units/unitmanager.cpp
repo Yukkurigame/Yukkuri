@@ -92,7 +92,7 @@ Unit* UnitManager::closer( Unit* u, string type, float limit )
 	limit *= u->getUnitSize();
 	for (int i = 0; i < (int)Units.size(); i++) {
 		if( Units[i] != u && Units[i]->getUnitType() == type ){
-			int dist = u->dist(Units[i]);
+			float dist = u->dist(Units[i]);
 			if( dist < limit && dist < distance ){
 				distance = dist;
 				ret = Units[i];
@@ -112,7 +112,7 @@ Unit* UnitManager::closer( Unit* u, vector< string >* types, float limit )
 		if( Units[i] != u ){
 			for( vector< string >::iterator it = types->begin(), end = types->end(); it != end; ++it ){
 				if( Units[i]->getUnitType() == (*it) ){
-					int dist = u->dist(Units[i]);
+					float dist = u->dist(Units[i]);
 					if( dist < limit && dist < distance ){
 						distance = dist;
 						ret = Units[i];

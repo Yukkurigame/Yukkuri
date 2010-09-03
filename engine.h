@@ -132,8 +132,8 @@ public:
 
 	// Screen Core	float GetFPS();
 	char* GetFPSText();
-	int getScreenW() { return WWIDTH; }
-	int getScreenH() { return WHEIGHT; }
+	int getScreenW();
+	int getScreenH();
 
 };
 

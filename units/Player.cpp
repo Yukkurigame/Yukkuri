@@ -13,8 +13,8 @@ Player::Player()
 	sprintf( d, "%d", stat.level );
 	//FIXME: static.
 	UI::yui.GetWidget( "plevel" )->setText( d );
-	UI::yui.GetWidget( "phpbar" )->setBarSize( stat.hpMax );
-	UI::yui.GetWidget( "pexpbar" )->setBarSize( stat.expMax );
+	UI::yui.GetWidget( "phpbar" )->setBarSize( static_cast<int>(stat.hpMax) );
+	UI::yui.GetWidget( "pexpbar" )->setBarSize( static_cast<int>(stat.expMax) );
 	UI::yui.GetWidget( "pfedbar" )->setBarSize( 100 );
 
 	FoodTypes.push_back( "corpse" );
@@ -34,9 +34,9 @@ void Player::update( const int& dt )
 {
 	DynamicUnit::update( dt );
 	DynamicUnit::moveUnit( moveX, moveY, dt );
-	UI::yui.GetWidget( "phpbar" )->setBarValue( stat.hp );
-	UI::yui.GetWidget( "pexpbar" )->setBarValue( stat.exp );
-	UI::yui.GetWidget( "pfedbar" )->setBarValue( stat.fed * 100 );
+	UI::yui.GetWidget( "phpbar" )->setBarValue( static_cast<int>(stat.hp) );
+	UI::yui.GetWidget( "pexpbar" )->setBarValue( static_cast<int>(stat.exp) );
+	UI::yui.GetWidget( "pfedbar" )->setBarValue( static_cast<int>(stat.fed * 100) );
 }
 
 void Player::attack( )
@@ -72,8 +72,8 @@ void Player::levelUp( int addlevel )
 	sprintf( d, "%d", stat.level );
 	//FIXME: static.
 	UI::yui.GetWidget( "plevel" )->setText( d );
-	UI::yui.GetWidget( "phpbar" )->setBarSize( stat.hpMax );
-	UI::yui.GetWidget( "pexpbar" )->setBarSize( stat.expMax );
+	UI::yui.GetWidget( "phpbar" )->setBarSize( static_cast<int>(stat.hpMax) );
+	UI::yui.GetWidget( "pexpbar" )->setBarSize( static_cast<int>(stat.expMax) );
 	UI::yui.GetWidget( "pfedbar" )->setBarSize( 100 );
 }
 

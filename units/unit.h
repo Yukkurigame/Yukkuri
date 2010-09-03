@@ -8,7 +8,7 @@ using std::string;
 using std::cout;
 using std::endl;
 
-#include "GraphicsTypes.h" //TODO: disable
+#include "GraphicsTypes.h"
 #include "Luaconfig.h"
 #include "ConfigTypes.h"
 

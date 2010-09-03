@@ -5,6 +5,9 @@
 #include <cstdio>
 #include <sys/stat.h>
 #include <dirent.h>
+#include "config.h"
+
+extern MainConfig conf;
 
 Graphics* Graphics::graph = 0;
 
@@ -210,10 +213,11 @@ void Graphics::DrawGLTexture( Texture* tex, vertex3farr* vertices, coord2farr* c
 	}
 }
 
+//FIXME: depreciated?
 void Graphics::LoadAllTTFonts( int size )
 {
-	debug(3, "Loading fonts\n");
-	string dirname = "data/shared/"; //TODO: add FONTPATH
+	debug(3, "Loading fonts");
+	string dirname = conf.fontsPath;
     DIR *dp;
     struct dirent *ep;
     dp = opendir (dirname.c_str());
@@ -232,14 +236,14 @@ void Graphics::LoadAllTTFonts( int size )
         }
         closedir(dp);
     }else{
-    	debug(3, "\tFAIL\n");
-    	debug(3, "Bad directory.\n");
+    	debug(3, "\tFAIL");
+    	debug(3, "Bad directory.");
         return;
     }
     //pdbg(3, "Done.\n");
     //FIXME: debug print
     char dbg[38];
-    sprintf(dbg, "Loaded %d from %d font files.\n", success, files);
+    sprintf(dbg, "Loaded %d from %d font files.", success, files);
     debug(3, dbg);
 	return;
 }
@@ -319,7 +323,7 @@ void Graphics::ChangeTextSprite( Sprite* spr, string fontname, int size, string 
  * centered - origin at the center of the object if not 0;
  * return Sprite*
  */
-//TODO: идеально было бы написать миллион конструкторов, чтобы можно было создавать с дефолтными параметрами.
+
 Sprite* Graphics::CreateGLSprite( float x, float y, float z, float texX, float texY,
 								float width, float height, Texture* tex, short mirrored, short centered)
 {
@@ -669,11 +673,11 @@ void Graphics::SetTextTexture( Texture* tex, font_data* font, string text )
 SDL_Surface* Graphics::LoadImage( string name )
 {
 	SDL_Surface* pImg = NULL;
-	pImg = OpenImage( IMAGEPATH + name );
+	pImg = OpenImage( conf.imagePath + name );
 	if( !pImg ){
 		//Not loaded.
-		if( name != DEFAULT_IMAGE )
-			pImg = LoadImage( DEFAULT_IMAGE ); // Load default.
+		if( name != conf.defaultImage )
+			pImg = LoadImage( conf.defaultImage );
 		else
 			return NULL; // Default already tried. Break.
 	}
@@ -716,7 +720,7 @@ SDL_Surface* Graphics::OpenImage( string filename )
 font_data* Graphics::GetFont( string name, int size  )
 {
 	if( !LoadedFonts.count(name) || !LoadedFonts[name].count(size) ){
-		if( !LoadTTFont( "data/shared/", name, size ) ) //TODO: add FONTPATH
+		if( !LoadTTFont( conf.fontsPath, name, size ) )
 			return NULL;
 	}
 	return LoadedFonts[name][size];

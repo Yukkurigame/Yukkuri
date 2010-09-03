@@ -11,15 +11,18 @@
 
 #define DEBUGLEVEL 9
 
-//FIXME: headers!!!
 #include <stdio.h>
 #include <string>
 
 inline void debug( int level, std::string txt )
 {
 #ifdef DEBUG
-	if( level <= DEBUGLEVEL )
-		printf("%d: %s", level, txt.c_str());
+	if( level > 0 ){
+		if( level <= DEBUGLEVEL )
+			printf("%d: %s", level, txt.c_str());
+	}else{
+		printf("%s", txt.c_str());
+	}
 #endif
 };
 

@@ -1,7 +1,11 @@
 #include "engine.h"
+#include "debug.h"
+#include "config.h"
+
+extern MainConfig conf;
 
 /** Default constructor. **/
-CEngine::CEngine()
+CEngine::CEngine( )
 {
 	LastTick = 0;
 	Title = 0;
@@ -31,12 +35,19 @@ void CEngine::SetSize()
 /** Initialize SDL, the window and the additional data. **/
 void CEngine::Init()
 {
+	debug(3, "Loading defaults.");
+	if( !conf.load( ) ){
+		debug(1, "Loading default configuration failed. Exiting.");
+		exit( 1 );
+	}
+
+
 	cout << "Initializing SDL...	";
 	// Register SDL_Quit to be called at exit; makes sure things are cleaned up when we quit.
 	atexit( SDL_Quit );
 
 	// Initialize SDL's subsystems - in this case, only video.
-	if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) < 0 ) {
+	if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) < 0 ) {
 		cout << "[FAIL]" << endl;
 		cout << "Couldn't initialize SDL: " << SDL_GetError() << endl;
 		exit( 1 );
@@ -44,17 +55,38 @@ void CEngine::Init()
 
 	SetTitle( "Loading..." );
 
+	int videoFlags;
+	const SDL_VideoInfo *videoInfo;
+
+	videoInfo = SDL_GetVideoInfo( );
+
+	if( !videoInfo ) {
+		cout << "Video query failed: " << SDL_GetError() << endl;
+	}
+
+	videoFlags  = SDL_OPENGL;          /* Enable OpenGL in SDL */
+	videoFlags |= SDL_GL_DOUBLEBUFFER; /* Enable double buffering */
+	videoFlags |= SDL_HWPALETTE;       /* Store the palette in hardware */
+
+	if( videoInfo->hw_available )
+		videoFlags |= SDL_HWSURFACE;
+    else
+		videoFlags |= SDL_SWSURFACE;
+
+    if( videoInfo->blit_hw )
+        videoFlags |= SDL_HWACCEL;
+
 	Graphics::Instance()->openglInit( );
 
 	// Attempt to create a window with the specified height and width.
 	// If we fail, return error.
-	if ( !Graphics::Instance()->SetScreen( SDL_SetVideoMode( WWIDTH, WHEIGHT, 0, SDL_OPENGL ) ) ) {
+	if( !Graphics::Instance()->SetScreen( SDL_SetVideoMode( conf.windowWidth, conf.windowHeight, 0, videoFlags ) ) ) {
 		cout << "[FAIL]" << endl;
 		cout << "Unable to set up video: " << SDL_GetError() << endl;
 		exit( 1 );
 	}
 
-	Graphics::Instance()->openglSetup( WWIDTH, WHEIGHT );
+	Graphics::Instance()->openglSetup( conf.windowWidth, conf.windowHeight );
 
 	cout << "Done" << endl;
 
@@ -83,6 +115,11 @@ void CEngine::Start()
 	LastTick = 0;
 	EndLoop = false;
 	long ElapsedTicks;
+	float UpdateInterval;
+	float MaxCycles;
+
+	UpdateInterval = 1.0 / conf.maxFrameRate;
+	MaxCycles = conf.maxFrameRate / conf.minFrameRate;
 
 	// Main loop.
 	while( !EndLoop ){
@@ -106,12 +143,12 @@ void CEngine::Start()
 		}else{
 			UpdIterations = ElapsedTicks + CyclesLeft;
 
-			if (UpdIterations > (MAX_CYCLES_PER_FRAME * UPDATE_INTERVAL))
-				UpdIterations = (MAX_CYCLES_PER_FRAME * UPDATE_INTERVAL);
+			if( UpdIterations > ( MaxCycles * UpdateInterval ) )
+				UpdIterations = MaxCycles * UpdateInterval;
 
 			// Do some thinking
-			while (UpdIterations > UPDATE_INTERVAL) { // Update game state a variable number of times
-				UpdIterations -= UPDATE_INTERVAL;
+			while (UpdIterations > UpdateInterval) { // Update game state a variable number of times
+				UpdIterations -= UpdateInterval;
 				DoThink( ElapsedTicks );
 			}
 
@@ -287,4 +324,14 @@ char* CEngine::GetFPSText()
 {
 	sprintf( FPStext, "FPS: %0.1f", GetFPS() );
 	return FPStext;
+}
+
+int CEngine::getScreenW()
+{
+	return conf.windowWidth;
+}
+
+int CEngine::getScreenH()
+{
+	return conf.windowHeight;
 }

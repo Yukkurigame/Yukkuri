@@ -5,6 +5,7 @@
  */
 
 #include "Luaconfig.h"
+#include "config.h"
 
 LuaConfig* LuaConfig::conf = 0;
 
@@ -20,10 +21,13 @@ LuaConfig::~LuaConfig( )
 
 bool LuaConfig::LoadAll( string type )
 {
-	debug(3, "Loading " + type + "\n");
-	string dirname = "data/defs/"; //TODO: DEFSPATH
+	extern MainConfig conf;
+
+	string dirname = ( conf.configsPath != "" ) ? conf.configsPath : "data/defs/";
     DIR *dp;
     struct dirent *ep;
+
+    debug(3, "Loading " + type + "\n");
     dp = opendir (dirname.c_str());
     int success = 0;
     int files = 0;
@@ -39,7 +43,7 @@ bool LuaConfig::LoadAll( string type )
         closedir(dp);
     }else{
     	debug(3, "\tFAIL\n");
-    	debug(3, "Bad directory.\n");
+    	debug(3, "Bad directory." + dirname + "\n");
         return false;
     }
     //pdbg(3, "Done.\n");

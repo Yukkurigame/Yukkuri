@@ -24,7 +24,8 @@ void Yukkuri::AdditionalInit()
 	//map.Init("map.map");
 	cout << "Additional Init" << endl;
 
-	LuaConfig::Instance()->LoadAll( "config" );
+	//loaded at init.
+	//LuaConfig::Instance()->LoadAll( "config" );
 
 	Bindings::bnd.setEngine( this );
 

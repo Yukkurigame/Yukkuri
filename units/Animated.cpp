@@ -5,11 +5,13 @@
  */
 #include "Animated.h"
 #include "Define.h"
+#include "config.h"
 
 AnimatedUnit::AnimatedUnit( )
 {
+	extern MainConfig conf;
 	TimePassed = 0;
-	TimeLimit = ACTION_INTERVAL;
+	TimeLimit = conf.actionInterval;
 }
 
 void AnimatedUnit::update( const int& dt )

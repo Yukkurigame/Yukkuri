@@ -28,7 +28,7 @@ public:
 	wType getType( ){ return type; }
 
 	void setZ( float z ){ posz = z * 0.1; }
-	float getZ( ){ return posz + 5; } //5 - minimum widgets level TODO: in constants/configs
+	float getZ( );
 
 	virtual void setParent( Widget* p );
 

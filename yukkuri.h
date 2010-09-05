@@ -1,16 +1,12 @@
 #ifndef YUKKURI_H
 #define YUKKURI_H
 
-#include <vector>
-using std::vector;
-
 #include "engine.h"
 #include "Bindings.h"
 #include "unitmanager.h"
 //#include "map.h"
 #include "Interface.h"
 #include "Camera.h"
-//#include "SDL_getenv.h"
 #include "daytime.h"
 #include "Spawner.h"
 

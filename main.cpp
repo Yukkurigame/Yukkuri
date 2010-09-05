@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <stdio.h>
 #include "yukkuri.h"
 
 
@@ -22,7 +21,7 @@ int main(int argc, char* argv[])  // <- this must match exactly, since SDL rewri
 void Yukkuri::AdditionalInit()
 {
 	//map.Init("map.map");
-	cout << "Additional Init" << endl;
+	debug( 1, "Additional Init\n" );
 
 	//loaded at init.
 	//LuaConfig::Instance()->LoadAll( "config" );
@@ -62,7 +61,7 @@ void Yukkuri::Render( )
 
 	daytime.draw( );
 
-	UI::yui.GetWidget("fps")->setText(GetFPSText());
+	UI::yui.GetWidget("fps")->setText( GetFPSText() );
 
 	//Draw to screen
 	Graphics::Instance()->DrawGLScene( );

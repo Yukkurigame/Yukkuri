@@ -20,6 +20,7 @@
 		type = 2,
 		x = 5,
 		y = 0,
+		text = "FPS: ",
 		textx = 0,
 		texty = 0,
 		fontsize = 20,

@@ -4,16 +4,12 @@
 //На самом деле я не хочу сюда лазить, здесь грязно и пакостно.
 
 #include "Define.h"
-#include <cstdlib>
-#include <iostream>
-using std::cout;
-using std::endl;
 #include <string>
 using std::string;
 
-//#include "SDL/SDL.h"
 #include "Graphics.h"
 #include "Bindings.h"
+#include "debug.h"
 
 /** The base engine class. **/
 class CEngine

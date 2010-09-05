@@ -12,7 +12,6 @@ using std::string;
 #include <map>
 
 #include "Widgets.h"
-#include "Luaconfig.h"
 #include "debug.h"
 
 

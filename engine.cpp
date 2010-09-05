@@ -1,5 +1,4 @@
 #include "engine.h"
-#include "debug.h"
 #include "config.h"
 
 extern MainConfig conf;
@@ -35,21 +34,21 @@ void CEngine::SetSize()
 /** Initialize SDL, the window and the additional data. **/
 void CEngine::Init()
 {
-	debug(3, "Loading defaults.");
+	debug( 3, "Loading defaults." );
 	if( !conf.load( ) ){
-		debug(1, "Loading default configuration failed. Exiting.");
+		debug( 1, "Loading default configuration failed. Exiting." );
 		exit( 1 );
 	}
 
 
-	cout << "Initializing SDL...	";
+	debug(1, "Initializing SDL...	");
 	// Register SDL_Quit to be called at exit; makes sure things are cleaned up when we quit.
 	atexit( SDL_Quit );
 
 	// Initialize SDL's subsystems - in this case, only video.
 	if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) < 0 ) {
-		cout << "[FAIL]" << endl;
-		cout << "Couldn't initialize SDL: " << SDL_GetError() << endl;
+		debug( 0, "[FAIL]\n" );
+		debug( 1, "Couldn't initialize SDL: " + static_cast<string>(SDL_GetError( )) + "\n" );
 		exit( 1 );
 	}
 
@@ -61,47 +60,38 @@ void CEngine::Init()
 	videoInfo = SDL_GetVideoInfo( );
 
 	if( !videoInfo ) {
-		cout << "Video query failed: " << SDL_GetError() << endl;
+		debug( 1, "Video query failed: " + static_cast<string>(SDL_GetError( )) + "\n" );
 	}
 
-	videoFlags  = SDL_OPENGL;          /* Enable OpenGL in SDL */
-	videoFlags |= SDL_GL_DOUBLEBUFFER; /* Enable double buffering */
-	videoFlags |= SDL_HWPALETTE;       /* Store the palette in hardware */
-
-	if( videoInfo->hw_available )
-		videoFlags |= SDL_HWSURFACE;
-    else
-		videoFlags |= SDL_SWSURFACE;
-
-    if( videoInfo->blit_hw )
-        videoFlags |= SDL_HWACCEL;
+	videoFlags  = SDL_OPENGL; // Enable OpenGL in SDL
 
 	Graphics::Instance()->openglInit( );
 
 	// Attempt to create a window with the specified height and width.
-	// If we fail, return error.
 	if( !Graphics::Instance()->SetScreen( SDL_SetVideoMode( conf.windowWidth, conf.windowHeight, 0, videoFlags ) ) ) {
-		cout << "[FAIL]" << endl;
-		cout << "Unable to set up video: " << SDL_GetError() << endl;
+		debug( 0, "[FAIL]\n" );
+		debug( 1, "Unable to set up video: " + static_cast<string>(SDL_GetError( )) + "\n" );
 		exit( 1 );
 	}
 
 	Graphics::Instance()->openglSetup( conf.windowWidth, conf.windowHeight );
 
-	cout << "Done" << endl;
+	debug( 0, "Done\n" );
 
 #ifdef JOYSTICKENABLE
 	if( SDL_NumJoysticks() > 0 ){
-		cout << SDL_NumJoysticks() << " joysticks were found:" << endl;
-		for( int i=0; i < SDL_NumJoysticks(); i++ )
-			cout << SDL_JoystickName(i) << endl;
+		int jnum = SDL_NumJoysticks();
+		char d[2]; //100 joystics, lol
+		sprintf( d, "%d", jnum );
+		debug( 1, static_cast<string>(d) + " joysticks were found:\n" );
+		for( int i=0; i < jnum; i++ )
+			debug( 2, static_cast<string>(SDL_JoystickName(i)) + "\n" );
 		SDL_JoystickEventState(SDL_ENABLE);
 		joystick = SDL_JoystickOpen(0);
 	}
 #else
-	cout << "Joystick not enabled." << endl;
+	debug( 1, "Joystick not enabled.\n" );
 #endif
-
 
 	AdditionalInit();
 
@@ -322,7 +312,7 @@ float CEngine::GetFPS()
 
 char* CEngine::GetFPSText()
 {
-	sprintf( FPStext, "FPS: %0.1f", GetFPS() );
+	sprintf( FPStext, "%0.1f", GetFPS() );
 	return FPStext;
 }
 

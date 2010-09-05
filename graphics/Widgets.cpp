@@ -4,27 +4,31 @@
  *  Created on: 30.06.2010
  */
 #include "Widgets.h"
+#include "Luaconfig.h"
 #include "config.h"
+
+LuaConfig* cfg = LuaConfig::Instance();
 
 Widget::Widget()
 {
 	graph = Graphics::Instance();
-	type = NONE;
-	width = 0;
-	height = 0;
-	posx = 0;
-	posy = 0;
-	posz = 0;
+	Type = NONE;
+	Width = 0;
+	Height = 0;
+	PosX = 0;
+	PosY = 0;
+	PosZ = 0;
 	visible = true;
-	parent = NULL;
+	Parent = NULL;
 	background = NULL;
 }
 
 Widget::~Widget()
 {
 	graph->FreeGLSprite( background );
-	parent = NULL;
-	children.clear();
+	Parent = NULL;
+	//FIXME: parent dies but children overcomes this.
+	Children.clear();
 }
 
 bool Widget::create( string name, string text, int x, int y )
@@ -32,31 +36,60 @@ bool Widget::create( string name, string text, int x, int y )
 	//FIXME: text not used it is bad;
 	Texture* tex;
 	tex = graph->LoadGLTexture( name );
-	background = graph->CreateGLSprite(posx, posy, getZ(), x, y, width, height, tex);
+	background = graph->CreateGLSprite( PosX, PosY, getZ(), x, y, Width, Height, tex );
 	if(!background)
 		return false;
+	return true;
+}
+
+bool Widget::load( string config )
+{
+	cfg->getValue( "name", config, "widget", Name );
+	cfg->getValue( "x", config, "widget", PosX );
+	cfg->getValue( "y", config, "widget", PosY );
+	cfg->getValue( "width", config, "widget", Width );
+	cfg->getValue( "height", config, "widget", Height );
+
+	int z = 0;
+	cfg->getValue("depth", config, "widget", z );
+	setZ( z );
+
+	if( Type != NONE ){
+		string imgname;
+		string text;
+		int bgx, bgy;
+		cfg->getValue( "bgimage", config, "widget", imgname );
+		cfg->getValue( "text", config, "widget", text );
+		cfg->getValue( "bgposx", config, "widget", bgx );
+		cfg->getValue( "bgposy", config, "widget", bgy );
+
+		if( !create( imgname, text, bgx, bgy )){
+			return NULL;
+		}
+	}
 	return true;
 }
 
 float Widget::getZ( )
 {
 	extern MainConfig conf;
-	return posz + conf.widgetsPosZ;
+	return PosZ + conf.widgetsPosZ;
 }
 
 void Widget::setParent( Widget* p )
 {
-	parent = p;
-	posx += p->posx;
-	posy = p->posy + p->height - posy;
-	posz = posz + p->posz + 0.1;
+	extern MainConfig conf;
+	Parent = p;
+	PosX += p->getX( );
+	PosY = p->getY( ) + p->getHeight( ) - PosY;
+	PosZ = PosZ + p->getZ( ) - conf.widgetsPosZ + 0.1;
 	if( background )
 		background->vertices->z = getZ();
 }
 
 void Widget::addChild( Widget* child )
 {
-	children.push_back( child );
+	Children.push_back( child );
 }
 
 void Widget::toggleVisibility( )
@@ -67,8 +100,8 @@ void Widget::toggleVisibility( )
 		visible = true;
 	if( this->background && this->background->visible != visible )
 		this->background->toggleVisibility( );
-	for( int i = 0, end = children.size(); i < end; ++i ){
-		children[i]->toggleVisibility();
+	for( int i = 0, end = Children.size(); i < end; ++i ){
+		Children[i]->toggleVisibility();
 	}
 }
 
@@ -98,19 +131,43 @@ bool TextWidget::create( string name, string text, int x, int y )
 			background = NULL;
 	}
 	if( text != "" ){
-		StaticTextSprite = graph->CreateGLSprite( x, y, getZ(), 20, 20, width, height, NULL );
+		StaticTextSprite = graph->CreateGLSprite( x, y, getZ(), 20, 20, Width, Height, NULL );
 		StaticTextSprite->clr->set( 0 );
 	}
 	Text = text;
-	TextSprite = graph->CreateGLSprite( x, y, getZ(), 20, 20, width, height, NULL );
+	TextSprite = graph->CreateGLSprite( x, y, getZ(), 20, 20, Width, Height, NULL );
 	TextSprite->clr->set( 0 );
+	return true;
+}
+
+bool TextWidget::load( string config )
+{
+	if( !Widget::load( config ) )
+		return NULL;
+
+	string font;
+	float textx, texty;
+	textx = texty = 0;
+	int fontsize = 12;
+	vector<int> vcolor;
+
+	cfg->getValue( "textx", config, "widget", textx );
+	cfg->getValue( "texty", config, "widget", texty );
+	cfg->getValue( "font", config, "widget", font );
+	cfg->getValue( "fontsize", config, "widget", fontsize );
+	cfg->getValue( "fontcolor", config, "widget", vcolor );
+
+	setFont( font, fontsize );
+	setTextPosition( textx, texty );
+	if( vcolor.size( ) > 2 )
+		setFontColor(vcolor[0], vcolor[1], vcolor[2]);
 	return true;
 }
 
 void TextWidget::setParent( Widget* p )
 {
-	float x = p->posx + posx + textx;
-	float y = p->posy + p->height - posy - texty;
+	float x = p->getX( ) + PosX + textx;
+	float y = p->getY( ) + p->getHeight( ) - PosY - texty;
 	Widget::setParent( p );
 	textPosition( x, y );
 }
@@ -140,7 +197,7 @@ void TextWidget::setTextPosition( float x, float y )
 {
 	textx = x;
 	texty = y;
-	textPosition( posx + x, posy + height - y );
+	textPosition( PosX + x, PosY + Height - y );
 }
 
 void TextWidget::toggleVisibility( )
@@ -178,18 +235,46 @@ BarWidget::~BarWidget( )
 	graph->FreeGLSprite( bar );
 }
 
+bool BarWidget::load( string config )
+{
+	if( !TextWidget::load( config ) )
+		return NULL;
+	string imgname;
+	int position[9];
+	vector<int> vcolor;
+	//Order: topimgx, topimgy, barx, bary, barwidth, barheight
+	//Ya, it's cruve, but it's simple
+	cfg->getValue( "topimgx", config, "widget", position[0] );
+	cfg->getValue( "topimgy", config, "widget", position[1] );
+	cfg->getValue( "barx", config, "widget", position[2] );
+	cfg->getValue( "bary", config, "widget", position[3] );
+	cfg->getValue( "barwidth", config, "widget", position[4] );
+	cfg->getValue( "barheight", config, "widget", position[5] );
+	cfg->getValue( "source", config, "widget", imgname );
+	cfg->getValue( "barcolor", config, "widget", vcolor );
+	if( vcolor.size( ) > 2 ){
+		position[6] = vcolor[0]; //r
+		position[7] = vcolor[1]; //g
+		position[8] = vcolor[2]; //b
+	}else{
+		position[6] = 0; position[7] = 0; position[8] = 0;
+	}
+	createBar( imgname, position );
+	return true;
+}
+
 void BarWidget::createBar( string name, int* pos)
 {
 	Texture* tex;
-	barstartx = posx + pos[2];
+	barstartx = PosX + pos[2];
 	if( pos[4] > 0 )
 		barwidth = pos[4];
 	else
-		barwidth = width;
+		barwidth = Width;
 	tex = graph->LoadGLTexture( name );
-	bar = graph->CreateGLSprite( barstartx, posy + pos[3], getZ(), barwidth, pos[5] );
+	bar = graph->CreateGLSprite( barstartx, PosY + pos[3], getZ(), barwidth, pos[5] );
 	if( tex )
-		top = graph->CreateGLSprite( posx, posy, getZ() + 0.1, pos[0], pos[1], width, height, tex );
+		top = graph->CreateGLSprite( PosX, PosY, getZ() + 0.1, pos[0], pos[1], Width, Height, tex );
 	if( bar ){
 		bar->clr->set( pos[6], pos[7], pos[8] );
 	}
@@ -219,9 +304,9 @@ void BarWidget::setBarValue( int value )
 
 void BarWidget::setParent( Widget* p )
 {
-	float bardelta = barstartx - posx;
-	float x = p->posx + posx;
-	float y = p->posy + p->height - posy;
+	float bardelta = barstartx - PosX;
+	float x = p->getX( ) + PosX;
+	float y = p->getY( ) + p->getHeight( ) - PosY;
 	float barheight = bar->vertices->lt.y - bar->vertices->lb.y;
 	TextWidget::setParent( p );
 	bar->setPosition( x + bardelta, y, getZ() );

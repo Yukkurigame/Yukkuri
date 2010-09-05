@@ -23,11 +23,19 @@ public:
 	virtual ~Widget();
 
 	virtual bool create( string name, string text, int x=0, int y=0 );
+	virtual bool load( string config );
 
-	void setType( wType t ){ type = t; }
-	wType getType( ){ return type; }
+	void setType( wType t ){ Type = t; }
+	wType getType( ){ return Type; }
 
-	void setZ( float z ){ posz = z * 0.1; }
+	string getName( ){ return Name; }
+
+	float getX( ){ return PosX; }
+	float getY( ){ return PosY; }
+	float getHeight( ){ return Height; }
+	float getWidth( ){ return Width; }
+
+	void setZ( float z ){ PosZ = z * 0.1; }
 	float getZ( );
 
 	virtual void setParent( Widget* p );
@@ -45,24 +53,22 @@ public:
 	virtual void setBarSize( int size ) {};
 	virtual void setBarValue( int val ) {};
 
-	//FIXME: как-то не хорошо так публично.
-	string name;
-	float width;
-	float height;
-	float posx;
-	float posy;
-
 protected:
 	bool visible;
 	Graphics* graph;
 	Sprite* background;
 
-private:
-	wType type;
-	float posz;
+	float PosX;
+	float PosY;
+	float Width;
+	float Height;
 
-	Widget* parent;
-	std::vector<Widget*> children;
+private:
+	string Name;
+	wType Type;
+	float PosZ;
+	Widget* Parent;
+	std::vector<Widget*> Children;
 };
 
 class TextWidget: public Widget
@@ -72,6 +78,7 @@ public:
 	~TextWidget( );
 
 	bool create( string name, string text, int x=0, int y=0 );
+	bool load( string config );
 
 	void setParent( Widget* p );
 
@@ -105,7 +112,7 @@ public:
 	BarWidget( );
 	~BarWidget( );
 
-	/*bool create( string name, int x=0, int y=0 );*/
+	bool load( string config );
 
 	void createBar( string name, int* position );
 	void setBarValue( int size );

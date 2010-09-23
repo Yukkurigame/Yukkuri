@@ -22,7 +22,7 @@ class UnitManager
 
         Unit* CreateUnit( enum unitType type, float x, float y );
         void DeleteUnit( Unit* u );
-        Unit* GetUnit( unsigned int Index );
+        Unit* GetUnit( unsigned int id );
         Unit* GetPlayer() { return player; }
         int GetUnitsSize( enum unitType type );
         int GetUnitVecSize() { return (int)Units.size();}
@@ -44,6 +44,7 @@ class UnitManager
         vector< Unit* > Units;
         std::map< enum unitType, int > Size;
         Unit* player;
+        unsigned int LastId;
 };
 
 #endif // UNITMANAGER_H

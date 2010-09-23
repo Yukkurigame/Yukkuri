@@ -34,7 +34,7 @@ void CEngine::SetSize()
 /** Initialize SDL, the window and the additional data. **/
 void CEngine::Init()
 {
-	debug( 3, "Loading defaults." );
+	debug( 3, "Loading defaults.\n" );
 	if( !conf.load( ) ){
 		debug( 1, "Loading default configuration failed. Exiting." );
 		exit( 1 );
@@ -63,7 +63,8 @@ void CEngine::Init()
 		debug( 1, "Video query failed: " + static_cast<string>(SDL_GetError( )) + "\n" );
 	}
 
-	videoFlags  = SDL_OPENGL; // Enable OpenGL in SDL
+	videoFlags = SDL_OPENGL; // Enable OpenGL in SDL
+	videoFlags |= SDL_HWPALETTE; // Store the palette in hardware
 
 	Graphics::Instance()->openglInit( );
 

@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "daytime.h"
 #include "Spawner.h"
+#include "LuaScript.h"
 
 class Yukkuri: public CEngine
 {

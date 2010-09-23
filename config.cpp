@@ -24,6 +24,7 @@ bool MainConfig::load( )
 	lc->getValue( "images_path" , subconfig, config, imagePath );
 	lc->getValue( "default_image_name" , subconfig, config, defaultImage );
 	lc->getValue( "fonts_path" , subconfig, config, fontsPath );
+	lc->getValue( "scripts_path" , subconfig, config, scriptsPath );
 	lc->getValue( "configs_path" , subconfig, config, configsPath );
 
 	lc->getValue( "widgets_z" , subconfig, config, widgetsPosZ );

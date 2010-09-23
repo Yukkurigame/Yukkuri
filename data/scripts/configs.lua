@@ -1,6 +1,7 @@
 
 ---
 local configs = {}
+math.randomseed(os.time())
 
 function load( filename )
     print("Load " .. filename)

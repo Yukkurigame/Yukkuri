@@ -3,6 +3,7 @@
 
 Unit::Unit()
 {
+	UnitId = 0;
 	Anim = 0;
 	X = 0.0;
 	Y = 0.0;
@@ -15,14 +16,12 @@ Unit::Unit()
 
 Unit::~Unit()
 {
-	//delete Image;
 	delete defs;
 }
 
-bool Unit::Create( )
+bool Unit::Create( int id )
 {
-
-	//string type = "entity";
+	UnitId = id;
 
 	setUnitName( Type );
 

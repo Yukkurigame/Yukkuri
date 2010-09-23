@@ -134,3 +134,12 @@
 		}
 	}
 }
+
+--- Configuration file
+--- main.config
+{
+	"General",
+	{
+	--- Predetermined fields
+	}
+}

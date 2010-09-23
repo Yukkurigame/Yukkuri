@@ -53,6 +53,10 @@ bool Graphics::SetScreen( SDL_Surface* s )
 void Graphics::openglInit( )
 {
 	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+	SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 6 );
+	SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 6 );
+	SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 6 );
+	SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, 6 );
 }
 
 void Graphics::openglSetup( int wwidth, int wheight )

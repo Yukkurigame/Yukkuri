@@ -15,7 +15,7 @@ public:
 	Corpse();
 	~Corpse();
 
-	bool Create( );
+	bool Create( int id );
 
 	void update( const int& dt );
 

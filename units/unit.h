@@ -26,7 +26,7 @@ public:
 
     double dist( Unit* );
 
-    virtual bool Create( );
+    virtual bool Create( int id );
     void Delete( );
     bool isDeleted( ) { return Deleted; }
     virtual bool loadAnimation( ) { return true; }
@@ -35,9 +35,11 @@ public:
     void setUnitX( float x );
     void setUnitY( float y );
     void setUnitSize( float size );
-    int getUnitAnim() { return (const int)Anim; }
 
     void setUnitAnim( int );
+    int getUnitAnim() { return (const int)Anim; }
+
+    unsigned int getUnitId( ) { return UnitId; }
 
     void setUnitName( string type );
     string getUnitName() { return UnitName; }
@@ -74,6 +76,7 @@ protected:
     float X, Y, Z;
 
 private:
+    unsigned int UnitId;
     string UnitName;
     int Anim;
     string Type;

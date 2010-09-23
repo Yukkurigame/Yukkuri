@@ -17,9 +17,9 @@ Corpse::~Corpse( )
 	Graphics::Instance( )->FreeGLSprite( blood );
 }
 
-bool Corpse::Create( )
+bool Corpse::Create( int id )
 {
-	if( !Plant::Create( ) )
+	if( !Plant::Create( id ) )
 		return false;
 	blood = Graphics::Instance( )->CreateGLSprite( getUnitImageName( ) );
 	blood->fixed = false;

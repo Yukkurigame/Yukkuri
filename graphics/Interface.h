@@ -34,8 +34,6 @@ private:
 
 	std::vector< Widget* > widgets;
 
-	//std::map< string, Widget*> widgets;
-
 };
 
 #endif /* INTERFACE_H_ */

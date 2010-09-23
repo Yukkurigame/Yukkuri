@@ -11,9 +11,9 @@ Plant::Plant( )
 	hp = 1;
 }
 
-bool Plant::Create( )
+bool Plant::Create( int id )
 {
-	if( !Unit::Create( ) )
+	if( !Unit::Create( id ) )
 		return false;
 	getConfigValue("nutritive", nutritive);
 	getConfigValue("hp", hp);

@@ -23,23 +23,17 @@ void Yukkuri::AdditionalInit()
 	//map.Init("map.map");
 	debug( 1, "Additional Init\n" );
 
-	//loaded at init.
-	//LuaConfig::Instance()->LoadAll( "config" );
+	LuaScript* s = new LuaScript( );
+	if( !s->Init( ) || !s->OpenFile( "init" ) )
+		debug( 1, "Lua loading failed.\n" );
 
 	Bindings::bnd.setEngine( this );
 
 	Bindings::bnd.LoadKeys();
 
-	LuaConfig::Instance()->LoadAll( "widget" );
-	UI::yui.LoadAllWidgets( );
-
 	daytime.loadInterface();
 
-	LuaConfig::Instance()->LoadAll( "entity" );
-
 	units = &UnitManager::units;
-
-	units->CreateUnit( PLAYER, 0, 0 );
 	YCamera::CameraControl.SetTarget( units->GetPlayer()->getUnitpX(), units->GetPlayer()->getUnitpY());
 
 }

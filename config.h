@@ -24,6 +24,7 @@ struct MainConfig
 	std::string imagePath;
 	std::string defaultImage;
 	std::string fontsPath;
+	std::string scriptsPath;
 	std::string configsPath;
 
 	MainConfig(){

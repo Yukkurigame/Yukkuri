@@ -5,6 +5,8 @@ UnitManager UnitManager::units;
 UnitManager::UnitManager()
 {
 	graph = Graphics::Instance();
+	player = NULL;
+	LastId = 0;
 }
 
 UnitManager::~UnitManager()
@@ -44,7 +46,7 @@ Unit* UnitManager::CreateUnit( enum unitType type, float x, float y )
 
 	temp->setUnitType( type );
 
-	if( !temp->Create() ||
+	if( !temp->Create( LastId ) ||
 		!temp->setUnitImage( graph->CreateGLSprite( temp->getUnitImageName( ) ) ) ||
 		!temp->loadAnimation()
 	)
@@ -62,7 +64,10 @@ Unit* UnitManager::CreateUnit( enum unitType type, float x, float y )
 	AddUnit( temp );
 	ChangeUnitsSize( type, 1 );
 
+	LastId++;
+
 	if( type == PLAYER ){
+		DeleteUnit( player );
 		player = temp;
 	}
 
@@ -71,6 +76,8 @@ Unit* UnitManager::CreateUnit( enum unitType type, float x, float y )
 
 void UnitManager::DeleteUnit( Unit* u )
 {
+	if( !u )
+		return;
 	ChangeUnitsSize( u->geteUnitType( ), -1 );
 	graph->FreeGLSprite( u->getUnitImage() );
 	u->setUnitImage( NULL );
@@ -145,12 +152,17 @@ void UnitManager::grow( )
 }
 
 
-Unit* UnitManager::GetUnit( unsigned int index )
+Unit* UnitManager::GetUnit( unsigned int id )
 {
-	if ( index < 0 || index > Units.size() )
-		return 0;
-
-	return Units.at( index );
+	Unit* u = NULL;
+	if( id != 0 && id <= LastId ){
+		for( vector< Unit* >::iterator it = Units.begin(), end = Units.end(); it != end; ++it ){
+			if( (*it)->getUnitId( ) == id ){
+				u = (*it);
+			}
+		}
+	}
+	return u;
 }
 
 void UnitManager::DrawUnits( )
@@ -167,12 +179,6 @@ void UnitManager::AddUnit( Unit* unit )
 {
 	Units.push_back( unit );
 }
-
-/*coord2farr* UnitManager::getAnim( Unit* unit )
-{
-	return graph->GetAnimation( unit->getUnitName( ), unit->getUnitAnim( ) );
-}
-*/
 
 void UnitManager::ChangeUnitsSize( enum unitType type, signed int size )
 {

@@ -11,7 +11,6 @@
 
 //TODO: add logger
 #include <map>
-using std::map;
 #include <vector>
 using std::vector;
 #include <string>
@@ -40,16 +39,7 @@ public:
 	void openglSetup( int wwidth, int wheight );
 
 	Texture* LoadGLTexture( string name );
-	void FreeGLTexture( Texture* );
 
-private:
-	inline void DrawGLTexture( Sprite* s ){
-		if( !s ) return;
-		DrawGLTexture( s->tex, s->vertices, s->coordinates, s->clr );
-	}
-	void DrawGLTexture( Texture* tex, vertex3farr* vertices, coord2farr* coordinates, Color* col );
-
-public:
 	void LoadAllTTFonts( int size );
 	bool LoadTTFont( string dir, string filename, int size );
 	Sprite* CreateTextSprite( string font, int size, float x, float y, float z, Color* color, string text, short cached=0 );
@@ -62,22 +52,25 @@ public:
 		return CreateGLSprite( 20, 20, 0, 0, 0, 0, 0, tex );
 	}
 	inline Sprite* CreateGLSprite( float x, float y, float z, float width, float height ){
-		return CreateGLSprite( x, y, z, 0, 0, width, height, NULL);
+		return CreateGLSprite( x, y, z, 0, 0, width, height, NULL );
 	}
-	inline Sprite* CreateGLSprite( float x, float y, float z, float width, float height, Texture* tex ){
-		return CreateGLSprite( x, y, z, 0, 0, width, height, tex);
+	inline Sprite* CreateGLSprite(	float x, float y, float z, float width, float height, Texture* tex ){
+		return CreateGLSprite( x, y, z, 0, 0, width, height, tex );
 	}
-	Sprite* CreateGLSprite( float x, float y, float z, float texX, float texY,
-							float width, float height, Texture* tex, short mirrored = 0, short centered =0 );
+	Sprite* CreateGLSprite( float x, float y, float z, float texX, float texY, float width, float height,
+							Texture* tex, short mirrored = 0, short centered = 0, short cached = 1 );
+
+	void CreateGLSpriteList( vector<Sprite* >* sprites );
 
 	void FreeGLSprite( Sprite* );
-	void FreeTextSprite( Sprite* );
+	void FreeTextSprite( Sprite** );
 
 	void SetVertex( vertex3farr* v, float x, float y, float z, float width, float height, short centered );
 
 	coord2farr* GetAnimation( string , unsigned int );
 	void LoadAnimation( string name, int rows, int cols, int width, int height, int texw, int texh );
 
+	void MoveGlScene( float x, float y, float z );
 	void DrawGLScene();
 	void CleanGLScene();
 
@@ -93,6 +86,12 @@ private:
 	SDL_Surface* screen;
 	void AddGLTexture( Texture* , string );
 	Texture* GetGLTexture( string );
+	inline void DrawGLTexture( Sprite* s ){
+		if( !s ) return;
+		DrawGLTexture( s->tex, s->vertices, s->coordinates, s->clr, s->fixed );
+	}
+	void DrawGLTexture( Texture* tex, vertex3farr* vertices, coord2farr* coordinates, Color* col, bool fixed = true );
+	void FreeGLTexture( Texture* );
 
 	coord2farr* GetCoordinates( float x1, float y1, float x2, float y2, float width, float height, short mirrored );
 	void FreeCoordinates( coord2farr* );
@@ -110,11 +109,12 @@ private:
 
 
 	vector < Sprite* > GLSprites;
-	map < string, vector< coord2farr* > > Animations;
-	map < string, Texture* > LoadedGLTextures;
-	map < string, map< int, font_data* > > LoadedFonts;
-	map < font_data*, map< string, Texture* > > CachedTexts;
+	std::map < string, vector< coord2farr* > > Animations;
+	std::map < string, Texture* > LoadedGLTextures;
+	std::map < string, std::map< int, font_data* > > LoadedFonts;
+	std::map < font_data*, std::map< string, Texture* > > CachedTexts;
 
+	GLuint MapListBase;
 };
 
 

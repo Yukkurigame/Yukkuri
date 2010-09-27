@@ -6,6 +6,7 @@
 
 #ifndef ANIMATED_H_
 #define ANIMATED_H_
+
 #include "unit.h"
 
 class AnimatedUnit: public Unit

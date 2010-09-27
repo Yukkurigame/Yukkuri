@@ -1,12 +1,8 @@
 #ifndef UNIT_H
 #define UNIT_H
 
-#include <math.h>
-#include <iostream>
 #include <string>
 using std::string;
-using std::cout;
-using std::endl;
 
 #include "GraphicsTypes.h"
 #include "Luaconfig.h"
@@ -57,7 +53,6 @@ public:
     	LuaConfig::Instance()->getValue( name, UnitName, Type, ret );
     }
 
-    //как-то это не хорошо, почему картинка хранится в юните? структ какой придумать что ли.
     inline Sprite* getUnitImage() {return Image;}
     bool setUnitImage( Sprite* );
     string getUnitImageName( ) { return defs->imageName;  }

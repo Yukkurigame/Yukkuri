@@ -12,7 +12,7 @@ function load( filename )
         return
     end
     local filedata = file:read("*all")
-    local data = assert(loadstring('return ' .. filedata))()    
+    local data = assert(loadstring('return ' .. filedata))()
     file:close()
     ctype = string.lower(data[1])
     table.remove(data,1)

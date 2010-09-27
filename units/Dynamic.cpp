@@ -1,4 +1,5 @@
 #include "Dynamic.h"
+#include <math.h>
 
 
 DynamicUnit::DynamicUnit()

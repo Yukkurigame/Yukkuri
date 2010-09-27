@@ -10,6 +10,7 @@
 #include "daytime.h"
 #include "Spawner.h"
 #include "LuaScript.h"
+#include "map.h"
 
 class Yukkuri: public CEngine
 {

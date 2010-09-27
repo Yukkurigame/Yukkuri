@@ -1,0 +1,18 @@
+{
+	"MapRegion",
+	{
+		name = "test",
+		tiles = {
+			{
+				x = 1,
+				y = 1,
+				type = 2
+			},
+			{
+				x = 1,
+				y = 2,
+				type = 1
+			}
+		}
+	}
+}

@@ -115,7 +115,7 @@ Texture* Graphics::LoadGLTexture( string name )
 		surface = LoadImage(name);
 
 		if( !surface ){
-			debug(3, name + " not loaded");
+			debug(3, name + " not loaded.\n");
 			delete cached;
 			return NULL;
 		}
@@ -133,7 +133,7 @@ Texture* Graphics::LoadGLTexture( string name )
 			else
 				texture_format = GL_BGR;
 		}else{
-			debug(3, name + " is not truecolor..  this will probably break");
+			debug(3, name + " is not truecolor..  this will probably break.\n");
 			// this error should not go unhandled
 		}
 
@@ -168,53 +168,6 @@ Texture* Graphics::LoadGLTexture( string name )
 
 
 	return tex;
-}
-
-void Graphics::FreeGLTexture( Texture* tex )
-{
-	if( tex ){
-		if( tex->texture )
-			glDeleteTextures( 1, tex->texture );
-		delete tex;
-		tex = NULL;
-	}
-}
-
-void Graphics::DrawGLTexture( Texture* tex, vertex3farr* vertices, coord2farr* coordinates, Color* col)
-{
-	if(tex){
-		glBindTexture( GL_TEXTURE_2D, *tex->texture );
-	}else{
-		glBindTexture( GL_TEXTURE_2D, 0 );
-	}
-	//Sprite color
-	glColor4ub( col->r, col->g, col->b, col->a );
-	if(coordinates){
-		glBegin( GL_QUADS );
-			//Bottom-left vertex (corner)
-			glTexCoord2f( coordinates->lb.x, coordinates->lb.y );
-			glVertex3f( vertices->lb.x, vertices->lb.y, vertices->z );
-
-			//Bottom-right vertex (corner)
-			glTexCoord2f( coordinates->rb.x , coordinates->rb.y );
-			glVertex3f( vertices->rb.x, vertices->rb.y, vertices->z );
-
-			//Top-right vertex (corner)
-			glTexCoord2f( coordinates->rt.x , coordinates->rt.y );
-			glVertex3f( vertices->rt.x, vertices->rt.y, vertices->z );
-
-			//Top-left vertex (corner)
-			glTexCoord2f( coordinates->lt.x , coordinates->lt.y );
-			glVertex3f( vertices->lt.x, vertices->lt.y, vertices->z );
-		glEnd();
-	}else{
-		glBegin( GL_QUADS ); //draw rectangle;
-			glVertex3f( vertices->lb.x, vertices->lb.y, vertices->z ); //Bottom-left
-			glVertex3f( vertices->rb.x, vertices->rb.y, vertices->z ); //Bottom-right
-			glVertex3f( vertices->rt.x, vertices->rt.y, vertices->z ); //Top-right
-			glVertex3f( vertices->lt.x, vertices->lt.y, vertices->z ); //Top-left
-		glEnd();
-	}
 }
 
 //FIXME: depreciated?
@@ -294,8 +247,10 @@ void Graphics::ChangeTextSprite( Sprite* spr, string fontname, int size, string 
 
 	{ //TODO: In thread
 
-		if( spr->tex )
+		if( spr->tex ){
 			FreeGLTexture( spr->tex );
+			spr->tex = NULL;
+		}
 
 		width = height = 0;
 
@@ -328,8 +283,8 @@ void Graphics::ChangeTextSprite( Sprite* spr, string fontname, int size, string 
  * return Sprite*
  */
 
-Sprite* Graphics::CreateGLSprite( float x, float y, float z, float texX, float texY,
-								float width, float height, Texture* tex, short mirrored, short centered)
+Sprite* Graphics::CreateGLSprite( float x, float y, float z, float texX, float texY, float width,
+						float height, Texture* tex, short mirrored, short centered,  short cached )
 {
 	Sprite* sprite;
 	vertex3farr* vertex;
@@ -360,24 +315,43 @@ Sprite* Graphics::CreateGLSprite( float x, float y, float z, float texX, float t
 	if(centered)
 		sprite->centered = true;
 
-	GLSprites.push_back( sprite );
+	if( cached )
+		GLSprites.push_back( sprite );
 
 	return sprite;
+}
+
+void Graphics::CreateGLSpriteList( vector<Sprite* >* sprites )
+{
+	if( glIsList( MapListBase ) )
+		glDeleteLists( MapListBase, 1 );
+	MapListBase = glGenLists(1);
+	glNewList( MapListBase, GL_COMPILE );
+		for( vector<Sprite*>::iterator it = sprites->begin(), end = sprites->end(); it != end; ++it ){
+			DrawGLTexture( *it );
+		}
+	glEndList();
 }
 
 void Graphics::FreeGLSprite( Sprite* spr )
 {
 	if( spr ){
-		if(!spr->tex || spr->clr != &spr->tex->clr )
+		if(!spr->tex || spr->clr != &spr->tex->clr ){
 			delete spr->clr;
+			spr->clr = NULL;
+		}
+		spr->tex = NULL;
 		//All textures deleted on exit;
 		//if( spr->tex )
 			//FreeGLTexture( spr->tex );
 		if( spr->vertices ){
 			delete spr->vertices;
+			spr->vertices = NULL;
 		}
-		if( spr->coordinates )
+		if( spr->coordinates ){
 			FreeCoordinates( spr->coordinates );
+			spr->coordinates = NULL;
+		}
 		//std::cout << GLSprites.size() << "! " << GLSprites.size() << " sprites! A-ha-ha-ha-ha... " << std::endl;
 		for( int i = 0, end = GLSprites.size(); i < end; ++i ){
 			if( GLSprites[i] == spr ){
@@ -386,27 +360,27 @@ void Graphics::FreeGLSprite( Sprite* spr )
 			}
 		}
 		delete spr;
-		spr = NULL;
-
 	}
 }
 
-void Graphics::FreeTextSprite( Sprite* spr )
+void Graphics::FreeTextSprite( Sprite** spr )
 {
-	if( !spr )
+	if( !spr || !(*spr) )
 		return;
-	for( map < font_data*, map< string, Texture* > > ::iterator it = CachedTexts.begin(), end = CachedTexts.end();
-			it != end; ++it ){
-		for( map< string, Texture* >::iterator vit = it->second.begin(), vend = it->second.end(); vit != vend; ++vit ){
-			if( vit->second == spr->tex ){
+	for( std::map < font_data*, std::map< string, Texture* > > ::iterator it = CachedTexts.begin(),
+			end = CachedTexts.end(); it != end; ++it ){
+		for( std::map< string, Texture* >::iterator vit = it->second.begin(), vend = it->second.end();
+				vit != vend; ++vit ){
+			if( vit->second == (*spr)->tex ){
 				it->second.erase(vit);
 				break;
 			}
 		}
 	}
-	FreeGLTexture( spr->tex );
-	FreeGLSprite( spr );
-	spr = NULL;
+	FreeGLTexture( (*spr)->tex );
+	(*spr)->tex = NULL;
+	FreeGLSprite( (*spr) );
+	*spr = NULL;
 }
 
 void Graphics::SetVertex( vertex3farr* v, float x, float y, float z, float width, float height, short centered )
@@ -469,20 +443,23 @@ void Graphics::LoadAnimation( string name, int rows, int cols, int width, int he
    }
 }
 
+void Graphics::MoveGlScene( float x, float y, float z )
+{
+	glTranslatef( x, y, z );
+}
+
 void Graphics::DrawGLScene()
 {
+	if( glIsList( MapListBase ) )
+		glCallList( MapListBase );
 	sort(GLSprites.begin(), GLSprites.end(), compareSprites);
 	for( vector<Sprite*>::iterator it = GLSprites.begin(), end = GLSprites.end(); it != end; ++it ){
 		if( (*it)->visible ){
-			if( !(*it)->fixed )
-				(*it)->setPosition(
-						(*it)->posx - YCamera::CameraControl.GetX(),
-						(*it)->posy - YCamera::CameraControl.GetY()
-				);
 			DrawGLTexture( (*it) );
 		}
 	}
-	glLoadIdentity();
+	//TODO: оно желательно по идее, нужен обходной костыль.
+	//glLoadIdentity();
 	SDL_GL_SwapBuffers();
 }
 
@@ -502,7 +479,7 @@ bool Graphics::SaveScreenshot( )
 
 	Screenshot::GenerateName( Filename );
 	if( Filename[0] == '\0' ){
-		debug(3, "Can not get screenshot name. Too many screenshots in folder.");
+		debug(3, "Can not get screenshot name. Too many screenshots in folder.\n");
 		return false;
 	}
 
@@ -543,7 +520,7 @@ Graphics::Graphics( ){
 
 Graphics::~Graphics( )
 {
-	for( map< string, vector<coord2farr*> >::iterator it = Animations.begin(), end = Animations.end();
+	for( std::map< string, vector<coord2farr*> >::iterator it = Animations.begin(), end = Animations.end();
 			it != end; ++it ){
 		for( vector<coord2farr*>::iterator vit = it->second.begin(), vend = it->second.end(); vit != vend; ++vit ){
 			delete (*vit);
@@ -551,22 +528,26 @@ Graphics::~Graphics( )
 		it->second.clear();
 	}
 	Animations.clear();
-	for( map< string, Texture* >::iterator it = LoadedGLTextures.begin(), end = LoadedGLTextures.end();
+	for( std::map< string, Texture* >::iterator it = LoadedGLTextures.begin(), end = LoadedGLTextures.end();
 			it != end; ++it ){
 		FreeGLTexture( it->second );
+		it->second = NULL;
 	}
 	LoadedGLTextures.clear();
-	for( map < font_data*, map< string, Texture* > > ::iterator it = CachedTexts.begin(), end = CachedTexts.end();
-			it != end; ++it ){
-		for( map< string, Texture* >::iterator vit = it->second.begin(), vend = it->second.end(); vit != vend; ++vit ){
-			FreeGLTexture(vit->second);
+	for( std::map < font_data*, std::map< string, Texture* > > ::iterator it = CachedTexts.begin(),
+			end = CachedTexts.end(); it != end; ++it ){
+		for( std::map< string, Texture* >::iterator vit = it->second.begin(), vend = it->second.end();
+				vit != vend; ++vit ){
+			FreeGLTexture( vit->second );
+			vit->second = NULL;
 		}
 		it->second.clear();
 	}
 	CachedTexts.clear();
-	for( map< string, map< int, font_data*> >::iterator it = LoadedFonts.begin(), end = LoadedFonts.end();
-			it != end; ++it ){
-		for( map< int, font_data*>::iterator vit = it->second.begin(), vend = it->second.end(); vit != vend; ++vit ){
+	for( std::map< string, std::map< int, font_data*> >::iterator it = LoadedFonts.begin(),
+			end = LoadedFonts.end(); it != end; ++it ){
+		for( std::map< int, font_data*>::iterator vit = it->second.begin(), vend = it->second.end();
+				vit != vend; ++vit ){
 			vit->second->clean();
 			delete vit->second;
 		}
@@ -582,12 +563,66 @@ void Graphics::AddGLTexture( Texture* texture, string name)
 
 Texture* Graphics::GetGLTexture( string name )
 {
-	map <string, Texture* >::iterator it;
+	std::map <string, Texture* >::iterator it;
 	it = LoadedGLTextures.find(name);
 	if( it != LoadedGLTextures.end() ){
 		return it->second;
 	}
 	return NULL;
+}
+
+void Graphics::DrawGLTexture( Texture* tex, vertex3farr* vertices, coord2farr* coordinates, Color* col, bool fixed)
+{
+	float offsetx, offsety;
+	offsetx = offsety = 0;
+	if( fixed ){
+		offsetx = -YCamera::CameraControl.GetX();
+		offsety = -YCamera::CameraControl.GetY();
+	}
+	if(tex && tex->texture){
+		glBindTexture( GL_TEXTURE_2D, *tex->texture );
+	}else{
+		glBindTexture( GL_TEXTURE_2D, 0 );
+	}
+	//Sprite color
+	glColor4ub( col->r, col->g, col->b, col->a );
+	if(coordinates){
+		glBegin( GL_QUADS );
+			//Bottom-left vertex (corner)
+			glTexCoord2f( coordinates->lb.x, coordinates->lb.y );
+			glVertex3f( vertices->lb.x - offsetx, vertices->lb.y - offsety, vertices->z );
+
+			//Bottom-right vertex (corner)
+			glTexCoord2f( coordinates->rb.x , coordinates->rb.y );
+			glVertex3f( vertices->rb.x - offsetx, vertices->rb.y - offsety, vertices->z );
+
+			//Top-right vertex (corner)
+			glTexCoord2f( coordinates->rt.x , coordinates->rt.y );
+			glVertex3f( vertices->rt.x - offsetx, vertices->rt.y - offsety, vertices->z );
+
+			//Top-left vertex (corner)
+			glTexCoord2f( coordinates->lt.x , coordinates->lt.y );
+			glVertex3f( vertices->lt.x - offsetx, vertices->lt.y - offsety, vertices->z );
+		glEnd();
+	}else{
+		glBegin( GL_QUADS ); //draw rectangle;
+			glVertex3f( vertices->lb.x - offsetx, vertices->lb.y - offsety, vertices->z ); //Bottom-left
+			glVertex3f( vertices->rb.x - offsetx, vertices->rb.y - offsety, vertices->z ); //Bottom-right
+			glVertex3f( vertices->rt.x - offsetx, vertices->rt.y - offsety, vertices->z ); //Top-right
+			glVertex3f( vertices->lt.x - offsetx, vertices->lt.y - offsety, vertices->z ); //Top-left
+		glEnd();
+	}
+}
+
+void Graphics::FreeGLTexture( Texture* tex )
+{
+	if( tex ){
+		if( tex->texture ){
+			glDeleteTextures( 1, tex->texture );
+			tex->texture = NULL;
+		}
+		delete tex;
+	}
 }
 
 coord2farr* Graphics::GetCoordinates(float x1, float y1, float x2, float y2,
@@ -636,7 +671,7 @@ coord2farr* Graphics::GetCoordinates(float x1, float y1, float x2, float y2,
 
 void Graphics::FreeCoordinates( coord2farr* coord )
 {
-	for( map< string, vector<coord2farr*> >::iterator it = Animations.begin(), end = Animations.end();
+	for( std::map< string, vector<coord2farr*> >::iterator it = Animations.begin(), end = Animations.end();
 			it != end; ++it ){
 		for( vector<coord2farr*>::iterator vit = it->second.begin(), vend = it->second.end(); vit != vend; ++vit ){
 			if( coord == (*vit) )
@@ -644,7 +679,6 @@ void Graphics::FreeCoordinates( coord2farr* coord )
 		}
 	}
 	delete coord;
-	coord = NULL;
 }
 
 vertex3farr* Graphics::GetVertex( float x, float y, float z, float width, float height, short centered )
@@ -670,6 +704,7 @@ void Graphics::SetTextTexture( Texture* tex, font_data* font, string text )
 {
 	if( CachedTexts.count(font) > 0  &&  CachedTexts[font].count(text) > 0 ){
 		FreeGLTexture( CachedTexts[font][text] );
+		CachedTexts[font][text] = NULL;
 	}
 	CachedTexts[font][text] = tex;
 }
@@ -710,11 +745,11 @@ SDL_Surface* Graphics::OpenImage( string filename )
     }
 
     if( ( optimizedImage->w & (optimizedImage->w - 1) ) != 0 ){
-    	debug(3, filename + " width is not a power of 2");
+    	debug(3, filename + " width is not a power of 2!\n");
     	return NULL;
     }
     if( (optimizedImage->h & (optimizedImage->h - 1) ) != 0 ){
-    	debug(3, filename + " height is not a power of 2");
+    	debug(3, filename + " height is not a power of 2!\n");
     	return NULL;
     }
 

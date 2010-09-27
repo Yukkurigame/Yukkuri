@@ -20,7 +20,8 @@ int main(int argc, char* argv[])  // <- this must match exactly, since SDL rewri
 
 void Yukkuri::AdditionalInit()
 {
-	//map.Init("map.map");
+	extern Map map;
+
 	debug( 1, "Additional Init\n" );
 
 	LuaScript* s = new LuaScript( );
@@ -30,6 +31,8 @@ void Yukkuri::AdditionalInit()
 	Bindings::bnd.setEngine( this );
 
 	Bindings::bnd.LoadKeys();
+
+	map.Init( );
 
 	daytime.loadInterface();
 
@@ -43,15 +46,21 @@ void Yukkuri::Think( const int& ElapsedTime )
 	// Do time-based calculations
 	units->tick( ElapsedTime );
 	daytime.update( ElapsedTime );
-	spawner.Spawn();
+	spawner.Spawn( );
 }
 
 void Yukkuri::Render( )
 {
+	extern Map map;
+
 	Graphics::Instance()->CleanGLScene( );
+
+	YCamera::CameraControl.Update( );
 
 	// Display slick graphics on screen
 	units->DrawUnits( );
+
+	map.Draw( );
 
 	daytime.draw( );
 

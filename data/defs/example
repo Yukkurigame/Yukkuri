@@ -6,9 +6,9 @@
 	{element1},
 	{element2},
 	{	
-		subelement1 = "value",
-		subelement2 = 3,
-		subelement3 = 24.5,
+		subelement1 = "value", --- string
+		subelement2 = 3, --- integer
+		subelement3 = 24.5, --- float
 		subelement4 = {
 			subsubelements
 		}
@@ -132,6 +132,44 @@
 			joyaxis10 = "up",
 			esc = "exit",
 		}
+	}
+}
+
+--- Map
+--- *.map
+{
+	"MapRegion",
+	{
+		name = "test", --- Name of region
+		tiles = { --- Map tiles
+			{
+				x = 1,
+				y = 1,
+				type = 2 --- Number - tile name. All Tiles 1 by default.
+			},
+			{
+				x = 1,
+				y = 2,
+				type = 1
+			}
+		}.
+	}
+}
+
+--- Map tiles
+--- *.map
+{
+	"Tiles",
+	{
+		name = 1, --- Number type of element 
+		image = "filename",
+		--- Left top corner offset of sprite in image.
+		offsetx = 1.0,
+		offsety = 1.0,
+		blocked = false,		
+	},
+	{
+		name = 2,
 	}
 }
 

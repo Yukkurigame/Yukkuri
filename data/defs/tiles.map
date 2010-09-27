@@ -1,0 +1,17 @@
+{
+	"Tiles",
+	{
+		name = 1,
+		image = "ground.png",
+		offsetx = 0,
+		offsety = 0,
+		blocked = false,
+	},
+	{
+		name = 2,
+		image = "ground.png",
+		offsetx = 64,
+		offsety = 0,
+		blocked = false,
+	}
+}

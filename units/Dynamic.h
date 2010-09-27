@@ -2,7 +2,6 @@
 #define DYNAMIC_UNIT_H
 
 #include "Animated.h"
-#include "stdlib.h"
 #include <map>
 #include <vector>
 

@@ -118,8 +118,8 @@ TextWidget::TextWidget( )
 
 TextWidget::~TextWidget( )
 {
-	graph->FreeTextSprite( TextSprite );
-	graph->FreeTextSprite( StaticTextSprite );
+	graph->FreeTextSprite( &TextSprite );
+	graph->FreeTextSprite( &StaticTextSprite );
 }
 
 bool TextWidget::create( string name, string text, int x, int y )

@@ -12,19 +12,21 @@ enum {
 class YCamera {
     public:
         YCamera();
-        
+
         static YCamera CameraControl;
-        
-        int TargetMode;
-        float GetX();
-        float GetY();
-        void OnMove(float MoveX, float MoveY);
-        void SetPos(float X, float Y);
-        void SetTarget(float* X, float* Y);
+
+        void Update();
+
+        float GetX( );
+        float GetY( );
+        void Move( float X, float Y );
+        void ChangeMode( int mode );
+        void SetTarget( float* X, float* Y );
 
     private:
-        float X;
-        float Y;
+        int TargetMode;
+        float posX;
+        float posY;
         float* TargetX;
         float* TargetY;
 };

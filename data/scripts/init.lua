@@ -1,4 +1,5 @@
 
+LoadAllConfigs("map")
 LoadAllConfigs("widget")
 LoadAllConfigs("entity")
 

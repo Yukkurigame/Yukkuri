@@ -17,6 +17,7 @@ struct MainConfig
 	float maxFrameRate;
 	float minFrameRate;
 	float widgetsPosZ;
+	int mapTileSize;
 	int dayLength;
 	int actionInterval;
 	int maxSpawn;

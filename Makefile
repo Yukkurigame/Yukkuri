@@ -18,7 +18,7 @@ GRAPHICS = Font.cpp Graphics.cpp Interface.cpp Widgets.cpp pngfuncs.c
 SCRIPTS = Lua.cpp Luaconfig.cpp LuaScript.cpp api.cpp
 
 
-SRCS =   main.cpp config.cpp engine.cpp Bindings.cpp Spawner.cpp\
+SRCS =   main.cpp config.cpp engine.cpp Bindings.cpp Spawner.cpp map.cpp\
          $(SCRIPTS) \
          $(UNITS) \
          $(GRAPHICS) \

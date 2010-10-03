@@ -46,8 +46,6 @@ class Config(dict):
         except KeyError:
             return ''
             #raise AttributeError(item)
-         
-
     def __setattr__(self, item, value):
         if self.__dict__.has_key(item):
             dict.__setattr__(self, item, value)

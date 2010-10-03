@@ -1,4 +1,5 @@
 
+LoadAllConfigs("tiles")
 LoadAllConfigs("map")
 LoadAllConfigs("widget")
 LoadAllConfigs("entity")

@@ -54,7 +54,7 @@
          <item>
           <widget class="QTabWidget" name="MainTabs">
            <property name="currentIndex">
-            <number>0</number>
+            <number>2</number>
            </property>
            <widget class="QWidget" name="EntityTab">
             <attribute name="title">
@@ -72,7 +72,7 @@
                   <item>
                    <widget class="QWidget" name="Name" native="true">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <layout class="QHBoxLayout" name="meeting_2">
                      <property name="margin">
@@ -1464,153 +1464,203 @@
               <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
              </property>
              <item row="0" column="0">
-              <widget class="QGroupBox" name="groupBox_7">
+              <widget class="QGroupBox" name="TilesMainBox">
                <property name="title">
                 <string>Main</string>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_15">
                 <item>
-                 <layout class="QHBoxLayout" name="Image_2">
-                  <item>
-                   <widget class="QLabel" name="label_6">
-                    <property name="text">
-                     <string>Image name:</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLineEdit" name="lineEdit_35"/>
-                  </item>
-                  <item>
-                   <widget class="QDialogButtonBox" name="buttonBox_4">
-                    <property name="maximumSize">
-                     <size>
-                      <width>75</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
-                    <property name="standardButtons">
-                     <set>QDialogButtonBox::Open</set>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
+                 <widget class="QWidget" name="Name_2" native="true">
+                  <layout class="QHBoxLayout" name="imgcols_3">
+                   <property name="margin">
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <widget class="QLabel" name="label_28">
+                     <property name="text">
+                      <string>Name:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_27">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_37">
+                     <property name="minimumSize">
+                      <size>
+                       <width>190</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>190</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                     <property name="inputMethodHints">
+                      <set>Qt::ImhDigitsOnly</set>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="imgcols_2">
-                  <item>
-                   <widget class="QLabel" name="label_24">
-                    <property name="text">
-                     <string>Name:</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <spacer name="horizontalSpacer_23">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                  <item>
-                   <widget class="QLineEdit" name="lineEdit_36">
-                    <property name="inputMethodHints">
-                     <set>Qt::ImhDigitsOnly</set>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
+                 <widget class="QWidget" name="Image_4" native="true">
+                  <layout class="QHBoxLayout" name="Image_2">
+                   <property name="margin">
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <widget class="QLabel" name="label_6">
+                     <property name="text">
+                      <string>Image name:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="lineEdit_35">
+                     <property name="maximumSize">
+                      <size>
+                       <width>190</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QDialogButtonBox" name="dialogButtonBox">
+                     <property name="maximumSize">
+                      <size>
+                       <width>75</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                     <property name="standardButtons">
+                      <set>QDialogButtonBox::Open</set>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="imgrows_2">
-                  <item>
-                   <widget class="QLabel" name="label_25">
-                    <property name="text">
-                     <string>Offset X:</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <spacer name="horizontalSpacer_24">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                  <item>
-                   <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
-                  </item>
-                 </layout>
+                 <widget class="QWidget" name="OffsetX" native="true">
+                  <layout class="QHBoxLayout" name="imgrows_2">
+                   <property name="margin">
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <widget class="QLabel" name="label_25">
+                     <property name="text">
+                      <string>Offset X:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_24">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item>
+                    <widget class="QDoubleSpinBox" name="TilesOffestXSpin"/>
+                   </item>
+                  </layout>
+                 </widget>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="height_2">
-                  <item>
-                   <widget class="QLabel" name="label_26">
-                    <property name="text">
-                     <string>Offset Y:</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <spacer name="horizontalSpacer_25">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                  <item>
-                   <widget class="QDoubleSpinBox" name="doubleSpinBox_2"/>
-                  </item>
-                 </layout>
+                 <widget class="QWidget" name="OffsetY" native="true">
+                  <layout class="QHBoxLayout" name="height_2">
+                   <property name="margin">
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <widget class="QLabel" name="label_26">
+                     <property name="text">
+                      <string>Offset Y:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_25">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item>
+                    <widget class="QDoubleSpinBox" name="TilesOffestYSpin"/>
+                   </item>
+                  </layout>
+                 </widget>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="width_2">
-                  <item>
-                   <widget class="QLabel" name="label_27">
-                    <property name="text">
-                     <string>Blocked:</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <spacer name="horizontalSpacer_26">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                  <item>
-                   <widget class="QCheckBox" name="checkBox">
-                    <property name="text">
-                     <string/>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
+                 <widget class="QWidget" name="Blocked" native="true">
+                  <layout class="QHBoxLayout" name="width_2">
+                   <property name="margin">
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <widget class="QLabel" name="label_27">
+                     <property name="text">
+                      <string>Blocked:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_26">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item>
+                    <widget class="QCheckBox" name="checkBox">
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="checked">
+                      <bool>false</bool>
+                     </property>
+                     <property name="tristate">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -1623,14 +1673,35 @@
                <layout class="QHBoxLayout" name="horizontalLayout_6">
                 <item>
                  <widget class="QLabel" name="TileImageViewer">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
                   <property name="minimumSize">
                    <size>
-                    <width>60</width>
-                    <height>60</height>
+                    <width>64</width>
+                    <height>64</height>
                    </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>128</width>
+                    <height>128</height>
+                   </size>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::NoFrame</enum>
                   </property>
                   <property name="text">
                    <string/>
+                  </property>
+                  <property name="scaledContents">
+                   <bool>false</bool>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                  <property name="indent">
+                   <number>0</number>
                   </property>
                  </widget>
                 </item>
@@ -1720,7 +1791,7 @@
       <item>
        <widget class="QDialogButtonBox" name="exitbox">
         <property name="standardButtons">
-         <set>QDialogButtonBox::Close|QDialogButtonBox::Save</set>
+         <set>QDialogButtonBox::Close|QDialogButtonBox::RestoreDefaults|QDialogButtonBox::Save</set>
         </property>
         <property name="centerButtons">
          <bool>false</bool>
@@ -1756,44 +1827,12 @@
    <slot>setText(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>294</x>
-     <y>83</y>
+     <x>271</x>
+     <y>73</y>
     </hint>
     <hint type="destinationlabel">
-     <x>288</x>
-     <y>142</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>doubleSpinBox</sender>
-   <signal>valueChanged(double)</signal>
-   <receiver>TileImageViewer</receiver>
-   <slot>setNum(double)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>480</x>
-     <y>170</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>545</x>
-     <y>169</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>doubleSpinBox_2</sender>
-   <signal>valueChanged(double)</signal>
-   <receiver>TileImageViewer</receiver>
-   <slot>setNum(double)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>476</x>
-     <y>200</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>551</x>
-     <y>197</y>
+     <x>289</x>
+     <y>139</y>
     </hint>
    </hints>
   </connection>

@@ -33,6 +33,8 @@ class SLPP:
             s += '"'+obj+'"'
         elif tp == 'int' or tp == 'float' or tp == 'long' or tp == 'complex':
             s += str(obj)
+        elif tp == 'bool':
+            s += str(obj).lower()
         elif tp == 'list' or tp == 'tuple':
             s += "{\n"
             self.depth += 1

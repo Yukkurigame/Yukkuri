@@ -12,6 +12,6 @@
 		image = "ground.png",
 		offsetx = 64,
 		offsety = 0,
-		blocked = false,
+		blocked = true,
 	}
 }

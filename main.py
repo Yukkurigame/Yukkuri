@@ -3,13 +3,11 @@ import os, sys
 from PyQt4 import QtCore,QtGui
 from map import *
 from Editor import Ui_Editor
+from framework import *
 from files import *
 import re
 
 tabsExtension = ['entity', 'widget', 'tiles', 'map']
-
-config = Config()
-lua = Lua()
 
 class Main(QtGui.QMainWindow):
     
@@ -17,11 +15,10 @@ class Main(QtGui.QMainWindow):
         QtGui.QMainWindow.__init__(self)        
         self.ui=Ui_Editor()
         self.ui.setupUi(self)        
-        self.__files = Files()
         self.__loadedConfig = []
         self.__loadedFile = ''
         self.__loadedElement = ''
-        self.__Map = MapWindow()
+        self.__Map = MapWindow(self)
         self.ReloadFolder(config.path)
         
         self.connect(self.ui.Image_3.children()[-1].children()[-1], QtCore.SIGNAL('clicked()'),
@@ -43,7 +40,7 @@ class Main(QtGui.QMainWindow):
         self.connect(self.ui.TilesOffestYSpin, QtCore.SIGNAL("valueChanged(double)"), self.ReloadTilesImage)
     
     def OpenFolder(self):
-        folder = self.__files.getFolder()
+        folder = filesManager.getFolder()
         folder = QtGui.QFileDialog.getExistingDirectory(self, 'Open folder', folder)
         self.ReloadFolder(folder)
     
@@ -55,33 +52,20 @@ class Main(QtGui.QMainWindow):
         self.ReloadTilesImage()
     
     def ReloadTilesImage(self):
-        image = self.CreatePixmap(self.GetField(self.GetWidget(self.ui.TilesMainBox, 'image')))
+        image = CreatePixmap(GetField(GetWidget(self.ui.TilesMainBox, 'image')),
+                            GetField(GetWidget(self.ui.TilesMainBox, 'offsetx')),
+                            GetField(GetWidget(self.ui.TilesMainBox, 'offsety')))
         if not image: return
-        x = self.GetField(self.GetWidget(self.ui.TilesMainBox, 'offsetx'))
-        y = self.GetField(self.GetWidget(self.ui.TilesMainBox, 'offsety'))
-        self.ShowImage(image, self.ui.TileImageViewer, [x, y, 64, 64])
+        ShowImage(image, self.ui.TileImageViewer)
 
     def OpenImage(self, element):
         name = os.path.basename(str(
-            QtGui.QFileDialog.getOpenFileName(self, 'Choose file', self.__files.getFolder())))
+            QtGui.QFileDialog.getOpenFileName(self, 'Choose file', filesManager.getFolder())))
         if not name: return
         element.setText(name)
     
-    def CreatePixmap(self, name):
-        if not name: return
-        image = QtGui.QPixmap()            
-        result = image.load(os.path.join(config.path, '..', 'images', name))
-        if not result: return
-        return image
-    
-    def ShowImage(self, image, target, rectangle = []):
-        if len(rectangle) > 3:
-            image = image.copy(*rectangle[:4])
-            target.resize(*rectangle[2:4])
-        target.setPixmap(image)
-    
     def ChangeEntityColor(self):
-        color = self.GetField(self.ui.Bloodcolor)
+        color = GetField(self.ui.Bloodcolor)
         try:
             color = map(lambda x: int(x), color)
             color = QtGui.QColor(*color)
@@ -98,13 +82,13 @@ class Main(QtGui.QMainWindow):
         if folder == '':
             return
         self.ui.FolderPlace.setText(folder)
-        self.__files.setFolder(folder)
+        filesManager.setFolder(folder)
         config.path = str(folder)
         self.ReloadFiles()
     
     def ReloadFiles(self):
         tabindex = self.ui.MainTabs.currentIndex()        
-        files = self.__files.getFilesList(tabsExtension[tabindex])
+        files = filesManager.getFilesList(tabsExtension[tabindex])
         self.ui.FilesList.clear()
         self.__loadedConfig = []
         self.__loadedFile = ''
@@ -127,7 +111,7 @@ class Main(QtGui.QMainWindow):
         if not item:
             return
         self.__loadedFile = str(item.text())
-        data = lua.load(os.path.join(config.path, str(item.text())))       
+        data = lua.load(os.path.join(config.path, str(item.text())))
         if len(data) < 2:
             return
         for i in range(1, len(data)):
@@ -153,49 +137,21 @@ class Main(QtGui.QMainWindow):
         self.__loadedElement = item
         for el in [self.ui.EntityMainBox, self.ui.EntityEntityBox, self.ui.EntityFeedBox,
                    self.ui.EntityMiscBox, self.ui.TilesMainBox]:
-            self.RefillFields(el, element)
+            RefillFields(el, element)
         if element.has_key('animation'):
-                self.RefillFields(self.ui.EntityAnimationBox, element['animation'])
+                RefillFields(self.ui.EntityAnimationBox, element['animation'])
         else: 
-                self.RefillFields(self.ui.EntityAnimationBox, {})
+                RefillFields(self.ui.EntityAnimationBox, {})
         if eltype == "Tiles" and element.has_key('image'):
             self.ReloadTilesImage()
         elif eltype == "MapRegion":
-            self.__Map.show()
+            self.__Map.LoadRegion(element)
+            
 
-    def RefillFields(self, element, data):
-        for e in filter(lambda x: type(x).__name__ == 'QWidget', element.children()):
-            name = str(e.objectName()).lower()
-            name = re.sub('_\d+$', '', name)
-            value = ''
-            for key in data.keys():
-                if key.lower() == name:
-                    value = data[key]
-            self.SetField(e, value)
-
-    def SetField(self, widget, data):
-        lines = filter(lambda x: type(x).__name__ in ['QLineEdit', 'QDoubleSpinBox', 'QCheckBox'],
-                        widget.children())
-        if len(lines):
-            if type(data).__name__ != 'list' and type(data).__name__ != 'tuple': data = [data]
-            for i in range(0, len(lines)):
-                ltype = type(lines[i]).__name__
-                field = ''
-                if i < len(data):
-                    field = data[i]
-                if ltype == 'QLineEdit':
-                    lines[i].setText(str(field))
-                elif ltype == 'QDoubleSpinBox':
-                    try: lines[i].setValue(float(field))
-                    except: pass
-                elif ltype == 'QCheckBox':
-                    if not field: field = False
-                    lines[i].setChecked(int(field))
-    
     def ClearFields(self):
         for el in [self.ui.EntityMainBox, self.ui.EntityEntityBox, self.ui.EntityFeedBox,
                    self.ui.EntityMiscBox, self.ui.EntityAnimationBox, self.ui.TilesMainBox]:
-            self.RefillFields(el, {})
+            RefillFields(el, {})
     
     def SaveFile(self):
         if not self.__loadedFile: return
@@ -206,14 +162,13 @@ class Main(QtGui.QMainWindow):
         boxes = self.GetBoxes(eltype)
         name = self.__loadedElement
         if not name: return
-        print data
         for el in range(1, len(data)):
             if type(data[el]).__name__ == 'dict' and data[el].has_key('name'):
                 if str(data[el]['name']).lower() == name.lower():
                     data[el] = {}
                     for box in boxes:
                         for child in box.children()[1:]:
-                            field = self.GetField(child)
+                            field = GetField(child)
                             if field:
                                 name = re.sub('_\d+$', '', str(child.objectName()).lower())
                                 if box.objectName() == "EntityAnimationBox":
@@ -242,34 +197,6 @@ class Main(QtGui.QMainWindow):
                 fields.append(el)
         return fields
 
-    def GetWidget(self, box, wname):
-        for child in box.children()[1:]:
-            name = re.sub('_\d+$', '', str(child.objectName()).lower())
-            if name == wname.lower():
-                return child
-    
-    def GetField(self, widget):
-        ret = []
-        lines = filter(lambda x: type(x).__name__ in ['QLineEdit', 'QDoubleSpinBox', 'QCheckBox'],
-                        widget.children())
-        for line in lines:
-            ltype = type(line).__name__
-            t = ''
-            if ltype == 'QLineEdit':
-                t = str(line.text())
-                if re.match("^\d+\.\d+$", t): t = float(t)
-                elif re.match("^\d+", t): t = int(t)
-            elif ltype == 'QDoubleSpinBox':
-                t = line.value()
-            elif ltype == 'QCheckBox':
-                t = bool(line.isChecked())
-            ret.append(t)
-        if len(ret) < 1:
-            return
-        if len(ret) < 2:
-            ret = ret[0]
-        return ret
-    
     def test(self):
         print 'ololo'            
 

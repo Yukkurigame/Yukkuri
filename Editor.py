@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Editor.ui'
 #
-# Created: Mon Oct  4 20:23:16 2010
+# Created: Tue Oct  5 23:47:41 2010
 #      by: PyQt4 UI code generator 4.7.7
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,8 @@ except AttributeError:
 class Ui_Editor(object):
     def setupUi(self, Editor):
         Editor.setObjectName(_fromUtf8("Editor"))
-        Editor.resize(830, 699)
+        Editor.resize(821, 667)
+        Editor.setAnimated(True)
         self.centralwidget = QtGui.QWidget(Editor)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.verticalLayout_4 = QtGui.QVBoxLayout(self.centralwidget)
@@ -637,22 +638,38 @@ class Ui_Editor(object):
         self.formLayout_2.setWidget(0, QtGui.QFormLayout.FieldRole, self.groupBox_8)
         self.MainTabs.addTab(self.MapTilesTab, _fromUtf8(""))
         self.MapTab = QtGui.QWidget()
+        self.MapTab.setAutoFillBackground(False)
         self.MapTab.setObjectName(_fromUtf8("MapTab"))
-        self.gridLayout = QtGui.QGridLayout(self.MapTab)
+        self.verticalLayout = QtGui.QVBoxLayout(self.MapTab)
+        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
+        self.MapElements = QtGui.QToolBox(self.MapTab)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.MapElements.sizePolicy().hasHeightForWidth())
+        self.MapElements.setSizePolicy(sizePolicy)
+        self.MapElements.setMinimumSize(QtCore.QSize(280, 0))
+        self.MapElements.setMaximumSize(QtCore.QSize(280, 16777215))
+        self.MapElements.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.MapElements.setAutoFillBackground(False)
+        self.MapElements.setStyleSheet(_fromUtf8("#MapElements::tab:selected { font: bold; height: 26px;} /* selected tab */\n"
+"#MapElements::tab:!selected { height: 26px;} /* non-selected tab */\n"
+"#MapElements{\n"
+"border: 0px transparent;\n"
+"}"))
+        self.MapElements.setFrameShape(QtGui.QFrame.NoFrame)
+        self.MapElements.setObjectName(_fromUtf8("MapElements"))
+        self.MapTilesPage = QtGui.QWidget()
+        self.MapTilesPage.setGeometry(QtCore.QRect(0, 0, 280, 422))
+        self.MapTilesPage.setObjectName(_fromUtf8("MapTilesPage"))
+        self.gridLayout = QtGui.QGridLayout(self.MapTilesPage)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        self.comboBox = QtGui.QComboBox(self.MapTab)
-        self.comboBox.setObjectName(_fromUtf8("comboBox"))
-        self.gridLayout.addWidget(self.comboBox, 0, 0, 1, 1)
-        self.groupBox_9 = QtGui.QGroupBox(self.MapTab)
-        self.groupBox_9.setObjectName(_fromUtf8("groupBox_9"))
-        self.horizontalLayout_7 = QtGui.QHBoxLayout(self.groupBox_9)
-        self.horizontalLayout_7.setObjectName(_fromUtf8("horizontalLayout_7"))
-        self.TileImageViewer_2 = QtGui.QLabel(self.groupBox_9)
-        self.TileImageViewer_2.setMinimumSize(QtCore.QSize(60, 60))
-        self.TileImageViewer_2.setText(_fromUtf8(""))
-        self.TileImageViewer_2.setObjectName(_fromUtf8("TileImageViewer_2"))
-        self.horizontalLayout_7.addWidget(self.TileImageViewer_2)
-        self.gridLayout.addWidget(self.groupBox_9, 1, 0, 1, 1)
+        self.MapElements.addItem(self.MapTilesPage, _fromUtf8(""))
+        self.MapObjectsPage = QtGui.QWidget()
+        self.MapObjectsPage.setGeometry(QtCore.QRect(0, 0, 100, 30))
+        self.MapObjectsPage.setObjectName(_fromUtf8("MapObjectsPage"))
+        self.MapElements.addItem(self.MapObjectsPage, _fromUtf8(""))
+        self.verticalLayout.addWidget(self.MapElements)
         self.MainTabs.addTab(self.MapTab, _fromUtf8(""))
         self.horizontalLayout_5.addWidget(self.MainTabs)
         self.horizontalLayout_3.addLayout(self.horizontalLayout_5)
@@ -684,7 +701,7 @@ class Ui_Editor(object):
         self.verticalLayout_4.addLayout(self.horizontalLayout_2)
         Editor.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(Editor)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 830, 20))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 821, 20))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         Editor.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(Editor)
@@ -692,8 +709,8 @@ class Ui_Editor(object):
         Editor.setStatusBar(self.statusbar)
 
         self.retranslateUi(Editor)
-        self.MainTabs.setCurrentIndex(2)
-        QtCore.QObject.connect(self.comboBox, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(QString)")), self.TileImageViewer_2.setText)
+        self.MainTabs.setCurrentIndex(3)
+        self.MapElements.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(Editor)
         Editor.setTabOrder(self.FolderPlace, self.exitbox)
 
@@ -736,7 +753,8 @@ class Ui_Editor(object):
         self.label_27.setText(QtGui.QApplication.translate("Editor", "Blocked:", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_8.setTitle(QtGui.QApplication.translate("Editor", "Preview", None, QtGui.QApplication.UnicodeUTF8))
         self.MainTabs.setTabText(self.MainTabs.indexOf(self.MapTilesTab), QtGui.QApplication.translate("Editor", "Tiles", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_9.setTitle(QtGui.QApplication.translate("Editor", "Preview", None, QtGui.QApplication.UnicodeUTF8))
+        self.MapElements.setItemText(self.MapElements.indexOf(self.MapTilesPage), QtGui.QApplication.translate("Editor", "Tiles", None, QtGui.QApplication.UnicodeUTF8))
+        self.MapElements.setItemText(self.MapElements.indexOf(self.MapObjectsPage), QtGui.QApplication.translate("Editor", "Objects", None, QtGui.QApplication.UnicodeUTF8))
         self.MainTabs.setTabText(self.MainTabs.indexOf(self.MapTab), QtGui.QApplication.translate("Editor", "Map", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("Editor", "Source files directory path:", None, QtGui.QApplication.UnicodeUTF8))
 

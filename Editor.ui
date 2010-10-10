@@ -6,12 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>830</width>
-    <height>699</height>
+    <width>821</width>
+    <height>667</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Yukkuri Editor</string>
+  </property>
+  <property name="animated">
+   <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -54,7 +57,7 @@
          <item>
           <widget class="QTabWidget" name="MainTabs">
            <property name="currentIndex">
-            <number>2</number>
+            <number>3</number>
            </property>
            <widget class="QWidget" name="EntityTab">
             <attribute name="title">
@@ -1711,33 +1714,79 @@
             </layout>
            </widget>
            <widget class="QWidget" name="MapTab">
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
             <attribute name="title">
              <string>Map</string>
             </attribute>
-            <layout class="QGridLayout" name="gridLayout">
-             <item row="0" column="0">
-              <widget class="QComboBox" name="comboBox"/>
-             </item>
-             <item row="1" column="0">
-              <widget class="QGroupBox" name="groupBox_9">
-               <property name="title">
-                <string>Preview</string>
+            <layout class="QVBoxLayout" name="verticalLayout">
+             <item>
+              <widget class="QToolBox" name="MapElements">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
                </property>
-               <layout class="QHBoxLayout" name="horizontalLayout_7">
-                <item>
-                 <widget class="QLabel" name="TileImageViewer_2">
-                  <property name="minimumSize">
-                   <size>
-                    <width>60</width>
-                    <height>60</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
+               <property name="minimumSize">
+                <size>
+                 <width>280</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>280</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="layoutDirection">
+                <enum>Qt::LeftToRight</enum>
+               </property>
+               <property name="autoFillBackground">
+                <bool>false</bool>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">#MapElements::tab:selected { font: bold; height: 26px;} /* selected tab */
+#MapElements::tab:!selected { height: 26px;} /* non-selected tab */
+#MapElements{
+border: 0px transparent;
+}</string>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::NoFrame</enum>
+               </property>
+               <property name="currentIndex">
+                <number>0</number>
+               </property>
+               <widget class="QWidget" name="MapTilesPage">
+                <property name="geometry">
+                 <rect>
+                  <x>0</x>
+                  <y>0</y>
+                  <width>280</width>
+                  <height>422</height>
+                 </rect>
+                </property>
+                <attribute name="label">
+                 <string>Tiles</string>
+                </attribute>
+                <layout class="QGridLayout" name="gridLayout"/>
+               </widget>
+               <widget class="QWidget" name="MapObjectsPage">
+                <property name="geometry">
+                 <rect>
+                  <x>0</x>
+                  <y>0</y>
+                  <width>100</width>
+                  <height>30</height>
+                 </rect>
+                </property>
+                <attribute name="label">
+                 <string>Objects</string>
+                </attribute>
+               </widget>
               </widget>
              </item>
             </layout>
@@ -1807,7 +1856,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>830</width>
+     <width>821</width>
      <height>20</height>
     </rect>
    </property>
@@ -1819,22 +1868,5 @@
   <tabstop>exitbox</tabstop>
  </tabstops>
  <resources/>
- <connections>
-  <connection>
-   <sender>comboBox</sender>
-   <signal>currentIndexChanged(QString)</signal>
-   <receiver>TileImageViewer_2</receiver>
-   <slot>setText(QString)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>271</x>
-     <y>73</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>289</x>
-     <y>139</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

@@ -62,6 +62,8 @@ class Lua:
     
     def dump(self, filename, data):
         text = SLPP().encode(data)
+        print text
+        return 
         if text:
             stream = file(filename, 'w')
             stream.write(text)
@@ -74,4 +76,7 @@ class Lua:
         stream.close()
         data = SLPP().decode(lf)
         return data
-         
+
+filesManager = Files()
+config = Config()
+lua = Lua()

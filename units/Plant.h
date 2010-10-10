@@ -18,19 +18,12 @@ public:
 
 	bool isEdible( ) { return true; }
 
-	float getNutritive( ) {
-		return nutritive;
-	}
-
 	void update( const int& );
 
 	void hit( float damage );
 
-	void setHP( float value ) { hp = value; }
-
 private:
-	float hp;
-	float nutritive;
+
 
 };
 

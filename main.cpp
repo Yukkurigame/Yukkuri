@@ -25,8 +25,10 @@ void Yukkuri::AdditionalInit()
 	debug( 1, "Additional Init\n" );
 
 	LuaScript* s = new LuaScript( );
-	if( !s->Init( ) || !s->OpenFile( "init" ) )
+	if( !s->Init( ) || !s->OpenFile( "init" ) ){
 		debug( 1, "Lua loading failed.\n" );
+		return;
+	}
 
 	Bindings::bnd.setEngine( this );
 
@@ -46,6 +48,7 @@ void Yukkuri::Think( const int& ElapsedTime )
 	// Do time-based calculations
 	units->tick( ElapsedTime );
 	daytime.update( ElapsedTime );
+	UI::yui.Update( );
 	spawner.Spawn( );
 }
 

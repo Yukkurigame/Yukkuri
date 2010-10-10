@@ -92,9 +92,26 @@ void Unit::setUnitSize( float size )
 	Image->resize( defs->width * Scale, defs->height * Scale );
 }
 
+void Unit::setUnitParameter( string name, float value )
+{
+	Parameters[name] = value;
+}
+
+void Unit::increaseUnitParameter( string name, float value )
+{
+	Parameters[name] += value;
+}
+
 void Unit::setUnitAnim( int num )
 {
 	Anim = num;
+}
+
+float* Unit::getUnitpParameter( string name )
+{
+	if( Parameters.count(name) > 0 )
+		return &Parameters[name];
+	return NULL;
 }
 
 bool Unit::setUnitImage( Sprite* image)

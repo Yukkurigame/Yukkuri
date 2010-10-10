@@ -31,6 +31,8 @@ public:
     void setUnitX( float x );
     void setUnitY( float y );
     void setUnitSize( float size );
+    void setUnitParameter( string name, float value );
+    void increaseUnitParameter( string name, float value = 1 );
 
     void setUnitAnim( int );
     int getUnitAnim() { return (const int)Anim; }
@@ -43,8 +45,10 @@ public:
     float getUnitX() { return (const float)X; }
     float getUnitY() { return (const float)Y; }
     float getUnitSize() { return Scale; }
+    float getUnitParameter( string name ) { return Parameters[name]; }
     float* getUnitpX() { return &X; }
     float* getUnitpY() { return &Y; }
+    float* getUnitpParameter( string name );
     string getUnitType() { return Type; }
     enum unitType geteUnitType() { return UnitType; }
 
@@ -55,7 +59,7 @@ public:
 
     inline Sprite* getUnitImage() {return Image;}
     bool setUnitImage( Sprite* );
-    string getUnitImageName( ) { return defs->imageName;  }
+    string getUnitImageName( ) { return defs->imageName; }
 
 
     int getUnitWidth() { return defs->width; }
@@ -65,10 +69,10 @@ public:
 
     virtual bool isEdible( ) { return false; }
     virtual void hit( float ) {};
-    virtual float getNutritive( ) { return 0; }
 
 protected:
     float X, Y, Z;
+    std::map < string, float > Parameters;
 
 private:
     unsigned int UnitId;

@@ -25,7 +25,10 @@ public:
 	void LoadAllWidgets();
 	Widget* LoadWidget( string name );
 
+	Widget* GetWidget( unsigned int id );
 	Widget* GetWidget( string name );
+
+	void Update( );
 
 
 private:

@@ -2,11 +2,12 @@
 
 UnitManager UnitManager::units;
 
+static unsigned int LastId = 1;
+
 UnitManager::UnitManager()
 {
 	graph = Graphics::Instance();
 	player = NULL;
-	LastId = 0;
 }
 
 UnitManager::~UnitManager()
@@ -135,8 +136,10 @@ Unit* UnitManager::closer( Unit* u, vector< string >* types, float limit )
 void UnitManager::tick( const int& dt )
 {
 	for( vector< Unit* >::iterator it = Units.begin(), end = Units.end(); it != end; ++it ){
+		if( !(*it) ) continue;
 		if( (*it)->isDeleted( ) ){
 			DeleteUnit( *it );
+			*it = NULL;
 			Units.erase( it );
 		}else{
 			(*it)->update( dt );
@@ -155,7 +158,7 @@ void UnitManager::grow( )
 Unit* UnitManager::GetUnit( unsigned int id )
 {
 	Unit* u = NULL;
-	if( id != 0 && id <= LastId ){
+	if( id > 0 && id <= LastId ){
 		for( vector< Unit* >::iterator it = Units.begin(), end = Units.end(); it != end; ++it ){
 			if( (*it)->getUnitId( ) == id ){
 				u = (*it);
@@ -168,10 +171,12 @@ Unit* UnitManager::GetUnit( unsigned int id )
 void UnitManager::DrawUnits( )
 {
 	Unit* u = NULL;
-	for (int i = 0; i < (int)Units.size(); i++) {
-		u = Units[i];
-		u->getUnitImage( )->setPosition( u->getUnitX( ), u->getUnitY( ) );
-		u->getUnitImage()->coordinates = graph->GetAnimation( u->getUnitName( ), u->getUnitAnim( ) );
+	for( vector< Unit* >::iterator it = Units.begin(), end = Units.end(); it != end; ++it ){
+		if( (*it) ){
+			u = (*it);
+			u->getUnitImage( )->setPosition( u->getUnitX( ), u->getUnitY( ) );
+			u->getUnitImage()->coordinates = graph->GetAnimation( u->getUnitName( ), u->getUnitAnim( ) );
+		}
 	}
 }
 

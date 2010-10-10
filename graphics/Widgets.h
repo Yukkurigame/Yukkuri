@@ -38,11 +38,20 @@ public:
 	void setZ( float z ){ PosZ = z * 0.1; }
 	float getZ( );
 
+	unsigned int getId() { return ID; }
+	void setId( unsigned int id ) {  ID = id; }
+
 	virtual void setParent( Widget* p );
 
+	int childrenCount() { return Children.size( ); }
+	void getChildren( Widget* children[], int size );
 	void addChild( Widget* child );
 
+	bool bindValue( float* val );
+
 	virtual void toggleVisibility( );
+
+	virtual void Update() {};
 
 	virtual void setFont( string, int ) {};
 	virtual void setFontColor( int r, int g, int b ) {};
@@ -63,7 +72,10 @@ protected:
 	float Width;
 	float Height;
 
+	float* Binded;
+
 private:
+	unsigned int ID;
 	string Name;
 	wType Type;
 	float PosZ;
@@ -124,6 +136,8 @@ public:
 	}
 
 	void setParent( Widget* p );
+
+	void Update();
 
 	void toggleVisibility( );
 

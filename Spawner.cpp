@@ -17,7 +17,7 @@ void Spawner::Spawn( )
 		DynamicUnit* u = dynamic_cast<DynamicUnit*>( UnitManager::units.CreateUnit( ENTITY, x, y ) );
 		DynamicUnit* p = dynamic_cast<DynamicUnit*>( UnitManager::units.GetPlayer( ) );
 		if( u && p )
-			u->levelUp( rand( ) % p->getLevel() + 3 );
+			u->levelUp( rand( ) % static_cast<int>(p->getUnitParameter("level")) + 3 );
 	}
 	if( UnitManager::units.GetUnitsSize(PLANT) < conf.maxEdibles ){
 		x = y = 0;

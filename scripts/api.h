@@ -16,6 +16,8 @@ namespace scriptApi
 
 	int CreateWidget( lua_State* L );
 	int LoadWidget( lua_State* L );
+	int BindWidget( lua_State* L );
+	int WidgetChildren( lua_State* L );
 
 	int CreateUnit( lua_State* L );
 	int DeleteUnit( lua_State* L );

@@ -21,6 +21,7 @@ Widget::Widget()
 	visible = true;
 	Parent = NULL;
 	background = NULL;
+	Binded = NULL;
 }
 
 Widget::~Widget()
@@ -90,6 +91,25 @@ void Widget::setParent( Widget* p )
 void Widget::addChild( Widget* child )
 {
 	Children.push_back( child );
+}
+
+/* This function needs memory allocation.
+ */
+void Widget::getChildren( Widget* children[], int size )
+{
+	for( int i = 0, vsz = Children.size(); i < vsz; ++i ){
+		if( i >= size ) break;
+		children[i] = Children[i];
+	}
+}
+
+bool Widget::bindValue( float* val )
+{
+	if( val ){
+		Binded = val;
+		return true;
+	}
+	return false;
 }
 
 void Widget::toggleVisibility( )
@@ -312,6 +332,14 @@ void BarWidget::setParent( Widget* p )
 	bar->setPosition( x + bardelta, y, getZ() );
 	if( top )
 		top->setPosition( x, y - barheight, getZ() + 0.01 );
+}
+
+void BarWidget::Update( )
+{
+	if( !Binded )
+		return;
+	if( (*Binded) != barvalue )
+		setBarValue(*Binded);
 }
 
 void BarWidget::toggleVisibility( )

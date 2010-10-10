@@ -21,26 +21,26 @@ void Entity::Die( )
 			corpse->setBloodColor( bcolor[0], bcolor[1], bcolor[2] );
 		else if( bcolor.size() >= 1 )
 			corpse->setBloodColor( bcolor[0] );
-		corpse->setHP( this->stat.hpMax * this->stat.fed / 2 );
+		corpse->setUnitParameter( "hp", getUnitParameter( "hpmax" ) * getUnitParameter( "fed" ) / 100 );
 		corpse->setUnitSize( this->getUnitSize( ) );
 	}
 	if( this->Attacked ){
-		this->Attacked->expChange( this->stat.hpMax / this->stat.level );
-		this->Attacked->killsChange(1);
+		this->Attacked->increaseUnitParameter( "exp", getUnitParameter( "hpmax" ) / getUnitParameter( "level" ) );
+		this->Attacked->increaseUnitParameter( "kills" );
 	}
 	this->Delete();
 }
 
 void Entity::update( const int& dt )
 {
-	if( stat.hp <= 0 ){
+	if( getUnitParameter( "hp" ) <= 0 ){
 		Die( );
 		return;
 	}
 	DynamicUnit::update( dt );
 	if( Attacked ){
 		float dst = dist(Attacked);
-		if( stat.hp * 3 <= stat.hpMax && dst < 500 ){ //Run away
+		if( getUnitParameter( "hp" ) * 3 <= getUnitParameter( "hpmax" ) && dst < 500 ){ //Run away
 			signed int px = (( Attacked->getUnitX() > this->X ) ? -1 : 1);
 			signed int py = (( Attacked->getUnitY() > this->Y ) ? -1 : 1);
 			setPathTarget( this->X + 500 * px, this->Y + 500 * py );

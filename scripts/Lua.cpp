@@ -41,7 +41,8 @@ bool LuaMain::OpenFile( string name )
 
 	result = luaL_loadfile( Lst, name.c_str() );
 	if( result ){
-		debug( 3, "Open " + name + " failed!\n" );
+		string e = lua_tostring( Lst, -1 );
+		debug( 3, "Open " + name + " failed " + e + "\n" );
 		return false;
 	}
 

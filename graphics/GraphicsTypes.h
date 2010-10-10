@@ -93,6 +93,7 @@ struct Sprite
 		centered = false;
 	}
 	void resize( float w, float h ){
+		if( !vertices ) return;
 		if( w >= 0 ){
 			vertices->rb.x = vertices->rt.x = vertices->lb.x + w;
 			width = w;
@@ -103,6 +104,7 @@ struct Sprite
 		}
 	}
 	void setPosition( float x, float y ){
+		if( !vertices ) return;
 		float width = vertices->rb.x - vertices->lb.x;
 		float height = vertices->rt.y - vertices->lb.y;
 		posx = x;
@@ -122,6 +124,7 @@ struct Sprite
 		}
 	}
 	void setPosition( float x, float y, float z ){
+		if( !vertices ) return;
 		setPosition( x, y );
 		vertices->z = z;
 	}

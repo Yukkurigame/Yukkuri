@@ -44,7 +44,6 @@ class UnitManager
         vector< Unit* > Units;
         std::map< enum unitType, int > Size;
         Unit* player;
-        unsigned int LastId;
 };
 
 #endif // UNITMANAGER_H

@@ -9,6 +9,8 @@
 
 UI UI::yui; // :3
 
+static unsigned int LastWidgetId = 1;
+
 UI::~UI( )
 {
 	for(std::vector< Widget* >::iterator it = widgets.begin(); it != widgets.end(); it++){
@@ -66,6 +68,8 @@ Widget* UI::LoadWidget( string name )
 		return NULL;
 	}
 
+	w->setId( LastWidgetId++ );
+
 	//Add in cache;
 	widgets.push_back(w);
 
@@ -82,6 +86,17 @@ Widget* UI::LoadWidget( string name )
 	return w;
 }
 
+Widget* UI::GetWidget( unsigned int id )
+{
+	if( id > 1 && id < LastWidgetId  ){
+		for (std::vector< Widget* >::iterator it=widgets.begin() ; it != widgets.end(); it++ ){
+			if( (*it)->getId( ) == id )
+				return (*it);
+		}
+	}
+	return NULL;
+}
+
 Widget* UI::GetWidget( string name )
 {
 	for (std::vector< Widget* >::iterator it=widgets.begin() ; it != widgets.end(); it++ ){
@@ -89,4 +104,11 @@ Widget* UI::GetWidget( string name )
 			return (*it);
 	}
 	return NULL;
+}
+
+void UI::Update( )
+{
+	for (std::vector< Widget* >::iterator it=widgets.begin() ; it != widgets.end(); it++ ){
+		(*it)->Update( );
+	}
 }

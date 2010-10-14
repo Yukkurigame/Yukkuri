@@ -13,21 +13,22 @@ class SLPP:
         if not text or type(text).__name__ != 'str': return
         text = re.sub('---.*$', '', text, 0, re.M)
         self.text = text
-        self.at, self.ch, self.depth = 0, '', 0        
+        self.at, self.ch, self.depth = 0, '', 0
         self.len = len(text)
         self.next_chr()
         result = self.value()
         if not result: return
         return result;
-    
+
     def encode(self, obj):
         if not obj: return
         self.depth = 0
         return self.__encode(obj)
-    
+
     def __encode(self, obj):
         s = ''
         tab = '\t'
+        newline = '\n'
         tp = type(obj).__name__
         if tp == 'str':
             s += '"'+obj+'"'
@@ -36,29 +37,32 @@ class SLPP:
         elif tp == 'bool':
             s += str(obj).lower()
         elif tp == 'list' or tp == 'tuple':
-            s += "{\n"
+            s += "{" + newline
             self.depth += 1
             for el in obj:
-                s += tab * self.depth + self.__encode(el) + ',\n'
+                s += tab * self.depth + self.__encode(el) + ',' + newline
             self.depth -= 1
             s += tab * self.depth + "}"
         elif tp == 'dict':
-            s += "{\n"
+            s += "{" + newline
             self.depth += 1
             for key in obj:
-                s += tab * self.depth + key + ' = ' + self.__encode(obj[key]) + ',\n'
+                #TODO: lua cannot into number keys. Add check.
+                if type(key).__name__ == 'int':
+                    s += tab * self.depth + self.__encode(obj[key]) + ',' + newline
+                else:
+                    s += tab * self.depth + key + ' = ' + self.__encode(obj[key]) + ',' + newline
             self.depth -= 1
             s += tab * self.depth + "}"
         return s
-            
-            
+
 
     def white(self):
         while self.ch:
             if self.ch == ' ' or self.ch == '\t':
                 self.next_chr()
             else:
-                break    
+                break
 
     def next_chr(self):
         if self.at >= self.len:
@@ -82,15 +86,16 @@ class SLPP:
             while self.next_chr():
                 if self.ch == '"':
                     self.next_chr()
-                    return s
+                    return str(s)
                 else:
                     s += self.ch
         print "Unexpected end of string while parsing Lua string"
 
     def object(self):
         o = {}
-        k = '' #my $k;
+        k = ''
         idx = 0
+        self.depth += 1
         self.next_chr()
         self.white()
         if self.ch and self.ch == '}':
@@ -99,8 +104,8 @@ class SLPP:
             return o #Exit here
         else:
             while self.ch:
+                self.white()
                 if self.ch == '{':
-                    self.depth += 1
                     o[idx] = self.object()
                     idx += 1
                     continue
@@ -131,7 +136,7 @@ class SLPP:
                         o[idx] = k
                         idx += 1
                         k = ''
-        print "Unexpected end of table while parsing Lua string" #Bad exit here
+        print "Unexpected end of table while parsing Lua string."#Bad exit here
 
     def word(self):
         s = ''
@@ -145,11 +150,11 @@ class SLPP:
                     return True
                 elif re.match('^false$', s, re.I):
                     return False
-                return s
+                return str(s)
 
     def number(self):
         n = ''
-        flt = False 
+        flt = False
         if self.ch == '-':
             n = '-'
             if not self.ch or not self.ch.isdigit():
@@ -165,7 +170,7 @@ class SLPP:
             self.next_chr()
             if not self.ch or not self.ch.isdigit():
                 print "Malformed number (no digits after decimal point)"
-                return n+'0' 
+                return n+'0'
             else:
                 n += self.ch
             while self.ch and self.ch.isdigit():

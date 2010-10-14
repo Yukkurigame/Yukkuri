@@ -166,17 +166,20 @@ class Main(QtGui.QMainWindow):
             if type(data[el]).__name__ == 'dict' and data[el].has_key('name'):
                 if str(data[el]['name']).lower() == name.lower():
                     data[el] = {}
-                    for box in boxes:
-                        for child in box.children()[1:]:
-                            field = GetField(child)
-                            if field:
-                                name = re.sub('_\d+$', '', str(child.objectName()).lower())
-                                if box.objectName() == "EntityAnimationBox":
-                                    if not data[el].has_key('animation'): data[el]['animation'] = {}
-                                    data[el]['animation'][name] = field
-                                else:
-                                    data[el][name] = field
-                    break
+                    if eltype == "MapRegion":
+                        data[el] = self.__Map.dump()
+                    else:
+                        for box in boxes:
+                            for child in box.children()[1:]:
+                                field = GetField(child)
+                                if field:
+                                    name = re.sub('_\d+$', '', str(child.objectName()).lower())
+                                    if box.objectName() == "EntityAnimationBox":
+                                        if not data[el].has_key('animation'): data[el]['animation'] = {}
+                                        data[el]['animation'][name] = field
+                                    else:
+                                        data[el][name] = field
+                        break
         lua.dump(os.path.join(config.path, self.__loadedFile), data)
         self.ReloadElements()
     

@@ -11,9 +11,9 @@ class Sprite:
         self.height = 0.0
         self.posx = 0.0
         self.posy = 0.0
-        self.visible = True        
+        self.visible = True
         self.centered = False
-    
+
     def resize(self, w, h):
         if not self.vertices: return
         if w >= 0:
@@ -76,9 +76,9 @@ class Color:
 def DrawGlSprite(sprite):
     vertices = sprite.vertices
     coordinates = sprite.coordinates
-    
+
     glBindTexture(GL_TEXTURE_2D, sprite.tex.texture)
-    
+
     glColor4ub(sprite.clr.r, sprite.clr.g, sprite.clr.b, sprite.clr.a)
     glBegin(GL_QUADS)
     glTexCoord2f(0.0, 0.0) 
@@ -92,7 +92,7 @@ def DrawGlSprite(sprite):
     glEnd()
     #if coordinates:
         #glBegin(GL_QUADS)
-        
+
         #Bottom-left vertex (corner)
         #glTexCoord2f(coordinates.lb.x, coordinates.lb.y)
         #glVertex3f( vertices.lb.x, vertices.lb.y, vertices.z)
@@ -108,7 +108,7 @@ def DrawGlSprite(sprite):
         #Top-left vertex (corner)
         #glTexCoord2f(coordinates.lt.x , coordinates.lt.y)
         #glVertex3f(vertices.lt.x, vertices.lt.y, vertices.z)
-        
+
         #glEnd()
     #else:
         #glBegin( GL_QUADS ) #draw rectangle
@@ -119,26 +119,26 @@ def DrawGlSprite(sprite):
         #glEnd()
 
 def CreateGLSprite(x, y, z, texX, texY, width, height, tex, centered = 1):
-    
+
     sprite = Sprite()
 
     sprite.vertices = GetVertex( x, y, z, width, height, centered )
     sprite.width = width
     sprite.height = height
     sprite.clr = Color()
-    
+
     sprite.coordinates = GetCoordinates(texX, texY, width, height, tex.w, tex.h)
     sprite.tex = tex
-    
+
     if centered: sprite.centered = True
-    
+
     return sprite
 
 def GetVertex(x, y, z, width, height, centered):
-    
+
     v = vertex3farr()
     xp, xm, yp, ym = 0, 0, 0, 0
-    
+
     if centered:
         halfwidth = width/2
         halfheight = height/2
@@ -161,19 +161,19 @@ def GetVertex(x, y, z, width, height, centered):
     v.rt.x = xp
     v.rt.y = yp
     v.z = z
-    
+
     return v
 
 def GetCoordinates(x1, y1, x2, y2, width, height):    
 
     if x1 == 0 and x2 == 0 and y1 == 0 and y2 == 0: return
     c = vertex3farr()
-    
+
     cx1 = x1 / width
     cx2 = ( x1 + x2 ) / width
     cy2 = y1 / height
     cy1 = ( y1 + y2 ) / height
-        
+
     c.lt.x = cx1
     c.lt.y = cy2
     c.lb.x = cx1
@@ -185,11 +185,11 @@ def GetCoordinates(x1, y1, x2, y2, width, height):
     return c
 
 def GetGLTexture(name):
-    
+
     if not name: return
 
     texture = None
-    
+
     if name in LoadedTextures:
         texture = LoadedTextures[name]
     else:
@@ -205,20 +205,20 @@ def GetGLTexture(name):
             # has no alpha channel, synthesize one, see the
             # texture module for more realistic handling
             image = im.tostring("raw", "RGBX", 0, -1)
-        
+
         tex = range(1)
         tex = glGenTextures(1)
         glBindTexture(GL_TEXTURE_2D, tex)   # 2d texture (x and y size)
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR) # scale linearly when image bigger than texture
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR) # scale linearly when image smalled than texture
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ix, iy, 0, GL_RGBA, GL_UNSIGNED_BYTE, image)
-                 
+
         texture.texture = tex
         texture.w = ix
         texture.h = iy
-        
+
         LoadedTextures[name] = texture
-        
+
     return texture
 
 LoadedTextures = {}

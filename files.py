@@ -3,27 +3,27 @@ import json
 from slpp import SLPP
 
 class Files:
-    
+
     def __init__(self):
         self.folder = ''
-    
+
     def setFolder(self, folder):
         self.folder = folder
-    
+
     def getFolder(self):
         if not self.folder:
             return ''
         return self.folder 
-    
+
     def getFilesList(self, extension=None):
         if not self.folder: return
         files = os.listdir(self.folder)
-        f = []        
+        f = []
         if extension:
             for name in files:
                 if name.rfind('.'+extension) == len(name) - len(extension) - 1:
                     f.append(name)
-        else:  f = files        
+        else:  f = files
         return f
 
 class Config(dict):
@@ -49,8 +49,8 @@ class Config(dict):
     def save(self):
         stream = file('config', 'w')
         json.dump(dict(self), stream)
-    
-    def load(self):        
+
+    def load(self):
         try: stream = file('config', 'rU')
         except: pass
         else:
@@ -59,17 +59,17 @@ class Config(dict):
                 setattr(self, key, d[key])
 
 class Lua:
-    
+
     def dump(self, filename, data):
         text = SLPP().encode(data)
-        print text
-        return 
+        #print text
+        #return
         if text:
             stream = file(filename, 'w')
             stream.write(text)
             stream.close()
 
-    def load(self, filename):        
+    def load(self, filename):
         try: stream = file(filename, 'rU')
         except: return
         lf = stream.read()

@@ -31,6 +31,9 @@ public:
 	Map();
 	bool Init( );
 
+	void toMapCoordinates( int* x, int* y);
+	void fromMapCoordinates( int* x, int* y);
+
 	MapTile* CreateTile( signed int x, signed int y );
 	void DeleteTile( signed int x, signed int y );
 	void DeleteTile( MapTile* tile );

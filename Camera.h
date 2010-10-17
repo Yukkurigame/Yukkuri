@@ -27,6 +27,8 @@ class YCamera {
         int TargetMode;
         float posX;
         float posY;
+        float offsetX;
+        float offsetY;
         float* TargetX;
         float* TargetY;
 };

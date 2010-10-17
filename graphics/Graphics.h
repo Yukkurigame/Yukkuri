@@ -1,8 +1,7 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
-#include "SDL/SDL_image.h"
-#include "SDL/SDL_opengl.h"
+#include "SDL/SDL.h"
 #include "GraphicsTypes.h"
 #include "Font.h"
 #include "Camera.h"
@@ -16,6 +15,12 @@ using std::vector;
 #include <string>
 using std::string;
 
+struct ViewPoint {
+	int x;
+	int y;
+	int z;
+	ViewPoint(): x(), y(), z() {};
+};
 
 class Graphics
 {
@@ -96,6 +101,7 @@ private:
 	coord2farr* GetCoordinates( float x1, float y1, float x2, float y2, float width, float height, short mirrored );
 	void FreeCoordinates( coord2farr* );
 
+	inline vertex3farr* GetVertex(  );
 	vertex3farr* GetVertex( float x, float y, float z, float width, float height, short centered );
 
 	Texture* GetTextTexture( font_data* font, string text );
@@ -115,6 +121,8 @@ private:
 	std::map < font_data*, std::map< string, Texture* > > CachedTexts;
 
 	GLuint MapListBase;
+
+	ViewPoint vpoint;
 };
 
 

@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include "config.h"
 #include "Graphics.h"
+#include <math.h>
 
 extern MainConfig conf;
 
@@ -15,6 +16,7 @@ YCamera::YCamera( )
 
 void YCamera::Update( )
 {
+	Graphics::Instance()->MoveGlScene( -floor( posX - offsetX ) , -floor( posY - offsetY ), 0 );
 	if( TargetX && TargetY ){
 		if( (*TargetX) != posX || (*TargetY) != posY ){
 			Move( posX - (*TargetX), posY - (*TargetY) );
@@ -46,19 +48,10 @@ float YCamera::GetY( )
 
 void YCamera::Move( float x, float y )
 {
+	float dx, dy;
+	dx = dy = 0;
 	posX -= x;
 	posY -= y;
-	Graphics::Instance()->MoveGlScene( x , y, 0 );
-	/*switch( TargetMode ){
-		case TARGET_MODE_CENTER:
-			//Graphics::Instance()->MoveGlScene( -1 , -1, 0 );
-			//Graphics::Instance()->MoveGlScene( -x + conf.windowWidth / 2 , -y + conf.windowHeight / 2, 0 );
-			break;
-		default:
-			//Graphics::Instance()->MoveGlScene( -x, -y, 0 );
-			break;
-	}*/
-
 }
 
 void YCamera::ChangeMode( int mode )
@@ -66,10 +59,14 @@ void YCamera::ChangeMode( int mode )
 	if( mode == TargetMode )
 		return;
 	TargetMode = mode;
-	//FIXME: Remove old mode before add new
 	switch( mode ){
 		case TARGET_MODE_CENTER:
-			Graphics::Instance()->MoveGlScene( conf.windowWidth / 2, conf.windowHeight / 2, 0 );
+			offsetX = conf.windowWidth >> 1;
+			offsetY = conf.windowHeight >> 1;
+			break;
+		case TARGET_MODE_NORMAL:
+			offsetX = offsetY = 0;
+			break;
 	}
 }
 

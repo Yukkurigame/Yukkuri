@@ -54,22 +54,25 @@ MapTile::MapTile( signed int x, signed int y ) {
 
 	posX = x;
 	posY = y;
+	s = NULL;
+	Blocked = false;
 
 	offsetx = offsety = 0;
 
 	TypeID = Region::GetTile( x, y );
-	sprintf( name, "%d", TypeID );
+	if( TypeID ){
+		sprintf( name, "%d", TypeID );
 
-	LuaConfig::Instance()->getValue( "image", name, "tiles", image );
-	LuaConfig::Instance()->getValue( "offsetx", name, "tiles", offsetx );
-	LuaConfig::Instance()->getValue( "offsety", name, "tiles", offsety );
-	LuaConfig::Instance()->getValue( "blocked", name, "tiles", Blocked );
-	s = Graphics::Instance()->CreateGLSprite(
-			round(x * conf.mapTileSize + ( ( y % 2 == 0 ) ? conf.mapTileSize/2 : 0 )),
-			round(y * conf.mapTileSize * 0.3), 0, offsetx, offsety,
-			conf.mapTileSize, conf.mapTileSize * 0.6,
-			Graphics::Instance()->LoadGLTexture( image ), 0, 0, 0 );
-	s->fixed = false;
+		LuaConfig::Instance()->getValue( "image", name, "tiles", image );
+		LuaConfig::Instance()->getValue( "offsetx", name, "tiles", offsetx );
+		LuaConfig::Instance()->getValue( "offsety", name, "tiles", offsety );
+		LuaConfig::Instance()->getValue( "blocked", name, "tiles", Blocked );
+
+		map.fromMapCoordinates( &x, &y );
+		s = Graphics::Instance()->CreateGLSprite( x, y, 0, offsetx, offsety,
+				conf.mapTileSize, conf.mapTileSize, Graphics::Instance()->LoadGLTexture( image ), 0, 1, 0 );
+		s->fixed = false;
+	}
 }
 
 MapTile::~MapTile( )
@@ -94,13 +97,26 @@ bool Map::Init( )
 	return true;
 }
 
+void Map::toMapCoordinates( int* x, int* y )
+{
+	//FIXME: static tile size
+	*x >>= 6;
+	*y = ( (*y) + 32 ) >> 4;
+}
+
+void Map::fromMapCoordinates( int* x, int* y )
+{
+	//FIXME: static tile size
+	*x = ( (*x) << 6 ) + ( ( (*y) & 1 ) << 5 );
+	*y = ( (*y) << 4 ) + 32;
+}
+
 MapTile* Map::CreateTile( signed int x, signed int y )
 {
 	MapTile* tile;
 	tile = GetTile(x, y);
-	if( tile ){
+	if( tile )
 		return tile;
-	}
 	tile = new MapTile( x, y );
 	Tiles[x][y] = tile;
 	TileSprites.push_back( tile->s );
@@ -189,10 +205,11 @@ void Map::Clean( )
 	int cx, cy;
 	cx = YCamera::CameraControl.GetX();
 	cy = YCamera::CameraControl.GetY();
+	toMapCoordinates( &cx, &cy );
 	for( std::map< signed int, std::map< signed int, MapTile* > >::iterator it = Tiles.begin(),
 			end = Tiles.end(); it != end; ++it ){
-		if( it->first > ( round( (cx + conf.windowWidth ) / conf.mapTileSize ) + 5 ) ||
-				it->first < ( round( (cx - conf.windowWidth / 2 ) / conf.mapTileSize ) ) ){
+		if( it->first > ( cx + ( conf.windowWidth >> 6 ) + 5 ) ||
+				it->first < ( cx - ( conf.windowWidth/2 >> 6 ) ) ){
 			for( std::map< signed int, MapTile* >::iterator vit = it->second.begin(), vend = it->second.end();
 								vit != vend; ++vit ){
 				DeleteTile( vit->second );
@@ -202,8 +219,8 @@ void Map::Clean( )
 		}else{
 			for( std::map< signed int, MapTile* >::iterator vit = it->second.begin(), vend = it->second.end();
 					vit != vend; ++vit ){
-				if( vit->first > ( round( ( cy + conf.windowHeight ) / ( conf.mapTileSize * 0.3 ) ) + 10 ) ||
-					vit->first < ( round( ( cy - conf.windowHeight*0.4 ) / (conf.mapTileSize * 0.3) ) - 10 ) ){
+				if( vit->first > ( cy + ( ( ( conf.windowHeight - 32 ) * 2) >> 5 ) + 5 ) ||
+					vit->first < cy - ( ( conf.windowHeight/2 + 32 ) >> 5 ) - 4 ){
 					DeleteTile( vit->second );
 					vit->second = NULL;
 				}
@@ -221,28 +238,29 @@ void Map::Draw( )
 	int cx, cy;
 	cx = YCamera::CameraControl.GetX();
 	cy = YCamera::CameraControl.GetY();
+	toMapCoordinates( &cx, &cy );
 	if( posX != cx || posY != cy ){
 		//TODO: cleaning in thread
-		if( posX < cx - conf.mapTileSize * 5 ){
-			CreateTilesRectangle( round( (cx + conf.windowWidth  ) / conf.mapTileSize ),
-					round( (cy + conf.windowHeight * 0.06 ) / ( conf.mapTileSize * 0.3 ) ) - 13,
-					5, conf.windowHeight / ( conf.mapTileSize * 0.3 ) + 26 );
+		if( posX < cx - 4 ){
+			CreateTilesRectangle( cx + ( conf.windowWidth >> 6 ),
+									cy - ( ( conf.windowHeight/2 + 32 ) >> 5 ),
+									6, ( ( conf.windowHeight + 32 ) >> 3 ) );
 			posX = cx;
-		}else if( posX > cx + conf.mapTileSize * 5 ){
-			CreateTilesRectangle( round( (cx - conf.windowWidth / 2 ) / conf.mapTileSize ),
-					round( (cy + conf.windowHeight * 0.06 ) / ( conf.mapTileSize * 0.3 ) ) - 13,
-					5, conf.windowHeight / ( conf.mapTileSize * 0.3 ) + 26 );
+		}else if( posX > cx + 4 ){
+			CreateTilesRectangle( cx - ( conf.windowWidth >> 7 ),
+									cy - ( ( conf.windowHeight/2 + 32 ) >> 5 ),
+									6, ( ( conf.windowHeight + 32 ) >> 3 ) );
 			posX = cx;
 		}
-		if( posY < cy - conf.mapTileSize * 2.5 ){
-			CreateTilesRectangle( round( cx / conf.mapTileSize ) - 6,
-					round( (cy + conf.windowHeight ) / ( conf.mapTileSize * 0.3 ) ),
-					conf.windowWidth / conf.mapTileSize + 12, 10);
+		if( posY < cy - 5 ){
+			CreateTilesRectangle( cx - ( conf.windowWidth >> 7 ),
+									cy + ( ( conf.windowHeight - 32 ) >> 4 ),
+									( conf.windowWidth >> 5 ), 6);
 			posY = cy;
-		}else if( posY > cy + conf.mapTileSize * 2.5 ){
-			CreateTilesRectangle( round( cx / conf.mapTileSize ) - 6,
-					round( (cy - conf.windowHeight * 0.4 ) / ( conf.mapTileSize * 0.3 ) ),
-					conf.windowWidth / conf.mapTileSize + 12, 10);
+		}else if( posY > cy + 5 ){
+			CreateTilesRectangle( cx - ( conf.windowWidth >> 7 ),
+									cy - ( ( conf.windowHeight/2 + 32 ) >> 5 ),
+									( conf.windowWidth >> 5 ), 6);
 			posY = cy;
 		}
 	}
@@ -255,3 +273,4 @@ void Map::Draw( )
 		Updated = false;
 	}
 }
+

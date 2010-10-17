@@ -1,4 +1,6 @@
 #include "Graphics.h"
+#include "SDL/SDL_image.h"
+#include "SDL/SDL_opengl.h"
 #include "pngfuncs.h"
 #include <algorithm>
 #include <iostream>
@@ -36,8 +38,12 @@ namespace Screenshot
 
 bool compareSprites( Sprite* s1, Sprite* s2 )
 {
-	if( s1->vertices->z == s2->vertices->z )
+	if( s1->vertices->z == s2->vertices->z ){
+		if( s1->posy == s2->posy ){
+			return ( s1->posx > s2->posx );
+		}
 		return ( s1->posy > s2->posy );
+	}
 	return ( s1->vertices->z < s2->vertices->z );
 }
 
@@ -88,6 +94,7 @@ void Graphics::openglSetup( int wwidth, int wheight )
 	glLoadIdentity();
 
 	glOrtho(0.0, wwidth, 0.0, wheight, -10.0, 1.0);
+	//glOrtho(-wwidth, wwidth*1.5, -wheight, wheight*1.5, -10.0, 1.0);
 
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
@@ -115,28 +122,33 @@ Texture* Graphics::LoadGLTexture( string name )
 		surface = LoadImage(name);
 
 		if( !surface ){
-			debug(3, name + " not loaded.\n");
+			debug( 3, name + " not loaded.\n" );
 			delete cached;
 			return NULL;
 		}
 
-		nOfColors = surface->format->BytesPerPixel;
-
-		if(nOfColors == 4){     // contains an alpha channel
-			if( surface->format->Rmask == 0x000000ff )
-				texture_format = GL_RGBA;
-			else
-				texture_format = GL_BGRA;
-		}else if( nOfColors == 3 ){     // no alpha channel
-			if (surface->format->Rmask == 0x000000ff)
-				texture_format = GL_RGB;
-			else
-				texture_format = GL_BGR;
+		if( surface->format->colorkey != 0 ){
+			//FIXME: Indexed images support.
+			debug( 1, "BIDA while loading " + name + "! Indexed images not supported yet!\n" );
+			texture_format = GL_COLOR_INDEX;
 		}else{
-			debug(3, name + " is not truecolor..  this will probably break.\n");
-			// this error should not go unhandled
-		}
+			nOfColors = surface->format->BytesPerPixel;
 
+			if( nOfColors == 4 ){     // contains an alpha channel
+				if( surface->format->Rmask == 0x000000ff )
+					texture_format = GL_RGBA;
+				else
+					texture_format = GL_BGRA;
+			}else if( nOfColors == 3 ){     // no alpha channel
+				if (surface->format->Rmask == 0x000000ff)
+					texture_format = GL_RGB;
+				else
+					texture_format = GL_BGR;
+			}else{
+				debug(3, name + " is not truecolor..  this will probably break.\n");
+				// this error should not go unhandled
+			}
+		}
 		cached->w = surface->w;
 		cached->h = surface->h;
 
@@ -287,14 +299,16 @@ Sprite* Graphics::CreateGLSprite( float x, float y, float z, float texX, float t
 						float height, Texture* tex, short mirrored, short centered,  short cached )
 {
 	Sprite* sprite;
-	vertex3farr* vertex;
 	coord2farr* coords;
 
 	sprite = new Sprite();
 
-	//TODO: use sprite interface
 	//get vertex
-	vertex = GetVertex( x, y, z, width, height, centered );
+	//sprite->vertices = GetVertex( x, y, z, width, height, centered );
+	sprite->vertices = GetVertex( );
+	sprite->resize( width, height );
+	sprite->setPosition( x, y, z );
+
 
 	if(tex){ //no image - no rectangle;
 		coords = GetCoordinates( texX, texY, width, height, tex->w, tex->h, mirrored);
@@ -306,8 +320,6 @@ Sprite* Graphics::CreateGLSprite( float x, float y, float z, float texX, float t
 		sprite->coordinates = NULL;
 		sprite->clr = new Color( );
 	}
-
-	sprite->vertices = vertex;
 
 	sprite->width = width;
 	sprite->height = height;
@@ -323,6 +335,7 @@ Sprite* Graphics::CreateGLSprite( float x, float y, float z, float texX, float t
 
 void Graphics::CreateGLSpriteList( vector<Sprite* >* sprites )
 {
+	sort( sprites->begin(), sprites->end(), compareSprites );
 	if( glIsList( MapListBase ) )
 		glDeleteLists( MapListBase, 1 );
 	MapListBase = glGenLists(1);
@@ -445,7 +458,11 @@ void Graphics::LoadAnimation( string name, int rows, int cols, int width, int he
 
 void Graphics::MoveGlScene( float x, float y, float z )
 {
-	glTranslatef( x, y, z );
+	//FIXME: double cast
+	vpoint.x = x;
+	vpoint.y = y;
+	vpoint.z = z;
+	glTranslatef( vpoint.x, vpoint.y, vpoint.z );
 }
 
 void Graphics::DrawGLScene()
@@ -458,8 +475,7 @@ void Graphics::DrawGLScene()
 			DrawGLTexture( (*it) );
 		}
 	}
-	//TODO: оно желательно по идее, нужен обходной костыль.
-	//glLoadIdentity();
+	glLoadIdentity();
 	SDL_GL_SwapBuffers();
 }
 
@@ -576,8 +592,8 @@ void Graphics::DrawGLTexture( Texture* tex, vertex3farr* vertices, coord2farr* c
 	float offsetx, offsety;
 	offsetx = offsety = 0;
 	if( fixed ){
-		offsetx = -YCamera::CameraControl.GetX();
-		offsety = -YCamera::CameraControl.GetY();
+		offsetx = vpoint.x;
+		offsety = vpoint.y;
 	}
 	if(tex && tex->texture){
 		glBindTexture( GL_TEXTURE_2D, *tex->texture );
@@ -681,10 +697,18 @@ void Graphics::FreeCoordinates( coord2farr* coord )
 	delete coord;
 }
 
-vertex3farr* Graphics::GetVertex( float x, float y, float z, float width, float height, short centered )
+inline vertex3farr* Graphics::GetVertex(  )
 {
 	vertex3farr* v;
 	v = new vertex3farr();
+
+	return v;
+}
+
+vertex3farr* Graphics::GetVertex( float x, float y, float z, float width, float height, short centered )
+{
+	vertex3farr* v;
+	v = GetVertex();
 
 	SetVertex( v, x, y, z, width, height, centered );
 

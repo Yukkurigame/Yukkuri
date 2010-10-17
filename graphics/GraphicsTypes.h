@@ -67,6 +67,7 @@ struct vertex3farr
 	s2f rt; //right-top
 	s2f rb; //right-bottom
 	float z;
+	vertex3farr(): z() {};
 };
 
 

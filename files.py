@@ -6,14 +6,25 @@ class Files:
 
     def __init__(self):
         self.folder = ''
-
+        self.last = ''
+    
+    #ororororororo
     def setFolder(self, folder):
         self.folder = folder
+        self.last = folder
+    
+    def setLast(self, folder):
+        self.last = folder
+    
+    def getLast(self):
+        if not self.last:
+            return ''
+        return self.last
 
     def getFolder(self):
         if not self.folder:
             return ''
-        return self.folder 
+        return self.folder
 
     def getFilesList(self, extension=None):
         if not self.folder: return

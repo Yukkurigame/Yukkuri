@@ -157,10 +157,10 @@ class SLPP:
         flt = False
         if self.ch == '-':
             n = '-'
-            if not self.ch or not self.ch.isdigit():
-                print "Malformed number (no digits after initial minus)"
-                return 0
             self.next_chr()
+            if not self.ch or not self.ch.isdigit():
+                print "Malformed number " + self.ch + "(no digits after initial minus)"
+                return 0
         while self.ch and self.ch.isdigit():
             n += self.ch
             self.next_chr()
@@ -169,7 +169,7 @@ class SLPP:
             flt = True
             self.next_chr()
             if not self.ch or not self.ch.isdigit():
-                print "Malformed number (no digits after decimal point)"
+                print "Malformed number " + self.ch + "(no digits after decimal point)"
                 return n+'0'
             else:
                 n += self.ch

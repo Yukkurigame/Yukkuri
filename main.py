@@ -40,8 +40,7 @@ class Main(QtGui.QMainWindow):
         self.connect(self.ui.TilesOffestYSpin, QtCore.SIGNAL("valueChanged(double)"), self.ReloadTilesImage)
     
     def OpenFolder(self):
-        folder = filesManager.getFolder()
-        folder = QtGui.QFileDialog.getExistingDirectory(self, 'Open folder', folder)
+        folder = QtGui.QFileDialog.getExistingDirectory(self, 'Open folder', filesManager.getLast())
         self.ReloadFolder(folder)
     
     def OpenEntityImage(self):
@@ -55,12 +54,14 @@ class Main(QtGui.QMainWindow):
         image = CreatePixmap(GetField(GetWidget(self.ui.TilesMainBox, 'image')),
                             GetField(GetWidget(self.ui.TilesMainBox, 'offsetx')),
                             GetField(GetWidget(self.ui.TilesMainBox, 'offsety')))
-        if not image: return
+        if not image:
+            self.ui.TileImageViewer.clear()
+            return
         ShowImage(image, self.ui.TileImageViewer)
 
     def OpenImage(self, element):
-        name = os.path.basename(str(
-            QtGui.QFileDialog.getOpenFileName(self, 'Choose file', filesManager.getFolder())))
+        path, name = os.path.split(str(QtGui.QFileDialog.getOpenFileName(self, 'Choose file', filesManager.getLast())))
+        filesManager.setLast(path)
         if not name: return
         element.setText(name)
     
@@ -106,7 +107,7 @@ class Main(QtGui.QMainWindow):
         self.__loadedConfig = []
         self.__loadedElement = ''
         self.ui.ItemsList.clear()
-        self.ClearFields()
+        #self.ClearFields()
         item = self.ui.FilesList.currentItem()
         if not item:
             return
@@ -149,6 +150,7 @@ class Main(QtGui.QMainWindow):
             
 
     def ClearFields(self):
+        self.ReloadTilesImage()
         for el in [self.ui.EntityMainBox, self.ui.EntityEntityBox, self.ui.EntityFeedBox,
                    self.ui.EntityMiscBox, self.ui.EntityAnimationBox, self.ui.TilesMainBox]:
             RefillFields(el, {})
@@ -160,28 +162,34 @@ class Main(QtGui.QMainWindow):
             return
         eltype = self.__loadedConfig[0]
         boxes = self.GetBoxes(eltype)
-        name = self.__loadedElement
-        if not name: return
+        globalname = self.__loadedElement
+        saved = {}
+        if eltype == "MapRegion":
+            saved = self.__Map.dump()
+        else:
+            for box in boxes:
+                for child in box.children()[1:]:
+                    field = GetField(child)
+                    if field:
+                        name = re.sub('_\d+$', '', str(child.objectName()).lower())
+                        if box.objectName() == "EntityAnimationBox":
+                            if not d.has_key('animation'): saved['animation'] = {}
+                            saved['animation'][name] = field
+                        else:
+                            saved[name] = field
+        if not saved.has_key('name'): return
+        if not globalname: globalname = str(saved['name'])  
         for el in range(1, len(data)):
             if type(data[el]).__name__ == 'dict' and data[el].has_key('name'):
-                if str(data[el]['name']).lower() == name.lower():
-                    data[el] = {}
-                    if eltype == "MapRegion":
-                        data[el] = self.__Map.dump()
-                    else:
-                        for box in boxes:
-                            for child in box.children()[1:]:
-                                field = GetField(child)
-                                if field:
-                                    name = re.sub('_\d+$', '', str(child.objectName()).lower())
-                                    if box.objectName() == "EntityAnimationBox":
-                                        if not data[el].has_key('animation'): data[el]['animation'] = {}
-                                        data[el]['animation'][name] = field
-                                    else:
-                                        data[el][name] = field
-                        break
+                if str(data[el]['name']).lower() == globalname.lower():
+                    data[el] = saved # Write to exists record
+                    saved = {} 
+                    break
+        if len(saved) > 0: # No record with such name. Add new
+            data.append(saved)
         lua.dump(os.path.join(config.path, self.__loadedFile), data)
         self.ReloadElements()
+        self.ReloadContent()
     
     def GetBoxes(self, eltype):
         fields = []

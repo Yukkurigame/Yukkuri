@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <string>
 
+//TODO: string to char*
 inline void debug( int level, std::string txt )
 {
 #ifdef DEBUG

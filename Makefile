@@ -15,7 +15,7 @@ CFLAGS= -g -Wall $(DEFINES)
 
 UNITS =  unitmanager.cpp unit.cpp Animated.cpp Plant.cpp Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp
 GRAPHICS = Font.cpp Graphics.cpp Interface.cpp Widgets.cpp pngfuncs.c
-SCRIPTS = Lua.cpp Luaconfig.cpp LuaScript.cpp api.cpp
+SCRIPTS = Lua.cpp Luaconfig.cpp LuaScript.cpp LuaThread.cpp api.cpp
 
 
 SRCS =   main.cpp config.cpp engine.cpp Bindings.cpp Spawner.cpp map.cpp\

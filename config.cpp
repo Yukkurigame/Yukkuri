@@ -30,6 +30,7 @@ bool MainConfig::load( )
 	lc->getValue( "widgets_z" , subconfig, config, widgetsPosZ );
 
 	lc->getValue( "map_tile_size" , subconfig, config, mapTileSize );
+	lc->getValue( "map_default_tile" , subconfig, config, mapDefaultTile );
 	lc->getValue( "day_length" , subconfig, config, dayLength );
 	lc->getValue( "action_interval" , subconfig, config, actionInterval );
 	lc->getValue( "max_spawn" , subconfig, config, maxSpawn );

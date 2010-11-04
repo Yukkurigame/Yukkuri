@@ -71,7 +71,7 @@ void Graphics::openglSetup( int wwidth, int wheight )
 
 	glViewport( 0, 0, wwidth, wheight );
 
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	glClear( GL_COLOR_BUFFER_BIT ); // | GL_DEPTH_BUFFER_BIT );
 
 	glTranslatef(0.0f, 0.0f, 6.0f);
 
@@ -127,11 +127,11 @@ Texture* Graphics::LoadGLTexture( string name )
 			return NULL;
 		}
 
-		if( surface->format->colorkey != 0 ){
+		/*if( surface->format->colorkey != 0 ){
 			//FIXME: Indexed images support.
 			debug( 1, "BIDA while loading " + name + "! Indexed images not supported yet!\n" );
 			texture_format = GL_COLOR_INDEX;
-		}else{
+		}else{*/
 			nOfColors = surface->format->BytesPerPixel;
 
 			if( nOfColors == 4 ){     // contains an alpha channel
@@ -148,7 +148,7 @@ Texture* Graphics::LoadGLTexture( string name )
 				debug(3, name + " is not truecolor..  this will probably break.\n");
 				// this error should not go unhandled
 			}
-		}
+		//}
 		cached->w = surface->w;
 		cached->h = surface->h;
 
@@ -340,6 +340,7 @@ void Graphics::CreateGLSpriteList( vector<Sprite* >* sprites )
 		glDeleteLists( MapListBase, 1 );
 	MapListBase = glGenLists(1);
 	glNewList( MapListBase, GL_COMPILE );
+		//TODO: try GL_QUAD_STRIP
 		for( vector<Sprite*>::iterator it = sprites->begin(), end = sprites->end(); it != end; ++it ){
 			DrawGLTexture( *it );
 		}
@@ -376,6 +377,7 @@ void Graphics::FreeGLSprite( Sprite* spr )
 	}
 }
 
+//FIXME: WTF?
 void Graphics::FreeTextSprite( Sprite** spr )
 {
 	if( !spr || !(*spr) )
@@ -550,7 +552,7 @@ Graphics::~Graphics( )
 		it->second = NULL;
 	}
 	LoadedGLTextures.clear();
-	for( std::map < font_data*, std::map< string, Texture* > > ::iterator it = CachedTexts.begin(),
+	for( std::map < font_data*, std::map< string, Texture* > >::iterator it = CachedTexts.begin(),
 			end = CachedTexts.end(); it != end; ++it ){
 		for( std::map< string, Texture* >::iterator vit = it->second.begin(), vend = it->second.end();
 				vit != vend; ++vit ){
@@ -757,26 +759,21 @@ SDL_Surface* Graphics::OpenImage( string filename )
     loadedImage = IMG_Load( filename.c_str() );
 
     if( loadedImage != NULL ){
-        if( loadedImage->format->Amask ) {
-            optimizedImage = SDL_DisplayFormatAlpha( loadedImage );
-        } else {
-            optimizedImage = SDL_DisplayFormat( loadedImage );
+        if( ( loadedImage->w & (loadedImage->w - 1) ) != 0 ){
+        	debug(3, filename + " width is not a power of 2!\n");
+        }else if( (loadedImage->h & (loadedImage->h - 1) ) != 0 ){
+        	debug(3, filename + " height is not a power of 2!\n");
+        }else{
+        	//FIXME: no-alpha images
+        	if( loadedImage->format->Amask )
+        		optimizedImage = SDL_DisplayFormatAlpha( loadedImage );
+        	else
+        		optimizedImage = SDL_DisplayFormatAlpha( loadedImage );
         }
         SDL_FreeSurface( loadedImage );
     }else{
     	debug(3, "Could not load " + filename + "\n" );
-        return NULL;
     }
-
-    if( ( optimizedImage->w & (optimizedImage->w - 1) ) != 0 ){
-    	debug(3, filename + " width is not a power of 2!\n");
-    	return NULL;
-    }
-    if( (optimizedImage->h & (optimizedImage->h - 1) ) != 0 ){
-    	debug(3, filename + " height is not a power of 2!\n");
-    	return NULL;
-    }
-
     return optimizedImage;
 }
 

@@ -16,6 +16,9 @@ using std::string;
 
 enum wType { NONE = 0, BLANK, TEXT, BAR};
 
+enum wAlign { LEFT = 1, CENTER, RIGHT };
+enum wVAlign { TOP = 1, BOTTOM = 3 };
+
 class Widget
 {
 public:
@@ -35,6 +38,9 @@ public:
 	float getHeight( ){ return Height; }
 	float getWidth( ){ return Width; }
 
+	void resize( float w, float h );
+	virtual void updatePosition( );
+
 	void setZ( float z ){ PosZ = z * 0.1; }
 	float getZ( );
 
@@ -49,9 +55,10 @@ public:
 
 	bool bindValue( float* val );
 
-	virtual void toggleVisibility( );
-
+	//FIXME: to many virtual funcs
 	virtual void Update() {};
+
+	virtual void toggleVisibility( );
 
 	virtual void setFont( string, int ) {};
 	virtual void setFontColor( int r, int g, int b ) {};
@@ -59,7 +66,7 @@ public:
 	virtual void setTextPosition( float, float ) {};
 
 	virtual void createBar( string name, int* ) {};
-	virtual void setBarSize( int size ) {};
+	virtual void setBarSize( float size ) {};
 	virtual void setBarValue( int val ) {};
 
 protected:
@@ -69,6 +76,8 @@ protected:
 
 	float PosX;
 	float PosY;
+	float OffsetX;
+	float OffsetY;
 	float Width;
 	float Height;
 
@@ -78,6 +87,8 @@ private:
 	unsigned int ID;
 	string Name;
 	wType Type;
+	int Align;
+	int VAlign; //FIXME: two align is bad?
 	float PosZ;
 	Widget* Parent;
 	std::vector<Widget*> Children;
@@ -92,14 +103,16 @@ public:
 	bool create( string name, string text, int x=0, int y=0 );
 	bool load( string config );
 
-	void setParent( Widget* p );
+	void updatePosition( );
 
 	void setFont( string name, int size ){ FontName = name; FontSize = size; }
 	void setFontColor( int r, int g, int b );
 	void setText( string text );
 	void setTextPosition( float x, float y );
-	float getTextX( ){ return textx; }
-	float getTextY( ){ return texty; }
+	float getTextX( ){ return TextX; }
+	float getTextY( ){ return TextY; }
+
+	void Update();
 
 	void toggleVisibility( );
 
@@ -107,15 +120,15 @@ protected:
 	string AddText;
 
 private:
-
-	void textPosition( float x, float y );
-
 	Sprite* StaticTextSprite;
 	Sprite* TextSprite;
-	float textx, texty;
+	float TextX, TextY;
+	int TextAlign;
 	string Text;
 	string FontName;
 	int FontSize;
+
+	float BindedCache;
 };
 
 class BarWidget: public TextWidget
@@ -127,30 +140,28 @@ public:
 	bool load( string config );
 
 	void createBar( string name, int* position );
-	void setBarValue( int size );
-	void setBarSize( int val ){
-		if( val > 0 )
-			barmaxvalue = val;
-		else
-			barmaxvalue = 1;
-	}
+	void setBarValue( float val );
+	void setBarSize( float val );
 
-	void setParent( Widget* p );
+	void updatePosition( );
+
+	bool bindBarMaxValue( float* val );
 
 	void Update();
 
 	void toggleVisibility( );
 
 protected:
-	Sprite* bar;
-	int barcolor[3];
-	Sprite* top;
+	Sprite* BarSprite;
+	Sprite* TopSprite;
 
 private:
-	int barvalue;
-	int barmaxvalue; // in units
-	float barstartx;
-	float barwidth; // in pixels
+	float BarX, BarY;
+	float BarValue;
+	float BarMaxValue; // in units
+	float BarWidth; // in pixels
+
+	float* BindedMaxValue;
 };
 
 

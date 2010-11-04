@@ -19,8 +19,10 @@ struct MapTile
 	int TypeID;
 	signed int posX;
 	signed int posY;
-	bool Blocked;
-	Sprite* s;
+	float Passability;
+	bool Backing;
+	Sprite* Image;
+	Sprite* BackImage;
 	MapTile( signed int x, signed int y );
 	~MapTile();
 };
@@ -47,6 +49,7 @@ public:
 	void CreateTilesRectangle( signed int startx, signed int starty, int numberx, int numbery );
 	void DeleteTilesRectangle( signed int startx, signed int starty, int numberx, int numbery );
 
+	MapTile* GetTile( float x, float y );
 	MapTile* GetTile( signed int x, signed int y );
 
 	void Clean( );

@@ -8,9 +8,9 @@
 #define LUA_H_
 
 extern "C" {
-# include "lua.h"
-# include "lauxlib.h"
-# include "lualib.h"
+	#include "lua.h"
+	#include "lauxlib.h"
+	#include "lualib.h"
 }
 
 #include <map>
@@ -115,7 +115,7 @@ public:
 	}
 
 protected:
-	lua_State *Lst;
+	lua_State* Lst;
 };
 
 

@@ -17,11 +17,6 @@ public:
 
     void moveUnit( short axis, signed int val );
     void update( const int& );
-    void attack( );
-    void eat( );
-    void grow( );
-
-    void levelUp( int addlevel );
 
     //TODO: Это все вообще бы в луа перенести.
     void toggleInterface( );

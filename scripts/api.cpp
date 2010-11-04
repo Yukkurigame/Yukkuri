@@ -8,6 +8,21 @@
 #include "Interface.h"
 #include "Luaconfig.h"
 #include "unitmanager.h"
+#include "LuaThread.h"
+
+int scriptApi::Debug( lua_State* L )
+{
+	int level;
+	string str;
+	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Debug level expected." );
+	luaL_argcheck( L, lua_isstring( L, 2 ), 2, "Debug string expected." );
+
+	level = lua_tonumber( L, 1 );
+	str = lua_tostring( L, 2 );
+	debug( level, str );
+	lua_pop( L, lua_gettop( L ) );
+	return 0;
+}
 
 int scriptApi::LoadConfig( lua_State* L )
 {
@@ -82,6 +97,31 @@ int scriptApi::BindWidget( lua_State* L )
 	return 1;
 }
 
+int scriptApi::BindWidgetMaxBar( lua_State* L )
+{
+	BarWidget* w;
+	Unit* u;
+	string param;
+	bool result;
+
+	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Widget id not given." );
+	luaL_argcheck( L, lua_isnumber( L, 2 ), 2, "Unit id not given." );
+	luaL_argcheck( L, lua_isstring( L, 3 ), 3, "Parameter not given." );
+
+	result = false;
+
+	w = dynamic_cast<BarWidget*>( UI::yui.GetWidget( lua_tonumber( L, 1 ) ) );
+	if( w ){
+		u = UnitManager::units.GetUnit( lua_tonumber( L, 2 ) );
+		param = lua_tostring( L, 3 );
+		if( u && param != "" )
+			result = w->bindBarMaxValue( u->getUnitpParameter( param ) );
+	}
+	lua_pop( L, lua_gettop( L ) );
+	lua_pushboolean( L, result );
+	return 1;
+}
+
 int scriptApi::WidgetChildren( lua_State* L )
 {
 	Widget* w;
@@ -107,6 +147,37 @@ int scriptApi::WidgetChildren( lua_State* L )
 		lua_pushboolean( L, false );
 	}
 	return 1;
+}
+
+int scriptApi::GetWidgetName( lua_State* L )
+{
+	Widget* w;
+
+	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Widget id expected." );
+
+	w = UI::yui.GetWidget( lua_tonumber( L, 1 ) );
+	lua_pop( L, lua_gettop( L ) );
+	if( w ){
+		lua_pushstring( L, w->getName().c_str() );
+	}else{
+		lua_pushnil( L );
+	}
+	return 1;
+}
+
+int scriptApi::WidgetSetBarSize( lua_State* L )
+{
+	Widget* w;
+
+	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Widget id not given." );
+	luaL_argcheck( L, lua_isnumber( L, 2 ), 2, "Bar maximum value expected." );
+
+	w = UI::yui.GetWidget( lua_tonumber( L, 1 ) );
+	if( w )
+		w->setBarSize( lua_tonumber( L, 2 ) );
+	lua_pop( L, lua_gettop( L ) );
+
+	return 0;
 }
 
 int scriptApi::CreateUnit( lua_State* L )
@@ -149,3 +220,38 @@ int scriptApi::DeleteUnit( lua_State* L )
 
 	return 1;
 }
+
+int scriptApi::NewThread( lua_State* L )
+{
+	luaL_argcheck(L, lua_isfunction(L, 1), 1, "Function expected.");
+	luaL_argcheck(L, lua_isboolean(L, 2) || lua_isnoneornil(L, 2), 2, "Boolean or none expected.");
+	threadsManager::NewThread(L);
+	return 1;
+}
+
+int scriptApi::ThreadWait( lua_State* L )
+{
+	return threadsManager::ThreadWait( L );
+}
+
+int scriptApi::ResumeThread( lua_State* L )
+{
+	return threadsManager::ResumeThread( L );
+}
+
+int scriptApi::RemoveThread(lua_State* L)
+{
+	unsigned int tid;
+	luaL_argcheck( L, lua_isthread(L, 1), 1, "Thread expected" );
+	lua_State* t = lua_tothread( L, 1 );
+	tid = threadsManager::GetThread( t );
+	if( tid > 0 ){
+		lua_pushboolean( L, threadsManager::RemoveThread( tid ) );
+		return 1;
+	}else{
+		lua_pushboolean( L, 0 );
+		lua_pushstring( L, "Thread is not registered" );
+		return 2;
+	}
+}
+

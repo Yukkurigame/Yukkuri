@@ -143,7 +143,7 @@ void font_data::size( float* w, float* h, const char* str )
 	if( w )
 		(*w) = swidth;
 	if( h )
-		(*h) = (lineheight + lineheight/4) * nlines  + 1;
+		(*h) = ( lineheight + lineheight/4 ) * ( nlines - 1 );
 }
 
 void font_data::print( Texture* tex, float* sw, float* sh, const char* str )
@@ -183,7 +183,8 @@ void font_data::print( Texture* tex, float* sw, float* sh, const char* str )
 		token = strtok(NULL, "\n");
 	}
 
-	sheight = (lineheight + lineheight/4) * lines.size() + 1 ;
+	sheight = ( lineheight + lineheight/4 ) * lines.size();
+
 
 	(*sw) = swidth;
 	(*sh) = sheight;

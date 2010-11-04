@@ -1,6 +1,7 @@
 #include "Dynamic.h"
+#include "map.h"
 #include <math.h>
-
+#include "unitmanager.h"
 
 DynamicUnit::DynamicUnit()
 {
@@ -15,6 +16,7 @@ DynamicUnit::DynamicUnit()
 	Parameters["damage"] = 3;
 	Parameters["level"] = 1;
 	Parameters["speed"] = 80;
+	Parameters["days"] = 0;
 
 	//FIXME: get it from config
 	FoodTypes.push_back( "plant" );
@@ -47,15 +49,21 @@ bool DynamicUnit::loadAnimation()
 **/
 void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 {
-	if( x != 0 || y != 0 )
-	{
+	if( x != 0 || y != 0 ){
+		//char d[30];
+		//extern Map map;
+		float zone = 1.0;
 		float l = sqrt( x * x  +  y * y );
-		//	speed = abs(self.dfn.speed * self.fed * 2) #(self.dfn.speed * self.world.map.speed(self.x, self.y))
-		float speed = fabs( Parameters["speed"] * Parameters["fed"] ) * ( dt / 100000.0 ) / l;
-		if( speed < 0.05f )
-			speed = 0.05f;
+		float speed = fabs( Parameters["speed"] * Parameters["fed"] ) * zone * ( dt / 100000.0 ) / l;
 		float dx = speed * x;// / l;
-		float dy = speed * y;// / l;
+		float dy = speed * y ;// / l;
+		//MapTile* tile = map.GetTile( X + dx * x, Y + dy * y );
+		//if(tile) zone = tile->Passability;
+		//if(zone == 0) zone = 0.05;
+		//sprintf(d, "%f:%f %d:%d %f\n", X, Y, tile->posX, tile->posY, zone);
+		//debug(0, d);
+		//dx *= zone;
+		//dy *= zone;
 		float distance = sqrt( dx * dx + dy * dy );
 		TotalDistance += distance;
 		if( dx < 0 && dy > 0 ) 			//FUUUU
@@ -86,6 +94,14 @@ void DynamicUnit::grow( )
 {
 	++Parameters["days"];
 	Parameters["exp"] += 10 * Parameters["level"];
+}
+
+void DynamicUnit::eat( )
+{
+	Unit* victim = NULL;
+	victim = UnitManager::units.closer( this, &FoodTypes );
+	if( victim )
+		eat( victim );
 }
 
 void DynamicUnit::eat( Unit* victim )
@@ -170,6 +186,14 @@ void DynamicUnit::takeAction( )
 			Attacked = NULL;
 		}
 	}
+}
+
+void DynamicUnit::attack( )
+{
+	Unit* victim = NULL;
+	victim = UnitManager::units.closer( this, "entity", 120.0 );
+	if( victim )
+		this->attackUnit( victim );
 }
 
 void DynamicUnit::attackUnit( Unit* victim )

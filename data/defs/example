@@ -206,12 +206,13 @@
 			{
 				x = 1,
 				y = 1,
-				type = 2 --- Number - tile name. All Tiles 1 by default.
+				type = 2, --- Number - tile name. All Tiles 1 by default.				
 			},
 			{
 				x = 1,
 				y = 2,
-				type = 1
+				type = 1,
+				backtype = 1 --- Number - Name of current tile background image tile. If tile has background it 1 by default.
 			}
 		}.
 	}
@@ -226,8 +227,8 @@
 		image = "filename",
 		--- Left top corner offset of sprite in image.
 		offsetx = 1.0,
-		offsety = 1.0,
-		blocked = false,		
+		offsety = 1.0,		
+		backing = false, --- Could tile has Background image or not. 
 	},
 	{
 		name = 2,

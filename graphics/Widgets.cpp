@@ -18,6 +18,7 @@ Widget::Widget()
 	PosX = 0;
 	PosY = 0;
 	PosZ = 0;
+	Align = NONE;
 	visible = true;
 	Parent = NULL;
 	background = NULL;
@@ -46,10 +47,14 @@ bool Widget::create( string name, string text, int x, int y )
 bool Widget::load( string config )
 {
 	cfg->getValue( "name", config, "widget", Name );
-	cfg->getValue( "x", config, "widget", PosX );
-	cfg->getValue( "y", config, "widget", PosY );
+	cfg->getValue( "x", config, "widget", OffsetX );
+	cfg->getValue( "y", config, "widget", OffsetY );
 	cfg->getValue( "width", config, "widget", Width );
 	cfg->getValue( "height", config, "widget", Height );
+
+	cfg->getValue( "align", config, "widget", Align );
+	cfg->getValue( "valign", config, "widget", VAlign );
+	updatePosition( );
 
 	int z = 0;
 	cfg->getValue("depth", config, "widget", z );
@@ -71,6 +76,65 @@ bool Widget::load( string config )
 	return true;
 }
 
+void Widget::resize( float w, float h )
+{
+	if( w == Width && h == Height )
+		return;
+	if( w >= 0 )
+		Width = w;
+	if( h >= 0 )
+		Height = h;
+	if( background )
+		background->resize( Width, Height );
+}
+
+void Widget::updatePosition( )
+{
+	extern MainConfig conf;
+	float posx, posy, startx, starty, width, height;
+	if(Parent){
+		width = Parent->getWidth( );
+		height = Parent->getHeight( );
+		startx = Parent->getX( );
+		starty = Parent->getY( ) + height;
+	}else{
+		startx = 0;
+		starty = conf.windowHeight;
+		width = conf.windowWidth;
+		height = conf.windowHeight;
+	}
+	switch(Align){
+		case CENTER:
+			posx = startx + width * 0.5 - this->Width * 0.5 + OffsetX;
+			break;
+		case RIGHT:
+			posx = startx + width - this->Width + OffsetX;
+			break;
+		case LEFT:
+		default:
+			posx = startx + OffsetX;
+			break;
+	}
+	switch(VAlign){
+		case CENTER:
+			posy = starty - height * 0.5 + this->Height * 0.5 - OffsetY;
+			break;
+		case BOTTOM:
+			posy = starty - height + this->Height - OffsetY;
+			break;
+		case TOP:
+		default:
+			posy = starty - OffsetY - this->Height;
+			break;
+	}
+	PosX = posx;
+	PosY = posy;
+	if( background ){
+		background->setPosition( PosX, PosY, getZ() );
+	}
+
+}
+
 float Widget::getZ( )
 {
 	extern MainConfig conf;
@@ -81,11 +145,8 @@ void Widget::setParent( Widget* p )
 {
 	extern MainConfig conf;
 	Parent = p;
-	PosX += p->getX( );
-	PosY = p->getY( ) + p->getHeight( ) - PosY;
 	PosZ = PosZ + p->getZ( ) - conf.widgetsPosZ + 0.1;
-	if( background )
-		background->vertices->z = getZ();
+	updatePosition();
 }
 
 void Widget::addChild( Widget* child )
@@ -129,11 +190,13 @@ TextWidget::TextWidget( )
 {
 	FontName = "DejaVuSans";
 	FontSize = 12;
-	textx = 0;
-	texty = 0;
+	TextX = 0;
+	TextY = 0;
+	TextAlign = NONE;
 	Text = "";
 	StaticTextSprite = NULL;
 	TextSprite = NULL;
+	BindedCache = 0.00123;
 }
 
 TextWidget::~TextWidget( )
@@ -166,30 +229,58 @@ bool TextWidget::load( string config )
 		return NULL;
 
 	string font;
-	float textx, texty;
-	textx = texty = 0;
 	int fontsize = 12;
 	vector<int> vcolor;
+	//float textx, texty;
+	//textx = texty = 0;
 
-	cfg->getValue( "textx", config, "widget", textx );
-	cfg->getValue( "texty", config, "widget", texty );
+	cfg->getValue( "textx", config, "widget", TextX );
+	cfg->getValue( "texty", config, "widget", TextY );
+	cfg->getValue( "textalign", config, "widget", TextAlign );
 	cfg->getValue( "font", config, "widget", font );
 	cfg->getValue( "fontsize", config, "widget", fontsize );
 	cfg->getValue( "fontcolor", config, "widget", vcolor );
 
+	updatePosition( );
+
 	setFont( font, fontsize );
-	setTextPosition( textx, texty );
+	//setTextPosition( textx, texty );
 	if( vcolor.size( ) > 2 )
 		setFontColor(vcolor[0], vcolor[1], vcolor[2]);
 	return true;
 }
 
-void TextWidget::setParent( Widget* p )
+void TextWidget::updatePosition( )
 {
-	float x = p->getX( ) + PosX + textx;
-	float y = p->getY( ) + p->getHeight( ) - PosY - texty;
-	Widget::setParent( p );
-	textPosition( x, y );
+	float posx, posy, swidth, width, height;
+	Widget::updatePosition( );
+	posx = posy = swidth = width = height = 0;
+	if( StaticTextSprite ){
+		swidth = StaticTextSprite->width;
+		height = StaticTextSprite->height;
+	}
+	if( TextSprite ){
+		width = TextSprite->width;
+		if( !height || height < TextSprite->height )
+			height = TextSprite->height;
+	}
+	switch(TextAlign){
+		case CENTER:
+			posx = PosX + this->Width * 0.5 - ( swidth + width ) * 0.5 + TextX;
+			break;
+		case RIGHT:
+			posx = PosX + this->Width - ( swidth + width ) + TextX;
+			break;
+		case LEFT:
+		default:
+			posx = PosX + TextX;
+			break;
+	}
+	posy = PosY - TextY;
+	if( StaticTextSprite )
+		StaticTextSprite->setPosition( posx, posy, getZ( ) + 0.1 );
+	if( TextSprite )
+		TextSprite->setPosition( posx + swidth, posy, getZ( ) + 0.1 );
 }
 
 void TextWidget::setFontColor( int r, int g, int b )
@@ -201,6 +292,7 @@ void TextWidget::setFontColor( int r, int g, int b )
 
 void TextWidget::setText( string text )
 {
+	int w, h;
 	if( AddText == text )
 		return;
 	if( StaticTextSprite ){
@@ -211,13 +303,38 @@ void TextWidget::setText( string text )
 	}
 	AddText = text;
 	graph->ChangeTextSprite( TextSprite, FontName, FontSize, AddText );
+	w = Width;
+	h = Height;
+	if( !Width || Width < TextSprite->width ){
+		w = TextSprite->width;
+		if( StaticTextSprite ){
+			w += StaticTextSprite->width;
+		}
+	}
+	if( !Height || Height < TextSprite->height ){
+		h = TextSprite->height;
+	}
+	resize( w, h );
+	updatePosition();
 }
 
 void TextWidget::setTextPosition( float x, float y )
 {
-	textx = x;
-	texty = y;
-	textPosition( PosX + x, PosY + Height - y );
+	TextX = x;
+	TextY = y;
+	updatePosition();
+}
+
+void TextWidget::Update( )
+{
+	if( !Binded )
+		return;
+	if( (*Binded) != BindedCache ){
+		BindedCache = (*Binded);
+		char d[15];
+		sprintf(d, "%.0f", BindedCache);
+		setText( d );
+	}
 }
 
 void TextWidget::toggleVisibility( )
@@ -229,30 +346,21 @@ void TextWidget::toggleVisibility( )
 		TextSprite->toggleVisibility( );
 }
 
-void TextWidget::textPosition( float x, float y )
-{
-	float txdelta;
-	txdelta = 0;
-	if( StaticTextSprite ){
-		StaticTextSprite->setPosition( x, y, getZ( ) + 0.1 );
-		txdelta = StaticTextSprite->width;
-	}
-	TextSprite->setPosition( x + txdelta, y, getZ( ) + 0.1 );
-}
-
 BarWidget::BarWidget()
 {
-	bar = NULL;
-	top = NULL;
-	barwidth = 0;
-	barmaxvalue = 1;
-	barstartx = 0;
+	BarSprite = NULL;
+	TopSprite = NULL;
+	BarWidth = 0;
+	BarMaxValue = 1;
+	BindedMaxValue = NULL;
+	BarX = 0;
+	BarY = 0;
 }
 
 BarWidget::~BarWidget( )
 {
-	graph->FreeGLSprite( top );
-	graph->FreeGLSprite( bar );
+	graph->FreeGLSprite( BarSprite );
+	graph->FreeGLSprite( TopSprite );
 }
 
 bool BarWidget::load( string config )
@@ -260,93 +368,115 @@ bool BarWidget::load( string config )
 	if( !TextWidget::load( config ) )
 		return NULL;
 	string imgname;
-	int position[9];
+	int position[6];
 	vector<int> vcolor;
 	//Order: topimgx, topimgy, barx, bary, barwidth, barheight
 	//Ya, it's cruve, but it's simple
 	cfg->getValue( "topimgx", config, "widget", position[0] );
 	cfg->getValue( "topimgy", config, "widget", position[1] );
-	cfg->getValue( "barx", config, "widget", position[2] );
-	cfg->getValue( "bary", config, "widget", position[3] );
-	cfg->getValue( "barwidth", config, "widget", position[4] );
-	cfg->getValue( "barheight", config, "widget", position[5] );
+	cfg->getValue( "barx", config, "widget", BarX );
+	cfg->getValue( "bary", config, "widget", BarY );
+	cfg->getValue( "barwidth", config, "widget", BarWidth );
+	cfg->getValue( "barheight", config, "widget", position[2] );
 	cfg->getValue( "source", config, "widget", imgname );
 	cfg->getValue( "barcolor", config, "widget", vcolor );
 	if( vcolor.size( ) > 2 ){
-		position[6] = vcolor[0]; //r
-		position[7] = vcolor[1]; //g
-		position[8] = vcolor[2]; //b
+		position[3] = vcolor[0]; //r
+		position[4] = vcolor[1]; //g
+		position[5] = vcolor[2]; //b
 	}else{
-		position[6] = 0; position[7] = 0; position[8] = 0;
+		position[3] = position[4] = position[5] = 0;
 	}
+	if( BarWidth <= 0 )
+		BarWidth = Width;
 	createBar( imgname, position );
+	updatePosition();
 	return true;
 }
 
 void BarWidget::createBar( string name, int* pos)
 {
 	Texture* tex;
-	barstartx = PosX + pos[2];
-	if( pos[4] > 0 )
-		barwidth = pos[4];
-	else
-		barwidth = Width;
 	tex = graph->LoadGLTexture( name );
-	bar = graph->CreateGLSprite( barstartx, PosY + pos[3], getZ(), barwidth, pos[5] );
+	BarSprite = graph->CreateGLSprite( PosX + BarX, PosY + BarY, getZ(), BarWidth, pos[2] );
 	if( tex )
-		top = graph->CreateGLSprite( PosX, PosY, getZ() + 0.1, pos[0], pos[1], Width, Height, tex );
-	if( bar ){
-		bar->clr->set( pos[6], pos[7], pos[8] );
+		TopSprite = graph->CreateGLSprite( PosX, PosY, getZ() + 0.1, pos[0], pos[1], Width, Height, tex );
+	if( BarSprite ){
+		BarSprite->clr->set( pos[3], pos[4], pos[5] );
 	}
-	setTextPosition( getTextX() + 5, getTextY() - pos[5] );
+	setTextPosition( getTextX(), getTextY() - Height );
 	setBarValue(1);
 	setBarSize(1);
 }
 
-void BarWidget::setBarValue( int value )
+void BarWidget::setBarValue( float value )
 {
-	if( value == barvalue )
+	if( value == BarValue )
 		return;
-	barvalue = value;
+	BarValue = value;
 	{//Output text;
 		char str[25];
-		sprintf( str, "%d/%d", value, barmaxvalue );
+		sprintf( str, "%.0f/%.0f", value, BarMaxValue );
 		setText( str );
 	}
 	if( value < 0 )
 		value = 0;
-	if( value > barmaxvalue )
-		value = barmaxvalue;
-	float s = static_cast<float>(value) / static_cast<float>(barmaxvalue);
-	float x = barwidth * s;
-	bar->resize( x, -1 );
+	if( value > BarMaxValue )
+		value = BarMaxValue;
+	if( BarSprite )
+		BarSprite->resize( BarWidth * value / BarMaxValue, -1 );
 }
 
-void BarWidget::setParent( Widget* p )
+void BarWidget::setBarSize( float val )
 {
-	float bardelta = barstartx - PosX;
-	float x = p->getX( ) + PosX;
-	float y = p->getY( ) + p->getHeight( ) - PosY;
-	float barheight = bar->vertices->lt.y - bar->vertices->lb.y;
-	TextWidget::setParent( p );
-	bar->setPosition( x + bardelta, y, getZ() );
-	if( top )
-		top->setPosition( x, y - barheight, getZ() + 0.01 );
+	if( val > 0 )
+		BarMaxValue = val;
+	else
+		BarMaxValue = 1;
+	{//Output text;
+		char str[25];
+		sprintf( str, "%.0f/%.0f", BarValue, BarMaxValue );
+		setText( str );
+	}
+	if( BarSprite )
+		BarSprite->resize( BarWidth * BarValue / BarMaxValue, -1 );
+}
+
+void BarWidget::updatePosition( )
+{
+	TextWidget::updatePosition( );
+	if( BarSprite )
+		BarSprite->setPosition( PosX + BarX, PosY + BarY, getZ() );
+	if( TopSprite )
+		TopSprite->setPosition( PosX, PosY, getZ() + 0.01 );
+}
+
+bool BarWidget::bindBarMaxValue( float* val )
+{
+	if( val ){
+		BindedMaxValue = val;
+		return true;
+	}
+	return false;
 }
 
 void BarWidget::Update( )
 {
-	if( !Binded )
-		return;
-	if( (*Binded) != barvalue )
-		setBarValue(*Binded);
+	if( Binded != NULL ){
+		if( (*Binded) != BarValue )
+			setBarValue( *Binded );
+	}
+	if( BindedMaxValue != NULL ){
+		if( (*BindedMaxValue) != BarMaxValue )
+			setBarSize( *BindedMaxValue );
+	}
 }
 
 void BarWidget::toggleVisibility( )
 {
 	TextWidget::toggleVisibility( );
-	if( bar && bar->visible != visible )
-		bar->toggleVisibility( );
-	if( top && top->visible != visible )
-			top->toggleVisibility( );
+	if( BarSprite && BarSprite->visible != visible )
+		BarSprite->toggleVisibility( );
+	if( TopSprite && TopSprite->visible != visible )
+		TopSprite->toggleVisibility( );
 }

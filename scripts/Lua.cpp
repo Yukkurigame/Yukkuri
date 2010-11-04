@@ -60,6 +60,7 @@ bool LuaMain::OpenFile( string name )
 
 template<> bool LuaMain::getValue( lua_State* L, int index, bool& ret)
 {
+	ret = false;
 	if( lua_isboolean(L, index) ){
 		ret = lua_toboolean(L, index) != 0;
 		return true;
@@ -70,6 +71,7 @@ template<> bool LuaMain::getValue( lua_State* L, int index, bool& ret)
 //FIXME: Но зачем
 template<> bool LuaMain::getValue( lua_State* L, int index, float& ret)
 {
+	ret = 0.0;
 	if( lua_isnumber(L, index) ){
 		ret = lua_tonumber(L, index);
 		return true;
@@ -79,6 +81,7 @@ template<> bool LuaMain::getValue( lua_State* L, int index, float& ret)
 
 template<> bool LuaMain::getValue( lua_State* L, int index, double& ret)
 {
+	ret = 0.0;
 	if( lua_isnumber(L, index) ){
 		ret = lua_tonumber(L, index);
 		return true;
@@ -88,6 +91,7 @@ template<> bool LuaMain::getValue( lua_State* L, int index, double& ret)
 
 template<> bool LuaMain::getValue( lua_State* L, int index, int& ret)
 {
+	ret = 0;
 	if( lua_isnumber(L, index) ){
 		ret = static_cast<int>(lua_tonumber(L, index));
 		return true;
@@ -97,6 +101,7 @@ template<> bool LuaMain::getValue( lua_State* L, int index, int& ret)
 
 template<> bool LuaMain::getValue( lua_State* L, int index, string& ret)
 {
+	ret = "";
 	if( lua_isstring(L, index) ){
 		ret = lua_tostring(L, index);
 		return true;

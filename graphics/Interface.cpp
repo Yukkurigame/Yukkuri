@@ -36,10 +36,10 @@ Widget* UI::LoadWidget( string name )
 
 	//Prevent loop inheritance.
 	w = GetWidget( name );
-	if( w ){
-		debug(5, "Widget with name " + name + " already exists.\n");
-		return w;
-	}
+	//if( w ){
+		//debug(5, "Widget with name " + name + " already exists.\n");
+		//return w;
+	//}
 
 	int type;
 	conf->getValue("type", name, "widget", type );

@@ -33,11 +33,11 @@ class Main(QtGui.QMainWindow):
         self.connect(self.ui.exitbox, QtCore.SIGNAL('rejected()'), QtGui.qApp, QtCore.SLOT('quit()'))
         self.connect(self.ui.OpenFolderDBox.children()[1], QtCore.SIGNAL('clicked()'), self.OpenFolder)
         self.connect(self.ui.MainTabs, QtCore.SIGNAL('currentChanged(int)'), self.ReloadFiles)
-        self.connect(self.ui.FilesList, QtCore.SIGNAL("itemDoubleClicked(QListWidgetItem*)"), self.ReloadElements)
-        self.connect(self.ui.ItemsList, QtCore.SIGNAL("itemDoubleClicked(QListWidgetItem*)"), self.ReloadContent)
+        self.connect(self.ui.FilesList, QtCore.SIGNAL("itemActivated(QListWidgetItem*)"), self.ReloadElements)
+        self.connect(self.ui.ItemsList, QtCore.SIGNAL("itemActivated(QListWidgetItem*)"), self.ReloadContent)
         
-        self.connect(self.ui.TilesOffestXSpin, QtCore.SIGNAL("valueChanged(double)"), self.ReloadTilesImage)
-        self.connect(self.ui.TilesOffestYSpin, QtCore.SIGNAL("valueChanged(double)"), self.ReloadTilesImage)
+        self.connect(self.ui.TilesOffestXSpin, QtCore.SIGNAL("valueChanged(int)"), self.ReloadTilesImage)
+        self.connect(self.ui.TilesOffestYSpin, QtCore.SIGNAL("valueChanged(int)"), self.ReloadTilesImage)
     
     def OpenFolder(self):
         folder = QtGui.QFileDialog.getExistingDirectory(self, 'Open folder', filesManager.getLast())
@@ -107,7 +107,6 @@ class Main(QtGui.QMainWindow):
         self.__loadedConfig = []
         self.__loadedElement = ''
         self.ui.ItemsList.clear()
-        #self.ClearFields()
         item = self.ui.FilesList.currentItem()
         if not item:
             return
@@ -125,6 +124,7 @@ class Main(QtGui.QMainWindow):
             return
         item = self.ui.ItemsList.currentItem()
         if not item: return
+        self.ClearFields()
         item = str(item.text()).lower()
         eltype = self.__loadedConfig[0]
         data = self.__loadedConfig[1:]

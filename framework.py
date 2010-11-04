@@ -43,11 +43,12 @@ def SetField(widget, data):
             if ltype == 'QLineEdit':
                 lines[i].setText(str(field))
             elif ltype == 'QSpinBox':
+                if not field: field = 0
                 try: lines[i].setValue(int(field))
                 except: pass
             elif ltype == 'QDoubleSpinBox':
-                try: lines[i].setValue(float(field))
-                except: pass
+                if not field: field = 0.0
+                lines[i].setValue(float(field))
             elif ltype == 'QCheckBox':
                 if not field: field = False
                 lines[i].setChecked(int(field))

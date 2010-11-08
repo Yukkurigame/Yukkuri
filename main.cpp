@@ -39,8 +39,6 @@ void Yukkuri::AdditionalInit()
 	daytime.loadInterface();
 
 	units = &UnitManager::units;
-	YCamera::CameraControl.SetTarget( units->GetPlayer()->getUnitpX(), units->GetPlayer()->getUnitpY());
-
 }
 
 void Yukkuri::Think( const int& ElapsedTime )

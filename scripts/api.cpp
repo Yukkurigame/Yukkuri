@@ -9,6 +9,7 @@
 #include "Luaconfig.h"
 #include "unitmanager.h"
 #include "LuaThread.h"
+#include "Camera.h"
 
 int scriptApi::Debug( lua_State* L )
 {
@@ -239,7 +240,7 @@ int scriptApi::ResumeThread( lua_State* L )
 	return threadsManager::ResumeThread( L );
 }
 
-int scriptApi::RemoveThread(lua_State* L)
+int scriptApi::RemoveThread( lua_State* L )
 {
 	unsigned int tid;
 	luaL_argcheck( L, lua_isthread(L, 1), 1, "Thread expected" );
@@ -255,3 +256,13 @@ int scriptApi::RemoveThread(lua_State* L)
 	}
 }
 
+int scriptApi::SetCameraTarget( lua_State* L )
+{
+	unsigned int tid;
+	Unit* u;
+	luaL_argcheck(L, lua_isnumber(L, 1) || lua_isnoneornil(L, 1), 1, "Number or none expected.");
+	tid = lua_tonumber( L, 1 );
+	u = UnitManager::units.GetUnit( tid );
+	YCamera::CameraControl.SetTarget( u );
+	return 0;
+}

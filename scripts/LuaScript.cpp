@@ -41,6 +41,8 @@ void LuaScript::RegisterApi( )
 	lua_register( Lst, "ThreadWait", &scriptApi::ThreadWait );
 	lua_register( Lst, "ResumeThread", &scriptApi::ResumeThread );
 	lua_register( Lst, "RemoveThread", &scriptApi::RemoveThread );
+
+	lua_register( Lst, "SetCameraTarget", &scriptApi::SetCameraTarget );
 }
 
 bool LuaScript::OpenFile( string name )

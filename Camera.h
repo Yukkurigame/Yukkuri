@@ -1,8 +1,7 @@
 #ifndef YCAMERA_H
 #define YCAMERA_H
 
-#include "Define.h"
-#include <cstdlib>
+#include "unit.h"
 
 enum {
     TARGET_MODE_NORMAL = 0,
@@ -21,7 +20,9 @@ class YCamera {
         float GetY( );
         void Move( float X, float Y );
         void ChangeMode( int mode );
+        void SetTarget( Unit* u );
         void SetTarget( float* X, float* Y );
+        void DeleteTarget( );
 
     private:
         int TargetMode;
@@ -31,6 +32,7 @@ class YCamera {
         float offsetY;
         float* TargetX;
         float* TargetY;
+        Unit* Target;
 };
 
 #endif //YCAMERA_H

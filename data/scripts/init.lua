@@ -10,6 +10,7 @@ gui:addWidget("time")
 gui:addWidget("pstats")
 
 CreateUnit(1)
+SetCameraTarget(1)
 
 local plevel = gui:GetWidgetByName("plevel")
 local pdays = gui:GetWidgetByName("pdays")

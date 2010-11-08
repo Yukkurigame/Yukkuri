@@ -167,7 +167,7 @@ void CEngine::HandleInput()
 	// Poll for events, and handle the ones we care about.
 	SDL_Event event;
 
-	while ( SDL_PollEvent( &event ) )
+	while( SDL_PollEvent( &event ) )
 	{
 		int evnt = 0;
 		short down = 1;
@@ -198,7 +198,7 @@ void CEngine::HandleInput()
 #ifdef JOYSTICKENABLE
 			case SDL_JOYAXISMOTION:
 				evnt = SDLK_LAST;
-				if( event.jaxis.axis == 0){ // Left-right movement
+				if( event.jaxis.axis == 0 ){ // Left-right movement
 					//left, right, release
 					if( event.jaxis.value > JSSENS )
 						++evnt;
@@ -209,7 +209,7 @@ void CEngine::HandleInput()
 						down = 0;
 					}
 				}
-				if( event.jaxis.axis == 1){ //Up-Down movement
+				if( event.jaxis.axis == 1 ){ //Up-Down movement
 					//up, down, release
 					evnt += 2;
 					if( event.jaxis.value > JSSENS )

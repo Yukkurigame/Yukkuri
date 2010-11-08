@@ -2,6 +2,7 @@
 #include "config.h"
 #include "Graphics.h"
 #include <math.h>
+//#include <cstdlib>
 
 extern MainConfig conf;
 
@@ -70,10 +71,27 @@ void YCamera::ChangeMode( int mode )
 	}
 }
 
+void YCamera::SetTarget( Unit* u )
+{
+	DeleteTarget( );
+	if( !u )
+		return;
+	Target = u;
+	SetTarget( u->getUnitpX(), u->getUnitpY() );
+}
+
 void YCamera::SetTarget( float* x, float* y )
 {
 	TargetX = x;
 	TargetY = y;
 	ChangeMode(TARGET_MODE_CENTER);
 	Update( );
+}
+
+void YCamera::DeleteTarget( )
+{
+	Target = NULL;
+	TargetX = NULL;
+	TargetY = NULL;
+	ChangeMode(TARGET_MODE_NORMAL);
 }

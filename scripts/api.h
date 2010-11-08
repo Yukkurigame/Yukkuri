@@ -32,6 +32,8 @@ namespace scriptApi
 	int ThreadWait( lua_State* L );
 	int ResumeThread( lua_State* L );
 	int RemoveThread( lua_State* L );
+
+	int SetCameraTarget( lua_State* L );
 }
 
 #endif /* API_H_ */

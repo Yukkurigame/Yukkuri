@@ -35,7 +35,7 @@ Widget* UI::LoadWidget( string name )
 	debug(5, "Loading widget " + name + "\n");
 
 	//Prevent loop inheritance.
-	w = GetWidget( name );
+	//w = GetWidget( name );
 	//if( w ){
 		//debug(5, "Widget with name " + name + " already exists.\n");
 		//return w;

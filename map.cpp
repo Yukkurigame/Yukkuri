@@ -7,6 +7,10 @@
 
 extern MainConfig conf;
 static int TilesCount = 0;
+//FIXME: Я не знаю, почему не вношу это в Map
+static int TileTypesCount = 0;
+static imageRect* TilesArray = NULL;
+static bool TilesLoaded = false;
 
 Map map;
 
@@ -88,6 +92,8 @@ static struct MapDefines{
 	}
 } Defines;
 
+//TODO:Одноуровневая карта, высокие объекты занимают 2 клетки вместо одной.
+
 MapTile::MapTile( signed int x, signed int y ) {
 	float offsetx, offsety;
 	char name[3];
@@ -108,6 +114,7 @@ MapTile::MapTile( signed int x, signed int y ) {
 	TypeID = Region::GetTile( x, y );
 	backtype = Region::GetTileBack(x, y);
 	if( TypeID ){
+		//FIXME: ororoshenkiroro
 		memset( name, 0, sizeof(name) );
 		sprintf( name, "%d", TypeID );
 		map.fromMapCoordinates( &x, &y );
@@ -145,6 +152,42 @@ Map::Map( )
 	Updated = false;
 	posX = 0;
 	posY = 0;
+}
+
+bool Map::LoadTiles( )
+{
+	char dbg[25];
+	if(TilesLoaded){
+		debug( 5, "Tiles already loaded." );
+		return false;
+	}
+	//FIXME: И тут, внезапно, в функцию врываются костыли.
+	std::vector <  std::map < string, string > > Subconfigs;
+	if( !LuaConfig::Instance()->getSubconfigs( "tiles", Subconfigs ) || ! Subconfigs.size() ){
+		debug(1, "Tiles configs opening error or no tiles found.\n");
+		return false;
+	}else{
+		TileTypesCount = Subconfigs.size();
+		sprintf( dbg, "Tiles found: %d\n", Subconfigs.size() );
+		debug( 5, dbg );
+	}
+	TilesArray = (imageRect*)malloc( sizeof(imageRect) * ( TileTypesCount + 1 ) );
+	TilesArray[0].id = 0;
+	memset(TilesArray[0].imageName, 0, 100);
+	TilesArray[0].x = 0;
+	TilesArray[0].y = 0;
+	for( int i = 1; i <= TileTypesCount; ++i ){
+		char name[100];
+		memset(name, 0, 100);
+		if( Subconfigs[i-1].count("image") )
+			strcpy(name, Subconfigs[i-1]["image"].c_str());
+		TilesArray[i].id =  Subconfigs[i-1].count("id") ? atoi(Subconfigs[i-1]["id"].c_str()) : 0;
+		strcpy( TilesArray[i].imageName, name );
+		TilesArray[i].x = Subconfigs[i-1].count("offsetx") ? atof(Subconfigs[i-1]["offsetx"].c_str()) : 0;
+		TilesArray[i].y = Subconfigs[i-1].count("offsety") ? atof(Subconfigs[i-1]["offsety"].c_str()) : 0;
+	}
+
+	return true;
 }
 
 bool Map::Init( )

@@ -76,10 +76,20 @@ string LuaConfig::getRandom( string field, string config )
 	return ret;
 }
 
-bool LuaConfig::getSubconfigs( string config, std::vector< string >& ret )
+/*	Returns subconfig names list
+ */
+bool LuaConfig::getSubconfigsList( string config, std::vector< string >& ret )
 {
 	const int prmsz = 1;
 	const char* prm[prmsz] = { config.c_str() };
 	bool res = execFunction("getSubconfigsList", prm, prmsz, ret);
+	return res;
+}
+
+bool LuaConfig::getSubconfigsLength( string config, int& len )
+{
+	const int prmsz = 1;
+	const char* prm[prmsz] = { config.c_str() };
+	bool res = execFunction("getSubconfigsLength", prm, prmsz, len);
 	return res;
 }

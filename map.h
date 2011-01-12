@@ -31,6 +31,7 @@ class Map
 {
 public:
 	Map();
+	bool LoadTiles( );
 	bool Init( );
 
 	void toMapCoordinates( int* x, int* y);

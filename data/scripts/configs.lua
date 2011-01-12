@@ -1,4 +1,4 @@
-
+require("data/scripts/adddebug")
 ---
 local configs = {}
 math.randomseed(os.time())
@@ -48,12 +48,29 @@ function get( value, subconfig, config )
     return ret
 end
 
+function getSubconfigs( config )
+    t = {}
+    for i,j in pairs(configs[string.lower(config)]) do
+        table.insert(t, j)         
+    end
+    return t
+end
+
 function getSubconfigsList( config )
     t = {}
     for i,j in pairs(configs[string.lower(config)]) do
         table.insert(t, i)        
     end
     return t
+end
+
+function getSubconfigsLength( config )
+    len = 0
+    --- Я не смог в #
+    for i in pairs(configs[string.lower(config)]) do        
+        len = len + 1
+    end
+    return len
 end
 
 function getOneFromSeveral( field, config )

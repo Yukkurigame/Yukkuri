@@ -52,6 +52,18 @@ struct s2f
 	s2f() : x(), y() {}
 };
 
+struct imageRect
+{
+	int id;
+	char imageName[100];
+	float x;
+	float y;
+	float atlasX;
+	float atlasY;
+	Texture* texture;
+	imageRect() : id(), x(), y() { }
+};
+
 struct coord2farr
 {
 	s2f lt; //left-top

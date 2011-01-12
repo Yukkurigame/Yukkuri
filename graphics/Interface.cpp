@@ -21,7 +21,7 @@ UI::~UI( )
 void UI::LoadAllWidgets( )
 {
 	std::vector< string > v;
-	LuaConfig::Instance()->getSubconfigs("widget", v);
+	LuaConfig::Instance()->getSubconfigsList("widget", v);
 	for(std::vector <string>::iterator it = v.begin(); it != v.end(); ++it ){
 		LoadWidget( (*it) );
 	}

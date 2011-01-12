@@ -66,6 +66,7 @@ public:
 							Texture* tex, short mirrored = 0, short centered = 0, short cached = 1 );
 
 	void CreateGLSpriteList( vector<Sprite* >* sprites );
+	void CreateGLTextureAtlas( int width, int height, imageRect* rects[], const int size );
 
 	void FreeGLSprite( Sprite* );
 	void FreeTextSprite( Sprite** );

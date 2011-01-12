@@ -35,7 +35,11 @@ public:
 
 	string getRandom( string field, string config );
 
-	bool getSubconfigs( string config, std::vector< string >& ret );
+
+
+	bool getSubconfigsList( string config, std::vector< string >& ret );
+
+	bool getSubconfigsLength( string config, int& len );
 
 	template<typename T>
 	bool getValue( string field, string subconfig, string config, T& ret)
@@ -45,6 +49,16 @@ public:
 		bool res = execFunction("get", prm, prmsz, ret);
 		return res;
 	}
+
+	template<typename T>
+	bool getSubconfigs( string config, T& ret)
+	{
+		const int prmsz = 1;
+		const char* prm[prmsz] = { config.c_str() };
+		bool res = execFunction("getSubconfigs", prm, prmsz, ret);
+		return res;
+	}
+
 private:
 	LuaConfig( );
 	~LuaConfig( );

@@ -19,7 +19,7 @@ LuaStackChecker::~LuaStackChecker( )
 	int c;
 	c = lua_gettop( luaState_ ) -  top_;
 	if( c != 0 ){
-		luaL_error( luaState_, "Lua stack corrupted! %d fields. File [%s] line[%d]", c , filename_, line_ );
+		luaL_error( luaState_, "Lua stack corrupted! %d fields. File [%s] line[%d]\n", c , filename_, line_ );
 	}
 }
 

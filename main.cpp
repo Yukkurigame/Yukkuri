@@ -34,6 +34,7 @@ void Yukkuri::AdditionalInit()
 
 	Bindings::bnd.LoadKeys();
 
+	map.LoadTiles( );
 	map.Init( );
 
 	daytime.loadInterface();

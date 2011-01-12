@@ -347,6 +347,11 @@ void Graphics::CreateGLSpriteList( vector<Sprite* >* sprites )
 	glEndList();
 }
 
+void Graphics::CreateGLTextureAtlas( int width, int height, imageRect* rects[], int size )
+{
+
+}
+
 void Graphics::FreeGLSprite( Sprite* spr )
 {
 	if( spr ){

@@ -21,8 +21,7 @@ struct MapTile
 	signed int posY;
 	float Passability;
 	bool Backing;
-	Sprite* Image;
-	Sprite* BackImage;
+	imageRect Image;
 	MapTile( signed int x, signed int y );
 	~MapTile();
 };

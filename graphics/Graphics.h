@@ -66,7 +66,7 @@ public:
 							Texture* tex, short mirrored = 0, short centered = 0, short cached = 1 );
 
 	void CreateGLSpriteList( vector<Sprite* >* sprites );
-	void CreateGLTextureAtlas( int width, int height, imageRect* rects[], const int size );
+	void CreateGLTextureAtlas( int size, imageRect rects[], int count );
 
 	void FreeGLSprite( Sprite* );
 	void FreeTextSprite( Sprite** );
@@ -108,8 +108,10 @@ private:
 	Texture* GetTextTexture( font_data* font, string text );
 	void SetTextTexture( Texture* tex, font_data* font, string text );
 
-	SDL_Surface* LoadImage( std::string );
-	SDL_Surface* OpenImage( std::string );
+	Texture* CreateGlTexture( SDL_Surface* );
+
+	SDL_Surface* LoadImage( const char* );
+	SDL_Surface* OpenImage( const char* );
 
 	font_data* GetFont( string name, int size);
 	Sprite* CreateTextTexture( font_data* ftfont, float x, float y, float z, Color* color, string str, short cached=0 );

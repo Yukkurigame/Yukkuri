@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <iostream>
 #include <cstdio>
+#include <cmath>
 #include <sys/stat.h>
 #include <dirent.h>
 #include "config.h"
@@ -34,6 +35,14 @@ namespace Screenshot
 			name[0] = '\0';
 		}
 	}
+}
+
+//FIXME: duplicate in Font.cpp
+inline int next_p2( int a )
+{
+	int rval=2;
+	while( rval < a ) rval <<= 1;
+	return rval;
 }
 
 bool compareSprites( Sprite* s1, Sprite* s2 )
@@ -106,20 +115,16 @@ Texture* Graphics::LoadGLTexture( string name )
 	Texture* tex;
 	Texture* cached;
 	SDL_Surface* surface;
-	GLuint* image;
-	GLint  nOfColors;
-	GLenum texture_format;
+
 
 	if( name == "" )
 		return NULL;
 
-	cached = GetGLTexture(name);
+	cached = GetGLTexture( name );
 
 	if( !cached || !cached->texture ){
 
-		cached = new Texture();
-
-		surface = LoadImage(name);
+		surface = LoadImage( name.c_str() );
 
 		if( !surface ){
 			debug( 3, name + " not loaded.\n" );
@@ -127,52 +132,12 @@ Texture* Graphics::LoadGLTexture( string name )
 			return NULL;
 		}
 
-		/*if( surface->format->colorkey != 0 ){
-			//FIXME: Indexed images support.
-			debug( 1, "BIDA while loading " + name + "! Indexed images not supported yet!\n" );
-			texture_format = GL_COLOR_INDEX;
-		}else{*/
-			nOfColors = surface->format->BytesPerPixel;
+		cached = CreateGlTexture( surface );
 
-			if( nOfColors == 4 ){     // contains an alpha channel
-				if( surface->format->Rmask == 0x000000ff )
-					texture_format = GL_RGBA;
-				else
-					texture_format = GL_BGRA;
-			}else if( nOfColors == 3 ){     // no alpha channel
-				if (surface->format->Rmask == 0x000000ff)
-					texture_format = GL_RGB;
-				else
-					texture_format = GL_BGR;
-			}else{
-				debug(3, name + " is not truecolor..  this will probably break.\n");
-				// this error should not go unhandled
-			}
-		//}
-		cached->w = surface->w;
-		cached->h = surface->h;
-
-		// Have OpenGL generate a texture object handle for us
-		image = new GLuint();
-		glGenTextures( 1, image );
-
-		// Bind the texture object
-		glBindTexture( GL_TEXTURE_2D, *image );
-
-		// Set the texture's stretching properties
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-
-		// Edit the texture object's image data using the information SDL_Surface gives us
-		glTexImage2D( GL_TEXTURE_2D, 0, nOfColors, surface->w, surface->h, 0,
-		                      texture_format, GL_UNSIGNED_BYTE, surface->pixels );
-
-		cached->texture = image;
+		AddGLTexture( cached, name );
 
 		if( surface )
 			SDL_FreeSurface( surface );
-
-		AddGLTexture(cached, name);
 
 	}
 
@@ -205,8 +170,7 @@ void Graphics::LoadAllTTFonts( int size )
         }
         closedir(dp);
     }else{
-    	debug(3, "\tFAIL");
-    	debug(3, "Bad directory.");
+    	debug(3, "\tFAIL Bad directory.");
         return;
     }
     //pdbg(3, "Done.\n");
@@ -235,8 +199,8 @@ bool Graphics::LoadTTFont( string dir, string name, int size )
 	return true;
 }
 
-Sprite* Graphics::CreateTextSprite( string fontname, int size, float x, float y, float z, Color* color, string text,
-		short cached )
+Sprite* Graphics::CreateTextSprite( string fontname, int size, float x, float y, float z, Color* color,
+		string text, short cached )
 {
 	font_data* font = GetFont( fontname, size );
 	if(!font){
@@ -347,8 +311,56 @@ void Graphics::CreateGLSpriteList( vector<Sprite* >* sprites )
 	glEndList();
 }
 
-void Graphics::CreateGLTextureAtlas( int width, int height, imageRect* rects[], int size )
+void Graphics::CreateGLTextureAtlas( int size, imageRect rects[], int count )
 {
+	Uint32 rmask, gmask, bmask, amask;
+	SDL_Surface* sdlAtlas;
+	SDL_Surface* sdltemp;
+	SDL_Rect src, dst;
+	Texture* Atlas;
+	int colcount, rowcount, texturewidth, textureheight;
+	if( size <= 0 || count <= 0 )
+		return;
+	colcount = static_cast<int>( ceil(sqrt(count)) );
+	texturewidth = next_p2( colcount * size );
+	colcount = texturewidth / size;
+	rowcount = static_cast<int>( ceil( static_cast<float>(count) / static_cast<float>(colcount) ) );
+	textureheight = next_p2( rowcount * size );
+	dst.w = dst.h = src.w = src.h = size;
+
+	#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+	rmask = 0xff000000; gmask = 0x00ff0000; bmask = 0x0000ff00; amask = 0x000000ff;
+	#else
+	rmask = 0x000000ff; gmask = 0x0000ff00; bmask = 0x00ff0000; amask = 0xff000000;
+	#endif
+	sdlAtlas = SDL_CreateRGBSurface(SDL_SWSURFACE, texturewidth, textureheight, 32, rmask, gmask, bmask, amask);
+	SDL_SetAlpha( sdlAtlas, 0, SDL_ALPHA_OPAQUE );
+
+	for( int row = 0, cnt = 0; row < rowcount; ++row ){
+		for( int col = 0; col < colcount; ++col ){
+			if( cnt >= count )
+				break;
+			const char* imageName = rects[cnt].imageName;
+			sdltemp = LoadImage( imageName );
+			rects[cnt].coordinates = GetCoordinates( rects[cnt].x, rects[cnt].y, size, size, texturewidth,
+														textureheight, 0);
+			src.x = rects[cnt].x;
+			src.y = rects[cnt].y;
+			dst.x  = size * row;
+			dst.y = size * col;
+			SDL_BlitSurface( sdltemp, &src, sdlAtlas, &dst );
+			SDL_FreeSurface( sdltemp );
+			++cnt;
+		}
+	}
+
+	Atlas = CreateGlTexture( sdlAtlas );
+
+	SDL_FreeSurface( sdlAtlas );
+
+	for( int i = 0; i < count; ++i ){
+		rects[i].texture = Atlas;
+	}
 
 }
 
@@ -536,6 +548,8 @@ bool Graphics::SaveScreenshot( )
 	SDL_FreeSurface( output );
 	return true;
 }
+
+/* ** PRIVATE METHODS ** */
 
 Graphics::Graphics( ){
 
@@ -740,16 +754,78 @@ void Graphics::SetTextTexture( Texture* tex, font_data* font, string text )
 	CachedTexts[font][text] = tex;
 }
 
-SDL_Surface* Graphics::LoadImage( string name )
+Texture* Graphics::CreateGlTexture( SDL_Surface* surface )
+{
+	Texture* tex;
+	GLuint* image;
+	GLint  nOfColors;
+	GLenum texture_format;
+
+	tex = new Texture();
+
+	/*if( surface->format->colorkey != 0 ){
+		//FIXME: Indexed images support.
+		debug( 1, "BIDA while loading " + name + "! Indexed images not supported yet!\n" );
+		texture_format = GL_COLOR_INDEX;
+	}else{*/
+		nOfColors = surface->format->BytesPerPixel;
+
+		if( nOfColors == 4 ){     // contains an alpha channel
+			if( surface->format->Rmask == 0x000000ff )
+				texture_format = GL_RGBA;
+			else
+				texture_format = GL_BGRA;
+		}else if( nOfColors == 3 ){     // no alpha channel
+			if (surface->format->Rmask == 0x000000ff)
+				texture_format = GL_RGB;
+			else
+				texture_format = GL_BGR;
+		}else{
+			debug(3, "Image is not truecolor..  this will probably break.\n");
+			// this error should not go unhandled
+		}
+	//}
+
+	tex->w = surface->w;
+	tex->h = surface->h;
+
+	// Have OpenGL generate a texture object handle for us
+	image = new GLuint();
+	glGenTextures( 1, image );
+
+	// Bind the texture object
+	glBindTexture( GL_TEXTURE_2D, *image );
+
+	// Set the texture's stretching properties
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+
+	// Edit the texture object's image data using the information SDL_Surface gives us
+	glTexImage2D( GL_TEXTURE_2D, 0, nOfColors, surface->w, surface->h, 0,
+					texture_format, GL_UNSIGNED_BYTE, surface->pixels );
+
+	tex->texture = image;
+
+	return tex;
+
+}
+
+//TODO: one more cache?
+SDL_Surface* Graphics::LoadImage( const char* name )
 {
 	SDL_Surface* pImg = NULL;
-	pImg = OpenImage( conf.imagePath + name );
+	char path[ conf.imagePath.size( ) + strlen( name ) ];
+	strcpy( path, conf.imagePath.c_str() );
+	strcat( path, name );
+	pImg = OpenImage( path );
 	if( !pImg ){
 		//Not loaded.
-		if( name != conf.defaultImage )
-			pImg = LoadImage( conf.defaultImage );
-		else
+		if( name != conf.defaultImage.c_str() ){
+			strcpy( path, conf.defaultImage.c_str() );
+			pImg = LoadImage( path );
+		}else{
 			return NULL; // Default already tried. Break.
+		}
 	}
 	return pImg;
 }
@@ -757,29 +833,37 @@ SDL_Surface* Graphics::LoadImage( string name )
 /** Load image file
     @return A pointer to the SDL_Surface surface.
 **/
-SDL_Surface* Graphics::OpenImage( string filename )
+SDL_Surface* Graphics::OpenImage( const char* filename )
 {
-    SDL_Surface* loadedImage = NULL;
-    SDL_Surface* optimizedImage = NULL;
-    loadedImage = IMG_Load( filename.c_str() );
+	SDL_Surface* loadedImage = NULL;
+	SDL_Surface* optimizedImage = NULL;
+	char dbg[ strlen(filename) + 30 ];
+	loadedImage = IMG_Load( filename );
 
-    if( loadedImage != NULL ){
-        if( ( loadedImage->w & (loadedImage->w - 1) ) != 0 ){
-        	debug(3, filename + " width is not a power of 2!\n");
-        }else if( (loadedImage->h & (loadedImage->h - 1) ) != 0 ){
-        	debug(3, filename + " height is not a power of 2!\n");
-        }else{
-        	//FIXME: no-alpha images
-        	if( loadedImage->format->Amask )
-        		optimizedImage = SDL_DisplayFormatAlpha( loadedImage );
-        	else
-        		optimizedImage = SDL_DisplayFormatAlpha( loadedImage );
-        }
-        SDL_FreeSurface( loadedImage );
-    }else{
-    	debug(3, "Could not load " + filename + "\n" );
-    }
-    return optimizedImage;
+	if( loadedImage != NULL ){
+		if( ( loadedImage->w & (loadedImage->w - 1) ) != 0 ){
+			strcpy( dbg, filename );
+			strcat( dbg, " width is not a power of 2!\n" );
+        	debug( 3, dbg );
+		}else if( (loadedImage->h & (loadedImage->h - 1) ) != 0 ){
+			strcpy( dbg, filename );
+			strcat( dbg, " height is not a power of 2!\n" );
+			debug( 3, dbg );
+		}else{
+			//FIXME: no-alpha images
+			if( loadedImage->format->Amask )
+				optimizedImage = SDL_DisplayFormatAlpha( loadedImage );
+			else
+				optimizedImage = SDL_DisplayFormatAlpha( loadedImage );
+		}
+		SDL_FreeSurface( loadedImage );
+	}else{
+		strcpy( dbg, "Could not load " );
+		strcat( dbg, filename );
+		strcat( dbg, "\n" );
+		debug(3, dbg );
+	}
+	return optimizedImage;
 }
 
 font_data* Graphics::GetFont( string name, int size  )

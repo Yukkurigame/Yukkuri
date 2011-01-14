@@ -39,6 +39,8 @@ namespace Region
 				if( it->count( "y" ) > 0 )
 					y = (*it)["y"];
 				RegionDump[x][y] = type;
+
+				//FIXME: Убрать этот костыль, перенести в imageRect
 				if( TileBack.count( type ) > 0 ){
 					Backing = TileBack[type];
 				}else{
@@ -95,56 +97,41 @@ static struct MapDefines{
 //TODO:Одноуровневая карта, высокие объекты занимают 2 клетки вместо одной.
 
 MapTile::MapTile( signed int x, signed int y ) {
-	float offsetx, offsety;
-	char name[3];
-	string image;
 	int backtype;
-
 	TileID = TilesCount;
 	TilesCount++;
 
 	posX = x;
 	posY = y;
-	Image = NULL;
-	BackImage = NULL;
 	Backing = false;
 
-	backtype = offsetx = offsety = 0;
-
 	TypeID = Region::GetTile( x, y );
+	if( TypeID > TileTypesCount )
+		TypeID = 0;
+
+	Image = TilesArray[TypeID];
+
 	backtype = Region::GetTileBack(x, y);
+
+	char name[ sizeof(TypeID) ];
+
+	map.fromMapCoordinates( &x, &y );
+
+
 	if( TypeID ){
 		//FIXME: ororoshenkiroro
 		memset( name, 0, sizeof(name) );
 		sprintf( name, "%d", TypeID );
-		map.fromMapCoordinates( &x, &y );
-		LuaConfig::Instance()->getValue( "image", name, "tiles", image );
-		LuaConfig::Instance()->getValue( "offsetx", name, "tiles", offsetx );
-		LuaConfig::Instance()->getValue( "offsety", name, "tiles", offsety );
 		LuaConfig::Instance()->getValue( "passability", name, "tiles", Passability );
-		Image = Graphics::Instance()->CreateGLSprite( x, y, 0, offsetx, offsety,
-				conf.mapTileSize, conf.mapTileSize, Graphics::Instance()->LoadGLTexture( image ), 0, 1, 0 );
-		Image->fixed = false;
-		//Background sprite
-		if( backtype ){
-			memset( name, 0, sizeof(name) );
-			sprintf( name, "%d", backtype );
-			LuaConfig::Instance()->getValue( "image", name, "tiles", image );
-			LuaConfig::Instance()->getValue( "offsetx", name, "tiles", offsetx );
-			LuaConfig::Instance()->getValue( "offsety", name, "tiles", offsety );
-			BackImage = Graphics::Instance()->CreateGLSprite( x, y, -1, offsetx, offsety,
-					conf.mapTileSize, conf.mapTileSize, Graphics::Instance()->LoadGLTexture( image ), 0, 1, 0 );
-			BackImage->fixed = false;
-		}
 	}
 }
 
 MapTile::~MapTile( )
 {
-	Graphics::Instance()->FreeGLSprite( Image );
-	Image = NULL;
-	Graphics::Instance()->FreeGLSprite( BackImage );
-	BackImage = NULL;
+	//Graphics::Instance()->FreeGLSprite( Image );
+	//Image = NULL;
+	//Graphics::Instance()->FreeGLSprite( BackImage );
+	//BackImage = NULL;
 }
 
 Map::Map( )
@@ -171,21 +158,23 @@ bool Map::LoadTiles( )
 		sprintf( dbg, "Tiles found: %d\n", Subconfigs.size() );
 		debug( 5, dbg );
 	}
-	TilesArray = (imageRect*)malloc( sizeof(imageRect) * ( TileTypesCount + 1 ) );
+	TileTypesCount++; // First tile are blank;
+	TilesArray = (imageRect*)malloc( sizeof(imageRect) * ( TileTypesCount ) );
 	TilesArray[0].id = 0;
-	memset(TilesArray[0].imageName, 0, 100);
+	memset(TilesArray[0].imageName, 0, 65);
 	TilesArray[0].x = 0;
 	TilesArray[0].y = 0;
-	for( int i = 1; i <= TileTypesCount; ++i ){
+	for( int i = 1; i < TileTypesCount; ++i ){
 		char name[100];
-		memset(name, 0, 100);
+		memset(name, 0, 65);
 		if( Subconfigs[i-1].count("image") )
 			strcpy(name, Subconfigs[i-1]["image"].c_str());
-		TilesArray[i].id =  Subconfigs[i-1].count("id") ? atoi(Subconfigs[i-1]["id"].c_str()) : 0;
+		TilesArray[i].id =  Subconfigs[i-1].count("name") ? atoi(Subconfigs[i-1]["name"].c_str()) : 0;
 		strcpy( TilesArray[i].imageName, name );
 		TilesArray[i].x = Subconfigs[i-1].count("offsetx") ? atof(Subconfigs[i-1]["offsetx"].c_str()) : 0;
 		TilesArray[i].y = Subconfigs[i-1].count("offsety") ? atof(Subconfigs[i-1]["offsety"].c_str()) : 0;
 	}
+	Graphics::Instance()->CreateGLTextureAtlas( conf.mapTileSize, &TilesArray[0], TileTypesCount );
 
 	return true;
 }
@@ -222,10 +211,11 @@ MapTile* Map::CreateTile( signed int x, signed int y )
 		return tile;
 	tile = new MapTile( x, y );
 	Tiles[x][y] = tile;
-	if( tile->Image )
+	/*if( tile->Image )
 		TileSprites.push_back( tile->Image );
 	if( tile->BackImage )
 		TileSprites.push_back( tile->BackImage );
+	*/
 	Updated = true;
 	return tile;
 }
@@ -247,12 +237,12 @@ void Map::DeleteTile( MapTile* tile )
 	Updated = true;
 	for( vector< Sprite* >::iterator it = TileSprites.begin(), end = TileSprites.end(); it != end; ++it ){
 		//FIXME: null pointer error?
-		if( (*it) == tile->Image ){
+		/*if( (*it) == tile->Image ){
 			TileSprites.erase( it );
 			break;
-		}
+		}*/
 	}
-	if( tile->BackImage ){
+	/*if( tile->BackImage ){
 		for( vector< Sprite* >::iterator it = TileSprites.begin(), end = TileSprites.end(); it != end; ++it ){
 			//FIXME: null pointer error?
 			if( (*it) == tile->BackImage ){
@@ -260,7 +250,7 @@ void Map::DeleteTile( MapTile* tile )
 				break;
 			}
 		}
-	}
+	}*/
 	delete tile;
 }
 

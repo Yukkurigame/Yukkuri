@@ -68,6 +68,9 @@ public:
 	void CreateGLSpriteList( vector<Sprite* >* sprites );
 	void CreateGLTextureAtlas( int size, imageRect rects[], int count );
 
+	void AddImageRectArray( vector < imageRect* >* rects );
+	void RemoveImageRectArray( vector < imageRect* >* rects );
+
 	void FreeGLSprite( Sprite* );
 	void FreeTextSprite( Sprite** );
 
@@ -90,6 +93,9 @@ private:
 	static Graphics* graph;
 
 	SDL_Surface* screen;
+
+	void DrawImageRects( vector < imageRect* >* rects );
+
 	void AddGLTexture( Texture* , string );
 	Texture* GetGLTexture( string );
 	inline void DrawGLTexture( Sprite* s ){
@@ -116,6 +122,8 @@ private:
 	font_data* GetFont( string name, int size);
 	Sprite* CreateTextTexture( font_data* ftfont, float x, float y, float z, Color* color, string str, short cached=0 );
 
+	void DrawSDLSurface( SDL_Surface* surface );
+
 
 	vector < Sprite* > GLSprites;
 	std::map < string, vector< coord2farr* > > Animations;
@@ -123,9 +131,15 @@ private:
 	std::map < string, std::map< int, font_data* > > LoadedFonts;
 	std::map < font_data*, std::map< string, Texture* > > CachedTexts;
 
+	vector < imageRect* >* ImageRects;
+
 	GLuint MapListBase;
 
 	ViewPoint vpoint;
+
+	vector < SDL_Surface* > testsurf;
+
+
 };
 
 

@@ -62,7 +62,7 @@ private:
 	float posY;
 
 	std::map< signed int, std::map< signed int, MapTile* > > Tiles;
-	std::vector< Sprite* > TileSprites;
+	std::vector< imageRect* > TileSprites;
 
 };
 

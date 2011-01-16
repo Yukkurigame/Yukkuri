@@ -45,7 +45,7 @@ inline int next_p2( int a )
 	return rval;
 }
 
-bool compareSprites( Sprite* s1, Sprite* s2 )
+inline bool compareSprites( Sprite* s1, Sprite* s2 )
 {
 	if( s1->vertices->z == s2->vertices->z ){
 		if( s1->posy == s2->posy ){
@@ -54,6 +54,17 @@ bool compareSprites( Sprite* s1, Sprite* s2 )
 		return ( s1->posy > s2->posy );
 	}
 	return ( s1->vertices->z < s2->vertices->z );
+}
+
+inline bool compareRects( imageRect* s1, imageRect* s2 )
+{
+	if( s1->z == s2->z ){
+		if( s1->y == s2->y ){
+			return ( s1->x > s2->x );
+		}
+		return ( s1->y > s2->y );
+	}
+	return ( s1->z < s2->z );
 }
 
 bool Graphics::SetScreen( SDL_Surface* s )
@@ -258,7 +269,6 @@ void Graphics::ChangeTextSprite( Sprite* spr, string fontname, int size, string 
  * centered - origin at the center of the object if not 0;
  * return Sprite*
  */
-
 Sprite* Graphics::CreateGLSprite( float x, float y, float z, float texX, float texY, float width,
 						float height, Texture* tex, short mirrored, short centered,  short cached )
 {
@@ -318,9 +328,11 @@ void Graphics::CreateGLTextureAtlas( int size, imageRect rects[], int count )
 	SDL_Surface* sdltemp;
 	SDL_Rect src, dst;
 	Texture* Atlas;
+	string name = "Texture Atlas";
 	int colcount, rowcount, texturewidth, textureheight;
 	if( size <= 0 || count <= 0 )
 		return;
+	Atlas = NULL;
 	colcount = static_cast<int>( ceil(sqrt(count)) );
 	texturewidth = next_p2( colcount * size );
 	colcount = texturewidth / size;
@@ -333,7 +345,9 @@ void Graphics::CreateGLTextureAtlas( int size, imageRect rects[], int count )
 	#else
 	rmask = 0x000000ff; gmask = 0x0000ff00; bmask = 0x00ff0000; amask = 0xff000000;
 	#endif
-	sdlAtlas = SDL_CreateRGBSurface(SDL_SWSURFACE, texturewidth, textureheight, 32, rmask, gmask, bmask, amask);
+
+	sdlAtlas = SDL_CreateRGBSurface(SDL_SWSURFACE|SDL_SRCALPHA, texturewidth, textureheight, 24,
+									rmask, gmask, bmask, amask);
 	SDL_SetAlpha( sdlAtlas, 0, SDL_ALPHA_OPAQUE );
 
 	for( int row = 0, cnt = 0; row < rowcount; ++row ){
@@ -346,22 +360,40 @@ void Graphics::CreateGLTextureAtlas( int size, imageRect rects[], int count )
 														textureheight, 0);
 			src.x = rects[cnt].x;
 			src.y = rects[cnt].y;
-			dst.x  = size * row;
-			dst.y = size * col;
+			dst.x  = size * col;
+			dst.y = size * row;
 			SDL_BlitSurface( sdltemp, &src, sdlAtlas, &dst );
 			SDL_FreeSurface( sdltemp );
 			++cnt;
 		}
 	}
 
+	//testsurf.push_back( sdlAtlas );
+
 	Atlas = CreateGlTexture( sdlAtlas );
 
-	SDL_FreeSurface( sdlAtlas );
+	//SDL_FreeSurface( sdlAtlas );
+
+	name += size + "x" + count;
+	AddGLTexture( Atlas, name );
 
 	for( int i = 0; i < count; ++i ){
 		rects[i].texture = Atlas;
 	}
 
+}
+
+//TODO: array of rects
+void Graphics::AddImageRectArray( vector < imageRect* >* rects )
+{
+	sort( rects->begin(), rects->end(), compareRects );
+	ImageRects = rects;
+}
+//TODO: everything 'll be turned into imageRects, even the sky, Allah himself.
+void Graphics::RemoveImageRectArray( vector < imageRect* >* rects )
+{
+	if( ImageRects == rects )
+		ImageRects = NULL;
 }
 
 void Graphics::FreeGLSprite( Sprite* spr )
@@ -486,14 +518,18 @@ void Graphics::MoveGlScene( float x, float y, float z )
 
 void Graphics::DrawGLScene()
 {
-	if( glIsList( MapListBase ) )
-		glCallList( MapListBase );
+	DrawImageRects( ImageRects );
+
 	sort(GLSprites.begin(), GLSprites.end(), compareSprites);
 	for( vector<Sprite*>::iterator it = GLSprites.begin(), end = GLSprites.end(); it != end; ++it ){
 		if( (*it)->visible ){
 			DrawGLTexture( (*it) );
 		}
 	}
+
+	for( unsigned int i = 0; i < testsurf.size(); ++i  )
+		DrawSDLSurface( testsurf[i] );
+
 	glLoadIdentity();
 	SDL_GL_SwapBuffers();
 }
@@ -593,8 +629,73 @@ Graphics::~Graphics( )
 	LoadedFonts.clear();
 }
 
+void Graphics::DrawImageRects( vector < imageRect* >* rects )
+{
+	float xm, xp, ym, yp;
+	coord2farr* coord;
+	Texture* first;
+	imageRect* temp;
+	if( rects->size() < 1 || ! rects->front()->texture )
+			return;
+	first = rects->front()->texture;
+
+
+	glBindTexture( GL_TEXTURE_2D, *first->texture );
+	//glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+	glBegin(GL_QUADS);
+
+	glColor4ub( first->clr.r, first->clr.g, first->clr.b, first->clr.a );
+
+	for( vector< imageRect* >::iterator it = rects->begin(), end = rects->end(); it != end; ++it ){
+		temp = (*it);
+		if( first != temp->texture )
+			continue;
+
+		coord = temp->coordinates;
+
+		xp = temp->x + temp->width;
+		xm = temp->x;
+		yp = temp->y + temp->height;
+		ym = temp->y;
+
+		if( coord ){
+			//Bottom-left vertex (corner)
+			glTexCoord2f( coord->lb.x, coord->lb.y );
+			glVertex3f( xm, ym, temp->z );
+
+			//Bottom-right vertex (corner)
+			glTexCoord2f( coord->rb.x , coord->rb.y );
+			glVertex3f( xp, ym, temp->z );
+
+			//Top-right vertex (corner)
+			glTexCoord2f( coord->rt.x , coord->rt.y );
+			glVertex3f( xp, yp, temp->z );
+
+			//Top-left vertex (corner)
+			glTexCoord2f( coord->lt.x , coord->lt.y );
+			glVertex3f( xm, yp, temp->z );
+		}else{
+			glVertex3f( xm, ym, temp->z ); //Bottom-left
+			glVertex3f( xp, ym, temp->z ); //Bottom-right
+			glVertex3f( xp, yp, temp->z ); //Top-right
+			glVertex3f( xm, yp, temp->z ); //Top-left
+		}
+	}
+
+	glEnd();
+	//glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+}
+
 void Graphics::AddGLTexture( Texture* texture, string name)
 {
+	Texture* cached;
+	if( !texture )
+		return;
+	cached = GetGLTexture( name );
+	if( cached == texture )
+		return;
+	FreeGLTexture( cached );
 	LoadedGLTextures[name] = texture;
 }
 
@@ -908,4 +1009,38 @@ Sprite* Graphics::CreateTextTexture( font_data* ftfont, float x, float y, float 
 	}
 
 	return ret;
+}
+
+// This function for debug only yet.
+void Graphics::DrawSDLSurface( SDL_Surface* surface )
+{
+	int bytes;
+
+	if( !surface )
+		return;
+
+	bytes = surface->pitch / surface->w;
+
+	glRasterPos3i( 0, 0, 1 );
+
+	glDisable( GL_TEXTURE_2D );
+
+	switch( bytes ){
+		case 4:
+		#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+			glDrawPixels( surface->w, surface->h, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8, surface->pixels );
+		#else
+			glDrawPixels( surface->w, surface->h, GL_BGRA, GL_UNSIGNED_BYTE, surface->pixels );
+		#endif
+			break;
+		case 3:
+			glDrawPixels( surface->w, surface->h, GL_RGB, GL_UNSIGNED_BYTE, surface->pixels );
+			break;
+		case 2:
+			glDrawPixels( surface->w, surface->h, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, surface->pixels );
+			break;
+	}
+
+	glEnable( GL_TEXTURE_2D );
+
 }

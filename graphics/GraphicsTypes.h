@@ -76,6 +76,9 @@ struct imageRect
 	char imageName[65];
 	float x;
 	float y;
+	float z;
+	float width;
+	float height;
 	Texture* texture;
 	coord2farr* coordinates;
 };

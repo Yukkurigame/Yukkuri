@@ -85,6 +85,7 @@ static struct MapDefines{
 	int yXCount;
 	int yYCount;
 	void Init( ){
+		//FIXME: This magic needs to be described
 		OffsetX = conf.windowWidth >> 7;
 		OffsetY = ( conf.windowHeight/2 + 32 ) >> 5;
 		xXCount = conf.windowWidth >> 6;
@@ -117,6 +118,8 @@ MapTile::MapTile( signed int x, signed int y ) {
 
 	map.fromMapCoordinates( &x, &y );
 
+	Image.x = x;
+	Image.y = y;
 
 	if( TypeID ){
 		//FIXME: ororoshenkiroro
@@ -164,6 +167,9 @@ bool Map::LoadTiles( )
 	memset(TilesArray[0].imageName, 0, 65);
 	TilesArray[0].x = 0;
 	TilesArray[0].y = 0;
+	TilesArray[0].z = 0;
+	TilesArray[0].coordinates = NULL;
+	TilesArray[0].width = TilesArray[0].height = conf.mapTileSize;
 	for( int i = 1; i < TileTypesCount; ++i ){
 		char name[100];
 		memset(name, 0, 65);
@@ -173,6 +179,9 @@ bool Map::LoadTiles( )
 		strcpy( TilesArray[i].imageName, name );
 		TilesArray[i].x = Subconfigs[i-1].count("offsetx") ? atof(Subconfigs[i-1]["offsetx"].c_str()) : 0;
 		TilesArray[i].y = Subconfigs[i-1].count("offsety") ? atof(Subconfigs[i-1]["offsety"].c_str()) : 0;
+		TilesArray[i].z = 0;
+		TilesArray[i].coordinates = NULL;
+		TilesArray[i].width = TilesArray[i].height = conf.mapTileSize;
 	}
 	Graphics::Instance()->CreateGLTextureAtlas( conf.mapTileSize, &TilesArray[0], TileTypesCount );
 
@@ -211,9 +220,9 @@ MapTile* Map::CreateTile( signed int x, signed int y )
 		return tile;
 	tile = new MapTile( x, y );
 	Tiles[x][y] = tile;
-	/*if( tile->Image )
-		TileSprites.push_back( tile->Image );
-	if( tile->BackImage )
+	if( tile->Image.texture )
+		TileSprites.push_back( &tile->Image );
+	/*if( tile->BackImage )
 		TileSprites.push_back( tile->BackImage );
 	*/
 	Updated = true;
@@ -235,12 +244,12 @@ void Map::DeleteTile( MapTile* tile )
 	if( !tile )
 		return;
 	Updated = true;
-	for( vector< Sprite* >::iterator it = TileSprites.begin(), end = TileSprites.end(); it != end; ++it ){
+	for( vector< imageRect* >::iterator it = TileSprites.begin(), end = TileSprites.end(); it != end; ++it ){
 		//FIXME: null pointer error?
-		/*if( (*it) == tile->Image ){
+		if( (*it) == &tile->Image ){
 			TileSprites.erase( it );
 			break;
-		}*/
+		}
 	}
 	/*if( tile->BackImage ){
 		for( vector< Sprite* >::iterator it = TileSprites.begin(), end = TileSprites.end(); it != end; ++it ){
@@ -379,7 +388,8 @@ void Map::Draw( )
 		/*char d[3];
 		sprintf(d, "%d\n", TileSprites.size());
 		debug(0, d);*/
-		Graphics::Instance( )->CreateGLSpriteList( &TileSprites );
+		//Graphics::Instance( )->CreateGLSpriteList( &TileSprites );
+		Graphics::Instance()->AddImageRectArray( &TileSprites );
 		Updated = false;
 	}
 }

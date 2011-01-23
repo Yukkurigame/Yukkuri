@@ -137,9 +137,6 @@ private:
 
 	ViewPoint vpoint;
 
-	vector < SDL_Surface* > testsurf;
-
-
 };
 
 

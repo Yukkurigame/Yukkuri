@@ -6,9 +6,9 @@
 #include <math.h>
 
 extern MainConfig conf;
-static int TilesCount = 0;
+static unsigned int TilesCount = 0;
 //FIXME: Я не знаю, почему не вношу это в Map
-static int TileTypesCount = 0;
+static unsigned int TileTypesCount = 0;
 static imageRect* TilesArray = NULL;
 static bool TilesLoaded = false;
 
@@ -17,14 +17,13 @@ Map map;
 namespace Region
 {
 
-	static std::map< signed int, std::map< signed int, int > >  RegionDump;
-	static std::map< signed int, std::map< signed int, int > >  RegionBackDump;
+	static std::map< signed int, std::map< signed int, unsigned int > >  RegionDump;
+	static std::map< signed int, std::map< signed int, unsigned int > >  RegionBackDump;
 
 	void Load( std::string name ){
 		debug( 5, "Loading region " + name + ".\n" );
 		bool Backing;
 		char BackName[3];
-		std::map< int, bool > TileBack;
 		std::vector< std::map< string, int > > Tiles;
 		LuaConfig::Instance()->getValue( "tiles", name, "mapregion", Tiles );
 		//Lua cannot into number keys
@@ -41,24 +40,20 @@ namespace Region
 				RegionDump[x][y] = type;
 
 				//FIXME: Убрать этот костыль, перенести в imageRect
-				if( TileBack.count( type ) > 0 ){
-					Backing = TileBack[type];
-				}else{
-					sprintf( BackName, "%d", type );
-					LuaConfig::Instance()->getValue( "backing", BackName, "tiles", Backing );
-				}
+				//FIXME: А как?
+				sprintf( BackName, "%d", type );
+				LuaConfig::Instance()->getValue( "backing", BackName, "tiles", Backing );
 				if( Backing ){
 					if( it->count( "backtype" ) > 0 )
 						RegionBackDump[x][y] = (*it)["backtype"];
 					else
 						RegionBackDump[x][y] = conf.mapDefaultTile;
-					TileBack[type] = true;
 				}
 			}
 		}
 	}
 
-	int GetTile( signed int x, signed int y ){
+	unsigned int GetTile( signed int x, signed int y ){
 		if( RegionDump.count( x ) > 0) {
 			if( RegionDump[x].count( y ) > 0 ){
 				return RegionDump[x][y];
@@ -67,7 +62,7 @@ namespace Region
 		return conf.mapDefaultTile;
 	}
 
-	int GetTileBack( signed int x, signed int y ){
+	unsigned int GetTileBack( signed int x, signed int y ){
 		if( RegionBackDump.count( x ) > 0) {
 			if( RegionBackDump[x].count( y ) > 0 ){
 				return RegionBackDump[x][y];
@@ -75,6 +70,27 @@ namespace Region
 		}
 		return 0;
 	}
+}
+
+/* Return tile with passed id.
+ * If id not found and tiles array exists its return first tile.
+ * Otherwise returns tile with -1 as id.
+ */
+static inline imageRect getTileById( int tileid )
+{
+	if( TilesLoaded && TilesArray ){
+		for( unsigned int i = 0; i < TileTypesCount; ++i ){
+			if( TilesArray[i].id == tileid )
+				return TilesArray[i];
+		}
+		char d[30];
+		sprintf( d, "Tile with id %d not found.\n", tileid );
+		debug( 3, d );
+		return TilesArray[0];
+	}
+	debug( 3, "Tiles not loaded.\n" );
+	imageRect fake;
+	return fake;
 }
 
 static struct MapDefines{
@@ -98,31 +114,36 @@ static struct MapDefines{
 //TODO:Одноуровневая карта, высокие объекты занимают 2 клетки вместо одной.
 
 MapTile::MapTile( signed int x, signed int y ) {
-	int backtype;
 	TileID = TilesCount;
 	TilesCount++;
 
 	posX = x;
 	posY = y;
-	Backing = false;
 
 	TypeID = Region::GetTile( x, y );
 	if( TypeID > TileTypesCount )
 		TypeID = 0;
 
-	Image = TilesArray[TypeID];
+	Image = getTileById( TypeID );
 
-	backtype = Region::GetTileBack(x, y);
-
-	char name[ sizeof(TypeID) ];
+	BackType = Region::GetTileBack(x, y);
 
 	map.fromMapCoordinates( &x, &y );
 
 	Image.x = x;
 	Image.y = y;
 
+	if( BackType ){
+		BackImage = getTileById( BackType );
+		BackImage.x = x;
+		BackImage.y = y;
+		BackImage.z -= 0.01;
+	}
+
+
 	if( TypeID ){
 		//FIXME: ororoshenkiroro
+		char name[ sizeof(TypeID) ];
 		memset( name, 0, sizeof(name) );
 		sprintf( name, "%d", TypeID );
 		LuaConfig::Instance()->getValue( "passability", name, "tiles", Passability );
@@ -161,7 +182,7 @@ bool Map::LoadTiles( )
 		sprintf( dbg, "Tiles found: %d\n", Subconfigs.size() );
 		debug( 5, dbg );
 	}
-	TileTypesCount++; // First tile are blank;
+	//TileTypesCount++; // First tile are blank;
 	TilesArray = (imageRect*)malloc( sizeof(imageRect) * ( TileTypesCount ) );
 	TilesArray[0].id = 0;
 	memset(TilesArray[0].imageName, 0, 65);
@@ -170,20 +191,22 @@ bool Map::LoadTiles( )
 	TilesArray[0].z = 0;
 	TilesArray[0].coordinates = NULL;
 	TilesArray[0].width = TilesArray[0].height = conf.mapTileSize;
-	for( int i = 1; i < TileTypesCount; ++i ){
+	for( unsigned int i = 0; i < TileTypesCount; ++i ){
 		char name[100];
 		memset(name, 0, 65);
 		if( Subconfigs[i-1].count("image") )
-			strcpy(name, Subconfigs[i-1]["image"].c_str());
-		TilesArray[i].id =  Subconfigs[i-1].count("name") ? atoi(Subconfigs[i-1]["name"].c_str()) : 0;
+			strcpy(name, Subconfigs[i]["image"].c_str());
+		TilesArray[i].id =  Subconfigs[i].count("name") ? atoi(Subconfigs[i]["name"].c_str()) : 0;
 		strcpy( TilesArray[i].imageName, name );
-		TilesArray[i].x = Subconfigs[i-1].count("offsetx") ? atof(Subconfigs[i-1]["offsetx"].c_str()) : 0;
-		TilesArray[i].y = Subconfigs[i-1].count("offsety") ? atof(Subconfigs[i-1]["offsety"].c_str()) : 0;
+		TilesArray[i].x = Subconfigs[i].count("offsetx") ? atof(Subconfigs[i]["offsetx"].c_str()) : 0;
+		TilesArray[i].y = Subconfigs[i].count("offsety") ? atof(Subconfigs[i]["offsety"].c_str()) : 0;
 		TilesArray[i].z = 0;
 		TilesArray[i].coordinates = NULL;
 		TilesArray[i].width = TilesArray[i].height = conf.mapTileSize;
 	}
 	Graphics::Instance()->CreateGLTextureAtlas( conf.mapTileSize, &TilesArray[0], TileTypesCount );
+
+	TilesLoaded = true;
 
 	return true;
 }
@@ -222,9 +245,8 @@ MapTile* Map::CreateTile( signed int x, signed int y )
 	Tiles[x][y] = tile;
 	if( tile->Image.texture )
 		TileSprites.push_back( &tile->Image );
-	/*if( tile->BackImage )
-		TileSprites.push_back( tile->BackImage );
-	*/
+	if( tile->BackType )
+		TileSprites.push_back( &tile->BackImage );
 	Updated = true;
 	return tile;
 }
@@ -251,15 +273,15 @@ void Map::DeleteTile( MapTile* tile )
 			break;
 		}
 	}
-	/*if( tile->BackImage ){
-		for( vector< Sprite* >::iterator it = TileSprites.begin(), end = TileSprites.end(); it != end; ++it ){
+	if( tile->BackType ){
+		for( vector< imageRect* >::iterator it = TileSprites.begin(), end = TileSprites.end(); it != end; ++it ){
 			//FIXME: null pointer error?
-			if( (*it) == tile->BackImage ){
+			if( (*it) == &tile->BackImage ){
 				TileSprites.erase( it );
 				break;
 			}
 		}
-	}*/
+	}
 	delete tile;
 }
 
@@ -388,7 +410,6 @@ void Map::Draw( )
 		/*char d[3];
 		sprintf(d, "%d\n", TileSprites.size());
 		debug(0, d);*/
-		//Graphics::Instance( )->CreateGLSpriteList( &TileSprites );
 		Graphics::Instance()->AddImageRectArray( &TileSprites );
 		Updated = false;
 	}

@@ -346,7 +346,7 @@ void Graphics::CreateGLTextureAtlas( int size, imageRect rects[], int count )
 	rmask = 0x000000ff; gmask = 0x0000ff00; bmask = 0x00ff0000; amask = 0xff000000;
 	#endif
 
-	sdlAtlas = SDL_CreateRGBSurface(SDL_SWSURFACE|SDL_SRCALPHA, texturewidth, textureheight, 24,
+	sdlAtlas = SDL_CreateRGBSurface(SDL_SWSURFACE|SDL_SRCALPHA, texturewidth, textureheight, 32,
 									rmask, gmask, bmask, amask);
 	SDL_SetAlpha( sdlAtlas, 0, SDL_ALPHA_OPAQUE );
 
@@ -356,23 +356,26 @@ void Graphics::CreateGLTextureAtlas( int size, imageRect rects[], int count )
 				break;
 			const char* imageName = rects[cnt].imageName;
 			sdltemp = LoadImage( imageName );
-			rects[cnt].coordinates = GetCoordinates( rects[cnt].x, rects[cnt].y, size, size, texturewidth,
-														textureheight, 0);
+
 			src.x = rects[cnt].x;
 			src.y = rects[cnt].y;
 			dst.x  = size * col;
 			dst.y = size * row;
+
+			rects[cnt].coordinates = GetCoordinates( dst.x, dst.y, size, size, texturewidth,
+																	textureheight, 0);
+
+			SDL_SetAlpha( sdltemp, 0, SDL_ALPHA_OPAQUE );
 			SDL_BlitSurface( sdltemp, &src, sdlAtlas, &dst );
 			SDL_FreeSurface( sdltemp );
+
 			++cnt;
 		}
 	}
 
-	//testsurf.push_back( sdlAtlas );
-
 	Atlas = CreateGlTexture( sdlAtlas );
 
-	//SDL_FreeSurface( sdlAtlas );
+	SDL_FreeSurface( sdlAtlas );
 
 	name += size + "x" + count;
 	AddGLTexture( Atlas, name );
@@ -527,9 +530,6 @@ void Graphics::DrawGLScene()
 		}
 	}
 
-	for( unsigned int i = 0; i < testsurf.size(); ++i  )
-		DrawSDLSurface( testsurf[i] );
-
 	glLoadIdentity();
 	SDL_GL_SwapBuffers();
 }
@@ -561,8 +561,8 @@ bool Graphics::SaveScreenshot( )
 	#endif
 
 	stride = screen->w * 4;
-	pixels = (GLubyte *) malloc(stride * screen->h);
-	swapline = (GLubyte *) malloc(stride);
+	pixels = (GLubyte *) malloc( stride * screen->h );
+	swapline = (GLubyte *) malloc( stride );
 	glReadBuffer(GL_FRONT);
 	glReadPixels(0, 0, screen->w, screen->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 	// vertical flip

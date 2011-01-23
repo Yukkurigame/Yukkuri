@@ -81,6 +81,12 @@ struct imageRect
 	float height;
 	Texture* texture;
 	coord2farr* coordinates;
+	imageRect() {
+		id = -1;
+		x = y = z = width = height = 0;
+		texture = NULL;
+		coordinates = NULL;
+	}
 };
 
 struct Sprite

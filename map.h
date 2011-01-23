@@ -15,13 +15,14 @@ enum {
 
 struct MapTile
 {
-	int TileID;
-	int TypeID;
+	unsigned int TileID;
+	unsigned int TypeID;
 	signed int posX;
 	signed int posY;
+	int BackType;
 	float Passability;
-	bool Backing;
 	imageRect Image;
+	imageRect BackImage;
 	MapTile( signed int x, signed int y );
 	~MapTile();
 };

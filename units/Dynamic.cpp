@@ -50,39 +50,43 @@ bool DynamicUnit::loadAnimation()
 void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 {
 	if( x != 0 || y != 0 ){
-		//char d[30];
-		//extern Map map;
+		char d[30];
+		extern Map map;
 		float zone = 1.0;
 		float l = sqrt( x * x  +  y * y );
 		float speed = fabs( Parameters["speed"] * Parameters["fed"] ) * zone * ( dt / 100000.0 ) / l;
 		float dx = speed * x;// / l;
 		float dy = speed * y ;// / l;
-		//MapTile* tile = map.GetTile( X + dx * x, Y + dy * y );
-		//if(tile) zone = tile->Passability;
+		MapTile* tile = map.GetTile( X + dx * x, Y + dy * y );
+		if(tile) zone = tile->Passability;
 		//if(zone == 0) zone = 0.05;
-		//sprintf(d, "%f:%f %d:%d %f\n", X, Y, tile->posX, tile->posY, zone);
-		//debug(0, d);
-		//dx *= zone;
-		//dy *= zone;
+		if(tile){
+			sprintf(d, "%f:%f %d:%d %f\n", X, Y, tile->posX, tile->posY, zone);
+			debug(0, d);
+		}
+		dx *= zone;
+		dy *= zone;
 		float distance = sqrt( dx * dx + dy * dy );
 		TotalDistance += distance;
-		if( dx < 0 && dy > 0 ) 			//FUUUU
-			anim = Animdef.leftup;		//UUUUU
-		else if( dx < 0 && dy < 0 ) 	//UUUUU
-			anim = Animdef.leftdown;	//UUUUU
-		else if( dx > 0 && dy > 0 ) 	//UUUUU
-			anim = Animdef.rightup; 	//UUUUU
-		else if( dx > 0 && dy < 0 ) 	//UUUUU
-			anim = Animdef.rightdown;	//UUUUU
-		else if( dy > 0 ) 				//UUUUU
-			anim = Animdef.up;	 		//UUUUU
-		else if( dy < 0 ) 				//UUUUU
-			anim = Animdef.down;	 	//UUUUU
-		else if( dx < 0 ) 				//UUUUU
-			anim = Animdef.left;	 	//UUUUU
-		else if( dx > 0 ) 				//UUUUU
-			anim = Animdef.right;		//UUUUU
-		setUnitAnim( anim[0] + ( anim[1] > 1 ? ( static_cast<int>(TotalDistance) / m_animdistance) % anim[1] : 0 ) );
+		if( dx || dy ) {
+			if( dx < 0 && dy > 0 ) 			//FUUUU
+				anim = Animdef.leftup;		//UUUUU
+			else if( dx < 0 && dy < 0 ) 	//UUUUU
+				anim = Animdef.leftdown;	//UUUUU
+			else if( dx > 0 && dy > 0 ) 	//UUUUU
+				anim = Animdef.rightup; 	//UUUUU
+			else if( dx > 0 && dy < 0 ) 	//UUUUU
+				anim = Animdef.rightdown;	//UUUUU
+			else if( dy > 0 ) 				//UUUUU
+				anim = Animdef.up;	 		//UUUUU
+			else if( dy < 0 ) 				//UUUUU
+				anim = Animdef.down;	 	//UUUUU
+			else if( dx < 0 ) 				//UUUUU
+				anim = Animdef.left;	 	//UUUUU
+			else if( dx > 0 ) 				//UUUUU
+				anim = Animdef.right;		//UUUUU
+			setUnitAnim( anim[0] + ( anim[1] > 1 ? ( static_cast<int>(TotalDistance) / m_animdistance) % anim[1] : 0 ) );
+		}
 		X += dx;
 		Y += dy;
 		if( Parameters["fed"] > 1 )

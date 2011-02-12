@@ -85,7 +85,7 @@
 --- *.widget
 --- Widgets has some types(variable type).
 --- All unspecified fields are 0 by default.
---- children - it's array of widget names. 
+--- children - it's array of widget names.
 {
 	"Widget",
 	{
@@ -206,7 +206,7 @@
 			{
 				x = 1,
 				y = 1,
-				type = 2, --- Number - tile name. All Tiles 1 by default.				
+				type = 2, --- Number - tile name. All Tiles 1 by default.
 			},
 			{
 				x = 1,

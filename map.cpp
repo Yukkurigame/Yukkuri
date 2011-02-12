@@ -100,14 +100,16 @@ static struct MapDefines{
 	int xYCount;
 	int yXCount;
 	int yYCount;
+	int lTileSize;
 	void Init( ){
 		//FIXME: This magic needs to be described
-		OffsetX = conf.windowWidth >> 7;
-		OffsetY = ( conf.windowHeight/2 + 32 ) >> 5;
-		xXCount = conf.windowWidth >> 6;
-		xYCount = ( conf.windowHeight + 32 ) >> 3;
-		yXCount = conf.windowWidth >> 5;
-		yYCount = conf.windowHeight >> 5;
+		lTileSize = static_cast<int>( log(conf.mapTileSize) / log(2) );
+		OffsetX = conf.windowWidth >> ( lTileSize + 2 );
+		OffsetY = ( conf.windowHeight/2 + 32 ) >> lTileSize;
+		xXCount = conf.windowWidth >> ( lTileSize + 1 );
+		xYCount = ( conf.windowHeight + 32 ) >> ( lTileSize - 2 );
+		yXCount = conf.windowWidth >> lTileSize;
+		yYCount = conf.windowHeight >> lTileSize;
 	}
 } Defines;
 
@@ -130,13 +132,14 @@ MapTile::MapTile( signed int x, signed int y ) {
 
 	map.fromMapCoordinates( &x, &y );
 
-	Image.x = x;
-	Image.y = y;
+	//FIXME: я не уверен, что это правильно, но выглядит нормально. Может внезапно вылезти боком.
+	Image.x = x - ( conf.mapTileSize >> 1 );
+	Image.y = y - ( conf.mapTileSize >> 2 );
 
 	if( BackType ){
 		BackImage = getTileById( BackType );
-		BackImage.x = x;
-		BackImage.y = y;
+		BackImage.x = x - ( conf.mapTileSize >> 1 );
+		BackImage.y = y - ( conf.mapTileSize >> 2 );
 		BackImage.z -= 0.01;
 	}
 
@@ -221,18 +224,24 @@ bool Map::Init( )
 	return true;
 }
 
-void Map::toMapCoordinates( int* x, int* y )
+void Map::toMapCoordinates( int* mx, int* my )
 {
-	//FIXME: static tile size
-	*x >>= 6;
-	*y >>= 4;
+	signed int x, y;
+	x = ( 2 * (*my) + (*mx) ) / 2;
+    y = ( 2 * (*my) - (*mx) ) / 2;
+    *mx = x >> Defines.lTileSize;
+    *my = y >> Defines.lTileSize;
 }
 
 void Map::fromMapCoordinates( int* x, int* y )
 {
-	//FIXME: static tile size
-	*x = ( (*x) << 6 ) + ( ( (*y) & 1 ) << 5 );
-	*y <<= 4;
+	signed int mx, my;
+	*x <<= Defines.lTileSize;
+	*y <<= Defines.lTileSize;
+	mx = (*x) - (*y);
+	my = (*x) / 2 + (*y) / 2;
+	*x = mx;
+	*y = my;
 }
 
 MapTile* Map::CreateTile( signed int x, signed int y )

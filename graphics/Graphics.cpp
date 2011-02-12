@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include "config.h"
+#include "debug.h"
 
 extern MainConfig conf;
 
@@ -717,6 +718,23 @@ void Graphics::DrawGLTexture( Texture* tex, vertex3farr* vertices, coord2farr* c
 		offsetx = vpoint.x;
 		offsety = vpoint.y;
 	}
+
+//Draw border around texture
+#ifdef DEBUG_DRAW_RECTANGLES
+	glDisable(GL_TEXTURE_2D);
+
+	glColor3ub( 255, 255, 0);
+
+	glBegin(GL_LINE_LOOP);
+		glVertex3f( vertices->lb.x - offsetx - 1, vertices->lb.y - offsety - 1, vertices->z ); //Bottom-left
+		glVertex3f( vertices->rb.x - offsetx + 1, vertices->rb.y - offsety - 1, vertices->z ); //Bottom-right
+		glVertex3f( vertices->rt.x - offsetx + 1, vertices->rt.y - offsety + 1, vertices->z ); //Top-right
+		glVertex3f( vertices->lt.x - offsetx - 1, vertices->lt.y - offsety + 1, vertices->z ); //Top-left
+	glEnd();
+
+	glEnable(GL_TEXTURE_2D);
+#endif
+
 	if(tex && tex->texture){
 		glBindTexture( GL_TEXTURE_2D, *tex->texture );
 	}else{

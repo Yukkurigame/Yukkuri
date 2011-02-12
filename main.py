@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os, sys
+import signal
 from PyQt4 import QtCore,QtGui
 from map import *
 from Editor import Ui_Editor
@@ -212,6 +213,7 @@ class Main(QtGui.QMainWindow):
         print 'ololo'            
 
 def main():
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
     app = QtGui.QApplication(sys.argv)
     window=Main()
     window.show()

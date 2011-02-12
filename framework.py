@@ -70,7 +70,7 @@ def RefillFields(element, data):
 #           Images              #
 #################################
 
-def CreatePixmap(name, x = 0, y = 0, width = 64, height = 64):
+def CreatePixmap(name, x=0, y=0, width=64, height=64):
     if not name: return
     image = QPixmap()
     result = image.load(os.path.join(config.path, '..', 'images', name))
@@ -81,3 +81,46 @@ def CreatePixmap(name, x = 0, y = 0, width = 64, height = 64):
 def ShowImage(image, target):
     target.resize(image.width(), image.height())
     target.setPixmap(image)
+
+#################################
+#           Classes             #
+#################################
+
+class Sprite(dict):
+    
+    def __init__(self, position=None, image=None, depth=0):
+        self.rect = None
+        self.image = None
+        self.z = depth
+        self.setRect(position)
+        self.setImage(image)
+    
+    def setRect(self, rect):
+        if type(rect).__name__ == 'QRect':
+            self.rect = rect
+    
+    def setImage(self, image):
+        if type(image).__name__ == 'QPixmap':
+            self.image = image
+
+    def __getattr__(self, item):
+        result = None
+        try:
+            if item in ('x', 'y', 'width', 'height'):
+                if self.rect != None:
+                    result = getattr(self.rect, item)()
+            else:
+                result = self.__getitem__(item)
+        except Exception, e:
+            print e
+        return result
+    
+    def __setattr__(self, item, value):
+        try:
+            if item in ('x', 'y', 'width', 'height'):
+                if self.rect != None:
+                    getattr(self.rect, 'set' + item.capitalize())(value)
+            else:
+                self.__setitem__(item, value)
+        except Exception, e:
+            print e

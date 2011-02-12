@@ -73,8 +73,6 @@ class Lua:
 
     def dump(self, filename, data):
         text = SLPP().encode(data)
-        #print text
-        #return
         if text:
             stream = file(filename, 'w')
             stream.write(text)

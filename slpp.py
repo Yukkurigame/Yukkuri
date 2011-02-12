@@ -11,7 +11,8 @@ class SLPP:
 
     def decode(self, text):
         if not text or type(text).__name__ != 'str': return
-        text = re.sub('---.*$', '', text, 0, re.M)
+        reg = re.compile('---.*$', re.M)
+        text = reg.sub('', text, 0)
         self.text = text
         self.at, self.ch, self.depth = 0, '', 0
         self.len = len(text)

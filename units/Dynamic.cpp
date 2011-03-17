@@ -57,13 +57,39 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 		float speed = fabs( Parameters["speed"] * Parameters["fed"] ) * zone * ( dt / 100000.0 ) / l;
 		float dx = speed * x;// / l;
 		float dy = speed * y ;// / l;
-		MapTile* tile = map.GetTile( X + dx * x, Y + dy * y );
-		if(tile) zone = tile->Passability;
-		if(zone == 0)
-			zone = -1;
-		if(tile){
-			//sprintf(d, "%f:%f %d:%d %f\n", X, Y, tile->posX, tile->posY, zone);
-			//debug(0, d);
+		MapTile* currentTile = map.GetTile( X , Y );
+		if( currentTile && !currentTile->Passability ){
+			//FIXME: Bad
+			int x, y, px, py, dx;
+			MapTile* nextTile;
+			dx = 9000;
+			x = y = 1;
+			px = X;
+			py = Y;
+			map.toMapCoordinates( &px, &py );
+			for( int i = -1; i < 2; ++i ){
+				for( int j = -1; j < 2; ++j ){
+					nextTile = map.GetTile( px + i, py + j );
+					if( !nextTile )
+						continue;
+					int f = sqrt( pow( nextTile->RealX - X, 2 ) + pow( nextTile->RealY - Y, 2 ) );
+					if( f < dx ){
+						dx = f;
+						x = i;
+						y = j;
+					}
+				}
+			}
+			nextTile = map.GetTile( px + x, py + y );
+			if( nextTile ){
+				dx = ( nextTile->RealX - X ) / 2;
+				dy = ( nextTile->RealY - Y ) / 2;
+			}
+		}else{
+			MapTile* nextTile = map.GetTile( X + dx * x, Y + dy * y );
+			if( nextTile ) zone = nextTile->Passability;
+			if( !zone )
+				zone = -1;
 		}
 		dx *= zone;
 		dy *= zone;

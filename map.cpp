@@ -326,8 +326,8 @@ void Map::DeleteTile( MapTile* tile )
 
 MapTile* Map::GetTile( float x, float y )
 {
-	signed int cx = static_cast<int>(x);
-	signed int cy = static_cast<int>(y);
+	signed int cx = static_cast<int>(floor(x));
+	signed int cy = static_cast<int>(floor(y));
 	toMapCoordinates( &cx, &cy );
 	return GetTile( cx, cy );
 }

@@ -115,7 +115,7 @@ void Graphics::openglSetup( int wwidth, int wheight )
 	glLoadIdentity();
 
 	glOrtho(0.0, wwidth, 0.0, wheight, -10.0, 1.0);
-	//glOrtho(-wwidth, wwidth*1.5, -wheight, wheight*1.5, -10.0, 1.0);
+	//glOrtho(-wwidth*1.5, wwidth*1.5, -wheight*1.5, wheight*1.5, -10.0, 1.0);
 
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
@@ -390,6 +390,8 @@ void Graphics::CreateGLTextureAtlas( int size, imageRect rects[], int count )
 //TODO: array of rects
 void Graphics::AddImageRectArray( vector < imageRect* >* rects )
 {
+	if( rects->size() < 1 )
+		return;
 	sort( rects->begin(), rects->end(), compareRects );
 	ImageRects = rects;
 }
@@ -589,7 +591,7 @@ bool Graphics::SaveScreenshot( )
 /* ** PRIVATE METHODS ** */
 
 Graphics::Graphics( ){
-
+	ImageRects = NULL;
 }
 
 Graphics::~Graphics( )
@@ -636,7 +638,7 @@ void Graphics::DrawImageRects( vector < imageRect* >* rects )
 	coord2farr* coord;
 	Texture* first;
 	imageRect* temp;
-	if( rects->size() < 1 || ! rects->front()->texture )
+	if( !rects || rects->size() < 1 || ! rects->front()->texture )
 			return;
 	first = rects->front()->texture;
 

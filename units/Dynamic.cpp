@@ -50,7 +50,7 @@ bool DynamicUnit::loadAnimation()
 void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 {
 	if( x != 0 || y != 0 ){
-		char d[30];
+		//char d[30];
 		extern Map map;
 		float zone = 1.0;
 		float l = sqrt( x * x  +  y * y );
@@ -59,10 +59,11 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 		float dy = speed * y ;// / l;
 		MapTile* tile = map.GetTile( X + dx * x, Y + dy * y );
 		if(tile) zone = tile->Passability;
-		//if(zone == 0) zone = 0.05;
+		if(zone == 0)
+			zone = -1;
 		if(tile){
-			sprintf(d, "%f:%f %d:%d %f\n", X, Y, tile->posX, tile->posY, zone);
-			debug(0, d);
+			//sprintf(d, "%f:%f %d:%d %f\n", X, Y, tile->posX, tile->posY, zone);
+			//debug(0, d);
 		}
 		dx *= zone;
 		dy *= zone;

@@ -14,6 +14,16 @@ static bool TilesLoaded = false;
 
 Map map;
 
+static int compareRects( const void * a, const void * b )
+{
+    const imageRect* aI = static_cast<const imageRect*>(a);
+    const imageRect* bI = static_cast<const imageRect*>(b);
+    if( aI && bI )
+    	return ( aI->id - bI->id );
+    else
+    	return 0;
+}
+
 namespace Region
 {
 
@@ -79,9 +89,22 @@ namespace Region
 static inline imageRect getTileById( int tileid )
 {
 	if( TilesLoaded && TilesArray ){
-		for( unsigned int i = 0; i < TileTypesCount; ++i ){
-			if( TilesArray[i].id == tileid )
-				return TilesArray[i];
+		int first;
+		int last;
+		int mid;
+
+		if( TilesArray[0].id <= tileid && TilesArray[TileTypesCount-1].id >= tileid ){
+			first = 0;
+			last = TileTypesCount;
+			while( first < last ){
+				mid = first + ( last - first ) / 2;
+				if( tileid <= TilesArray[mid].id )
+					last = mid;
+				else
+					first = mid + 1;
+			}
+			if( TilesArray[last].id == tileid )
+				return TilesArray[last];
 		}
 		char d[30];
 		sprintf( d, "Tile with id %d not found.\n", tileid );
@@ -94,22 +117,28 @@ static inline imageRect getTileById( int tileid )
 }
 
 static struct MapDefines{
-	int OffsetX;
-	int OffsetY;
-	int xXCount;
-	int xYCount;
-	int yXCount;
-	int yYCount;
+	int XCount;
+	int YCount;
 	int lTileSize;
+	posOffset ROffset;
+	posOffset LOffset;
+	posOffset Right;
+	posOffset Top;
 	void Init( ){
 		//FIXME: This magic needs to be described
 		lTileSize = static_cast<int>( log(conf.mapTileSize) / log(2) );
-		OffsetX = conf.windowWidth >> ( lTileSize + 2 );
-		OffsetY = ( conf.windowHeight/2 + 32 ) >> lTileSize;
-		xXCount = conf.windowWidth >> ( lTileSize + 1 );
-		xYCount = ( conf.windowHeight + 32 ) >> ( lTileSize - 2 );
-		yXCount = conf.windowWidth >> lTileSize;
-		yYCount = conf.windowHeight >> lTileSize;
+		Right.set(1, -1);
+		Top.set(1, 1);
+		XCount = conf.windowWidth >> lTileSize;
+		YCount = conf.windowHeight >> lTileSize;
+		ROffset.set( conf.windowWidth / 2, conf.windowHeight / 2 );
+		map.toMapCoordinates(&ROffset.X, &ROffset.Y);
+		ROffset += ROffset;
+		LOffset = ROffset + ( Right * -1 * ( XCount >> 1 ) );
+		//Now (rox, roy) - right top corner
+		//Left-bottom (-rox, -roy)
+		//Left-top (loy, lox)
+		//Right-bottom (-loy, -lox)
 	}
 } Defines;
 
@@ -119,8 +148,8 @@ MapTile::MapTile( signed int x, signed int y ) {
 	TileID = TilesCount;
 	TilesCount++;
 
-	posX = x;
-	posY = y;
+	RealX = posX = x;
+	RealY = posY = y;
 
 	TypeID = Region::GetTile( x, y );
 	if( TypeID > TileTypesCount )
@@ -130,16 +159,16 @@ MapTile::MapTile( signed int x, signed int y ) {
 
 	BackType = Region::GetTileBack(x, y);
 
-	map.fromMapCoordinates( &x, &y );
+	map.fromMapCoordinates( &RealX, &RealY );
 
 	//FIXME: я не уверен, что это правильно, но выглядит нормально. Может внезапно вылезти боком.
-	Image.x = x - ( conf.mapTileSize >> 1 );
-	Image.y = y - ( conf.mapTileSize >> 2 );
+	Image.x = RealX - ( conf.mapTileSize >> 1 );
+	Image.y = RealY - ( conf.mapTileSize >> 2 );
 
 	if( BackType ){
 		BackImage = getTileById( BackType );
-		BackImage.x = x - ( conf.mapTileSize >> 1 );
-		BackImage.y = y - ( conf.mapTileSize >> 2 );
+		BackImage.x = RealX - ( conf.mapTileSize >> 1 );
+		BackImage.y = RealY - ( conf.mapTileSize >> 2 );
 		BackImage.z -= 0.01;
 	}
 
@@ -207,6 +236,7 @@ bool Map::LoadTiles( )
 		TilesArray[i].coordinates = NULL;
 		TilesArray[i].width = TilesArray[i].height = conf.mapTileSize;
 	}
+	qsort(TilesArray, TileTypesCount, sizeof(imageRect), compareRects);
 	Graphics::Instance()->CreateGLTextureAtlas( conf.mapTileSize, &TilesArray[0], TileTypesCount );
 
 	TilesLoaded = true;
@@ -220,7 +250,7 @@ bool Map::Init( )
 	posY = YCamera::CameraControl.GetY();
 	Region::Load("test");
 	Defines.Init();
-	CreateTilesRectangle( -20, -30, 40, 60 );
+	//CreateTilesRectangle( 3, 16, 21, 14 );
 	return true;
 }
 
@@ -315,71 +345,66 @@ MapTile* Map::GetTile( signed int x, signed int y )
 void Map::CreateHTilesLine( signed int startx, signed int starty, int number )
 {
 	for( int i = 0; i < number; ++i ){
-		CreateTile( startx + i, starty );
+		CreateTile( startx + i, starty - i );
 	}
 }
 
 void Map::DeleteHTilesLine( signed int startx, signed int starty, int number )
 {
 	for( int i = 0; i < number; ++i ){
-		DeleteTile( startx + i, starty );
+		DeleteTile( startx + i, starty - i );
 	}
 }
 
 void Map::CreateVTilesLine( signed int startx, signed int starty, int number )
 {
 	for( int i = 0; i < number; ++i ){
-		CreateTile( startx, starty + i );
+		CreateTile( startx - i, starty - i );
 	}
 }
 
 void Map::DeleteVTilesLine( signed int startx, signed int starty, int number )
 {
 	for( int i = 0; i < number; ++i ){
-		DeleteTile( startx, starty + i );
+		DeleteTile( startx - i, starty - i );
 	}
 }
 
 void Map::CreateTilesRectangle( signed int startx, signed int starty, int numberx, int numbery )
 {
 	for( int i = 0; i < numberx; ++i ){
-		CreateVTilesLine( startx + i, starty, numbery );
+		CreateHTilesLine( startx - i, starty - i, numbery );
+		CreateHTilesLine( startx - i + 1, starty - i, numbery );
 	}
 }
 
 void Map::DeleteTilesRectangle( signed int startx, signed int starty, int numberx, int numbery )
 {
 	for( int i = 0; i < numberx; ++i ){
-		DeleteVTilesLine( startx + i, starty, numbery );
+		DeleteVTilesLine( startx - i, starty - i, numbery );
 	}
 }
 
 void Map::Clean( )
 {
-	int cx, cy;
+	int cx, cy, right, left, top, bottom;
+	MapTile* t;
 	cx = YCamera::CameraControl.GetX();
 	cy = YCamera::CameraControl.GetY();
-	toMapCoordinates( &cx, &cy );
+	right = cx + conf.windowWidth + conf.mapTileSize * 3;
+	left = cx - ( conf.windowWidth >> 2 );
+	top = cy + conf.windowHeight + conf.mapTileSize * 3;
+	bottom = cy - ( conf.windowHeight >> 2 );
 	for( std::map< signed int, std::map< signed int, MapTile* > >::iterator it = Tiles.begin(),
 			end = Tiles.end(); it != end; ++it ){
-		if( it->first > ( cx + Defines.xXCount + 5 ) ||
-				it->first < ( cx - Defines.OffsetX ) ){
-			for( std::map< signed int, MapTile* >::iterator vit = it->second.begin(), vend = it->second.end();
-								vit != vend; ++vit ){
+		for( std::map< signed int, MapTile* >::iterator vit = it->second.begin(), vend = it->second.end();
+							vit != vend; ++vit ){
+			t = vit->second;
+			if( t->RealX > right || t->RealX < left ||
+				t->RealY > top || t->RealY < bottom ){
 				DeleteTile( vit->second );
 				vit->second = NULL;
 				it->second.erase( vit );
-			}
-		}else{
-			for( std::map< signed int, MapTile* >::iterator vit = it->second.begin(), vend = it->second.end();
-					vit != vend; ++vit ){
-				if( vit->first > ( cy + ( ( conf.windowHeight - 32 ) >> 4 ) + 5 ) ||
-					vit->first < cy - Defines.OffsetY - 4 ){
-					DeleteTile( vit->second );
-					vit->second = NULL;
-				}
-				if( !vit->second )
-					it->second.erase( vit );
 			}
 		}
 		if( it->second.empty() )
@@ -394,27 +419,31 @@ void Map::Draw( )
 	cy = YCamera::CameraControl.GetY();
 	toMapCoordinates( &cx, &cy );
 	if( posX != cx || posY != cy ){
-		//TODO: cleaning in thread
-		if( posX < cx - 4 ){
-			CreateTilesRectangle( cx + Defines.OffsetX, cy - Defines.OffsetY,
-									Defines.xXCount, Defines.xYCount );
+		//FIXME: избыточность.
+		if( posX < cx || posY > cy ){ // move right or bottom
+			CreateTilesRectangle( cx + Defines.ROffset.X - Defines.Right.X *
+										( Defines.XCount >> 2 ) + Defines.Top.X * 3,
+								  cy + Defines.ROffset.Y - Defines.Right.Y *
+										( Defines.XCount >> 2 ) + Defines.Top.X * 3,
+								  Defines.XCount, Defines.YCount >> 1 );
+			CreateTilesRectangle( cx + Defines.LOffset.X/2 - Defines.Right.X * 3,
+								  cy + Defines.LOffset.Y/2 - Defines.Right.Y * 3,
+								  Defines.XCount >> 1, Defines.YCount);
 			posX = cx;
-		}else if( posX > cx + 4 ){
-			CreateTilesRectangle( cx - Defines.OffsetX, cy - Defines.OffsetY,
-									Defines.xXCount, Defines.xYCount);
-			posX = cx;
-		}
-		if( posY < cy - 2 ){
-			CreateTilesRectangle( cx - Defines.OffsetX, cy + Defines.yYCount,
-									Defines.yXCount, Defines.yYCount + 4);
 			posY = cy;
-		}else if( posY > cy + 2 ){
-			CreateTilesRectangle( cx - Defines.OffsetX, cy - Defines.OffsetY,
-									Defines.yXCount, Defines.yYCount + 4);
+		}else if( posX > cx || posY < cy ){ //move left or top
+			CreateTilesRectangle( cx + Defines.LOffset.X + Defines.Top.X * 3 - Defines.Right.X * 2,
+								  cy + Defines.LOffset.Y + Defines.Top.Y * 3 - Defines.Right.Y * 2,
+								  Defines.XCount, Defines.YCount >> 1);
+			CreateTilesRectangle( cx + Defines.LOffset.X + Defines.Top.X * 3 - Defines.Right.X * 2,
+								  cy + Defines.LOffset.Y + Defines.Top.Y * 3 - Defines.Right.Y * 2,
+								  Defines.XCount >> 1, Defines.YCount);
+			posX = cx;
 			posY = cy;
 		}
 	}
 	if( Updated ){
+		//TODO: cleaning in thread
 		Clean();
 		/*char d[3];
 		sprintf(d, "%d\n", TileSprites.size());

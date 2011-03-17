@@ -17,6 +17,8 @@ struct MapTile
 {
 	unsigned int TileID;
 	unsigned int TypeID;
+	signed int RealX;
+	signed int RealY;
 	signed int posX;
 	signed int posY;
 	int BackType;
@@ -25,6 +27,28 @@ struct MapTile
 	imageRect BackImage;
 	MapTile( signed int x, signed int y );
 	~MapTile();
+};
+
+struct posOffset
+{
+	int X;
+	int Y;
+	posOffset( ){ X = Y = 0; }
+	posOffset( int x, int y ) { set(x, y); };
+
+	inline void set( int a, int b ){ X = a; Y = b; }
+	inline posOffset flip(){ return posOffset( Y, X ); }
+
+	posOffset operator +( posOffset a ){ return posOffset( a.X + X, a.Y + Y ); }
+	void operator +=( posOffset a ){ X += a.X; Y += a.Y; }
+	posOffset operator -( posOffset a ){ return posOffset( a.X - X, a.Y - Y ); }
+	void operator -=( posOffset a ){ X -= a.X; Y -= a.Y; }
+
+	posOffset operator *( int a ){ return posOffset( X * a, Y * a ); }
+	posOffset operator *( posOffset a ){ return posOffset( a.X * X, a.Y * Y ); }
+	void operator *=( int a ){ X *= a; Y *= a; }
+	void operator *=( posOffset a ){ X *= a.X; Y *= a.Y; }
+
 };
 
 class Map

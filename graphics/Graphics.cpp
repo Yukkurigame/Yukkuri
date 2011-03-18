@@ -728,10 +728,10 @@ void Graphics::DrawGLTexture( Texture* tex, vertex3farr* vertices, coord2farr* c
 	glColor3ub( 255, 255, 0);
 
 	glBegin(GL_LINE_LOOP);
-		glVertex3f( vertices->lb.x - offsetx - 1, vertices->lb.y - offsety - 1, vertices->z ); //Bottom-left
-		glVertex3f( vertices->rb.x - offsetx + 1, vertices->rb.y - offsety - 1, vertices->z ); //Bottom-right
-		glVertex3f( vertices->rt.x - offsetx + 1, vertices->rt.y - offsety + 1, vertices->z ); //Top-right
-		glVertex3f( vertices->lt.x - offsetx - 1, vertices->lt.y - offsety + 1, vertices->z ); //Top-left
+		glVertex3i( vertices->lb.x - offsetx - 1, vertices->lb.y - offsety - 1, vertices->z ); //Bottom-left
+		glVertex3i( vertices->rb.x - offsetx + 1, vertices->rb.y - offsety - 1, vertices->z ); //Bottom-right
+		glVertex3i( vertices->rt.x - offsetx + 1, vertices->rt.y - offsety + 1, vertices->z ); //Top-right
+		glVertex3i( vertices->lt.x - offsetx - 1, vertices->lt.y - offsety + 1, vertices->z ); //Top-left
 	glEnd();
 
 	glEnable(GL_TEXTURE_2D);

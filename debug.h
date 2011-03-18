@@ -11,7 +11,7 @@
 
 #define DEBUGLEVEL 9
 
-#define DEBUG_DRAW_RECTANGLES
+//#define DEBUG_DRAW_RECTANGLES
 
 #include <stdio.h>
 #include <string>

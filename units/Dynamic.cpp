@@ -69,8 +69,10 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 			map.toMapCoordinates( &px, &py );
 			for( int i = -1; i < 2; ++i ){
 				for( int j = -1; j < 2; ++j ){
+					if( !i && !j )
+						continue;
 					nextTile = map.GetTile( px + i, py + j );
-					if( !nextTile )
+					if( !nextTile || !nextTile->Passability )
 						continue;
 					int f = sqrt( pow( nextTile->RealX - X, 2 ) + pow( nextTile->RealY - Y, 2 ) );
 					if( f < dx ){
@@ -82,14 +84,14 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 			}
 			nextTile = map.GetTile( px + x, py + y );
 			if( nextTile ){
-				dx = ( nextTile->RealX - X ) / 2;
-				dy = ( nextTile->RealY - Y ) / 2;
+				dx = ( nextTile->RealX - X ) / 4;
+				dy = ( nextTile->RealY - Y ) / 4;
 			}
 		}else{
 			MapTile* nextTile = map.GetTile( X + dx * x, Y + dy * y );
 			if( nextTile ) zone = nextTile->Passability;
 			if( !zone )
-				zone = -1;
+				zone = -0.5;
 		}
 		dx *= zone;
 		dy *= zone;
@@ -212,7 +214,7 @@ void DynamicUnit::takeAction( )
 	AnimatedUnit::takeAction();
 	if( Parameters["fed"] > 1 )
 		Parameters["fed"] -= 0.2 * Parameters["level"];
-	if( Attacked ){
+	if( Attacked && !Attacked->isDeleted() ){
 		if( Attacked->getUnitParameter( "hp" ) <= 0 || dist(Attacked) >= 1000 ){
 			Attacked = NULL;
 		}

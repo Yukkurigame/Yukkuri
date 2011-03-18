@@ -133,16 +133,10 @@ static struct MapDefines{
 		YCount = conf.windowHeight >> lTileSize;
 		ROffset.set( conf.windowWidth / 2, conf.windowHeight / 2 );
 		map.toMapCoordinates(&ROffset.X, &ROffset.Y);
-		ROffset += ROffset;
-		LOffset = ROffset + ( Right * -1 * ( XCount >> 1 ) );
-		//Now (rox, roy) - right top corner
-		//Left-bottom (-rox, -roy)
-		//Left-top (loy, lox)
-		//Right-bottom (-loy, -lox)
+		ROffset += ROffset; // Right top corner
+		LOffset = ROffset + ( Right * -1 * ( XCount >> 1 ) ); // Left top corner
 	}
 } Defines;
-
-//TODO:Одноуровневая карта, высокие объекты занимают 2 клетки вместо одной.
 
 MapTile::MapTile( signed int x, signed int y ) {
 	TileID = TilesCount;
@@ -250,7 +244,7 @@ bool Map::Init( )
 	posY = YCamera::CameraControl.GetY();
 	Region::Load("test");
 	Defines.Init();
-	//CreateTilesRectangle( 3, 16, 21, 14 );
+	CreateTilesRectangle( 3, 16, 21, 14 );
 	return true;
 }
 

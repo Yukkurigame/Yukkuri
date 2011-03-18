@@ -7,8 +7,6 @@
 #ifndef BINDINGS_H_
 #define BINDINGS_H_
 
-#include "SDL_keysym.h"
-
 #include "debug.h"
 
 #include <string>

@@ -358,8 +358,8 @@ void Graphics::CreateGLTextureAtlas( int size, imageRect rects[], int count )
 			const char* imageName = rects[cnt].imageName;
 			sdltemp = LoadImage( imageName );
 
-			src.x = rects[cnt].x;
-			src.y = rects[cnt].y;
+			src.x = static_cast<Sint16>(rects[cnt].x);
+			src.y = static_cast<Sint16>(rects[cnt].y);
 			dst.x  = size * col;
 			dst.y = size * row;
 
@@ -513,13 +513,13 @@ void Graphics::LoadAnimation( string name, int rows, int cols, int width, int he
    }
 }
 
-void Graphics::MoveGlScene( float x, float y, float z )
+void Graphics::MoveGlScene( int x, int y, int z )
 {
 	//FIXME: double cast
 	vpoint.x = x;
 	vpoint.y = y;
 	vpoint.z = z;
-	glTranslatef( vpoint.x, vpoint.y, vpoint.z );
+	glTranslatef( x, y, z );
 }
 
 void Graphics::DrawGLScene()

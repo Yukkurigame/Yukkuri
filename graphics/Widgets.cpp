@@ -70,7 +70,7 @@ bool Widget::load( string config )
 		cfg->getValue( "bgposy", config, "widget", bgy );
 
 		if( !create( imgname, text, bgx, bgy )){
-			return NULL;
+			return false;
 		}
 	}
 	return true;
@@ -226,7 +226,7 @@ bool TextWidget::create( string name, string text, int x, int y )
 bool TextWidget::load( string config )
 {
 	if( !Widget::load( config ) )
-		return NULL;
+		return false;
 
 	string font;
 	int fontsize = 12;
@@ -292,7 +292,7 @@ void TextWidget::setFontColor( int r, int g, int b )
 
 void TextWidget::setText( string text )
 {
-	int w, h;
+	float w, h;
 	if( AddText == text )
 		return;
 	if( StaticTextSprite ){
@@ -366,7 +366,7 @@ BarWidget::~BarWidget( )
 bool BarWidget::load( string config )
 {
 	if( !TextWidget::load( config ) )
-		return NULL;
+		return false;
 	string imgname;
 	int position[6];
 	vector<int> vcolor;

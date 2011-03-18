@@ -382,9 +382,8 @@ void Map::DeleteTilesRectangle( signed int startx, signed int starty, int number
 void Map::Clean( )
 {
 	int cx, cy, right, left, top, bottom;
-	MapTile* t;
-	cx = YCamera::CameraControl.GetX();
-	cy = YCamera::CameraControl.GetY();
+	cx = static_cast<int>(YCamera::CameraControl.GetX());
+	cy = static_cast<int>(YCamera::CameraControl.GetY());
 	right = cx + conf.windowWidth + conf.mapTileSize * 3;
 	left = cx - ( conf.windowWidth >> 2 );
 	top = cy + conf.windowHeight + conf.mapTileSize * 3;
@@ -393,8 +392,8 @@ void Map::Clean( )
 			end = Tiles.end(); it != end; ++it ){
 		for( std::map< signed int, MapTile* >::iterator vit = it->second.begin(), vend = it->second.end();
 							vit != vend; ++vit ){
-			t = vit->second;
-			if( t->RealX > right || t->RealX < left ||
+			MapTile* t = vit->second;
+            if( t->RealX > right || t->RealX < left ||
 				t->RealY > top || t->RealY < bottom ){
 				DeleteTile( vit->second );
 				vit->second = NULL;
@@ -409,8 +408,8 @@ void Map::Clean( )
 void Map::Draw( )
 {
 	int cx, cy;
-	cx = YCamera::CameraControl.GetX();
-	cy = YCamera::CameraControl.GetY();
+	cx = static_cast<int>(YCamera::CameraControl.GetX());
+	cy = static_cast<int>(YCamera::CameraControl.GetY());
 	toMapCoordinates( &cx, &cy );
 	if( posX != cx || posY != cy ){
 		//FIXME: избыточность.

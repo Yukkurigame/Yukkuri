@@ -79,7 +79,7 @@ public:
 	coord2farr* GetAnimation( string , unsigned int );
 	void LoadAnimation( string name, int rows, int cols, int width, int height, int texw, int texh );
 
-	void MoveGlScene( float x, float y, float z );
+	void MoveGlScene( int x, int y, int z );
 	void DrawGLScene();
 	void CleanGLScene();
 

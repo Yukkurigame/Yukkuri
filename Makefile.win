@@ -1,10 +1,10 @@
 
 rm=del
 CC= g++
-VPATH = ./units ./graphics
+VPATH = ./scripts ./units ./graphics
 DEFS= -I./includes.win -mno-cygwin
 PROGNAME= Yukkuri.exe
-INCLUDES=  -I. -Iunits -Igraphics
+INCLUDES=  -I. -Iscripts -Iunits -Igraphics
 LIBS= -Llibs -lmingw32 -lSDLmain -lSDL -lSDL_image -lpng -lopengl32 -llua5.1 -lfreetype240  -mwindows
 
 
@@ -12,11 +12,12 @@ DEFINES= $(INCLUDES) $(DEFS)
 CFLAGS= -Wall $(DEFINES) -DESRI_WINDOWS
 
 
-
 UNITS =  unitmanager.cpp unit.cpp Animated.cpp Plant.cpp Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp
 GRAPHICS = Font.cpp Graphics.cpp Interface.cpp Widgets.cpp pngfuncs.c
+SCRIPTS = Lua.cpp Luaconfig.cpp LuaScript.cpp LuaThread.cpp api.cpp
 
-SRCS =   main.cpp engine.cpp Lua.cpp Luaconfig.cpp Bindings.cpp Spawner.cpp\
+SRCS =   main.cpp config.cpp engine.cpp Bindings.cpp Spawner.cpp map.cpp\
+         $(SCRIPTS) \
          $(UNITS) \
          $(GRAPHICS) \
          Camera.cpp daytime.cpp

@@ -18,7 +18,7 @@ int scriptApi::Debug( lua_State* L )
 	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Debug level expected." );
 	luaL_argcheck( L, lua_isstring( L, 2 ), 2, "Debug string expected." );
 
-	level = lua_tonumber( L, 1 );
+	level = lua_tointeger( L, 1 );
 	str = lua_tostring( L, 2 );
 	debug( level, str );
 	lua_pop( L, lua_gettop( L ) );
@@ -87,8 +87,8 @@ int scriptApi::BindWidget( lua_State* L )
 	luaL_argcheck( L, lua_isstring( L, 3 ), 3, "Parameter not given." );
 
 
-	w = UI::yui.GetWidget( lua_tonumber( L, 1 ) );
-	u = UnitManager::units.GetUnit( lua_tonumber( L, 2 ) );
+	w = UI::yui.GetWidget( lua_tointeger( L, 1 ) );
+	u = UnitManager::units.GetUnit( lua_tointeger( L, 2 ) );
 	param = lua_tostring( L, 3 );
 	result = false;
 	if( w && u && param != "" )
@@ -111,9 +111,9 @@ int scriptApi::BindWidgetMaxBar( lua_State* L )
 
 	result = false;
 
-	w = dynamic_cast<BarWidget*>( UI::yui.GetWidget( lua_tonumber( L, 1 ) ) );
+	w = dynamic_cast<BarWidget*>( UI::yui.GetWidget( lua_tointeger( L, 1 ) ) );
 	if( w ){
-		u = UnitManager::units.GetUnit( lua_tonumber( L, 2 ) );
+		u = UnitManager::units.GetUnit( lua_tointeger( L, 2 ) );
 		param = lua_tostring( L, 3 );
 		if( u && param != "" )
 			result = w->bindBarMaxValue( u->getUnitpParameter( param ) );
@@ -131,7 +131,7 @@ int scriptApi::WidgetChildren( lua_State* L )
 
 	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Widget id not given." );
 
-	w = UI::yui.GetWidget( lua_tonumber( L, 1 ) );
+	w = UI::yui.GetWidget( lua_tointeger( L, 1 ) );
 	lua_pop( L, lua_gettop( L ) );
 	if( w ){
 		csize = w->childrenCount( );
@@ -156,7 +156,7 @@ int scriptApi::GetWidgetName( lua_State* L )
 
 	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Widget id expected." );
 
-	w = UI::yui.GetWidget( lua_tonumber( L, 1 ) );
+	w = UI::yui.GetWidget( lua_tointeger( L, 1 ) );
 	lua_pop( L, lua_gettop( L ) );
 	if( w ){
 		lua_pushstring( L, w->getName().c_str() );
@@ -173,7 +173,7 @@ int scriptApi::WidgetSetBarSize( lua_State* L )
 	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Widget id not given." );
 	luaL_argcheck( L, lua_isnumber( L, 2 ), 2, "Bar maximum value expected." );
 
-	w = UI::yui.GetWidget( lua_tonumber( L, 1 ) );
+	w = UI::yui.GetWidget( lua_tointeger( L, 1 ) );
 	if( w )
 		w->setBarSize( lua_tonumber( L, 2 ) );
 	lua_pop( L, lua_gettop( L ) );
@@ -190,7 +190,7 @@ int scriptApi::CreateUnit( lua_State* L )
 	luaL_argcheck( L, lua_isnumber(L, 1), 1, "Unit type not given." );
 
 	id = 0;
-	type = static_cast<enum unitType>(lua_tonumber( L, 1 ));
+	type = static_cast<enum unitType>(lua_tointeger( L, 1 ));
 	x = lua_tonumber( L, 2 );
 	y = lua_tonumber( L, 3 );
 	u = UnitManager::units.CreateUnit( type, x, y );
@@ -209,7 +209,7 @@ int scriptApi::DeleteUnit( lua_State* L )
 
 	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Unit id not given." );
 
-	id = lua_tonumber( L, 1 );
+	id = lua_tointeger( L, 1 );
 	u = UnitManager::units.GetUnit( id );
 	lua_pop( L, lua_gettop( L ) );
 	if( !id || !u ){
@@ -261,7 +261,7 @@ int scriptApi::SetCameraTarget( lua_State* L )
 	unsigned int tid;
 	Unit* u;
 	luaL_argcheck(L, lua_isnumber(L, 1) || lua_isnoneornil(L, 1), 1, "Number or none expected.");
-	tid = lua_tonumber( L, 1 );
+	tid = lua_tointeger( L, 1 );
 	u = UnitManager::units.GetUnit( tid );
 	YCamera::CameraControl.SetTarget( u );
 	return 0;

@@ -4,6 +4,8 @@
  *  Created on: 07.07.2010
  */
 
+#include "SDL/SDL_keysym.h"
+
 #include "Bindings.h"
 #include "yukkuri.h"
 #include "Luaconfig.h"

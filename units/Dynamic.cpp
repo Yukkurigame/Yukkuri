@@ -60,12 +60,12 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 		MapTile* currentTile = map.GetTile( X , Y );
 		if( currentTile && !currentTile->Passability ){
 			//FIXME: Bad
-			int x, y, px, py, dx;
+			int x, y, px, py;
 			MapTile* nextTile;
-			dx = 9000;
+			float dx = 9000;
 			x = y = 1;
-			px = X;
-			py = Y;
+			px = static_cast<int>(X);
+			py = static_cast<int>(Y);
 			map.toMapCoordinates( &px, &py );
 			for( int i = -1; i < 2; ++i ){
 				for( int j = -1; j < 2; ++j ){
@@ -74,7 +74,8 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 					nextTile = map.GetTile( px + i, py + j );
 					if( !nextTile || !nextTile->Passability )
 						continue;
-					int f = sqrt( pow( nextTile->RealX - X, 2 ) + pow( nextTile->RealY - Y, 2 ) );
+					//Если стоять в центре следующего тайла, то не сработает, но это какой-то омск.
+					float f = sqrt( pow( nextTile->RealX - static_cast<int>(X), 2 ) + pow( nextTile->RealY - static_cast<int>(Y), 2 ) );
 					if( f < dx ){
 						dx = f;
 						x = i;
@@ -84,8 +85,8 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 			}
 			nextTile = map.GetTile( px + x, py + y );
 			if( nextTile ){
-				dx = ( nextTile->RealX - X ) / 4;
-				dy = ( nextTile->RealY - Y ) / 4;
+				dx = ( nextTile->RealX - static_cast<int>(X) ) / 4;
+				dy = ( nextTile->RealY - static_cast<int>(Y) ) / 4;
 			}
 		}else{
 			MapTile* nextTile = map.GetTile( X + dx * x, Y + dy * y );

@@ -96,7 +96,7 @@ Unit* UnitManager::closer( Unit* u, string type, float limit )
 {
 	//FIXME: quick and dirty
 	Unit* ret = NULL;
-	int distance = 9000;
+	float distance = 9000;
 	limit *= u->getUnitSize();
 	for (int i = 0; i < (int)Units.size(); i++) {
 		if( Units[i] != u && Units[i]->getUnitType() == type ){
@@ -114,7 +114,7 @@ Unit* UnitManager::closer( Unit* u, vector< string >* types, float limit )
 {
 	//FIXME: quick and dirty
 	Unit* ret = NULL;
-	int distance = 9000;
+	float distance = 9000;
 	limit *= u->getUnitSize();
 	for (int i = 0; i < (int)Units.size(); i++) {
 		if( Units[i] != u ){

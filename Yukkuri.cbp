@@ -10,7 +10,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin\Debug\Yukkuri" prefix_auto="1" extension_auto="1" />
+				<Option output="..\..\Yubuild\Yukkuri" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="Build" />
 				<Option object_output="obj\Debug\" />
 				<Option type="0" />
@@ -20,7 +20,7 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="bin\Release\Yukkuri" prefix_auto="1" extension_auto="1" />
+				<Option output="..\..\Yubuild\Yukkuri" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="Build" />
 				<Option object_output="obj\Release\" />
 				<Option type="0" />
@@ -42,12 +42,10 @@
 		<Unit filename="Camera.h" />
 		<Unit filename="ConfigTypes.h" />
 		<Unit filename="Define.h" />
-		<Unit filename="Lua.cpp" />
-		<Unit filename="Lua.h" />
-		<Unit filename="Luaconfig.cpp" />
-		<Unit filename="Luaconfig.h" />
 		<Unit filename="Spawner.cpp" />
 		<Unit filename="Spawner.h" />
+		<Unit filename="config.cpp" />
+		<Unit filename="config.h" />
 		<Unit filename="daytime.cpp" />
 		<Unit filename="daytime.h" />
 		<Unit filename="debug.h" />
@@ -189,7 +187,23 @@
 		<Unit filename="includes.win\lua.hpp" />
 		<Unit filename="includes.win\luaconf.h" />
 		<Unit filename="includes.win\lualib.h" />
+		<Unit filename="includes.win\png.h" />
+		<Unit filename="includes.win\pngconf.h" />
+		<Unit filename="includes.win\zconf.h" />
+		<Unit filename="includes.win\zlib.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="map.cpp" />
+		<Unit filename="map.h" />
+		<Unit filename="scripts\Lua.cpp" />
+		<Unit filename="scripts\Lua.h" />
+		<Unit filename="scripts\LuaScript.cpp" />
+		<Unit filename="scripts\LuaScript.h" />
+		<Unit filename="scripts\LuaThread.cpp" />
+		<Unit filename="scripts\LuaThread.h" />
+		<Unit filename="scripts\Luaconfig.cpp" />
+		<Unit filename="scripts\Luaconfig.h" />
+		<Unit filename="scripts\api.cpp" />
+		<Unit filename="scripts\api.h" />
 		<Unit filename="units\Animated.cpp" />
 		<Unit filename="units\Animated.h" />
 		<Unit filename="units\Corpse.cpp" />

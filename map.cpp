@@ -3,7 +3,9 @@
 #include "Camera.h"
 #include "Graphics.h"
 #include "Luaconfig.h"
+#include <map>
 #include <math.h>
+#include <iterator>
 
 extern MainConfig conf;
 static unsigned int TilesCount = 0;
@@ -271,11 +273,14 @@ void Map::fromMapCoordinates( int* x, int* y )
 MapTile* Map::CreateTile( signed int x, signed int y )
 {
 	MapTile* tile;
-	tile = GetTile(x, y);
-	if( tile )
-		return tile;
+	std::vector< MapTile* >::iterator tit;
+	tit = GetTilev(x, y);
+	if( tit != Tilesvec.end() ){
+		if( (*tit)->posX == x && (*tit)->posY == y )
+			return (*tit);
+	}
 	tile = new MapTile( x, y );
-	Tiles[x][y] = tile;
+	Tilesvec.insert(tit, tile);
 	if( tile->Image.texture )
 		TileSprites.push_back( &tile->Image );
 	if( tile->BackType )
@@ -287,10 +292,13 @@ MapTile* Map::CreateTile( signed int x, signed int y )
 void Map::DeleteTile( signed int x, signed int y )
 {
 	MapTile* tile;
+	std::vector< MapTile* >::iterator tit;
+	tit = GetTilev(x, y);
+	if( (*tit)->posX == x && (*tit)->posY == y )
+		Tilesvec.erase( tit );
 	tile = GetTile( x, y );
 	if( !tile )
 		return;
-	Tiles[x].erase( Tiles[x].find(y) );
 	DeleteTile( tile );
 }
 
@@ -328,12 +336,56 @@ MapTile* Map::GetTile( float x, float y )
 
 MapTile* Map::GetTile( signed int x, signed int y )
 {
-	if( Tiles.count( x ) > 0) {
-		if( Tiles[x].count( y ) > 0 ){
-			return Tiles[x][y];
-		}
-	}
+	std::vector< MapTile* >::iterator m = GetTilev(x, y);
+	if( m != Tilesvec.end() )
+		return *m;
 	return NULL;
+}
+
+std::vector< MapTile* >::iterator Map::GetTilev( signed int x, signed int y )
+{
+	int first;
+	int last;
+	int mid;
+	int size = Tilesvec.size() - 1;
+	std::vector< MapTile* >::iterator begin;
+
+	if( size <= 0 || Tilesvec[size]->posX < x )
+		return Tilesvec.end();
+
+	begin = Tilesvec.begin();
+
+	if( Tilesvec[0]->posX <= x ){
+		//First find x
+		first = 0;
+		last = size;
+		while( first < last ){
+			mid = first + ( last - first ) / 2;
+			if( x <= Tilesvec[mid]->posX )
+				last = mid;
+			else
+				first = mid + 1;
+		}
+
+		if( Tilesvec[last]->posX == x ){
+			//Next find y
+			first = last;
+			while( last < size && Tilesvec[last]->posX == x ){
+				last++; //All elements with such x
+			}
+			while( first < last ){
+				mid = first + ( last - first ) / 2;
+				if( y <= Tilesvec[mid]->posY )
+					last = mid;
+				else
+					first = mid + 1;
+			}
+		}
+
+		std::advance( begin, last );
+	}
+
+	return begin;
 }
 
 void Map::CreateHTilesLine( signed int startx, signed int starty, int number )
@@ -382,26 +434,22 @@ void Map::DeleteTilesRectangle( signed int startx, signed int starty, int number
 void Map::Clean( )
 {
 	int cx, cy, right, left, top, bottom;
-	cx = static_cast<int>(YCamera::CameraControl.GetX());
-	cy = static_cast<int>(YCamera::CameraControl.GetY());
+	MapTile* t = NULL;
+	cx = YCamera::CameraControl.GetX();
+	cy = YCamera::CameraControl.GetY();
 	right = cx + conf.windowWidth + conf.mapTileSize * 3;
 	left = cx - ( conf.windowWidth >> 2 );
 	top = cy + conf.windowHeight + conf.mapTileSize * 3;
 	bottom = cy - ( conf.windowHeight >> 2 );
-	for( std::map< signed int, std::map< signed int, MapTile* > >::iterator it = Tiles.begin(),
-			end = Tiles.end(); it != end; ++it ){
-		for( std::map< signed int, MapTile* >::iterator vit = it->second.begin(), vend = it->second.end();
-							vit != vend; ++vit ){
-			MapTile* t = vit->second;
-            if( t->RealX > right || t->RealX < left ||
-				t->RealY > top || t->RealY < bottom ){
-				DeleteTile( vit->second );
-				vit->second = NULL;
-				it->second.erase( vit );
-			}
+	for( unsigned int i = 0; i < Tilesvec.size(); ){
+		t = Tilesvec[i];
+		if( t->RealX > right || t->RealX < left ||
+			t->RealY > top || t->RealY < bottom ){
+			DeleteTile( t );
+			Tilesvec.erase(Tilesvec.begin() + i);
+		}else{
+			++i;
 		}
-		if( it->second.empty() )
-			Tiles.erase( it );
 	}
 }
 
@@ -413,33 +461,17 @@ void Map::Draw( )
 	toMapCoordinates( &cx, &cy );
 	if( posX != cx || posY != cy ){
 		//FIXME: избыточность.
-		if( posX < cx || posY > cy ){ // move right or bottom
-			CreateTilesRectangle( cx + Defines.ROffset.X - Defines.Right.X *
-										( Defines.XCount >> 2 ) + Defines.Top.X * 3,
-								  cy + Defines.ROffset.Y - Defines.Right.Y *
-										( Defines.XCount >> 2 ) + Defines.Top.X * 3,
-								  Defines.XCount, Defines.YCount >> 1 );
-			CreateTilesRectangle( cx + Defines.LOffset.X/2 - Defines.Right.X * 3,
-								  cy + Defines.LOffset.Y/2 - Defines.Right.Y * 3,
-								  Defines.XCount >> 1, Defines.YCount);
-			posX = cx;
-			posY = cy;
-		}else if( posX > cx || posY < cy ){ //move left or top
-			CreateTilesRectangle( cx + Defines.LOffset.X + Defines.Top.X * 3 - Defines.Right.X * 2,
-								  cy + Defines.LOffset.Y + Defines.Top.Y * 3 - Defines.Right.Y * 2,
-								  Defines.XCount, Defines.YCount >> 1);
-			CreateTilesRectangle( cx + Defines.LOffset.X + Defines.Top.X * 3 - Defines.Right.X * 2,
-								  cy + Defines.LOffset.Y + Defines.Top.Y * 3 - Defines.Right.Y * 2,
-								  Defines.XCount >> 1, Defines.YCount);
-			posX = cx;
-			posY = cy;
-		}
+		CreateTilesRectangle( cx + Defines.LOffset.X + Defines.Top.X * 3 - Defines.Right.X * 2,
+					cy + Defines.LOffset.Y + Defines.Top.Y * 3 - Defines.Right.Y * 2,
+					Defines.XCount, Defines.YCount);
+		posX = cx;
+		posY = cy;
 	}
 	if( Updated ){
 		//TODO: cleaning in thread
 		Clean();
 		/*char d[3];
-		sprintf(d, "%d\n", TileSprites.size());
+		sprintf(d, "%d\n", Tilesvec.size());
 		debug(0, d);*/
 		Graphics::Instance()->AddImageRectArray( &TileSprites );
 		Updated = false;

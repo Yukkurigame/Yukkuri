@@ -62,7 +62,7 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 			//FIXME: Bad
 			int x, y, px, py;
 			MapTile* nextTile;
-			float dx = 9000;
+			float df = 9000;
 			x = y = 1;
 			px = static_cast<int>(X);
 			py = static_cast<int>(Y);
@@ -74,10 +74,10 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 					nextTile = map.GetTile( px + i, py + j );
 					if( !nextTile || !nextTile->Passability )
 						continue;
-					//Если стоять в центре следующего тайла, то не сработает, но это какой-то омск.
+					//Если стоять в центре следующего тайла, то не сработает.
 					float f = sqrt( pow( nextTile->RealX - static_cast<int>(X), 2 ) + pow( nextTile->RealY - static_cast<int>(Y), 2 ) );
-					if( f < dx ){
-						dx = f;
+					if( f < df ){
+						df = f;
 						x = i;
 						y = j;
 					}
@@ -85,8 +85,12 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 			}
 			nextTile = map.GetTile( px + x, py + y );
 			if( nextTile ){
-				dx = ( nextTile->RealX - static_cast<int>(X) ) / 4;
-				dy = ( nextTile->RealY - static_cast<int>(Y) ) / 4;
+				dx = ( static_cast<float>(nextTile->RealX) - X ) / 4.0f;
+				dy = ( static_cast<float>(nextTile->RealY) - Y ) / 4.0f;
+				if( dx && dx < 0.01 && dx > -0.01 )
+					dx = 0.3 * ( dx < 0 ? -1 : 1 );
+				if( dy && dy < 0.01 && dy > -0.01 )
+					dy = 0.3 * ( dy < 0 ? -1 : 1 );
 			}
 		}else{
 			MapTile* nextTile = map.GetTile( X + dx * x, Y + dy * y );

@@ -1,7 +1,6 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include <map>
 #include <vector>
 #include <string>
 
@@ -64,6 +63,7 @@ public:
 	MapTile* CreateTile( signed int x, signed int y );
 	void DeleteTile( signed int x, signed int y );
 	void DeleteTile( MapTile* tile );
+	void DeleteTilev( signed int x, signed int y );
 
 	void CreateHTilesLine( signed int startx, signed int starty, int number );
 	void DeleteHTilesLine( signed int startx, signed int starty, int number );
@@ -77,6 +77,8 @@ public:
 	MapTile* GetTile( float x, float y );
 	MapTile* GetTile( signed int x, signed int y );
 
+	std::vector< MapTile* >::iterator GetTilev( signed int x, signed int y );
+
 	void Clean( );
 
 	void Draw( );
@@ -86,7 +88,7 @@ private:
 	float posX;
 	float posY;
 
-	std::map< signed int, std::map< signed int, MapTile* > > Tiles;
+	std::vector< MapTile* > Tilesvec;
 	std::vector< imageRect* > TileSprites;
 
 };

@@ -78,6 +78,13 @@ public:
 	void SetVertex( vertex3farr* v, float x, float y, float z, float width, float height, short centered );
 
 	coord2farr* GetAnimation( string , unsigned int );
+	
+	inline void LoadAnimation( string name, int rows, int cols, int width, int height, Sprite* s ){
+		if( s->tex )
+			return LoadAnimation( name, rows, cols, width, height, s->tex->w, s->tex->h );
+		debug( 3, "No animation for " + name + "\n" );
+		return LoadAnimation( name, rows, cols, width, height, 0, 0 );
+	}
 	void LoadAnimation( string name, int rows, int cols, int width, int height, int texw, int texh );
 
 	void MoveGlScene( int x, int y, int z );

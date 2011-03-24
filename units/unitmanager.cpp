@@ -56,9 +56,10 @@ Unit* UnitManager::CreateUnit( enum unitType type, float x, float y )
 		return NULL;
 	}
 
+
 	graph->LoadAnimation( temp->getUnitName(), temp->getUnitImageRows(),
 								temp->getUnitImageCols(), temp->getUnitWidth(), temp->getUnitHeight(),
-								temp->getUnitImage()->tex->w, temp->getUnitImage()->tex->h);
+								temp->getUnitImage());
 
 	temp->setUnitPos( x, y );
 
@@ -135,14 +136,15 @@ Unit* UnitManager::closer( Unit* u, vector< string >* types, float limit )
 
 void UnitManager::tick( const int& dt )
 {
-	for( vector< Unit* >::iterator it = Units.begin(), end = Units.end(); it != end; ++it ){
-		if( !(*it) ) continue;
-		if( (*it)->isDeleted( ) ){
-			DeleteUnit( *it );
-			*it = NULL;
-			Units.erase( it );
+	Unit* u;
+	for( unsigned int i = 0; i < Units.size(); ){
+		u = Units[i];		
+		if( u->isDeleted() ){
+			DeleteUnit( u );
+			Units.erase( Units.begin() + i );
 		}else{
-			(*it)->update( dt );
+			u->update( dt );
+			++i;
 		}
 	}
 }

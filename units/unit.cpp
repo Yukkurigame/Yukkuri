@@ -12,6 +12,7 @@ Unit::Unit()
 	UnitName = "";
 	Type = "";
 	Deleted = false;
+	Image = NULL;
 }
 
 Unit::~Unit()
@@ -114,7 +115,7 @@ float* Unit::getUnitpParameter( string name )
 	return NULL;
 }
 
-bool Unit::setUnitImage( Sprite* image)
+bool Unit::setUnitImage( Sprite* image )
 {
 	if( image != NULL ){
 		Image = image;

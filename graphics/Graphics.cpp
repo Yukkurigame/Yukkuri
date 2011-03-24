@@ -364,17 +364,19 @@ void Graphics::CreateGLTextureAtlas( int size, imageRect rects[], int count )
 			const char* imageName = rects[cnt].imageName;
 			sdltemp = LoadImage( imageName );
 
-			src.x = static_cast<Sint16>(rects[cnt].x);
-			src.y = static_cast<Sint16>(rects[cnt].y);
-			dst.x  = size * col;
-			dst.y = size * row;
+			if( sdltemp ){
+				src.x = static_cast<Sint16>(rects[cnt].x);
+				src.y = static_cast<Sint16>(rects[cnt].y);
+				dst.x  = size * col;
+				dst.y = size * row;
 
-			rects[cnt].coordinates = GetCoordinates( dst.x, dst.y, size, size, texturewidth,
+				rects[cnt].coordinates = GetCoordinates( dst.x, dst.y, size, size, texturewidth,
 																	textureheight, 0);
 
-			SDL_SetAlpha( sdltemp, 0, SDL_ALPHA_OPAQUE );
-			SDL_BlitSurface( sdltemp, &src, sdlAtlas, &dst );
-			SDL_FreeSurface( sdltemp );
+				SDL_SetAlpha( sdltemp, 0, SDL_ALPHA_OPAQUE );
+				SDL_BlitSurface( sdltemp, &src, sdlAtlas, &dst );
+				SDL_FreeSurface( sdltemp );
+			}
 
 			++cnt;
 		}

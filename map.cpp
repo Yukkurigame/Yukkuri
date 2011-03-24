@@ -203,6 +203,8 @@ bool Map::LoadTiles( )
 	}
 	//FIXME: И тут, внезапно, в функцию врываются костыли.
 	std::vector <  std::map < string, string > > Subconfigs;
+	std::map < string, string > blank; //First element is blank.
+	Subconfigs.push_back( blank );
 	if( !LuaConfig::Instance()->getSubconfigs( "tiles", Subconfigs ) || ! Subconfigs.size() ){
 		debug(1, "Tiles configs opening error or no tiles found.\n");
 		return false;
@@ -211,19 +213,11 @@ bool Map::LoadTiles( )
 		snprintf( dbg, 25, "Tiles found: %d\n", Subconfigs.size() );
 		debug( 5, dbg );
 	}
-	//TileTypesCount++; // First tile are blank;
 	TilesArray = (imageRect*)malloc( sizeof(imageRect) * ( TileTypesCount ) );
-	TilesArray[0].id = 0;
-	memset(TilesArray[0].imageName, 0, 65);
-	TilesArray[0].x = 0;
-	TilesArray[0].y = 0;
-	TilesArray[0].z = 0;
-	TilesArray[0].coordinates = NULL;
-	TilesArray[0].width = TilesArray[0].height = conf.mapTileSize;
 	for( unsigned int i = 0; i < TileTypesCount; ++i ){
-		char name[100];
+		char name[65];
 		memset(name, 0, 65);
-		if( Subconfigs[i-1].count("image") )
+		if( Subconfigs[i].count("image") )
 			strcpy(name, Subconfigs[i]["image"].c_str());
 		TilesArray[i].id =  Subconfigs[i].count("name") ? atoi(Subconfigs[i]["name"].c_str()) : 0;
 		strcpy( TilesArray[i].imageName, name );
@@ -447,7 +441,7 @@ void Map::Clean( )
 		if( t->RealX > right || t->RealX < left ||
 			t->RealY > top || t->RealY < bottom ){
 			DeleteTile( t );
-			Tilesvec.erase(Tilesvec.begin() + i);
+			Tilesvec.erase( Tilesvec.begin() + i );
 		}else{
 			++i;
 		}

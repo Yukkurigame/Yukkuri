@@ -25,9 +25,9 @@ void DayTime::loadInterface()
 
 void DayTime::update( const int& dt )
 {
-	float hours = 24.0 * dt / (conf.dayLength * 10000);
-	time = fmod( time + hours , 24.0 );
-	if( time > 22 or time < 2){
+	float hours = 24.0f * dt / (conf.dayLength * 10000.0f);
+	time = fmod( time + hours , 24.0f );
+	if( time > 22 || time < 2){
 		if( dark != 128 )
 			dark = 128;
 		if ( time < 2 ){
@@ -43,7 +43,7 @@ void DayTime::update( const int& dt )
 		if(text)
 			text->setText("Midnight");
 	}else if( time > 18 ){
-		float p = (time - 18) / 4.0;
+		float p = (time - 18) / 4.0f;
 		dark = static_cast<int>(128 * p);
 		if(time > 20.0){
 			if(text)
@@ -53,7 +53,7 @@ void DayTime::update( const int& dt )
 				text->setText("Evening");
 		}
 	}else if( time < 6 ){
-		float p = 1 - (time - 2) / 4.0;
+		float p = 1 - (time - 2) / 4.0f;
 		dark = std::min( 128 , static_cast<int>( 256 * p ) );
 		if( time > 4 ){
 			if(text)

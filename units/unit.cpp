@@ -127,7 +127,7 @@ bool Unit::setUnitImage( Sprite* image)
 	return false;
 }
 
-double Unit::dist( Unit* target )
+float Unit::dist( Unit* target )
 {
 	float x = X - target->getUnitX();
 	float y = Y - target->getUnitY();

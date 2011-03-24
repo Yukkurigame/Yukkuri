@@ -105,7 +105,7 @@ void Widget::updatePosition( )
 	}
 	switch(Align){
 		case CENTER:
-			posx = startx + width * 0.5 - this->Width * 0.5 + OffsetX;
+			posx = startx + width * 0.5f - this->Width * 0.5f + OffsetX;
 			break;
 		case RIGHT:
 			posx = startx + width - this->Width + OffsetX;
@@ -117,7 +117,7 @@ void Widget::updatePosition( )
 	}
 	switch(VAlign){
 		case CENTER:
-			posy = starty - height * 0.5 + this->Height * 0.5 - OffsetY;
+			posy = starty - height * 0.5f + this->Height * 0.5f - OffsetY;
 			break;
 		case BOTTOM:
 			posy = starty - height + this->Height - OffsetY;
@@ -145,7 +145,7 @@ void Widget::setParent( Widget* p )
 {
 	extern MainConfig conf;
 	Parent = p;
-	PosZ = PosZ + p->getZ( ) - conf.widgetsPosZ + 0.1;
+	PosZ = PosZ + p->getZ( ) - conf.widgetsPosZ + 0.1f;
 	updatePosition();
 }
 
@@ -196,7 +196,7 @@ TextWidget::TextWidget( )
 	Text = "";
 	StaticTextSprite = NULL;
 	TextSprite = NULL;
-	BindedCache = 0.00123;
+	BindedCache = 0.00123f;
 }
 
 TextWidget::~TextWidget( )
@@ -278,9 +278,9 @@ void TextWidget::updatePosition( )
 	}
 	posy = PosY - TextY;
 	if( StaticTextSprite )
-		StaticTextSprite->setPosition( posx, posy, getZ( ) + 0.1 );
+		StaticTextSprite->setPosition( posx, posy, getZ( ) + 0.1f );
 	if( TextSprite )
-		TextSprite->setPosition( posx + swidth, posy, getZ( ) + 0.1 );
+		TextSprite->setPosition( posx + swidth, posy, getZ( ) + 0.1f );
 }
 
 void TextWidget::setFontColor( int r, int g, int b )
@@ -331,8 +331,8 @@ void TextWidget::Update( )
 		return;
 	if( (*Binded) != BindedCache ){
 		BindedCache = (*Binded);
-		char d[15];
-		sprintf(d, "%.0f", BindedCache);
+		char d[6];
+		snprintf(d, 6, "%.0f", BindedCache);
 		setText( d );
 	}
 }
@@ -400,7 +400,7 @@ void BarWidget::createBar( string name, int* pos)
 	tex = graph->LoadGLTexture( name );
 	BarSprite = graph->CreateGLSprite( PosX + BarX, PosY + BarY, getZ(), BarWidth, pos[2] );
 	if( tex )
-		TopSprite = graph->CreateGLSprite( PosX, PosY, getZ() + 0.1, pos[0], pos[1], Width, Height, tex );
+		TopSprite = graph->CreateGLSprite( PosX, PosY, getZ() + 0.1f, pos[0], pos[1], Width, Height, tex );
 	if( BarSprite ){
 		BarSprite->clr->set( pos[3], pos[4], pos[5] );
 	}
@@ -416,7 +416,7 @@ void BarWidget::setBarValue( float value )
 	BarValue = value;
 	{//Output text;
 		char str[25];
-		sprintf( str, "%.0f/%.0f", value, BarMaxValue );
+		snprintf( str, 25, "%.0f/%.0f", value, BarMaxValue );
 		setText( str );
 	}
 	if( value < 0 )
@@ -435,7 +435,7 @@ void BarWidget::setBarSize( float val )
 		BarMaxValue = 1;
 	{//Output text;
 		char str[25];
-		sprintf( str, "%.0f/%.0f", BarValue, BarMaxValue );
+		snprintf( str, 25, "%.0f/%.0f", BarValue, BarMaxValue );
 		setText( str );
 	}
 	if( BarSprite )
@@ -448,7 +448,7 @@ void BarWidget::updatePosition( )
 	if( BarSprite )
 		BarSprite->setPosition( PosX + BarX, PosY + BarY, getZ() );
 	if( TopSprite )
-		TopSprite->setPosition( PosX, PosY, getZ() + 0.01 );
+		TopSprite->setPosition( PosX, PosY, getZ() + 0.01f );
 }
 
 bool BarWidget::bindBarMaxValue( float* val )

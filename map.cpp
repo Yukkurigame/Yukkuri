@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Graphics.h"
 #include "Luaconfig.h"
+#include "safestring.h"
 #include <map>
 #include <math.h>
 #include <iterator>
@@ -53,7 +54,7 @@ namespace Region
 
 				//FIXME: Убрать этот костыль, перенести в imageRect
 				//FIXME: А как?
-				sprintf( BackName, "%d", type );
+				snprintf( BackName, 3, "%d", type );
 				LuaConfig::Instance()->getValue( "backing", BackName, "tiles", Backing );
 				if( Backing ){
 					if( it->count( "backtype" ) > 0 )
@@ -109,7 +110,7 @@ static inline imageRect getTileById( int tileid )
 				return TilesArray[last];
 		}
 		char d[30];
-		sprintf( d, "Tile with id %d not found.\n", tileid );
+		snprintf( d, 30, "Tile with id %d not found.\n", tileid );
 		debug( 3, d );
 		return TilesArray[0];
 	}
@@ -128,7 +129,7 @@ static struct MapDefines{
 	posOffset Top;
 	void Init( ){
 		//FIXME: This magic needs to be described
-		lTileSize = static_cast<int>( log(conf.mapTileSize) / log(2) );
+		lTileSize = static_cast<int>( log(static_cast<float>(conf.mapTileSize)) / log(2.0f) );
 		Right.set(1, -1);
 		Top.set(1, 1);
 		XCount = conf.windowWidth >> lTileSize;
@@ -165,7 +166,7 @@ MapTile::MapTile( signed int x, signed int y ) {
 		BackImage = getTileById( BackType );
 		BackImage.x = RealX - ( conf.mapTileSize >> 1 );
 		BackImage.y = RealY - ( conf.mapTileSize >> 2 );
-		BackImage.z -= 0.01;
+		BackImage.z -= 0.01f;
 	}
 
 
@@ -173,7 +174,7 @@ MapTile::MapTile( signed int x, signed int y ) {
 		//FIXME: ororoshenkiroro
 		char name[ sizeof(TypeID) ];
 		memset( name, 0, sizeof(name) );
-		sprintf( name, "%d", TypeID );
+		snprintf( name, sizeof(TypeID), "%d", TypeID );
 		LuaConfig::Instance()->getValue( "passability", name, "tiles", Passability );
 	}
 }
@@ -207,7 +208,7 @@ bool Map::LoadTiles( )
 		return false;
 	}else{
 		TileTypesCount = Subconfigs.size();
-		sprintf( dbg, "Tiles found: %d\n", Subconfigs.size() );
+		snprintf( dbg, 25, "Tiles found: %d\n", Subconfigs.size() );
 		debug( 5, dbg );
 	}
 	//TileTypesCount++; // First tile are blank;
@@ -471,7 +472,7 @@ void Map::Draw( )
 		//TODO: cleaning in thread
 		Clean();
 		/*char d[3];
-		sprintf(d, "%d\n", Tilesvec.size());
+		snprintf(d, 3, "%d\n", Tilesvec.size());
 		debug(0, d);*/
 		Graphics::Instance()->AddImageRectArray( &TileSprites );
 		Updated = false;

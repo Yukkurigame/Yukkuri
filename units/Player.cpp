@@ -16,7 +16,7 @@ void Player::moveUnit( short axis, signed int val )
 		moveX = val;
 	else
 		moveY = val;
-	if( moveX == 0 and moveY == 0 )
+	if( moveX == 0 && moveY == 0 )
 		setFirstFrame( );
 }
 

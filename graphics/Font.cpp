@@ -5,7 +5,12 @@
  */
 
 #include "Font.h"
-#include "GraphicsTypes.h"
+
+#include "safestring.h"
+using std::string;
+
+#include <vector>
+
 
 inline int next_p2( int a )
 {
@@ -54,16 +59,16 @@ void font_data::clean() {
 	}
 }
 
-bool font_data::load(const char * fname, unsigned int h) {
+bool font_data::load( const char * fname, unsigned int height ) {
 
 	char fs[4];
-	sprintf( fs, "%d", h );
+	snprintf( fs, 4, "%d", height );
 	debug( 3, "Loading font " +  (string)fname + ". Size: " + fs + "\n" );
 
 	//Allocate some memory to store the texture ids.
 	//textures = new GLuint[CHARSIZE];
 
-	this->h=h;
+	this->fontHeight = height;
 
 	//Create and initilize a freetype font library.
 	FT_Library library;
@@ -88,7 +93,7 @@ bool font_data::load(const char * fname, unsigned int h) {
 	//in terms of 1/64ths of pixels.  Thus, to make a font
 	//h pixels high, we need to request a size of h*64.
 	//(h << 6 is just a prettier way of writting h*64)
-	FT_Set_Char_Size( face, h << 6, h << 6, 96, 96);
+	FT_Set_Char_Size( face, height << 6, height << 6, 96, 96);
 
 	//Encoding
 	FT_Select_Charmap(face, FT_ENCODING_UNICODE);
@@ -109,7 +114,7 @@ bool font_data::load(const char * fname, unsigned int h) {
 	return true;
 }
 
-void font_data::size( float* w, float* h, const char* str )
+void font_data::size( int* w, int* h, const char* str )
 {
 	int swidth;
 	int textlen;
@@ -119,11 +124,11 @@ void font_data::size( float* w, float* h, const char* str )
 	nlines = swidth = lineheight = 0;
 	textlen = strlen( str );
 
-	char text[textlen];
+	char* text = (char*)malloc( sizeof(char)*textlen + 1 );
 	strcpy( text, str );
 
 	char* token;
-	token = strtok( text, "\n");
+	token = strtok( text, "\n" );
 	while( token != 0 ){
 		int tmpwidth = 0;
 		char* line = token;
@@ -139,6 +144,7 @@ void font_data::size( float* w, float* h, const char* str )
 		++nlines;
 		token = strtok(NULL, "\n");
 	}
+	free(text);
 
 	if( w )
 		(*w) = swidth;
@@ -146,7 +152,7 @@ void font_data::size( float* w, float* h, const char* str )
 		(*h) = ( lineheight + lineheight/4 ) * ( nlines - 1 );
 }
 
-void font_data::print( Texture* tex, float* sw, float* sh, const char* str )
+void font_data::print( Texture* tex, int* sw, int* sh, const char* str )
 {
 	GLuint* texture;
 	int width, height, swidth, sheight;
@@ -161,7 +167,7 @@ void font_data::print( Texture* tex, float* sw, float* sh, const char* str )
 
 	textlen = strlen( str );
 
-	char text[textlen];
+	char* text = (char*)malloc( sizeof(char) * ( textlen + 1 ) );
 	strcpy( text, str );
 
 	//Split lines by /n and calculate size;
@@ -237,6 +243,8 @@ void font_data::print( Texture* tex, float* sw, float* sh, const char* str )
 			}
 		}
 	}
+
+	free(text);
 
 	texture = new GLuint;
 	glGenTextures( 1, texture );

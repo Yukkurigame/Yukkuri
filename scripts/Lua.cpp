@@ -46,13 +46,12 @@ bool LuaMain::OpenFile( string name )
 		return false;
 	}
 
-	result = lua_pcall( Lst, 0, LUA_MULTRET, 0);
+	result = lua_pcall( Lst, 0, 0, 0);
     if( result ){
     	string e = lua_tostring( Lst, -1 );
     	debug( 3, "Execute " + name + " failed: " + e + "\n" );
     	return false;
     }
-
 
     return true;
 }
@@ -73,7 +72,7 @@ template<> bool LuaMain::getValue( lua_State* L, int index, float& ret)
 {
 	ret = 0.0;
 	if( lua_isnumber(L, index) ){
-		ret = lua_tonumber(L, index);
+		ret = static_cast<float>(lua_tonumber(L, index));
 		return true;
 	}
 	return false;

@@ -12,7 +12,6 @@ CEngine::CEngine( )
 	FPSTickCounter = 0;
 	FPSCounter = 0;
 	CurrentFPS = 0;
-	FPStext = new char[16];
 
 	Minimized = false;
 }
@@ -83,8 +82,8 @@ void CEngine::Init()
 	if( SDL_NumJoysticks() > 0 ){
 		int jnum = SDL_NumJoysticks();
 		char d[2]; //100 joystics, lol
-		sprintf( d, "%d", jnum );
-		debug( 1, static_cast<string>(d) + " joysticks were found:\n" );
+		snprintf( d, 2, "%d", jnum );
+		debug( 1, (string)(d) + " joysticks were found:\n" );
 		for( int i=0; i < jnum; i++ )
 			debug( 2, static_cast<string>(SDL_JoystickName(i)) + "\n" );
 		SDL_JoystickEventState(SDL_ENABLE);
@@ -109,7 +108,7 @@ void CEngine::Start()
 	float UpdateInterval;
 	float MaxCycles;
 
-	UpdateInterval = 1.0 / conf.maxFrameRate;
+	UpdateInterval = 1.0f / conf.maxFrameRate;
 	MaxCycles = conf.maxFrameRate / conf.minFrameRate;
 
 	// Main loop.
@@ -117,7 +116,7 @@ void CEngine::Start()
 
 		Tick = SDL_GetTicks();
 		if(Tick - FPSTickCounter >= 250){
-		    float seconds = (Tick - FPSTickCounter) / 1000.0;
+		    float seconds = (Tick - FPSTickCounter) / 1000.0f;
 		    CurrentFPS = FPSCounter / seconds;
 		    FPSTickCounter = Tick;
 		    FPSCounter = 0;
@@ -313,7 +312,7 @@ float CEngine::GetFPS()
 
 char* CEngine::GetFPSText()
 {
-	sprintf( FPStext, "%0.1f", GetFPS() );
+	snprintf( FPStext, 10, "%0.1f", GetFPS() );
 	return FPStext;
 }
 

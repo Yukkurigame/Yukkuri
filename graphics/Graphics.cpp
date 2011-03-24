@@ -1,7 +1,6 @@
 #include "Graphics.h"
 #include "SDL/SDL_image.h"
 #include "SDL/SDL_opengl.h"
-#include "pngfuncs.h"
 #include <algorithm>
 #include <iostream>
 #include <cstdio>
@@ -10,6 +9,13 @@
 #include <dirent.h>
 #include "config.h"
 #include "debug.h"
+#if WIN32
+extern "C" {
+#endif
+	#include "pngfuncs.h"
+#if WIN32
+}
+#endif
 
 extern MainConfig conf;
 
@@ -30,7 +36,7 @@ namespace Screenshot
 	{
 		int iter = 0;
 		do{
-			snprintf( name, 50, "screenshot%03d.png", ++iter);
+			snprintf( name, 50, "screenshot%03d.png", ++iter );
 		}while( Exists( name ) && iter < 1000 );
 		if( Exists( name ) ){
 			name[0] = '\0';
@@ -162,7 +168,7 @@ Texture* Graphics::LoadGLTexture( string name )
 //FIXME: depreciated?
 void Graphics::LoadAllTTFonts( int size )
 {
-	debug(3, "Loading fonts");
+	debug( 3, "Loading fonts" );
 	string dirname = conf.fontsPath;
     DIR *dp;
     struct dirent *ep;
@@ -170,7 +176,7 @@ void Graphics::LoadAllTTFonts( int size )
     int success = 0;
     int files = 0;
     if( dp != NULL ){
-        while ( (ep = readdir( dp ) ) != NULL) {
+        while ( ( ep = readdir( dp ) ) != NULL) {
             string fname = string(ep->d_name);
             int d = fname.find_last_of(".");
             if(fname.substr(d + 1) == "ttf"){
@@ -182,13 +188,13 @@ void Graphics::LoadAllTTFonts( int size )
         }
         closedir(dp);
     }else{
-    	debug(3, "\tFAIL Bad directory.");
+    	debug( 3, "\tFAIL Bad directory." );
         return;
     }
     //pdbg(3, "Done.\n");
     //FIXME: debug print
     char dbg[38];
-    sprintf(dbg, "Loaded %d from %d font files.", success, files);
+    snprintf( dbg, 38, "Loaded %d from %d font files.", success, files );
     debug(3, dbg);
 	return;
 }
@@ -224,8 +230,8 @@ Sprite* Graphics::CreateTextSprite( string fontname, int size, float x, float y,
 
 void Graphics::ChangeTextSprite( Sprite* spr, string fontname, int size, string text, short cached )
 {
-	float width;
-	float height;
+	int width;
+	int height;
 	font_data* font;
 	Texture* tex;
 
@@ -270,8 +276,8 @@ void Graphics::ChangeTextSprite( Sprite* spr, string fontname, int size, string 
  * centered - origin at the center of the object if not 0;
  * return Sprite*
  */
-Sprite* Graphics::CreateGLSprite( float x, float y, float z, float texX, float texY, float width,
-						float height, Texture* tex, short mirrored, short centered,  short cached )
+Sprite* Graphics::CreateGLSprite( float x, float y, float z, float texX, float texY, int width,
+						int height, Texture* tex, short mirrored, short centered,  short cached )
 {
 	Sprite* sprite;
 	coord2farr* coords;
@@ -334,7 +340,7 @@ void Graphics::CreateGLTextureAtlas( int size, imageRect rects[], int count )
 	if( size <= 0 || count <= 0 )
 		return;
 	Atlas = NULL;
-	colcount = static_cast<int>( ceil(sqrt(count)) );
+	colcount = static_cast<int>( ceil(sqrt(static_cast<float>(count))) );
 	texturewidth = next_p2( colcount * size );
 	colcount = texturewidth / size;
 	rowcount = static_cast<int>( ceil( static_cast<float>(count) / static_cast<float>(colcount) ) );
@@ -784,7 +790,7 @@ void Graphics::FreeGLTexture( Texture* tex )
 }
 
 coord2farr* Graphics::GetCoordinates(float x1, float y1, float x2, float y2,
-										float width, float height, short mirrored)
+										int width, int height, short mirrored)
 {
 	coord2farr* c;
 
@@ -847,7 +853,7 @@ inline vertex3farr* Graphics::GetVertex(  )
 	return v;
 }
 
-vertex3farr* Graphics::GetVertex( float x, float y, float z, float width, float height, short centered )
+vertex3farr* Graphics::GetVertex( float x, float y, float z, int width, int height, short centered )
 {
 	vertex3farr* v;
 	v = GetVertex();
@@ -935,19 +941,21 @@ Texture* Graphics::CreateGlTexture( SDL_Surface* surface )
 SDL_Surface* Graphics::LoadImage( const char* name )
 {
 	SDL_Surface* pImg = NULL;
-	char path[ conf.imagePath.size( ) + strlen( name ) ];
+	char* path = (char*)malloc( conf.imagePath.size( ) + strlen( name ) + 1 );
 	strcpy( path, conf.imagePath.c_str() );
 	strcat( path, name );
 	pImg = OpenImage( path );
 	if( !pImg ){
 		//Not loaded.
-		if( name != conf.defaultImage.c_str() ){
+		if( strcmp( name, conf.defaultImage.c_str() ) ){
 			strcpy( path, conf.defaultImage.c_str() );
 			pImg = LoadImage( path );
 		}else{
+			free(path);
 			return NULL; // Default already tried. Break.
 		}
 	}
+	free(path);
 	return pImg;
 }
 
@@ -958,7 +966,7 @@ SDL_Surface* Graphics::OpenImage( const char* filename )
 {
 	SDL_Surface* loadedImage = NULL;
 	SDL_Surface* optimizedImage = NULL;
-	char dbg[ strlen(filename) + 30 ];
+	char* dbg = (char*)malloc( sizeof(char) * ( strlen(filename) + 30 ) );
 	loadedImage = IMG_Load( filename );
 
 	if( loadedImage != NULL ){
@@ -984,6 +992,7 @@ SDL_Surface* Graphics::OpenImage( const char* filename )
 		strcat( dbg, "\n" );
 		debug(3, dbg );
 	}
+	free(dbg);
 	return optimizedImage;
 }
 
@@ -1001,8 +1010,8 @@ Sprite* Graphics::CreateTextTexture( font_data* ftfont, float x, float y, float 
 
 	Sprite* ret;
 	Texture* tex;
-	float width;
-	float height;
+	int width;
+	int height;
 
 	if( str == "" )
 		return NULL;

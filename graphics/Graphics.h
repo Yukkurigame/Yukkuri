@@ -7,12 +7,13 @@
 #include "Camera.h"
 #include "Define.h"
 #include "debug.h"
+#include "safestring.h"
 
 //TODO: add logger
 #include <map>
 #include <vector>
 using std::vector;
-#include <string>
+
 using std::string;
 
 struct ViewPoint {
@@ -56,13 +57,13 @@ public:
 	inline Sprite* CreateGLSprite( Texture* tex ){
 		return CreateGLSprite( 20, 20, 0, 0, 0, 0, 0, tex );
 	}
-	inline Sprite* CreateGLSprite( float x, float y, float z, float width, float height ){
+	inline Sprite* CreateGLSprite( float x, float y, float z, int width, int height ){
 		return CreateGLSprite( x, y, z, 0, 0, width, height, NULL );
 	}
-	inline Sprite* CreateGLSprite(	float x, float y, float z, float width, float height, Texture* tex ){
+	inline Sprite* CreateGLSprite(	float x, float y, float z, int width, int height, Texture* tex ){
 		return CreateGLSprite( x, y, z, 0, 0, width, height, tex );
 	}
-	Sprite* CreateGLSprite( float x, float y, float z, float texX, float texY, float width, float height,
+	Sprite* CreateGLSprite( float x, float y, float z, float texX, float texY, int width, int height,
 							Texture* tex, short mirrored = 0, short centered = 0, short cached = 1 );
 
 	void CreateGLSpriteList( vector<Sprite* >* sprites );
@@ -105,11 +106,11 @@ private:
 	void DrawGLTexture( Texture* tex, vertex3farr* vertices, coord2farr* coordinates, Color* col, bool fixed = true );
 	void FreeGLTexture( Texture* );
 
-	coord2farr* GetCoordinates( float x1, float y1, float x2, float y2, float width, float height, short mirrored );
+	coord2farr* GetCoordinates( float x1, float y1, float x2, float y2, int width, int height, short mirrored );
 	void FreeCoordinates( coord2farr* );
 
 	inline vertex3farr* GetVertex(  );
-	vertex3farr* GetVertex( float x, float y, float z, float width, float height, short centered );
+	vertex3farr* GetVertex( float x, float y, float z, int width, int height, short centered );
 
 	Texture* GetTextTexture( font_data* font, string text );
 	void SetTextTexture( Texture* tex, font_data* font, string text );

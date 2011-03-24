@@ -20,7 +20,7 @@ public:
     virtual void moveUnit( signed int x, signed int y, const int& dt ) {};
     virtual void moveUnit( short axis, signed int val ) {};
 
-    double dist( Unit* );
+    float dist( Unit* );
 
     virtual bool Create( int id );
     void Delete( );

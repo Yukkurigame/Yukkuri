@@ -38,7 +38,7 @@ bool DynamicUnit::loadAnimation()
 	copy(AnimTmp["rightup"].begin(), AnimTmp["rightup"].begin()+2, Animdef.rightup);
 
 	//FIXME: move from here
-	setUnitSize(0.35);
+	setUnitSize( 0.35f );
 
 	return true;
 }
@@ -53,8 +53,8 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 		//char d[30];
 		extern Map map;
 		float zone = 1.0;
-		float l = sqrt( x * x  +  y * y );
-		float speed = fabs( Parameters["speed"] * Parameters["fed"] ) * zone * ( dt / 100000.0 ) / l;
+		float l = sqrt( static_cast<float>(x * x  +  y * y) );
+		float speed = fabs( Parameters["speed"] * Parameters["fed"] ) * zone * ( dt / 100000.0f ) / l;
 		float dx = speed * x;// / l;
 		float dy = speed * y ;// / l;
 		MapTile* currentTile = map.GetTile( X , Y );
@@ -75,7 +75,8 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 					if( !nextTile || !nextTile->Passability )
 						continue;
 					//Если стоять в центре следующего тайла, то не сработает.
-					float f = sqrt( pow( nextTile->RealX - static_cast<int>(X), 2 ) + pow( nextTile->RealY - static_cast<int>(Y), 2 ) );
+					float f = sqrt( pow( static_cast<float>(nextTile->RealX) - X, 2 ) +
+									pow( static_cast<float>(nextTile->RealY) - Y, 2 ) );
 					if( f < df ){
 						df = f;
 						x = i;
@@ -88,9 +89,9 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 				dx = ( static_cast<float>(nextTile->RealX) - X ) / 4.0f;
 				dy = ( static_cast<float>(nextTile->RealY) - Y ) / 4.0f;
 				if( dx && dx < 0.01 && dx > -0.01 )
-					dx = 0.3 * ( dx < 0 ? -1 : 1 );
+					dx = 0.3f * ( dx < 0 ? -1 : 1 );
 				if( dy && dy < 0.01 && dy > -0.01 )
-					dy = 0.3 * ( dy < 0 ? -1 : 1 );
+					dy = 0.3f * ( dy < 0 ? -1 : 1 );
 			}
 		}else{
 			MapTile* nextTile = map.GetTile( X + dx * x, Y + dy * y );
@@ -192,9 +193,9 @@ void DynamicUnit::levelUp( int addlevel )
 		level = ++Parameters["level"];
 		scale = ( log( level ) / log( static_cast<float>(40) ) );
 		if( scale < 0.35 )
-			scale = 0.35;
+			scale = 0.35f;
 		else if( scale > 1.3 )
-			scale = 1.3;
+			scale = 1.3f;
 		setUnitSize( scale );
 		hpmax = Parameters["hpmax"];
 		if( hpmax == 0 ) hpmax = 1;
@@ -218,7 +219,7 @@ void DynamicUnit::takeAction( )
 {
 	AnimatedUnit::takeAction();
 	if( Parameters["fed"] > 1 )
-		Parameters["fed"] -= 0.2 * Parameters["level"];
+		Parameters["fed"] -= 0.2f * Parameters["level"];
 	if( Attacked && !Attacked->isDeleted() ){
 		if( Attacked->getUnitParameter( "hp" ) <= 0 || dist(Attacked) >= 1000 ){
 			Attacked = NULL;
@@ -239,10 +240,10 @@ void DynamicUnit::attackUnit( Unit* victim )
 	if( victim == this || !victim )
 		return;
 	if( Parameters["fed"] > 1 )
-		Parameters["fed"] -= 0.1;
+		Parameters["fed"] -= 0.1f;
     float dmg =  Parameters["damage"] * Parameters["fed"] / 100;
     if( dmg < 0.4 )
-        dmg = 0.4;
+        dmg = 0.4f;
     DynamicUnit* dvictim = dynamic_cast<DynamicUnit*>(victim);
     if( dvictim && dvictim->Attacker() != this )
     	dvictim->Attacker( this );

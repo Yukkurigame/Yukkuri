@@ -2,7 +2,6 @@
 #define MAP_H
 
 #include <vector>
-#include <string>
 
 #include "GraphicsTypes.h"
 

@@ -4,7 +4,7 @@
 //На самом деле я не хочу сюда лазить, здесь грязно и пакостно.
 
 #include "Define.h"
-#include <string>
+#include "safestring.h"
 using std::string;
 
 #include "Graphics.h"
@@ -40,7 +40,7 @@ private:
 	float CurrentFPS;
 
 	/** FPS Text **/
-	char* FPStext;
+	char FPStext[10];
 
 #ifdef JOYSTICKENABLE
    /** SDL joystick **/
@@ -126,8 +126,9 @@ public:
 	void SetTitle( const char* czTitle );
 	const char*	 GetTitle();
 
-	// Screen Core	float GetFPS();
+	// Screen Core
 	char* GetFPSText();
+	float GetFPS();
 	int getScreenW();
 	int getScreenH();
 

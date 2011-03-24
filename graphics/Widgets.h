@@ -7,7 +7,7 @@
 #ifndef WIDGETS_H_
 #define WIDGETS_H_
 
-#include <string>
+#include "safestring.h"
 using std::string;
 #include <vector>
 
@@ -35,13 +35,13 @@ public:
 
 	float getX( ){ return PosX; }
 	float getY( ){ return PosY; }
-	float getHeight( ){ return Height; }
-	float getWidth( ){ return Width; }
+	int getHeight( ){ return Height; }
+	int getWidth( ){ return Width; }
 
 	void resize( float w, float h );
 	virtual void updatePosition( );
 
-	void setZ( float z ){ PosZ = z * 0.1; }
+	void setZ( float z ){ PosZ = z * 0.1f; }
 	float getZ( );
 
 	unsigned int getId() { return ID; }
@@ -49,7 +49,7 @@ public:
 
 	virtual void setParent( Widget* p );
 
-	int childrenCount() { return Children.size( ); }
+	int childrenCount() { return static_cast<int>(Children.size( )); }
 	void getChildren( Widget* children[], int size );
 	void addChild( Widget* child );
 
@@ -74,12 +74,12 @@ protected:
 	Graphics* graph;
 	Sprite* background;
 
+	int Width;
+	int Height;
 	float PosX;
 	float PosY;
 	float OffsetX;
 	float OffsetY;
-	float Width;
-	float Height;
 
 	float* Binded;
 

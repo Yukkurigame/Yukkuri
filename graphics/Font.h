@@ -8,17 +8,13 @@
 #define YUKKURIFONT_H_
 
 #include "debug.h"
+#include "GraphicsTypes.h"
 
 #include <ft2build.h>
 #include <freetype/freetype.h>
 #include <freetype/ftglyph.h>
 #include <freetype/ftoutln.h>
 #include <freetype/fttrigon.h>
-#include "GraphicsTypes.h"
-
-#include <vector>
-#include <string>
-using std::string;
 
 #define CHARSIZE 256
 
@@ -33,22 +29,22 @@ struct Char{
 };
 
 struct font_data {
-	float h;			// Font height.
+	int fontHeight;			// Font height.
 	Char* chars[CHARSIZE];
 
 	//The init function will create a font of
 	//of the height h from the file fname.
-	bool load( const char * fname, unsigned int h );
+	bool load( const char * fname, unsigned int height );
 
 	//Free all the resources assosiated with the font.
 	void clean();
 
 	//Calculate text size.
-	void size( float* w, float* h, const char* str );
+	void size( int* w, int* h, const char* str );
 
 
 	//Print text string to sprite
-	void print( Texture* spr, float* sw, float* sh, const char* text );
+	void print( Texture* spr, int* sw, int* sh, const char* text );
 };
 
 

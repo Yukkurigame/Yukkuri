@@ -129,7 +129,7 @@ static struct MapDefines{
 	posOffset Top;
 	void Init( ){
 		//FIXME: This magic needs to be described
-		lTileSize = static_cast<int>( log(static_cast<float>(conf.mapTileSize)) / log(2.0f) );
+		lTileSize = static_cast<int>( floor( log(static_cast<float>(conf.mapTileSize)) / log(2.0f) ) ) - 1;
 		Right.set(1, -1);
 		Top.set(1, 1);
 		XCount = conf.windowWidth >> lTileSize;

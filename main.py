@@ -3,6 +3,7 @@ import os, sys
 import signal
 from PyQt4 import QtCore,QtGui
 from map import *
+from entity import EntityTab
 from Editor import Ui_Editor
 from framework import *
 from files import *
@@ -15,18 +16,18 @@ class Main(QtGui.QMainWindow):
     def __init__(self):        
         QtGui.QMainWindow.__init__(self)        
         self.ui=Ui_Editor()
-        self.ui.setupUi(self)        
+        self.ui.setupUi(self)
         self.__loadedConfig = []
         self.__loadedFile = ''
         self.__loadedElement = ''
+        self._Forms = [self.ui.EntityMainBox, self.ui.EntityEntityBox, self.ui.EntityFeedBox,
+                   self.ui.EntityMiscBox, self.ui.EntityAnimationBox, self.ui.TilesMainBox]
         self.__Map = MapWindow(self)
+        self.EntytyTab = EntityTab(self)
         self.ReloadFolder(config.path)
-        
-        self.connect(self.ui.Image_3.children()[-1].children()[-1], QtCore.SIGNAL('clicked()'),
-            self.OpenEntityImage)
+       
         self.connect(self.ui.Image_4.children()[-1].children()[-1], QtCore.SIGNAL('clicked()'),
             self.OpenTilesImage)
-        self.connect(self.ui.Bloodcolor.children()[-1], QtCore.SIGNAL('clicked()'), self.ChangeEntityColor)
         #ololoshenkilolo. FUFUFU is so FUFUFU. 
         self.connect(filter(lambda x: self.ui.exitbox.buttonRole(x) == 7, self.ui.exitbox.children()[1:])[0],
                     QtCore.SIGNAL('clicked()'), self.ReloadContent)
@@ -39,16 +40,14 @@ class Main(QtGui.QMainWindow):
         
         self.connect(self.ui.TilesOffestXSpin, QtCore.SIGNAL("valueChanged(int)"), self.ReloadTilesImage)
         self.connect(self.ui.TilesOffestYSpin, QtCore.SIGNAL("valueChanged(int)"), self.ReloadTilesImage)
+                
     
     def OpenFolder(self):
         folder = QtGui.QFileDialog.getExistingDirectory(self, 'Open folder', filesManager.getLast())
         self.ReloadFolder(folder)
     
-    def OpenEntityImage(self):
-        self.OpenImage(self.ui.Image_3.children()[-2])
-    
     def OpenTilesImage(self):
-        self.OpenImage(self.ui.Image_4.children()[-2])
+        self.OpenImage(GetWidget(self.ui.TilesMainBox, 'image').children()[-2])
         self.ReloadTilesImage()
     
     def ReloadTilesImage(self):
@@ -65,9 +64,9 @@ class Main(QtGui.QMainWindow):
         filesManager.setLast(path)
         if not name: return
         element.setText(name)
-    
-    def ChangeEntityColor(self):
-        color = GetField(self.ui.Bloodcolor)
+
+    def ChangeColor(self, field):
+        color = GetField(field)
         try:
             color = map(lambda x: int(x), color)
             color = QtGui.QColor(*color)
@@ -76,9 +75,9 @@ class Main(QtGui.QMainWindow):
         color = QtGui.QColorDialog.getColor(color, self, "Choose color")
         if not color.isValid(): return
         color = color.getRgb()[:3]        
-        colorle = filter(lambda x: type(x).__name__ == 'QLineEdit', self.ui.Bloodcolor.children())
+        colorle = filter(lambda x: type(x).__name__ == 'QSpinBox', self.ui.Bloodcolor.children())
         for i in range(0, len(colorle)):
-            colorle[i].setText(str(color[i]))
+            colorle[i].setValue(color[i])
     
     def ReloadFolder(self, folder):
         if folder == '':
@@ -125,7 +124,9 @@ class Main(QtGui.QMainWindow):
             return
         item = self.ui.ItemsList.currentItem()
         if not item: return
+        self.BlockFields()
         self.ClearFields()
+        self.EntytyTab.LoadAnimationPreview()
         item = str(item.text()).lower()
         eltype = self.__loadedConfig[0]
         data = self.__loadedConfig[1:]
@@ -148,12 +149,14 @@ class Main(QtGui.QMainWindow):
             self.ReloadTilesImage()
         elif eltype == "MapRegion":
             self.__Map.LoadRegion(element)
-            
+    
+    def BlockFields(self):
+        map(lambda el: el.setDisabled(True), self._Forms)
+        map(lambda el: el.setDisabled(False), self.GetBoxes(self.__loadedConfig[0]))
 
     def ClearFields(self):
         self.ReloadTilesImage()
-        for el in [self.ui.EntityMainBox, self.ui.EntityEntityBox, self.ui.EntityFeedBox,
-                   self.ui.EntityMiscBox, self.ui.EntityAnimationBox, self.ui.TilesMainBox]:
+        for el in self._Forms:
             RefillFields(el, {})
     
     def SaveFile(self):
@@ -194,19 +197,18 @@ class Main(QtGui.QMainWindow):
     
     def GetBoxes(self, eltype):
         fields = []
+        forms = []
         if eltype == 'Entity':
-            for el in [self.ui.EntityMainBox, self.ui.EntityEntityBox, self.ui.EntityMiscBox,
-                       self.ui.EntityAnimationBox]:
-                fields.append(el)
+            forms = [self.ui.EntityMainBox, self.ui.EntityEntityBox, self.ui.EntityMiscBox,
+                       self.ui.EntityAnimationBox]                
         elif eltype == 'Plant':
-            for el in [self.ui.EntityMainBox, self.ui.EntityMiscBox, self.ui.EntityFeedBox]:
-                fields.append(el)
+            forms = [self.ui.EntityMainBox, self.ui.EntityMiscBox, self.ui.EntityFeedBox]
         elif eltype == 'Corpse':
-            for el in [self.ui.EntityMainBox, self.ui.EntityFeedBox]:
-                fields.append(el)
+            forms = [self.ui.EntityMainBox, self.ui.EntityFeedBox]
         elif eltype == 'Tiles':
-            for el in [self.ui.TilesMainBox]:
-                fields.append(el)
+             forms = [self.ui.TilesMainBox]
+        for el in forms:
+            fields.append(el)
         return fields
 
     def test(self):

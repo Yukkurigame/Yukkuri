@@ -3,6 +3,23 @@ from files import *
 from PyQt4.QtGui import QPixmap, QLabel, QFrame
 from PyQt4.QtCore import pyqtSignal, SIGNAL
 
+class PDict(dict):
+    def __init__(self, indict=None):
+        if indict is None:
+            indict = {}
+        dict.__init__(self, indict)
+    def __getattr__(self, item):
+        try:
+            return self.__getitem__(item)
+        except KeyError:
+            return ''
+            #raise AttributeError(item)
+    def __setattr__(self, item, value):
+        if self.__dict__.has_key(item):
+            dict.__setattr__(self, item, value)
+        else:
+            self.__setitem__(item, value)
+
 def GetWidget(box, wname):
     for child in box.children()[1:]:
         name = re.sub('_\d+$', '', str(child.objectName()).lower())

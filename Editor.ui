@@ -57,7 +57,7 @@
          <item>
           <widget class="QTabWidget" name="MainTabs">
            <property name="currentIndex">
-            <number>3</number>
+            <number>0</number>
            </property>
            <widget class="QWidget" name="EntityTab">
             <attribute name="title">
@@ -151,6 +151,12 @@
                      </item>
                      <item>
                       <widget class="QLineEdit" name="EntityImgField">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="maximumSize">
                         <size>
                          <width>190</width>
@@ -177,19 +183,19 @@
                   </item>
                   <item>
                    <widget class="QWidget" name="Imagecols" native="true">
-                    <layout class="QHBoxLayout" name="imagecols">
+                    <layout class="QHBoxLayout" name="imgcols_7">
                      <property name="margin">
                       <number>0</number>
                      </property>
                      <item>
-                      <widget class="QLabel" name="label_3">
+                      <widget class="QLabel" name="label_36">
                        <property name="text">
                         <string>Image columns:</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_2">
+                      <spacer name="horizontalSpacer_34">
                        <property name="orientation">
                         <enum>Qt::Horizontal</enum>
                        </property>
@@ -202,7 +208,13 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_3">
+                      <widget class="QSpinBox" name="spinBox_7">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>190</width>
@@ -215,8 +227,11 @@
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="alignment">
+                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                       </property>
+                       <property name="maximum">
+                        <number>999999999</number>
                        </property>
                       </widget>
                      </item>
@@ -225,19 +240,19 @@
                   </item>
                   <item>
                    <widget class="QWidget" name="Imagerows" native="true">
-                    <layout class="QHBoxLayout" name="imagerows">
+                    <layout class="QHBoxLayout" name="imgcols_8">
                      <property name="margin">
                       <number>0</number>
                      </property>
                      <item>
-                      <widget class="QLabel" name="label_4">
+                      <widget class="QLabel" name="label_37">
                        <property name="text">
                         <string>Image rows:</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_3">
+                      <spacer name="horizontalSpacer_35">
                        <property name="orientation">
                         <enum>Qt::Horizontal</enum>
                        </property>
@@ -250,21 +265,24 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_4">
+                      <widget class="QSpinBox" name="spinBox_8">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>190</width>
                          <height>0</height>
                         </size>
                        </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>190</width>
-                         <height>16777215</height>
-                        </size>
+                       <property name="alignment">
+                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="maximum">
+                        <number>999999999</number>
                        </property>
                       </widget>
                      </item>
@@ -273,19 +291,19 @@
                   </item>
                   <item>
                    <widget class="QWidget" name="Height" native="true">
-                    <layout class="QHBoxLayout" name="height">
+                    <layout class="QHBoxLayout" name="imgcols_9">
                      <property name="margin">
                       <number>0</number>
                      </property>
                      <item>
-                      <widget class="QLabel" name="label_5">
+                      <widget class="QLabel" name="label_38">
                        <property name="text">
                         <string>Height:</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_4">
+                      <spacer name="horizontalSpacer_36">
                        <property name="orientation">
                         <enum>Qt::Horizontal</enum>
                        </property>
@@ -298,21 +316,24 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_5">
+                      <widget class="QSpinBox" name="spinBox_9">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>190</width>
                          <height>0</height>
                         </size>
                        </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>190</width>
-                         <height>16777215</height>
-                        </size>
+                       <property name="alignment">
+                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="maximum">
+                        <number>999999999</number>
                        </property>
                       </widget>
                      </item>
@@ -321,19 +342,19 @@
                   </item>
                   <item>
                    <widget class="QWidget" name="Width" native="true">
-                    <layout class="QHBoxLayout" name="width">
+                    <layout class="QHBoxLayout" name="imgcols_10">
                      <property name="margin">
                       <number>0</number>
                      </property>
                      <item>
-                      <widget class="QLabel" name="label_7">
+                      <widget class="QLabel" name="label_39">
                        <property name="text">
                         <string>Width:</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_5">
+                      <spacer name="horizontalSpacer_37">
                        <property name="orientation">
                         <enum>Qt::Horizontal</enum>
                        </property>
@@ -346,21 +367,24 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_7">
+                      <widget class="QSpinBox" name="spinBox_10">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>190</width>
                          <height>0</height>
                         </size>
                        </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>190</width>
-                         <height>16777215</height>
-                        </size>
+                       <property name="alignment">
+                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="maximum">
+                        <number>999999999</number>
                        </property>
                       </widget>
                      </item>
@@ -369,19 +393,19 @@
                   </item>
                   <item>
                    <widget class="QWidget" name="Meeting" native="true">
-                    <layout class="QHBoxLayout" name="meeting">
+                    <layout class="QHBoxLayout" name="imgcols_11">
                      <property name="margin">
                       <number>0</number>
                      </property>
                      <item>
-                      <widget class="QLabel" name="label_8">
+                      <widget class="QLabel" name="label_40">
                        <property name="text">
                         <string>Meeting:</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_6">
+                      <spacer name="horizontalSpacer_38">
                        <property name="orientation">
                         <enum>Qt::Horizontal</enum>
                        </property>
@@ -394,21 +418,24 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_8">
+                      <widget class="QSpinBox" name="spinBox_11">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>190</width>
                          <height>0</height>
                         </size>
                        </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>190</width>
-                         <height>16777215</height>
-                        </size>
+                       <property name="alignment">
+                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="maximum">
+                        <number>100</number>
                        </property>
                       </widget>
                      </item>
@@ -426,19 +453,19 @@
                  <layout class="QVBoxLayout" name="verticalLayout_12">
                   <item>
                    <widget class="QWidget" name="Damage" native="true">
-                    <layout class="QHBoxLayout" name="horizontalLayout_16">
+                    <layout class="QHBoxLayout" name="imgcols_12">
                      <property name="margin">
                       <number>0</number>
                      </property>
                      <item>
-                      <widget class="QLabel" name="label_10">
+                      <widget class="QLabel" name="label_41">
                        <property name="text">
                         <string>Damage:</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_8">
+                      <spacer name="horizontalSpacer_39">
                        <property name="orientation">
                         <enum>Qt::Horizontal</enum>
                        </property>
@@ -451,21 +478,27 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_10">
+                      <widget class="QSpinBox" name="spinBox_12">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>190</width>
                          <height>0</height>
                         </size>
                        </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>190</width>
-                         <height>16777215</height>
-                        </size>
+                       <property name="alignment">
+                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="minimum">
+                        <number>-999999999</number>
+                       </property>
+                       <property name="maximum">
+                        <number>999999999</number>
                        </property>
                       </widget>
                      </item>
@@ -474,19 +507,19 @@
                   </item>
                   <item>
                    <widget class="QWidget" name="Speed" native="true">
-                    <layout class="QHBoxLayout" name="horizontalLayout_18">
+                    <layout class="QHBoxLayout" name="imgcols_13">
                      <property name="margin">
                       <number>0</number>
                      </property>
                      <item>
-                      <widget class="QLabel" name="label_12">
+                      <widget class="QLabel" name="label_42">
                        <property name="text">
                         <string>Speed:</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_10">
+                      <spacer name="horizontalSpacer_40">
                        <property name="orientation">
                         <enum>Qt::Horizontal</enum>
                        </property>
@@ -499,21 +532,27 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_12">
+                      <widget class="QSpinBox" name="spinBox_16">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>190</width>
                          <height>0</height>
                         </size>
                        </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>190</width>
-                         <height>16777215</height>
-                        </size>
+                       <property name="alignment">
+                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="minimum">
+                        <number>-999999999</number>
+                       </property>
+                       <property name="maximum">
+                        <number>999999999</number>
                        </property>
                       </widget>
                      </item>
@@ -547,59 +586,86 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_6">
+                      <widget class="QSpinBox" name="spinBox_13">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="maximumSize">
                         <size>
-                         <width>45</width>
+                         <width>38</width>
                          <height>16777215</height>
                         </size>
-                       </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
-                       </property>
-                       <property name="maxLength">
-                        <number>3</number>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="lineEdit_14">
-                       <property name="maximumSize">
-                        <size>
-                         <width>45</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
-                       </property>
-                       <property name="maxLength">
-                        <number>3</number>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="lineEdit_15">
-                       <property name="maximumSize">
-                        <size>
-                         <width>45</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
-                       </property>
-                       <property name="maxLength">
-                        <number>3</number>
                        </property>
                        <property name="frame">
                         <bool>true</bool>
                        </property>
-                       <property name="dragEnabled">
+                       <property name="buttonSymbols">
+                        <enum>QAbstractSpinBox::NoButtons</enum>
+                       </property>
+                       <property name="keyboardTracking">
                         <bool>false</bool>
                        </property>
-                       <property name="readOnly">
+                       <property name="maximum">
+                        <number>256</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QSpinBox" name="spinBox_14">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>38</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="frame">
+                        <bool>true</bool>
+                       </property>
+                       <property name="buttonSymbols">
+                        <enum>QAbstractSpinBox::NoButtons</enum>
+                       </property>
+                       <property name="keyboardTracking">
                         <bool>false</bool>
+                       </property>
+                       <property name="maximum">
+                        <number>256</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QSpinBox" name="spinBox_15">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>38</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="frame">
+                        <bool>true</bool>
+                       </property>
+                       <property name="buttonSymbols">
+                        <enum>QAbstractSpinBox::NoButtons</enum>
+                       </property>
+                       <property name="keyboardTracking">
+                        <bool>false</bool>
+                       </property>
+                       <property name="maximum">
+                        <number>256</number>
                        </property>
                       </widget>
                      </item>
@@ -624,19 +690,19 @@
                  <layout class="QVBoxLayout" name="verticalLayout_11">
                   <item>
                    <widget class="QWidget" name="Nutritive" native="true">
-                    <layout class="QHBoxLayout" name="horizontalLayout_17">
+                    <layout class="QHBoxLayout" name="imgcols_14">
                      <property name="margin">
                       <number>0</number>
                      </property>
                      <item>
-                      <widget class="QLabel" name="label_11">
+                      <widget class="QLabel" name="label_43">
                        <property name="text">
                         <string>Nutritive:</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_9">
+                      <spacer name="horizontalSpacer_41">
                        <property name="orientation">
                         <enum>Qt::Horizontal</enum>
                        </property>
@@ -649,21 +715,27 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_11">
+                      <widget class="QSpinBox" name="spinBox_17">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>190</width>
                          <height>0</height>
                         </size>
                        </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>190</width>
-                         <height>16777215</height>
-                        </size>
+                       <property name="alignment">
+                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="minimum">
+                        <number>-999999999</number>
+                       </property>
+                       <property name="maximum">
+                        <number>999999999</number>
                        </property>
                       </widget>
                      </item>
@@ -681,19 +753,19 @@
                  <layout class="QVBoxLayout" name="verticalLayout_13">
                   <item>
                    <widget class="QWidget" name="Hp" native="true">
-                    <layout class="QHBoxLayout" name="horizontalLayout_19">
+                    <layout class="QHBoxLayout" name="imgcols_15">
                      <property name="margin">
                       <number>0</number>
                      </property>
                      <item>
-                      <widget class="QLabel" name="label_13">
+                      <widget class="QLabel" name="label_44">
                        <property name="text">
                         <string>Hp:</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_11">
+                      <spacer name="horizontalSpacer_42">
                        <property name="orientation">
                         <enum>Qt::Horizontal</enum>
                        </property>
@@ -706,21 +778,27 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_13">
+                      <widget class="QSpinBox" name="spinBox_18">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>190</width>
                          <height>0</height>
                         </size>
                        </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>190</width>
-                         <height>16777215</height>
-                        </size>
+                       <property name="alignment">
+                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="minimum">
+                        <number>-999999999</number>
+                       </property>
+                       <property name="maximum">
+                        <number>999999999</number>
                        </property>
                       </widget>
                      </item>
@@ -780,7 +858,13 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_16">
+                      <widget class="QSpinBox" name="spinBox_3">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>80</width>
@@ -793,22 +877,25 @@
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="baseSize">
-                        <size>
-                         <width>80</width>
-                         <height>0</height>
-                        </size>
+                       <property name="frame">
+                        <bool>true</bool>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="buttonSymbols">
+                        <enum>QAbstractSpinBox::NoButtons</enum>
                        </property>
-                       <property name="maxLength">
-                        <number>3</number>
+                       <property name="maximum">
+                        <number>999</number>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_9">
+                      <widget class="QSpinBox" name="spinBox_5">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>80</width>
@@ -821,17 +908,14 @@
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="baseSize">
-                        <size>
-                         <width>80</width>
-                         <height>0</height>
-                        </size>
+                       <property name="frame">
+                        <bool>true</bool>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="buttonSymbols">
+                        <enum>QAbstractSpinBox::NoButtons</enum>
                        </property>
-                       <property name="maxLength">
-                        <number>3</number>
+                       <property name="maximum">
+                        <number>999</number>
                        </property>
                       </widget>
                      </item>
@@ -865,7 +949,13 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_29">
+                      <widget class="QSpinBox" name="spinBox_6">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>80</width>
@@ -878,22 +968,25 @@
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="baseSize">
-                        <size>
-                         <width>80</width>
-                         <height>0</height>
-                        </size>
+                       <property name="frame">
+                        <bool>true</bool>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="buttonSymbols">
+                        <enum>QAbstractSpinBox::NoButtons</enum>
                        </property>
-                       <property name="maxLength">
-                        <number>3</number>
+                       <property name="maximum">
+                        <number>999</number>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_30">
+                      <widget class="QSpinBox" name="spinBox_19">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>80</width>
@@ -906,17 +999,14 @@
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="baseSize">
-                        <size>
-                         <width>80</width>
-                         <height>0</height>
-                        </size>
+                       <property name="frame">
+                        <bool>true</bool>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="buttonSymbols">
+                        <enum>QAbstractSpinBox::NoButtons</enum>
                        </property>
-                       <property name="maxLength">
-                        <number>3</number>
+                       <property name="maximum">
+                        <number>999</number>
                        </property>
                       </widget>
                      </item>
@@ -950,7 +1040,13 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_19">
+                      <widget class="QSpinBox" name="spinBox_21">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>80</width>
@@ -963,22 +1059,25 @@
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="baseSize">
-                        <size>
-                         <width>80</width>
-                         <height>0</height>
-                        </size>
+                       <property name="frame">
+                        <bool>true</bool>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="buttonSymbols">
+                        <enum>QAbstractSpinBox::NoButtons</enum>
                        </property>
-                       <property name="maxLength">
-                        <number>3</number>
+                       <property name="maximum">
+                        <number>999</number>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_20">
+                      <widget class="QSpinBox" name="spinBox_20">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>80</width>
@@ -991,17 +1090,14 @@
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="baseSize">
-                        <size>
-                         <width>80</width>
-                         <height>0</height>
-                        </size>
+                       <property name="frame">
+                        <bool>true</bool>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="buttonSymbols">
+                        <enum>QAbstractSpinBox::NoButtons</enum>
                        </property>
-                       <property name="maxLength">
-                        <number>3</number>
+                       <property name="maximum">
+                        <number>999</number>
                        </property>
                       </widget>
                      </item>
@@ -1035,7 +1131,13 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_31">
+                      <widget class="QSpinBox" name="spinBox_22">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>80</width>
@@ -1048,22 +1150,25 @@
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="baseSize">
-                        <size>
-                         <width>80</width>
-                         <height>0</height>
-                        </size>
+                       <property name="frame">
+                        <bool>true</bool>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="buttonSymbols">
+                        <enum>QAbstractSpinBox::NoButtons</enum>
                        </property>
-                       <property name="maxLength">
-                        <number>3</number>
+                       <property name="maximum">
+                        <number>999</number>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_32">
+                      <widget class="QSpinBox" name="spinBox_23">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>80</width>
@@ -1076,17 +1181,14 @@
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="baseSize">
-                        <size>
-                         <width>80</width>
-                         <height>0</height>
-                        </size>
+                       <property name="frame">
+                        <bool>true</bool>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="buttonSymbols">
+                        <enum>QAbstractSpinBox::NoButtons</enum>
                        </property>
-                       <property name="maxLength">
-                        <number>3</number>
+                       <property name="maximum">
+                        <number>999</number>
                        </property>
                       </widget>
                      </item>
@@ -1120,7 +1222,13 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_33">
+                      <widget class="QSpinBox" name="spinBox_25">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>80</width>
@@ -1133,22 +1241,25 @@
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="baseSize">
-                        <size>
-                         <width>80</width>
-                         <height>0</height>
-                        </size>
+                       <property name="frame">
+                        <bool>true</bool>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="buttonSymbols">
+                        <enum>QAbstractSpinBox::NoButtons</enum>
                        </property>
-                       <property name="maxLength">
-                        <number>3</number>
+                       <property name="maximum">
+                        <number>999</number>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_34">
+                      <widget class="QSpinBox" name="spinBox_24">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>80</width>
@@ -1161,17 +1272,14 @@
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="baseSize">
-                        <size>
-                         <width>80</width>
-                         <height>0</height>
-                        </size>
+                       <property name="frame">
+                        <bool>true</bool>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="buttonSymbols">
+                        <enum>QAbstractSpinBox::NoButtons</enum>
                        </property>
-                       <property name="maxLength">
-                        <number>3</number>
+                       <property name="maximum">
+                        <number>999</number>
                        </property>
                       </widget>
                      </item>
@@ -1205,7 +1313,13 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_17">
+                      <widget class="QSpinBox" name="spinBox_27">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>80</width>
@@ -1218,22 +1332,25 @@
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="baseSize">
-                        <size>
-                         <width>80</width>
-                         <height>0</height>
-                        </size>
+                       <property name="frame">
+                        <bool>true</bool>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="buttonSymbols">
+                        <enum>QAbstractSpinBox::NoButtons</enum>
                        </property>
-                       <property name="maxLength">
-                        <number>3</number>
+                       <property name="maximum">
+                        <number>999</number>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_18">
+                      <widget class="QSpinBox" name="spinBox_26">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>80</width>
@@ -1246,17 +1363,14 @@
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="baseSize">
-                        <size>
-                         <width>80</width>
-                         <height>0</height>
-                        </size>
+                       <property name="frame">
+                        <bool>true</bool>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="buttonSymbols">
+                        <enum>QAbstractSpinBox::NoButtons</enum>
                        </property>
-                       <property name="maxLength">
-                        <number>3</number>
+                       <property name="maximum">
+                        <number>999</number>
                        </property>
                       </widget>
                      </item>
@@ -1290,7 +1404,13 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_23">
+                      <widget class="QSpinBox" name="spinBox_29">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>80</width>
@@ -1303,22 +1423,25 @@
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="baseSize">
-                        <size>
-                         <width>80</width>
-                         <height>0</height>
-                        </size>
+                       <property name="frame">
+                        <bool>true</bool>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="buttonSymbols">
+                        <enum>QAbstractSpinBox::NoButtons</enum>
                        </property>
-                       <property name="maxLength">
-                        <number>3</number>
+                       <property name="maximum">
+                        <number>999</number>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_24">
+                      <widget class="QSpinBox" name="spinBox_28">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>80</width>
@@ -1331,17 +1454,14 @@
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="baseSize">
-                        <size>
-                         <width>80</width>
-                         <height>0</height>
-                        </size>
+                       <property name="frame">
+                        <bool>true</bool>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="buttonSymbols">
+                        <enum>QAbstractSpinBox::NoButtons</enum>
                        </property>
-                       <property name="maxLength">
-                        <number>3</number>
+                       <property name="maximum">
+                        <number>999</number>
                        </property>
                       </widget>
                      </item>
@@ -1375,7 +1495,13 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_27">
+                      <widget class="QSpinBox" name="spinBox_31">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>80</width>
@@ -1388,22 +1514,25 @@
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="baseSize">
-                        <size>
-                         <width>80</width>
-                         <height>0</height>
-                        </size>
+                       <property name="frame">
+                        <bool>true</bool>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="buttonSymbols">
+                        <enum>QAbstractSpinBox::NoButtons</enum>
                        </property>
-                       <property name="maxLength">
-                        <number>3</number>
+                       <property name="maximum">
+                        <number>999</number>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lineEdit_28">
+                      <widget class="QSpinBox" name="spinBox_30">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>80</width>
@@ -1416,22 +1545,290 @@
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="baseSize">
-                        <size>
-                         <width>80</width>
-                         <height>0</height>
-                        </size>
+                       <property name="frame">
+                        <bool>true</bool>
                        </property>
-                       <property name="inputMethodHints">
-                        <set>Qt::ImhDigitsOnly</set>
+                       <property name="buttonSymbols">
+                        <enum>QAbstractSpinBox::NoButtons</enum>
                        </property>
-                       <property name="maxLength">
-                        <number>3</number>
+                       <property name="maximum">
+                        <number>999</number>
                        </property>
                       </widget>
                      </item>
                     </layout>
                    </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QGroupBox" name="EntityAnimaptionPreview">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="title">
+                  <string>Animation preview</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_2">
+                  <item row="0" column="2">
+                   <widget class="QWidget" name="EntityAnimationSettings" native="true">
+                    <layout class="QVBoxLayout" name="verticalLayout_5">
+                     <item>
+                      <widget class="QComboBox" name="EntityAnimationChooser"/>
+                     </item>
+                     <item>
+                      <widget class="QWidget" name="EntityAnimationFrame" native="true">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
+                       <layout class="QHBoxLayout" name="width_5">
+                        <property name="margin">
+                         <number>0</number>
+                        </property>
+                        <item>
+                         <widget class="QScrollBar" name="horizontalScrollBar_2">
+                          <property name="enabled">
+                           <bool>true</bool>
+                          </property>
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="minimum">
+                           <number>1</number>
+                          </property>
+                          <property name="maximum">
+                           <number>99</number>
+                          </property>
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                          <property name="invertedAppearance">
+                           <bool>false</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QSpinBox" name="spinBox_4">
+                          <property name="maximumSize">
+                           <size>
+                            <width>30</width>
+                            <height>16777215</height>
+                           </size>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                          </property>
+                          <property name="buttonSymbols">
+                           <enum>QAbstractSpinBox::NoButtons</enum>
+                          </property>
+                          <property name="minimum">
+                           <number>1</number>
+                          </property>
+                          <property name="maximum">
+                           <number>99</number>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QWidget" name="EntityAnimationDelay" native="true">
+                       <layout class="QHBoxLayout" name="imgrows_3">
+                        <property name="margin">
+                         <number>0</number>
+                        </property>
+                        <item>
+                         <widget class="QLabel" name="label_33">
+                          <property name="text">
+                           <string>Delay:</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <spacer name="horizontalSpacer_31">
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>40</width>
+                            <height>20</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                        <item>
+                         <widget class="QSpinBox" name="DelaySpin">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>0</height>
+                           </size>
+                          </property>
+                          <property name="sizeIncrement">
+                           <size>
+                            <width>0</width>
+                            <height>0</height>
+                           </size>
+                          </property>
+                          <property name="baseSize">
+                           <size>
+                            <width>0</width>
+                            <height>0</height>
+                           </size>
+                          </property>
+                          <property name="mouseTracking">
+                           <bool>false</bool>
+                          </property>
+                          <property name="acceptDrops">
+                           <bool>false</bool>
+                          </property>
+                          <property name="layoutDirection">
+                           <enum>Qt::LeftToRight</enum>
+                          </property>
+                          <property name="autoFillBackground">
+                           <bool>false</bool>
+                          </property>
+                          <property name="wrapping">
+                           <bool>false</bool>
+                          </property>
+                          <property name="frame">
+                           <bool>true</bool>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                          </property>
+                          <property name="keyboardTracking">
+                           <bool>true</bool>
+                          </property>
+                          <property name="minimum">
+                           <number>1</number>
+                          </property>
+                          <property name="maximum">
+                           <number>999999999</number>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="EntityAnimationPlay">
+                       <property name="text">
+                        <string>Play</string>
+                       </property>
+                       <property name="autoDefault">
+                        <bool>false</bool>
+                       </property>
+                       <property name="default">
+                        <bool>false</bool>
+                       </property>
+                       <property name="flat">
+                        <bool>false</bool>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="EntityAnimationViewer">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                      <horstretch>1</horstretch>
+                      <verstretch>1</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>64</width>
+                      <height>64</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>200</width>
+                      <height>200</height>
+                     </size>
+                    </property>
+                    <property name="sizeIncrement">
+                     <size>
+                      <width>0</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QLabel {
+	padding: 1px;
+}</string>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::Box</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Sunken</enum>
+                    </property>
+                    <property name="lineWidth">
+                     <number>1</number>
+                    </property>
+                    <property name="midLineWidth">
+                     <number>0</number>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="textFormat">
+                     <enum>Qt::AutoText</enum>
+                    </property>
+                    <property name="scaledContents">
+                     <bool>false</bool>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                    <property name="wordWrap">
+                     <bool>false</bool>
+                    </property>
+                    <property name="indent">
+                     <number>0</number>
+                    </property>
+                    <property name="openExternalLinks">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <spacer name="horizontalSpacer_2">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                     <enum>QSizePolicy::Fixed</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>0</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
                   </item>
                  </layout>
                 </widget>
@@ -1933,8 +2330,8 @@ border: 0px transparent;
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>96</width>
-                  <height>26</height>
+                  <width>100</width>
+                  <height>30</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -2019,6 +2416,57 @@ border: 0px transparent;
                    <bool>false</bool>
                   </property>
                   <layout class="QVBoxLayout" name="verticalLayout">
+                   <item>
+                    <widget class="QWidget" name="RegionName" native="true">
+                     <property name="enabled">
+                      <bool>true</bool>
+                     </property>
+                     <layout class="QHBoxLayout" name="meeting_3">
+                      <property name="margin">
+                       <number>0</number>
+                      </property>
+                      <item>
+                       <widget class="QLabel" name="label_20">
+                        <property name="text">
+                         <string>Region name:</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <spacer name="horizontalSpacer_22">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item>
+                       <widget class="QLineEdit" name="lineEdit_22">
+                        <property name="minimumSize">
+                         <size>
+                          <width>190</width>
+                          <height>0</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>190</width>
+                          <height>16777215</height>
+                         </size>
+                        </property>
+                        <property name="inputMethodHints">
+                         <set>Qt::ImhNone</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </item>
                    <item>
                     <widget class="QWidget" name="MapBack" native="true">
                      <layout class="QHBoxLayout" name="width_3">
@@ -2240,12 +2688,12 @@ border: 0px transparent;
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>654</x>
-     <y>138</y>
+     <x>728</x>
+     <y>244</y>
     </hint>
     <hint type="destinationlabel">
-     <x>753</x>
-     <y>142</y>
+     <x>764</x>
+     <y>247</y>
     </hint>
    </hints>
   </connection>
@@ -2256,12 +2704,44 @@ border: 0px transparent;
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>760</x>
-     <y>131</y>
+     <x>764</x>
+     <y>247</y>
     </hint>
     <hint type="destinationlabel">
-     <x>708</x>
-     <y>127</y>
+     <x>728</x>
+     <y>244</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalScrollBar_2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox_4</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>713</x>
+     <y>396</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>754</x>
+     <y>402</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_4</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>horizontalScrollBar_2</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>742</x>
+     <y>388</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>703</x>
+     <y>397</y>
     </hint>
    </hints>
   </connection>

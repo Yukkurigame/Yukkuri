@@ -15,6 +15,8 @@ class Player : public DynamicUnit
 public:
     Player();
 
+    void Die( );
+
     void moveUnit( short axis, signed int val );
     void update( const int& );
 

@@ -16,7 +16,6 @@ class Entity: public DynamicUnit
 {
 public:
     Entity( );
-    void Die( );
     void setPathTarget(float, float);
     void update( const int& );
     void takeAction( );

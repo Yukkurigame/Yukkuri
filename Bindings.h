@@ -36,7 +36,7 @@ public:
 private:
 	const void* engine;
 	std::map< int, string> Keys;
-	std::map< string, string> Binds;
+	std::map< string, string> Bindkeys;
 };
 
 //TODO: Как-то нехорошо.

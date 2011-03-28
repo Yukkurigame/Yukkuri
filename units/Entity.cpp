@@ -10,35 +10,12 @@ Entity::Entity()
 	Attacked = NULL;
 }
 
-void Entity::Die( )
-{
-	Corpse* corpse;
-	corpse = dynamic_cast<Corpse*>( UnitManager::units.CreateUnit( CORPSE, getUnitX(), getUnitY() ) );
-	if( corpse ){
-		vector<int> bcolor;
-		getConfigValue( "bloodcolor", bcolor );
-		if( bcolor.size() >= 3 )
-			corpse->setBloodColor( bcolor[0], bcolor[1], bcolor[2] );
-		else if( bcolor.size() >= 1 )
-			corpse->setBloodColor( bcolor[0] );
-		corpse->setUnitParameter( "hp", getUnitParameter( "hpmax" ) * getUnitParameter( "fed" ) / 100 );
-		corpse->setUnitSize( this->getUnitSize( ) );
-	}
-	if( this->Attacked ){
-		this->Attacked->increaseUnitParameter( "exp", getUnitParameter( "hpmax" ) / getUnitParameter( "level" ) );
-		this->Attacked->increaseUnitParameter( "kills" );
-	}
-	this->Delete();
-}
-
 void Entity::update( const int& dt )
 {
-	if( getUnitParameter( "hp" ) <= 0 ){
-		Die( );
-		return;
-	}
 	DynamicUnit::update( dt );
-	if( Attacked ){
+	if( this->isDeleted() )
+		return;
+	if( Attacked && !Attacked->isDeleted() ){
 		float dst = dist(Attacked);
 		if( getUnitParameter( "hp" ) * 3 <= getUnitParameter( "hpmax" ) && dst < 500 ){ //Run away
 			signed int px = (( Attacked->getUnitX() > this->X ) ? -1 : 1);
@@ -54,7 +31,7 @@ void Entity::update( const int& dt )
 void Entity::takeAction( )
 {
 	DynamicUnit::takeAction( );
-	if( Attacked ){
+	if( Attacked && !Attacked->isDeleted() ){
 		if( dist(Attacked) < getUnitSize( ) * 100 ){
 			attackUnit( Attacked );
 		}

@@ -23,6 +23,7 @@ struct MainConfig
 	int actionInterval;
 	int maxSpawn;
 	int maxEdibles;
+	int playerDies;
 	std::string imagePath;
 	std::string defaultImage;
 	std::string fontsPath;

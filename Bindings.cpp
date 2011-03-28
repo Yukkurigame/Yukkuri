@@ -197,23 +197,23 @@ void Bindings::unBindKey( int key )
 
 void Bindings::process( int num, short down )
 {
-	if( Binds[Keys[num]] == "up" ){
+	if( Bindkeys[Keys[num]] == "up" ){
 		Binds::movePlayerUp(down);
-	}else if( Binds[Keys[num]] == "down" ){
+	}else if( Bindkeys[Keys[num]] == "down" ){
 		Binds::movePlayerDown(down);
-	}else if( Binds[Keys[num]] == "left" ){
+	}else if( Bindkeys[Keys[num]] == "left" ){
 		Binds::movePlayerLeft(down);
-	}else if( Binds[Keys[num]] == "right" ){
+	}else if( Bindkeys[Keys[num]] == "right" ){
 		Binds::movePlayerRight(down);
-	}else if( Binds[Keys[num]] == "toggleinterface" && down ){
+	}else if( Bindkeys[Keys[num]] == "toggleinterface" && down ){
 		Binds::playerToggleInterface();
-	}else if( Binds[Keys[num]] == "attack" && down ){
+	}else if( Bindkeys[Keys[num]] == "attack" && down ){
 		Binds::playerAttackUnit();
-	}else if( Binds[Keys[num]] == "eat" && down ){
+	}else if( Bindkeys[Keys[num]] == "eat" && down ){
 		Binds::playerEat( );
-	}else if( Binds[Keys[num]] == "exit" && down ){
+	}else if( Bindkeys[Keys[num]] == "exit" && down ){
 		Binds::exit( engine );
-	}else if( Binds[Keys[num]] == "screenshot" && down ){
+	}else if( Bindkeys[Keys[num]] == "screenshot" && down ){
 		Binds::screenshot( );
 	}
 }
@@ -222,42 +222,63 @@ void Bindings::LoadKeys( )
 {
 	string subconfig = "game";
 	string config = "bindings";
-	LuaConfig::Instance()->getValue( "keys", subconfig, config, Binds );
+	LuaConfig::Instance()->getValue( "keys", subconfig, config, Bindkeys );
 }
 
 void Binds::movePlayerUp( short down )
 {
-	UnitManager::units.GetPlayer()->moveUnit( 0, down );
+	Unit* player;
+	player = UnitManager::units.GetPlayer();
+	if( player )
+		player->moveUnit( 0, down );
 }
 
 void Binds::movePlayerDown( short down )
 {
-	UnitManager::units.GetPlayer()->moveUnit( 0, down * -1 );
+	Unit* player;
+	player = UnitManager::units.GetPlayer();
+	if( player )
+		player->moveUnit( 0, down * -1 );
 }
 
 void Binds::movePlayerLeft( short down )
 {
-	UnitManager::units.GetPlayer()->moveUnit( 1, down * -1 );
+	Unit* player;
+	player = UnitManager::units.GetPlayer();
+	if( player )
+		player->moveUnit( 1, down * -1 );
 }
 
 void Binds::movePlayerRight( short down )
 {
-	UnitManager::units.GetPlayer()->moveUnit( 1, down );
+	Unit* player;
+	player = UnitManager::units.GetPlayer();
+	if( player )
+		player->moveUnit( 1, down );
 }
 
 void Binds::playerAttackUnit( )
 {
-	((Player*)UnitManager::units.GetPlayer())->attack( );
+	Player* player;
+	player = dynamic_cast<Player*>(UnitManager::units.GetPlayer());
+	if( player )
+		player->attack( );
 }
 
 void Binds::playerToggleInterface( )
 {
-	((Player*)UnitManager::units.GetPlayer())->toggleInterface();
+	Player* player;
+	player = dynamic_cast<Player*>(UnitManager::units.GetPlayer());
+	if( player )
+		player->toggleInterface();
 }
 
 void Binds::playerEat( )
 {
-	((Player*)UnitManager::units.GetPlayer())->eat( );
+	Player* player;
+	player = dynamic_cast<Player*>(UnitManager::units.GetPlayer());
+	if( player )
+		player->eat( );
 }
 
 void Binds::screenshot( )

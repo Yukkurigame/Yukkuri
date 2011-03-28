@@ -1,6 +1,8 @@
 #include "Player.h"
 #include "Interface.h"
+#include "config.h"
 
+extern MainConfig conf;
 
 Player::Player()
 {
@@ -8,6 +10,13 @@ Player::Player()
 	moveY = 0;
 
 	FoodTypes.push_back( "corpse" );
+}
+
+void Player::Die( )
+{
+	if( conf.playerDies ){
+		DynamicUnit::Die( );
+	}
 }
 
 void Player::moveUnit( short axis, signed int val )
@@ -23,6 +32,8 @@ void Player::moveUnit( short axis, signed int val )
 void Player::update( const int& dt )
 {
 	DynamicUnit::update( dt );
+	if( this->isDeleted() )
+		return;
 	DynamicUnit::moveUnit( moveX, moveY, dt );
 }
 

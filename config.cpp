@@ -36,5 +36,7 @@ bool MainConfig::load( )
 	lc->getValue( "max_spawn" , subconfig, config, maxSpawn );
 	lc->getValue( "max_edibles" , subconfig, config, maxEdibles );
 
+	lc->getValue( "player_dies" , subconfig, config, playerDies );
+
 	return true;
 };

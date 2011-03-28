@@ -21,18 +21,22 @@ bool Corpse::Create( int id )
 {
 	if( !Plant::Create( id ) )
 		return false;
-	blood = Graphics::Instance( )->CreateGLSprite( getUnitImageName( ) );
-	blood->fixed = false;
+	if( getUnitImageCols() > 1 || getUnitImageRows() > 1 ){
+		blood = Graphics::Instance( )->CreateGLSprite( getUnitImageName( ) );
+		blood->fixed = false;
+	}
 	return true;
 }
 
 void Corpse::update( const int& dt )
 {
 	Plant::update( dt );
-	blood->setPosition( getUnitX() - getUnitWidth()/4 , getUnitY(), Z - 1 );
-	if( !blood->coordinates ){
-		getUnitImage( )->setPosition( 0, 0, Z - 1);
-		blood->resize( getUnitWidth() * getUnitSize(), getUnitHeight() * getUnitSize() );
-		blood->coordinates = Graphics::Instance( )->GetAnimation( getUnitName(), 1 );
+	if( blood ){
+		blood->setPosition( getUnitX() - getUnitWidth()/4 , getUnitY(), Z - 1 );
+		if( !blood->coordinates ){
+			getUnitImage( )->setPosition( 0, 0, Z - 1);
+			blood->resize( getUnitWidth() * getUnitSize(), getUnitHeight() * getUnitSize() );
+			blood->coordinates = Graphics::Instance( )->GetAnimation( getUnitName(), 1 );
+		}
 	}
 }

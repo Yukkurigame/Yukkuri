@@ -130,6 +130,8 @@ bool Unit::setUnitImage( Sprite* image )
 
 float Unit::dist( Unit* target )
 {
+	if( !target )
+		return 0; //Lol, Nobody here!
 	float x = X - target->getUnitX();
 	float y = Y - target->getUnitY();
 	return sqrt( ( x * x ) + ( y * y ) );

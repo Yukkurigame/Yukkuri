@@ -181,6 +181,27 @@ void DynamicUnit::eat( Unit* victim )
 	}
 }
 
+void DynamicUnit::Die( )
+{
+	Corpse* corpse;
+	corpse = dynamic_cast<Corpse*>( UnitManager::units.CreateUnit( CORPSE, getUnitX(), getUnitY() ) );
+	if( corpse ){
+		vector<int> bcolor;
+		getConfigValue( "bloodcolor", bcolor );
+		if( bcolor.size() >= 3 )
+			corpse->setBloodColor( bcolor[0], bcolor[1], bcolor[2] );
+		else if( bcolor.size() >= 1 )
+			corpse->setBloodColor( bcolor[0] );
+		corpse->setUnitParameter( "hp", getUnitParameter( "hpmax" ) * getUnitParameter( "fed" ) / 100 );
+		corpse->setUnitSize( this->getUnitSize( ) );
+	}
+	if( this->Attacked ){
+		this->Attacked->increaseUnitParameter( "exp", getUnitParameter( "hpmax" ) / getUnitParameter( "level" ) );
+		this->Attacked->increaseUnitParameter( "kills" );
+	}
+	this->Delete();
+}
+
 void DynamicUnit::levelUp( int addlevel )
 {
 	//FIXME: level not decreased;
@@ -211,6 +232,10 @@ void DynamicUnit::levelUp( int addlevel )
 void DynamicUnit::update( const int& dt )
 {
 	AnimatedUnit::update( dt );
+	if( getUnitParameter( "hp" ) <= 0 ){
+		Die( );
+		return;
+	}
 	if( this->Parameters["exp"] >= this->Parameters["expmax"] )
 		levelUp(1);
 }
@@ -220,8 +245,8 @@ void DynamicUnit::takeAction( )
 	AnimatedUnit::takeAction();
 	if( Parameters["fed"] > 1 )
 		Parameters["fed"] -= 0.2f * Parameters["level"];
-	if( Attacked && !Attacked->isDeleted() ){
-		if( Attacked->getUnitParameter( "hp" ) <= 0 || dist(Attacked) >= 1000 ){
+	if( Attacked ){
+		if( Attacked->isDeleted() || Attacked->getUnitParameter( "hp" ) <= 0 || dist(Attacked) >= 1000 ){
 			Attacked = NULL;
 		}
 	}

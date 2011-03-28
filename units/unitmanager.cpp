@@ -80,6 +80,8 @@ void UnitManager::DeleteUnit( Unit* u )
 {
 	if( !u )
 		return;
+	if( u == player )
+		player = NULL;
 	ChangeUnitsSize( u->geteUnitType( ), -1 );
 	graph->FreeGLSprite( u->getUnitImage() );
 	u->setUnitImage( NULL );
@@ -138,7 +140,7 @@ void UnitManager::tick( const int& dt )
 {
 	Unit* u;
 	for( unsigned int i = 0; i < Units.size(); ){
-		u = Units[i];		
+		u = Units[i];
 		if( u->isDeleted() ){
 			DeleteUnit( u );
 			Units.erase( Units.begin() + i );

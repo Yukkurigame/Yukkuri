@@ -13,6 +13,9 @@ public:
 	void grow();
 	void eat( );
 	void eat( Unit* Victim );
+
+	void Die( );
+
 	virtual void levelUp( int addlevel );
 
 	void update( const int& dt );

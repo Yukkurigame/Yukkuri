@@ -513,7 +513,7 @@ void Graphics::LoadAnimation( string name, int rows, int cols, int width, int he
 	for( int row = 0; row < rows; ++row ){
 		for( int col = 0; col < cols; ++col ){
 			Animations[name].push_back(
-					GetCoordinates( col *  width + col , row * height + row,
+					GetCoordinates( col *  width + col, row * height + row,
 							width, height,
 							texw, texh, 0)
 				);

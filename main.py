@@ -179,7 +179,7 @@ class Main(QtGui.QMainWindow):
                     if field:
                         name = re.sub('_\d+$', '', str(child.objectName()).lower())
                         if box.objectName() == "EntityAnimationBox":
-                            if not d.has_key('animation'): saved['animation'] = {}
+                            if not saved.has_key('animation'): saved['animation'] = {}
                             saved['animation'][name] = field
                         else:
                             saved[name] = field

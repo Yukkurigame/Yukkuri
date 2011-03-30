@@ -21,7 +21,7 @@ class EntityTab:
         self.__AnimationPreview = []
     
     def OpenEntityImage(self):
-        self.main.OpenImage(GetWidget(self.nain.ui.EntityMainBox, 'image').children()[-2])
+        self.main.OpenImage(GetWidget(self.main.ui.EntityMainBox, 'image').children()[-2])
     
     def ChangeEntityColor(self):
         self.main.ChangeColor(self.main.ui.Bloodcolor)
@@ -51,7 +51,7 @@ class EntityTab:
     def ChangeAnimaptionType(self):         
         atype = self.main.ui.EntityAnimationChooser.currentIndex()
         try:
-            self.__AnimationPreview[atype]
+            self.__AnimationPreview[atype].frames = []
         except Exception, e:
             print e
             return
@@ -102,5 +102,4 @@ class EntityTab:
         self.ShowAnimationPerviewImage(frame)
     
     def ShowAnimationPerviewImage(self, image):
-        print image
         ShowImage(image, self.main.ui.EntityAnimationViewer)

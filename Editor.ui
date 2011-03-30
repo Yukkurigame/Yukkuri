@@ -418,7 +418,7 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QSpinBox" name="spinBox_11">
+                      <widget class="QDoubleSpinBox" name="doubleSpinBox_11">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -433,9 +433,6 @@
                        </property>
                        <property name="alignment">
                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                       </property>
-                       <property name="maximum">
-                        <number>100</number>
                        </property>
                       </widget>
                      </item>
@@ -478,7 +475,7 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QSpinBox" name="spinBox_12">
+                      <widget class="QDoubleSpinBox" name="doubleSpinBox_12">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -493,12 +490,6 @@
                        </property>
                        <property name="alignment">
                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                       </property>
-                       <property name="minimum">
-                        <number>-999999999</number>
-                       </property>
-                       <property name="maximum">
-                        <number>999999999</number>
                        </property>
                       </widget>
                      </item>
@@ -532,7 +523,7 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QSpinBox" name="spinBox_16">
+                      <widget class="QDoubleSpinBox" name="doubleSpinBox_16">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -547,12 +538,6 @@
                        </property>
                        <property name="alignment">
                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                       </property>
-                       <property name="minimum">
-                        <number>-999999999</number>
-                       </property>
-                       <property name="maximum">
-                        <number>999999999</number>
                        </property>
                       </widget>
                      </item>
@@ -715,7 +700,7 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QSpinBox" name="spinBox_17">
+                      <widget class="QDoubleSpinBox" name="doubleSpinBox_17">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -730,12 +715,6 @@
                        </property>
                        <property name="alignment">
                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                       </property>
-                       <property name="minimum">
-                        <number>-999999999</number>
-                       </property>
-                       <property name="maximum">
-                        <number>999999999</number>
                        </property>
                       </widget>
                      </item>
@@ -778,7 +757,7 @@
                       </spacer>
                      </item>
                      <item>
-                      <widget class="QSpinBox" name="spinBox_18">
+                      <widget class="QDoubleSpinBox" name="doubleSpinBox_18">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -793,12 +772,6 @@
                        </property>
                        <property name="alignment">
                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                       </property>
-                       <property name="minimum">
-                        <number>-999999999</number>
-                       </property>
-                       <property name="maximum">
-                        <number>999999999</number>
                        </property>
                       </widget>
                      </item>
@@ -2316,8 +2289,8 @@ border: 0px transparent;
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>280</width>
-                  <height>510</height>
+                  <width>96</width>
+                  <height>26</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -2330,8 +2303,8 @@ border: 0px transparent;
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>100</width>
-                  <height>30</height>
+                  <width>96</width>
+                  <height>26</height>
                  </rect>
                 </property>
                 <attribute name="label">

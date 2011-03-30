@@ -1,6 +1,8 @@
 require("data/scripts/adddebug")
 ---
 local configs = {}
+math.randomseed(os.time())
+math.random(); math.random(); math.random()
 
 function load( filename )
     print("Load " .. filename)
@@ -84,7 +86,6 @@ function getOneFromSeveral( field, config )
         t[i] = config[i][field]
     end
     local min, max = 0.0, 0.0
-    math.randomseed(os.time())
     rnd = math.random()
     for i,j in pairs(t) do
         local el =  j / 100.0

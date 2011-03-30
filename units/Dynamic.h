@@ -14,6 +14,7 @@ public:
 	void eat( );
 	void eat( Unit* Victim );
 
+	virtual bool Create( int id );
 	virtual void Die( );
 
 	virtual void levelUp( int addlevel );

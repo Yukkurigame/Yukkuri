@@ -8,20 +8,26 @@ DynamicUnit::DynamicUnit()
 	TotalDistance = 0;
 	anim = NULL;
 	Attacked = NULL;
-	Parameters["hp"] = 10;
-	Parameters["hpmax"] = 10;
-	Parameters["fed"] = 100;
-	Parameters["exp"] = 20;
-	Parameters["expmax"] = 200;
-	Parameters["damage"] = 3;
-	Parameters["level"] = 1;
-	Parameters["speed"] = 80;
-	Parameters["days"] = 0;
 
 	//FIXME: get it from config
 	FoodTypes.push_back( "plant" );
 }
 
+bool DynamicUnit::Create( int id )
+{
+	if( !AnimatedUnit::Create( id ) )
+		return false;
+	getConfigValue("hp", Parameters["hp"]);
+	Parameters["hpmax"] = Parameters["hp"];
+	Parameters["fed"] = 100;
+	Parameters["exp"] = 20;
+	Parameters["expmax"] = 200;
+	getConfigValue("damage", Parameters["damage"]);
+	Parameters["level"] = 1;
+	getConfigValue("speed", Parameters["speed"]);
+	Parameters["days"] = 0;
+	return true;
+}
 
 bool DynamicUnit::loadAnimation()
 {
@@ -212,7 +218,7 @@ void DynamicUnit::levelUp( int addlevel )
 	float level;
 	for( int i = 1; i<= addlevel; ++i){
 		level = ++Parameters["level"];
-		scale = ( log( level ) / log( static_cast<float>(40) ) );
+		scale = ( log( level ) / log( 40.0f ) );
 		if( scale < 0.35 )
 			scale = 0.35f;
 		else if( scale > 1.3 )
@@ -224,7 +230,7 @@ void DynamicUnit::levelUp( int addlevel )
 		hp = Parameters["hp"] / hpmax;
 		Parameters["exp"] -= expmax;
 		Parameters["hpmax"] += 10 * level;
-		Parameters["expmax"] = expmax + log( level / static_cast<float>(40) );
+		Parameters["expmax"] = expmax + log( level / 40.0f );
 		Parameters["hp"] = Parameters["hpmax"] * hp;
 	}
 }
@@ -244,7 +250,7 @@ void DynamicUnit::takeAction( )
 {
 	AnimatedUnit::takeAction();
 	if( Parameters["fed"] > 1 )
-		Parameters["fed"] -= 0.2f * Parameters["level"];
+		Parameters["fed"] -= 0.2f * log( Parameters["level"] );
 	if( Attacked ){
 		if( Attacked->isDeleted() || Attacked->getUnitParameter( "hp" ) <= 0 || dist(Attacked) >= 1000 ){
 			Attacked = NULL;

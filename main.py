@@ -126,7 +126,6 @@ class Main(QtGui.QMainWindow):
         if not item: return
         self.BlockFields()
         self.ClearFields()
-        self.EntytyTab.LoadAnimationPreview()
         item = str(item.text()).lower()
         eltype = self.__loadedConfig[0]
         data = self.__loadedConfig[1:]
@@ -142,9 +141,12 @@ class Main(QtGui.QMainWindow):
                    self.ui.EntityMiscBox, self.ui.TilesMainBox]:
             RefillFields(el, element)
         if element.has_key('animation'):
-                RefillFields(self.ui.EntityAnimationBox, element['animation'])
-        else: 
-                RefillFields(self.ui.EntityAnimationBox, {})
+            RefillFields(self.ui.EntityAnimationBox, element['animation'])
+            self.EntytyTab.LoadAnimationPreview()
+            self.ui.EntityAnimaptionPreview.setDisabled(False)
+        else:
+            self.ui.EntityAnimaptionPreview.setDisabled(True)
+            RefillFields(self.ui.EntityAnimationBox, {})
         if eltype == "Tiles" and element.has_key('image'):
             self.ReloadTilesImage()
         elif eltype == "MapRegion":

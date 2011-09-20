@@ -19,7 +19,7 @@ DayTime::~DayTime()
 void DayTime::loadInterface()
 {
 	sfield = Graphics::Instance()->CreateGLSprite(0, 0, 4, conf.windowWidth, conf.windowHeight );
-	sfield->clr->set( 0, 0, 0, 255 );
+	sfield->clr->set( 0, 0, 0, 0 );
 	text = UI::yui.GetWidget("time");
 }
 

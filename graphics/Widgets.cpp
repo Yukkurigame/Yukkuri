@@ -7,8 +7,6 @@
 #include "Luaconfig.h"
 #include "config.h"
 
-LuaConfig* cfg = LuaConfig::Instance();
-
 Widget::Widget()
 {
 	graph = Graphics::Instance();
@@ -46,6 +44,7 @@ bool Widget::create( string name, string text, int x, int y )
 
 bool Widget::load( string config )
 {
+	LuaConfig* cfg = new LuaConfig;
 	cfg->getValue( "name", config, "widget", Name );
 	cfg->getValue( "x", config, "widget", OffsetX );
 	cfg->getValue( "y", config, "widget", OffsetY );
@@ -73,6 +72,9 @@ bool Widget::load( string config )
 			return false;
 		}
 	}
+
+	delete cfg;
+
 	return true;
 }
 
@@ -231,6 +233,7 @@ bool TextWidget::load( string config )
 	string font;
 	int fontsize = 12;
 	vector<int> vcolor;
+	LuaConfig* cfg = new LuaConfig;
 	//float textx, texty;
 	//textx = texty = 0;
 
@@ -247,6 +250,9 @@ bool TextWidget::load( string config )
 	//setTextPosition( textx, texty );
 	if( vcolor.size( ) > 2 )
 		setFontColor(vcolor[0], vcolor[1], vcolor[2]);
+
+	delete cfg;
+
 	return true;
 }
 
@@ -370,6 +376,8 @@ bool BarWidget::load( string config )
 	string imgname;
 	int position[6];
 	vector<int> vcolor;
+	LuaConfig* cfg = new LuaConfig;
+
 	//Order: topimgx, topimgy, barx, bary, barwidth, barheight
 	//Ya, it's cruve, but it's simple
 	cfg->getValue( "topimgx", config, "widget", position[0] );
@@ -391,6 +399,9 @@ bool BarWidget::load( string config )
 		BarWidth = Width;
 	createBar( imgname, position );
 	updatePosition();
+
+	delete cfg;
+
 	return true;
 }
 

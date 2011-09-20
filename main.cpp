@@ -7,27 +7,38 @@ int main(int argc, char* argv[])  // <- this must match exactly, since SDL rewri
 {
 	Yukkuri Engine;
 
-	Engine.Init();
-
-	Engine.SetTitle( "Yukkuri game" );
-	Engine.Start();
-
-	Engine.SetTitle( "Quitting..." );
+	if( Engine.Init() ){
+		Engine.SetTitle( "Yukkuri game" );
+		Engine.Start();
+		Engine.SetTitle( "Quitting..." );
+		return 1;
+	}
 
 	return 0;
 }
 
 
-void Yukkuri::AdditionalInit()
+bool Yukkuri::Init()
+{
+	ls = new LuaScript;
+
+	if( !ls->Init( ) || !ls->OpenFile( "init" ) ){
+		debug( 1, "Lua loading failed.\n" );
+		return false;
+	}
+
+	return CEngine::Init( );
+}
+
+bool Yukkuri::AdditionalInit()
 {
 	extern Map map;
 
 	debug( 1, "Additional Init\n" );
 
-	LuaScript* s = new LuaScript( );
-	if( !s->Init( ) || !s->OpenFile( "init" ) ){
-		debug( 1, "Lua loading failed.\n" );
-		return;
+	if( !ls->OpenFile( "start" ) ){
+		debug( 1, "Starting lua failed.\n" );
+		return false;
 	}
 
 	Bindings::bnd.setEngine( this );
@@ -40,6 +51,8 @@ void Yukkuri::AdditionalInit()
 	daytime.loadInterface();
 
 	units = &UnitManager::units;
+
+	return true;
 }
 
 void Yukkuri::Think( const int& ElapsedTime )
@@ -102,7 +115,6 @@ void Yukkuri::WindowActive()
 
 void Yukkuri::End()
 {
-	LuaConfig::Destroy();
 	//FIXME: графика уничтожается, а потом начинают уничтожаться спрайты, да.
 	//теги: ололо-сегфолты
 	//Graphics::Destroy();

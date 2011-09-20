@@ -4,14 +4,17 @@
  *  Created on: 13.07.2010
  */
 #include "Lua.h"
-#include "debug.h"
+#include <cstring>
+
+lua_State* LuaMain::Lst = NULL;
+int LuaMain::count = 0;
 
 LuaStackChecker::LuaStackChecker( lua_State* L, const char* filename/* = ""*/, int line/* = 0*/ )
 : luaState_(L),
-  filename_(filename),
-  line_(line)
+filename_(filename),
+line_(line)
 {
-  top_ = lua_gettop(L);
+	top_ = lua_gettop(L);
 }
 
 LuaStackChecker::~LuaStackChecker( )
@@ -26,13 +29,23 @@ LuaStackChecker::~LuaStackChecker( )
 
 LuaMain::LuaMain()
 {
-	Lst = luaL_newstate();
-    luaL_openlibs(Lst);
+	if( Lst == NULL ){
+		Lst = luaL_newstate();
+		luaL_openlibs(Lst);
+	}
+
+	count++; //FIXME: Ох, какой костыль.
 }
 
 LuaMain::~LuaMain()
 {
-	lua_close(Lst);
+	count--;
+
+	if( count == 0 ){
+		lua_close(Lst);
+		Lst = NULL;
+		debug( 4, "Lua engine closed.\n" );
+	}
 }
 
 bool LuaMain::OpenFile( string name )
@@ -47,13 +60,13 @@ bool LuaMain::OpenFile( string name )
 	}
 
 	result = lua_pcall( Lst, 0, 0, 0);
-    if( result ){
-    	string e = lua_tostring( Lst, -1 );
-    	debug( 3, "Execute " + name + " failed: " + e + "\n" );
-    	return false;
-    }
+	if( result ){
+		string e = lua_tostring( Lst, -1 );
+		debug( 3, "Execute " + name + " failed: " + e + "\n" );
+		return false;
+	}
 
-    return true;
+	return true;
 }
 
 
@@ -106,4 +119,42 @@ template<> bool LuaMain::getValue( lua_State* L, int index, string& ret)
 		return true;
 	}
 	return false;
+}
+
+int LuaMain::execFunction( string function )
+{
+	int cnum;
+	int szadd = 0;
+	char funcname[function.length()];
+	char subfuncname[function.length()];
+	char delimetr = '\0';
+
+	//FIXME: needs refactoring
+	cnum = function.find('.');
+	if( cnum >= 0 ){
+		delimetr = '.';
+	}else{
+		cnum = function.find(':');
+		if( cnum >= 0 ){
+			delimetr = ':';
+		}
+	}
+	if( delimetr != '\0' ){
+		strcpy(funcname, function.substr( 0, cnum ).c_str( ));
+		strcpy(subfuncname, function.substr( cnum +1, function.length( ) ).c_str( ));
+	}else{
+		strcpy(funcname, function.c_str( ));
+	}
+
+	lua_getfield( Lst, LUA_GLOBALSINDEX, funcname );
+	if( delimetr ){
+		lua_getfield( Lst, -1, subfuncname );
+		if( delimetr == ':' ){
+			lua_pushvalue( Lst, -2 );
+			szadd++;
+		}
+	}
+
+	return szadd;
+
 }

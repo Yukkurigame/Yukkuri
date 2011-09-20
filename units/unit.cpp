@@ -74,7 +74,9 @@ void Unit::setUnitType( enum unitType type )
 void Unit::setUnitName( string type )
 {
 	//FIXME: it's bad.
-	UnitName = LuaConfig::Instance()->getRandom("meeting", type);
+	LuaConfig* cfg = new LuaConfig;
+	UnitName = cfg->getRandom("meeting", type);
+	delete cfg;
 }
 
 void Unit::setUnitX( float x )

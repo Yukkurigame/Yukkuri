@@ -21,10 +21,10 @@ bool LuaScript::Init()
 
 void LuaScript::RegisterApi( )
 {
-	lua_register( Lst, "Debug", &scriptApi::Debug );
+	lua_register( Lst, "readdir", &scriptApi::ReadDirectory );
+	lua_register( Lst, "getcwd", &scriptApi::GetCWD );
 
-	lua_register( Lst, "LoadConfig", &scriptApi::LoadConfig );
-	lua_register( Lst, "LoadAllConfigs", &scriptApi::LoadAllConfigs );
+	lua_register( Lst, "Debug", &scriptApi::Debug );
 
 	lua_register( Lst, "CreateWidget", &scriptApi::CreateWidget );
 	lua_register( Lst, "LoadWidget", &scriptApi::LoadWidget );

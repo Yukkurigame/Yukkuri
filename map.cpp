@@ -19,12 +19,12 @@ Map map;
 
 static int compareRects( const void * a, const void * b )
 {
-    const imageRect* aI = static_cast<const imageRect*>(a);
-    const imageRect* bI = static_cast<const imageRect*>(b);
-    if( aI && bI )
-    	return ( aI->id - bI->id );
-    else
-    	return 0;
+	const imageRect* aI = static_cast<const imageRect*>(a);
+	const imageRect* bI = static_cast<const imageRect*>(b);
+	if( aI && bI )
+		return ( aI->id - bI->id );
+	else
+		return 0;
 }
 
 namespace Region
@@ -37,8 +37,9 @@ namespace Region
 		debug( 5, "Loading region " + name + ".\n" );
 		bool Backing;
 		char BackName[3];
+		LuaConfig* cfg = new LuaConfig;
 		std::vector< std::map< string, int > > Tiles;
-		LuaConfig::Instance()->getValue( "tiles", name, "mapregion", Tiles );
+		cfg->getValue( "tiles", name, "mapregion", Tiles );
 		//Lua cannot into number keys
 		for( std::vector< std::map< string, int > >::iterator it = Tiles.begin(), end = Tiles.end();
 			it != end; ++it ){
@@ -55,7 +56,7 @@ namespace Region
 				//FIXME: Убрать этот костыль, перенести в imageRect
 				//FIXME: А как?
 				snprintf( BackName, 3, "%d", type );
-				LuaConfig::Instance()->getValue( "backing", BackName, "tiles", Backing );
+				cfg->getValue( "backing", BackName, "tiles", Backing );
 				if( Backing ){
 					if( it->count( "backtype" ) > 0 )
 						RegionBackDump[x][y] = (*it)["backtype"];
@@ -64,6 +65,7 @@ namespace Region
 				}
 			}
 		}
+		delete cfg;
 	}
 
 	unsigned int GetTile( signed int x, signed int y ){
@@ -173,9 +175,11 @@ MapTile::MapTile( signed int x, signed int y ) {
 	if( TypeID ){
 		//FIXME: ororoshenkiroro
 		char name[ sizeof(TypeID) ];
+		LuaConfig* cfg = new LuaConfig;
 		memset( name, 0, sizeof(name) );
 		snprintf( name, sizeof(TypeID), "%d", TypeID );
-		LuaConfig::Instance()->getValue( "passability", name, "tiles", Passability );
+		cfg->getValue( "passability", name, "tiles", Passability );
+		delete cfg;
 	}
 }
 
@@ -201,16 +205,17 @@ bool Map::LoadTiles( )
 		debug( 5, "Tiles already loaded." );
 		return false;
 	}
+	LuaConfig* cfg = new LuaConfig;
 	//FIXME: И тут, внезапно, в функцию врываются костыли.
 	std::vector <  std::map < string, string > > Subconfigs;
 	std::map < string, string > blank; //First element is blank.
 	Subconfigs.push_back( blank );
-	if( !LuaConfig::Instance()->getSubconfigs( "tiles", Subconfigs ) || ! Subconfigs.size() ){
+	if( !cfg->getSubconfigs( "tiles", Subconfigs ) || ! Subconfigs.size() ){
 		debug(1, "Tiles configs opening error or no tiles found.\n");
 		return false;
 	}else{
 		TileTypesCount = Subconfigs.size();
-		snprintf( dbg, 25, "Tiles found: %d\n", Subconfigs.size() );
+		snprintf( dbg, 25, "Tiles found: %lu\n", Subconfigs.size() );
 		debug( 5, dbg );
 	}
 	TilesArray = (imageRect*)malloc( sizeof(imageRect) * ( TileTypesCount ) );
@@ -232,6 +237,8 @@ bool Map::LoadTiles( )
 
 	TilesLoaded = true;
 
+	delete cfg;
+
 	return true;
 }
 
@@ -249,9 +256,9 @@ void Map::toMapCoordinates( int* mx, int* my )
 {
 	signed int x, y;
 	x = ( 2 * (*my) + (*mx) ) / 2;
-    y = ( 2 * (*my) - (*mx) ) / 2;
-    *mx = x >> Defines.lTileSize;
-    *my = y >> Defines.lTileSize;
+	y = ( 2 * (*my) - (*mx) ) / 2;
+	*mx = x >> Defines.lTileSize;
+	*my = y >> Defines.lTileSize;
 }
 
 void Map::fromMapCoordinates( int* x, int* y )

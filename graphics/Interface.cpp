@@ -21,16 +21,18 @@ UI::~UI( )
 void UI::LoadAllWidgets( )
 {
 	std::vector< string > v;
-	LuaConfig::Instance()->getSubconfigsList("widget", v);
+	LuaConfig* lc = new LuaConfig;
+	lc->getSubconfigsList("widget", v);
 	for(std::vector <string>::iterator it = v.begin(); it != v.end(); ++it ){
 		LoadWidget( (*it) );
 	}
+	delete lc;
 }
 
 Widget* UI::LoadWidget( string name )
 {
 	Widget* w;
-	LuaConfig* conf = LuaConfig::Instance();
+	LuaConfig* conf = new LuaConfig;
 
 	debug(5, "Loading widget " + name + "\n");
 
@@ -82,6 +84,8 @@ Widget* UI::LoadWidget( string name )
 			cld->setParent(w);
 		}
 	}
+
+	delete conf;
 
 	return w;
 }

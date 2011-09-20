@@ -31,12 +31,13 @@ void CEngine::SetSize()
 }
 
 /** Initialize SDL, the window and the additional data. **/
-void CEngine::Init()
+bool CEngine::Init()
 {
+
 	debug( 3, "Loading defaults.\n" );
 	if( !conf.load( ) ){
 		debug( 1, "Loading default configuration failed. Exiting." );
-		exit( 1 );
+		return false;
 	}
 
 
@@ -48,7 +49,7 @@ void CEngine::Init()
 	if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) < 0 ) {
 		debug( 0, "[FAIL]\n" );
 		debug( 1, "Couldn't initialize SDL: " + static_cast<string>(SDL_GetError( )) + "\n" );
-		exit( 1 );
+		return false;
 	}
 
 	SetTitle( "Loading..." );
@@ -71,7 +72,7 @@ void CEngine::Init()
 	if( !Graphics::Instance()->SetScreen( SDL_SetVideoMode( conf.windowWidth, conf.windowHeight, 0, videoFlags ) ) ) {
 		debug( 0, "[FAIL]\n" );
 		debug( 1, "Unable to set up video: " + static_cast<string>(SDL_GetError( )) + "\n" );
-		exit( 1 );
+		return false;
 	}
 
 	Graphics::Instance()->openglSetup( conf.windowWidth, conf.windowHeight );
@@ -93,8 +94,11 @@ void CEngine::Init()
 	debug( 1, "Joystick not enabled.\n" );
 #endif
 
-	AdditionalInit();
+	if(	!AdditionalInit() ){
+		return false;
+	}
 
+	return true;
 }
 
 /** The main loop. **/
@@ -116,10 +120,10 @@ void CEngine::Start()
 
 		Tick = SDL_GetTicks();
 		if(Tick - FPSTickCounter >= 250){
-		    float seconds = (Tick - FPSTickCounter) / 1000.0f;
-		    CurrentFPS = FPSCounter / seconds;
-		    FPSTickCounter = Tick;
-		    FPSCounter = 0;
+			float seconds = (Tick - FPSTickCounter) / 1000.0f;
+			CurrentFPS = FPSCounter / seconds;
+			FPSTickCounter = Tick;
+			FPSCounter = 0;
 		}
 
 		ElapsedTicks = Tick - LastTick;

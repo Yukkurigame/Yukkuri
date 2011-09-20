@@ -222,7 +222,9 @@ void Bindings::LoadKeys( )
 {
 	string subconfig = "game";
 	string config = "bindings";
-	LuaConfig::Instance()->getValue( "keys", subconfig, config, Bindkeys );
+	LuaConfig* cfg = new LuaConfig;
+	cfg->getValue( "keys", subconfig, config, Bindkeys );
+	delete cfg;
 }
 
 void Binds::movePlayerUp( short down )

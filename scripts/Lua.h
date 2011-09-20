@@ -18,17 +18,19 @@ extern "C" {
 #include <string>
 using std::string;
 
+#include "debug.h"
+
 class LuaStackChecker
 {
 public:
-  LuaStackChecker(lua_State* L, const char* filename = "", int line = 0);
-  ~LuaStackChecker();
+LuaStackChecker(lua_State* L, const char* filename = "", int line = 0);
+~LuaStackChecker();
 
 private:
-  lua_State* luaState_;
-  const char* filename_;
-  int line_;
-  int top_;
+lua_State* luaState_;
+const char* filename_;
+int line_;
+int top_;
 };
 
 
@@ -48,13 +50,22 @@ public:
 	bool execFunction( string function, const char* params[], const int sz, T& ret)
 	{
 		LuaStackChecker sc(Lst, __FILE__, __LINE__);
-		lua_getfield( Lst, LUA_GLOBALSINDEX, function.c_str() );
+
+		int szadd = execFunction( function );
+
 		for( int i=0; i<sz; ++i ){
 			lua_pushstring( Lst, params[i] );
 		}
-		lua_call( Lst, sz, 1 );
+		if( lua_pcall( Lst, sz + szadd, 1, 0 ) ){
+			string err;
+			getValue( Lst, -1, err );
+			debug( 4, "Lua function '" + function + "' execute error: " + err + "\n" );
+			lua_pop( Lst, 1 );
+			return false;
+		}
 		bool res = getValue( Lst, -1, ret );
-		lua_pop( Lst, 1 );
+		//TODO: szadd должно работать при :, но это неправильный костыль, больше негде проверить.
+		lua_pop( Lst, 1 + szadd );
 		return res;
 	}
 
@@ -65,27 +76,26 @@ public:
 	template<typename T>
 	bool getValue( lua_State* L, int index, std::vector<T>& ret )
 	{
-	  // stack:
-	  if(!lua_istable(L, index))
-	    return false;
+		// stack:
+		if(!lua_istable(L, index))
+			return false;
 
-	  LuaStackChecker sc(L, __FILE__, __LINE__);
+		LuaStackChecker sc(L, __FILE__, __LINE__);
 
-	  lua_pushvalue(L, index); // stack: vector
+		lua_pushvalue(L, index); // stack: vector
 
-	  const int count = luaL_getn(L, -1);
-	  for(int i = 1; count >= i; ++i)
-	  {
-	    lua_pushnumber(L, i);
-	    lua_gettable(L, -2);
-	    T value;
-	    getValue(L, -1, value);
-	    ret.push_back(value);
-	    lua_pop(L, 1); // stack: vector
-	  }
-	  lua_pop(L, 1); // stack:
+		const int count = luaL_getn(L, -1);
+		for(int i = 1; count >= i; ++i)	{
+			lua_pushnumber(L, i);
+			lua_gettable(L, -2);
+			T value;
+			getValue(L, -1, value);
+			ret.push_back(value);
+			lua_pop(L, 1); // stack: vector
+		}
+		lua_pop(L, 1); // stack:
 
-	  return true;
+		return true;
 	}
 
 
@@ -115,7 +125,12 @@ public:
 	}
 
 protected:
-	lua_State* Lst;
+	static lua_State* Lst;
+
+private:
+	static int count;
+	int execFunction( string );
+
 };
 
 

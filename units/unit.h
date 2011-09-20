@@ -54,7 +54,10 @@ public:
 
     template<typename T>
     void getConfigValue( string name, T& ret ){
-    	LuaConfig::Instance()->getValue( name, UnitName, Type, ret );
+    	//FIXME: FUUUU
+    	LuaConfig* cfg = new LuaConfig;
+    	cfg->getValue( name, UnitName, Type, ret );
+    	delete cfg;
     }
 
     inline Sprite* getUnitImage() {return Image;}

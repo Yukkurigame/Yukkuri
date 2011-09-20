@@ -15,7 +15,9 @@
 class Yukkuri: public CEngine
 {
 public:
-	void AdditionalInit ();
+	bool Init( );
+	bool AdditionalInit( );
+
 	void Think( const int& ElapsedTime );
 	void Render( );
 
@@ -29,6 +31,7 @@ public:
 	void End();
 
 private:
+	LuaScript* ls;
 	UnitManager* units;
 	DayTime daytime;
 	Spawner spawner;

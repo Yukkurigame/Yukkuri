@@ -43,7 +43,7 @@ private:
 	char FPStext[10];
 
 #ifdef JOYSTICKENABLE
-   /** SDL joystick **/
+	/** SDL joystick **/
 	SDL_Joystick* joystick;
 #endif
 
@@ -59,12 +59,13 @@ public:
 	CEngine();
 	virtual ~CEngine();
 
-	void Init();
-	void Start();
-	void Quit();
+	virtual bool Init();
 
 	/** OVERLOADED - Data that should be initialized when the application starts. **/
-	virtual void AdditionalInit( ) {};
+	virtual bool AdditionalInit( ) { return false; }
+
+	void Start();
+	void Quit();
 
 	/** OVERLOADED - All the games calculation and updating.
 		@param iElapsedTime The time in milliseconds elapsed since the function was called last.

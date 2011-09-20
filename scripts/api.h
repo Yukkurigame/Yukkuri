@@ -11,10 +11,10 @@
 
 namespace scriptApi
 {
-	int Debug( lua_State* L );
+	int ReadDirectory( lua_State* L );
+	int GetCWD( lua_State* L );
 
-	int LoadConfig( lua_State* L );
-	int LoadAllConfigs( lua_State* L );
+	int Debug( lua_State* L );
 
 	int CreateWidget( lua_State* L );
 	int LoadWidget( lua_State* L );

@@ -11,11 +11,11 @@ MainConfig conf;
 
 bool MainConfig::load( )
 {
-	LuaConfig* lc = LuaConfig::Instance();
+	LuaConfig* lc = new LuaConfig;
+
 	string subconfig;
 	string config;
 	subconfig = config = "general";
-	lc->LoadAll( "config" );
 	lc->getValue( "windows_width" , subconfig, config, windowWidth );
 	lc->getValue( "windows_height" , subconfig, config, windowHeight );
 	lc->getValue( "maximum_frame_rate" , subconfig, config, maxFrameRate );
@@ -37,6 +37,8 @@ bool MainConfig::load( )
 	lc->getValue( "max_edibles" , subconfig, config, maxEdibles );
 
 	lc->getValue( "player_dies" , subconfig, config, playerDies );
+
+	delete lc;
 
 	return true;
 };

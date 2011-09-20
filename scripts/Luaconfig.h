@@ -19,23 +19,13 @@ using std::string;
 class LuaConfig : LuaMain
 {
 public:
-	static LuaConfig* Instance( ){
-		if( !cnf )
-			cnf = new LuaConfig();
-		return cnf;
-	}
-
-	static void Destroy( ){
-		delete cnf;
-		cnf = 0;
-	}
+	LuaConfig( );
+	~LuaConfig( );
 
 	bool OpenConfig( string );
 	bool LoadAll( string );
 
 	string getRandom( string field, string config );
-
-
 
 	bool getSubconfigsList( string config, std::vector< string >& ret );
 
@@ -46,7 +36,7 @@ public:
 	{
 		const int prmsz = 3;
 		const char* prm[prmsz] = { field.c_str(), subconfig.c_str(), config.c_str() };
-		bool res = execFunction("get", prm, prmsz, ret);
+		bool res = execFunction("configs:get", prm, prmsz, ret);
 		return res;
 	}
 
@@ -55,14 +45,9 @@ public:
 	{
 		const int prmsz = 1;
 		const char* prm[prmsz] = { config.c_str() };
-		bool res = execFunction("getSubconfigs", prm, prmsz, ret);
+		bool res = execFunction("configs:getSubconfigs", prm, prmsz, ret);
 		return res;
 	}
-
-private:
-	LuaConfig( );
-	~LuaConfig( );
-	static LuaConfig* cnf;
 
 };
 

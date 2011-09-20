@@ -28,14 +28,19 @@ class Files:
 
     def getFilesList(self, extension=None):
         if not self.folder: return
-        files = os.listdir(self.folder)
-        f = []
-        if extension:
-            for name in files:
-                if name.rfind('.'+extension) == len(name) - len(extension) - 1:
-                    f.append(name)
-        else:  f = files
-        return f
+        try:
+            files = os.listdir(self.folder)
+        except:
+            pass
+        else:
+            f = []
+            if extension:
+                for name in files:
+                    if name.rfind('.'+extension) == len(name) - len(extension) - 1:
+                        f.append(name)
+            else: 
+                f = files
+            return f
 
 class Config(dict):
 

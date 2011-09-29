@@ -9,47 +9,48 @@ from framework import *
 from files import *
 import re
 
-tabsExtension = ['entity', 'widget', 'tiles', 'map']
+tabsExtension = ['sprites', 'entity', 'widget', 'tiles', 'map']
 
 class Main(QtGui.QMainWindow):
-    
-    def __init__(self):        
-        QtGui.QMainWindow.__init__(self)        
+
+    def __init__(self):
+        QtGui.QMainWindow.__init__(self)
         self.ui=Ui_Editor()
         self.ui.setupUi(self)
         self.__loadedConfig = []
         self.__loadedFile = ''
         self.__loadedElement = ''
-        self._Forms = [self.ui.EntityMainBox, self.ui.EntityEntityBox, self.ui.EntityFeedBox,
-                   self.ui.EntityMiscBox, self.ui.EntityAnimationBox, self.ui.TilesMainBox]
+        self._Forms = [self.ui.SpritesMainBox, self.ui.EntityMainBox,
+                    self.ui.EntityEntityBox, self.ui.EntityFeedBox,
+                    self.ui.EntityMiscBox, self.ui.EntityAnimationBox,
+                    self.ui.TilesMainBox]
         self.__Map = MapWindow(self)
         self.EntytyTab = EntityTab(self)
         self.ReloadFolder(config.path)
-       
-        self.connect(self.ui.Image_4.children()[-1].children()[-1], QtCore.SIGNAL('clicked()'),
-            self.OpenTilesImage)
-        #ololoshenkilolo. FUFUFU is so FUFUFU. 
+
+        #ololoshenkilolo. FUFUFU is so FUFUFU.
         self.connect(filter(lambda x: self.ui.exitbox.buttonRole(x) == 7, self.ui.exitbox.children()[1:])[0],
                     QtCore.SIGNAL('clicked()'), self.ReloadContent)
         self.connect(self.ui.exitbox, QtCore.SIGNAL('accepted()'), self.SaveFile )
         self.connect(self.ui.exitbox, QtCore.SIGNAL('rejected()'), QtGui.qApp, QtCore.SLOT('quit()'))
         self.connect(self.ui.OpenFolderDBox.children()[1], QtCore.SIGNAL('clicked()'), self.OpenFolder)
+        self.connect(self.ui.NewConfigButton, QtCore.SIGNAL('clicked()'), self.OpenFolder)
         self.connect(self.ui.MainTabs, QtCore.SIGNAL('currentChanged(int)'), self.ReloadFiles)
         self.connect(self.ui.FilesList, QtCore.SIGNAL("itemActivated(QListWidgetItem*)"), self.ReloadElements)
         self.connect(self.ui.ItemsList, QtCore.SIGNAL("itemActivated(QListWidgetItem*)"), self.ReloadContent)
-        
+
         self.connect(self.ui.TilesOffestXSpin, QtCore.SIGNAL("valueChanged(int)"), self.ReloadTilesImage)
         self.connect(self.ui.TilesOffestYSpin, QtCore.SIGNAL("valueChanged(int)"), self.ReloadTilesImage)
-                
-    
+
+
     def OpenFolder(self):
         folder = QtGui.QFileDialog.getExistingDirectory(self, 'Open folder', filesManager.getLast())
         self.ReloadFolder(folder)
-    
+
     def OpenTilesImage(self):
         self.OpenImage(GetWidget(self.ui.TilesMainBox, 'image').children()[-2])
         self.ReloadTilesImage()
-    
+
     def ReloadTilesImage(self):
         image = CreatePixmap(GetField(GetWidget(self.ui.TilesMainBox, 'image')),
                             GetField(GetWidget(self.ui.TilesMainBox, 'offsetx')),
@@ -65,6 +66,12 @@ class Main(QtGui.QMainWindow):
         if not name: return
         element.setText(name)
 
+    def CreateConfigFile(self):
+        pass
+
+    def CreateConfigRecord(self):
+        pass
+
     def ChangeColor(self, field):
         color = GetField(field)
         try:
@@ -74,11 +81,11 @@ class Main(QtGui.QMainWindow):
             color = QtGui.QColor("linen")
         color = QtGui.QColorDialog.getColor(color, self, "Choose color")
         if not color.isValid(): return
-        color = color.getRgb()[:3]        
+        color = color.getRgb()[:3]
         colorle = filter(lambda x: type(x).__name__ == 'QSpinBox', self.ui.Bloodcolor.children())
         for i in range(0, len(colorle)):
             colorle[i].setValue(color[i])
-    
+
     def ReloadFolder(self, folder):
         if folder == '':
             return
@@ -86,9 +93,9 @@ class Main(QtGui.QMainWindow):
         filesManager.setFolder(folder)
         config.path = str(folder)
         self.ReloadFiles()
-    
+
     def ReloadFiles(self):
-        tabindex = self.ui.MainTabs.currentIndex()        
+        tabindex = self.ui.MainTabs.currentIndex()
         files = filesManager.getFilesList(tabsExtension[tabindex])
         self.ui.FilesList.clear()
         self.__loadedConfig = []
@@ -102,7 +109,7 @@ class Main(QtGui.QMainWindow):
         self.ClearFields()
         if tabindex != 3:
             self.__Map.hide()
-    
+
     def ReloadElements(self):
         self.__loadedConfig = []
         self.__loadedElement = ''
@@ -151,7 +158,7 @@ class Main(QtGui.QMainWindow):
             self.ReloadTilesImage()
         elif eltype == "MapRegion":
             self.__Map.LoadRegion(element)
-    
+
     def BlockFields(self):
         map(lambda el: el.setDisabled(True), self._Forms)
         map(lambda el: el.setDisabled(False), self.GetBoxes(self.__loadedConfig[0]))
@@ -160,7 +167,7 @@ class Main(QtGui.QMainWindow):
         self.ReloadTilesImage()
         for el in self._Forms:
             RefillFields(el, {})
-    
+
     def SaveFile(self):
         if not self.__loadedFile: return
         data = self.__loadedConfig
@@ -184,25 +191,25 @@ class Main(QtGui.QMainWindow):
                         else:
                             saved[name] = field
         if not saved.has_key('name'): return
-        if not globalname: globalname = str(saved['name'])  
+        if not globalname: globalname = str(saved['name'])
         for el in range(1, len(data)):
             if type(data[el]).__name__ == 'dict' and data[el].has_key('name'):
                 if str(data[el]['name']).lower() == globalname.lower():
                     data[el] = saved # Write to exists record
-                    saved = {} 
+                    saved = {}
                     break
         if len(saved) > 0: # No record with such name. Add new
             data.append(saved)
         lua.dump(os.path.join(config.path, self.__loadedFile), data)
         self.ReloadElements()
         self.ReloadContent()
-    
+
     def GetBoxes(self, eltype):
         fields = []
         forms = []
         if eltype == 'Entity':
             forms = [self.ui.EntityMainBox, self.ui.EntityEntityBox, self.ui.EntityMiscBox,
-                       self.ui.EntityAnimationBox]                
+                       self.ui.EntityAnimationBox]
         elif eltype == 'Plant':
             forms = [self.ui.EntityMainBox, self.ui.EntityMiscBox, self.ui.EntityFeedBox]
         elif eltype == 'Corpse':
@@ -214,7 +221,7 @@ class Main(QtGui.QMainWindow):
         return fields
 
     def test(self):
-        print 'ololo'            
+        print 'ololo'
 
 def main():
     signal.signal(signal.SIGINT, signal.SIG_DFL)

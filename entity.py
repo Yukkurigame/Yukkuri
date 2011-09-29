@@ -3,52 +3,52 @@ from framework import *
 from math import floor
 
 class EntityTab:
-    
+
     def __init__(self, main):
         self.main = main
-        main.connect(GetWidget(self.main.ui.EntityMainBox, 'image').children()[-1].children()[-1],
-            QtCore.SIGNAL('clicked()'), self.OpenEntityImage)
+        #main.connect(GetWidget(self.main.ui.EntityMainBox, 'image').children()[-1].children()[-1],
+        #    QtCore.SIGNAL('clicked()'), self.OpenEntityImage)
         main.connect(main.ui.Bloodcolor.children()[-1], QtCore.SIGNAL('clicked()'), self.ChangeEntityColor)
-        main.connect(GetWidget(main.ui.EntityMainBox, 'height').children()[-1], QtCore.SIGNAL("valueChanged(int)"),
-            self.SetPerviewHeight)
-        main.connect(GetWidget(main.ui.EntityMainBox, 'width').children()[-1], QtCore.SIGNAL("valueChanged(int)"),
-            self.SetPerviewWidth)
+        #main.connect(GetWidget(main.ui.EntityMainBox, 'height').children()[-1], QtCore.SIGNAL("valueChanged(int)"),
+        #    self.SetPerviewHeight)
+        #main.connect(GetWidget(main.ui.EntityMainBox, 'width').children()[-1], QtCore.SIGNAL("valueChanged(int)"),
+        #    self.SetPerviewWidth)
         main.connect(main.ui.EntityAnimationChooser, QtCore.SIGNAL("currentIndexChanged(int)"),
             self.ChangeAnimaptionType)
         main.connect(main.ui.EntityAnimationFrame.children()[1], QtCore.SIGNAL("valueChanged(int)"),
             self.ChooseAnimationFrame)
-                
+
         self.__AnimationPreview = []
-    
+
     def OpenEntityImage(self):
         self.main.OpenImage(GetWidget(self.main.ui.EntityMainBox, 'image').children()[-2])
-    
+
     def ChangeEntityColor(self):
         self.main.ChangeColor(self.main.ui.Bloodcolor)
-    
+
     def SetPerviewWidth(self):
         field = self.main.sender()
         width = field.value()
-        widget = self.main.ui.EntityAnimationViewer 
+        widget = self.main.ui.EntityAnimationViewer
         widget.resize(width, widget.height())
 
     def SetPerviewHeight(self):
         field = self.main.sender()
         height = field.value()
         self.main.ui.EntityAnimationViewer.resize(self.main.ui.EntityAnimationViewer.width(), height)
-    
+
     def LoadAnimationPreview(self):
         abox = self.main.ui.EntityAnimationBox
         chooser = self.main.ui.EntityAnimationChooser
         chooser.clear()
         self.__AnimationPreview = []
-        animations = self.main.ui.EntityAnimationBox.children()[1:]        
+        animations = self.main.ui.EntityAnimationBox.children()[1:]
         labels = map(lambda a: str(a.children()[1].text()).replace(":", ""), animations)
-        self.__AnimationPreview = [PDict({'label': labels[i], 'widget': animations[i], 'frames': []}) 
+        self.__AnimationPreview = [PDict({'label': labels[i], 'widget': animations[i], 'frames': []})
                                         for i in range(0, len(animations))]
-        chooser.addItems(labels)        
+        chooser.addItems(labels)
 
-    def ChangeAnimaptionType(self):         
+    def ChangeAnimaptionType(self):
         atype = self.main.ui.EntityAnimationChooser.currentIndex()
         try:
             self.__AnimationPreview[atype].frames = []
@@ -100,6 +100,6 @@ class EntityTab:
             frame = CreatePixmap(name, startx, starty, width, height)
             animpv.frames.insert(index, frame)
         self.ShowAnimationPerviewImage(frame)
-    
+
     def ShowAnimationPerviewImage(self, image):
         ShowImage(image, self.main.ui.EntityAnimationViewer)

@@ -6,9 +6,6 @@ class EntityTab:
 
     def __init__(self, main):
         self.main = main
-        #main.connect(GetWidget(self.main.ui.EntityMainBox, 'image').children()[-1].children()[-1],
-        #    QtCore.SIGNAL('clicked()'), self.OpenEntityImage)
-        main.connect(main.ui.Bloodcolor.children()[-1], QtCore.SIGNAL('clicked()'), self.ChangeEntityColor)
         #main.connect(GetWidget(main.ui.EntityMainBox, 'height').children()[-1], QtCore.SIGNAL("valueChanged(int)"),
         #    self.SetPerviewHeight)
         #main.connect(GetWidget(main.ui.EntityMainBox, 'width').children()[-1], QtCore.SIGNAL("valueChanged(int)"),
@@ -19,12 +16,6 @@ class EntityTab:
             self.ChooseAnimationFrame)
 
         self.__AnimationPreview = []
-
-    def OpenEntityImage(self):
-        self.main.OpenImage(GetWidget(self.main.ui.EntityMainBox, 'image').children()[-2])
-
-    def ChangeEntityColor(self):
-        self.main.ChangeColor(self.main.ui.Bloodcolor)
 
     def SetPerviewWidth(self):
         field = self.main.sender()

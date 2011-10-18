@@ -8,9 +8,12 @@ class SLPP:
         self.at = 0
         self.len = 0
         self.depth = 0
+        self.space = re.compile('\s', re.M)
+        self.alnum = re.compile('\w', re.M)
 
     def decode(self, text):
-        if not text or type(text).__name__ != 'str': return
+        if not text or type(text) is not str:
+            return
         reg = re.compile('---.*$', re.M)
         text = reg.sub('', text, 0)
         self.text = text
@@ -18,11 +21,11 @@ class SLPP:
         self.len = len(text)
         self.next_chr()
         result = self.value()
-        if not result: return
-        return result;
+        return result
 
     def encode(self, obj):
-        if not obj: return
+        if not obj:
+            return
         self.depth = 0
         return self.__encode(obj)
 
@@ -30,37 +33,33 @@ class SLPP:
         s = ''
         tab = '\t'
         newline = '\n'
-        tp = type(obj).__name__
-        if tp == 'str':
-            s += '"'+obj+'"'
-        elif tp == 'int' or tp == 'float' or tp == 'long' or tp == 'complex':
+        tp = type(obj)
+        if tp is str:
+            s += '"%s"' % obj
+        elif tp in [int, float, long, complex]:
             s += str(obj)
-        elif tp == 'bool':
+        elif tp is bool:
             s += str(obj).lower()
-        elif tp == 'list' or tp == 'tuple':
-            s += "{" + newline
+        elif tp in [list, tuple, dict]:
+            s += "%s{%s" % (tab * self.depth, newline)
             self.depth += 1
-            for el in obj:
-                s += tab * self.depth + self.__encode(el) + ',' + newline
+            dp = tab * self.depth
+            if tp is dict:
+                s += (',%s' % newline).join(
+                    [ dp + self.__encode(v) if type(k) is int \
+                        else dp + '%s = %s' % (k, self.__encode(v)) \
+                        for k, v in obj.iteritems()
+                    ])
+            else:
+                s += (',%s' % newline).join(
+                    [dp + self.__encode(el) for el in obj])
             self.depth -= 1
-            s += tab * self.depth + "}"
-        elif tp == 'dict':
-            s += "{" + newline
-            self.depth += 1
-            for key in obj:
-                #TODO: lua cannot into number keys. Add check.
-                if type(key).__name__ == 'int':
-                    s += tab * self.depth + self.__encode(obj[key]) + ',' + newline
-                else:
-                    s += tab * self.depth + key + ' = ' + self.__encode(obj[key]) + ',' + newline
-            self.depth -= 1
-            s += tab * self.depth + "}"
+            s += "%s%s}" % (newline, tab * self.depth)
         return s
-
 
     def white(self):
         while self.ch:
-            if self.ch == ' ' or self.ch == '\t':
+            if self.space.match(self.ch):
                 self.next_chr()
             else:
                 break
@@ -75,10 +74,14 @@ class SLPP:
 
     def value(self):
         self.white()
-        if not self.ch or self.ch == '': return
-        if self.ch == '{': return self.object()
-        if self.ch == '"': return self.string()
-        if self.ch.isdigit() or self.ch == '-': return self.number()
+        if not self.ch:
+            return
+        if self.ch == '{':
+            return self.object()
+        if self.ch == '"':
+            return self.string()
+        if self.ch.isdigit() or self.ch == '-':
+            return self.number()
         return self.word()
 
     def string(self):
@@ -113,8 +116,9 @@ class SLPP:
                 elif self.ch == '}':
                     self.depth -= 1
                     self.next_chr()
-                    if k: o[idx] = k
-                    if len([ key for key in o if type(key).__name__ == 'str' ]) == 0:
+                    if k:
+                       o[idx] = k
+                    if len([ key for key in o if type(key) is str ]) == 0:
                         ar = []
                         for key in o: ar.insert(key, o[key])
                         o = ar
@@ -122,6 +126,9 @@ class SLPP:
                 else:
                     if self.ch == '"':
                         k = self.string()
+                    elif self.ch == ',':
+                        self.next_chr()
+                        continue
                     else:
                         k = self.value()
                     self.white()
@@ -144,7 +151,7 @@ class SLPP:
         if self.ch != '\n':
           s = self.ch
         while self.next_chr():
-            if self.ch.isalnum():
+            if self.alnum.match(self.ch):
                 s += self.ch
             else:
                 if re.match('^true$', s, re.I):
@@ -160,8 +167,9 @@ class SLPP:
             n = '-'
             self.next_chr()
             if not self.ch or not self.ch.isdigit():
-                print "Malformed number " + self.ch + "(no digits after initial minus)"
+                print "Malformed number %s(no digits after initial minus)" % self.ch
                 return 0
+            self.next_chr()
         while self.ch and self.ch.isdigit():
             n += self.ch
             self.next_chr()
@@ -170,7 +178,7 @@ class SLPP:
             flt = True
             self.next_chr()
             if not self.ch or not self.ch.isdigit():
-                print "Malformed number " + self.ch + "(no digits after decimal point)"
+                print "Malformed number %s (no digits after decimal point)" % self.ch
                 return n+'0'
             else:
                 n += self.ch
@@ -180,3 +188,7 @@ class SLPP:
         if flt:
             return float(n)
         return int(n)
+
+slpp = SLPP()
+
+__all__ = ['slpp']

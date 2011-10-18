@@ -4,10 +4,9 @@ all : widgets editor
 widgets : force_look
 	$(MAKE) -C widgets/ui
 
-editor : Editor.py
+editor : GeneralConfig.py Editor.py
 
-Editor.py : Editor.ui
-	pyuic4 Editor.ui -o Editor.py
+%.py : %.ui
+	pyuic4 $< -o $*.py
 
 force_look :
-	

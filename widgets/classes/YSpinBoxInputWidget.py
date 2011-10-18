@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import re
-
 from PyQt4 import QtCore, QtGui
 
 try:
@@ -9,5 +7,8 @@ try:
 except AttributeError:
     _fromUtf8 = lambda s: s
 
-class YSpinBoxInputWidget(object):
-    pass
+class YSpinBoxInputWidget:
+
+    def __init__(self, parent=None):
+        self.connect(self.ui.MultiplerSpinBox, QtCore.SIGNAL('valueChanged(int)'),
+                    self.ui.spinBox.setSingleStep)

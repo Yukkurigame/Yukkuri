@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Ui_YSpinBoxInputWidget.ui'
 #
-# Created: Thu Sep 29 19:32:02 2011
+# Created: Mon Oct 17 13:30:57 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -52,16 +52,17 @@ class Ui_YSpinBoxInputWidget(object):
         self.label_2.setText(QtGui.QApplication.translate("YSpinBoxInputWidget", "X", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.horizontalLayout_8.addWidget(self.label_2)
-        self.spinBox_2 = QtGui.QSpinBox(self.Multipler)
-        self.spinBox_2.setMaximumSize(QtCore.QSize(48, 16777215))
-        self.spinBox_2.setMinimum(1)
-        self.spinBox_2.setMaximum(999)
-        self.spinBox_2.setProperty("value", 1)
-        self.spinBox_2.setObjectName(_fromUtf8("spinBox_2"))
-        self.horizontalLayout_8.addWidget(self.spinBox_2)
+        self.MultiplerSpinBox = QtGui.QSpinBox(self.Multipler)
+        self.MultiplerSpinBox.setMaximumSize(QtCore.QSize(48, 16777215))
+        self.MultiplerSpinBox.setMinimum(1)
+        self.MultiplerSpinBox.setMaximum(999)
+        self.MultiplerSpinBox.setProperty("value", 1)
+        self.MultiplerSpinBox.setObjectName(_fromUtf8("MultiplerSpinBox"))
+        self.horizontalLayout_8.addWidget(self.MultiplerSpinBox)
         self.horizontalLayout.addWidget(self.Multipler)
 
         self.retranslateUi(YSpinBoxInputWidget)
+        QtCore.QObject.connect(self.spinBox, QtCore.SIGNAL(_fromUtf8("valueChanged(int)")), YSpinBoxInputWidget._changed)
         QtCore.QMetaObject.connectSlotsByName(YSpinBoxInputWidget)
 
     def retranslateUi(self, YSpinBoxInputWidget):

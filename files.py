@@ -1,21 +1,28 @@
 import os
 import json
-from slpp import SLPP
+from slpp import slpp
 
 class Files:
+
+    _instance = None
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super(Files, cls).__new__(
+                                    cls, *args, **kwargs)
+        return cls._instance
 
     def __init__(self):
         self.folder = ''
         self.last = ''
-    
+
     #ororororororo
     def setFolder(self, folder):
         self.folder = folder
         self.last = folder
-    
+
     def setLast(self, folder):
         self.last = folder
-    
+
     def getLast(self):
         if not self.last:
             return ''
@@ -26,10 +33,11 @@ class Files:
             return ''
         return self.folder
 
-    def getFilesList(self, extension=None):
-        if not self.folder: return
+    def getFilesList(self, path=None, extension=None):
+        if not self.folder:
+            return
         try:
-            files = os.listdir(self.folder)
+            files = os.listdir(os.path.join(self.folder, path or 'data/defs'))
         except:
             pass
         else:
@@ -38,59 +46,34 @@ class Files:
                 for name in files:
                     if name.rfind('.'+extension) == len(name) - len(extension) - 1:
                         f.append(name)
-            else: 
+            else:
                 f = files
             return f
-
-class Config(dict):
-
-    def __init__(self, indict=None):
-        if indict is None:
-            indict = {}
-        dict.__init__(self, indict)
-        self.load()
-
-    def __getattr__(self, item):
-        try:
-            return self.__getitem__(item)
-        except KeyError:
-            return ''
-            #raise AttributeError(item)
-    def __setattr__(self, item, value):
-        if self.__dict__.has_key(item):
-            dict.__setattr__(self, item, value)
-        else:
-            self.__setitem__(item, value)
-
-    def save(self):
-        stream = file('config', 'w')
-        json.dump(dict(self), stream)
-
-    def load(self):
-        try: stream = file('config', 'rU')
-        except: pass
-        else:
-            d = json.load(stream)
-            for key in d.keys():
-                setattr(self, key, d[key])
 
 class Lua:
 
     def dump(self, filename, data):
-        text = SLPP().encode(data)
+        text = slpp.encode(data)
         if text:
             stream = file(filename, 'w')
             stream.write(text)
             stream.close()
 
-    def load(self, filename):
-        try: stream = file(filename, 'rU')
-        except: return
-        lf = stream.read()
-        stream.close()
-        data = SLPP().decode(lf)
+    def load(self, data):
+        stream = None
+        try:
+            stream = file(data, 'rU')
+        except IOError:
+            lf = data
+        except Exception, e:
+            raise
+        else:
+            lf = stream.read()
+        finally:
+            if stream:
+                stream.close()
+        data = slpp.decode(lf)
         return data
 
-filesManager = Files()
-config = Config()
+fileManager = Files()
 lua = Lua()

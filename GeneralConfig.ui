@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GeneralConfig</class>
+ <widget class="QDialog" name="GeneralConfig">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>370</width>
+    <height>424</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>General config</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <property name="leftMargin">
+    <number>9</number>
+   </property>
+   <item>
+    <widget class="QGroupBox" name="VideoSettings">
+     <property name="title">
+      <string>Video settings</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="YSpinBoxInputWidget" name="windows_width" native="true"/>
+      </item>
+      <item>
+       <widget class="YSpinBoxInputWidget" name="windows_height" native="true"/>
+      </item>
+      <item>
+       <widget class="YSpinBoxInputWidget" name="maximum_frame_rate" native="true"/>
+      </item>
+      <item>
+       <widget class="YSpinBoxInputWidget" name="minimum_frame_rate" native="true"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="PathsSettings">
+     <property name="title">
+      <string>Paths settings</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="YSimpleInputWidget" name="configs_path" native="true">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="YSimpleInputWidget" name="images_path" native="true">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="YSimpleInputWidget" name="default_image_name" native="true">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="YSimpleInputWidget" name="fonts_path" native="true">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="YSimpleInputWidget" name="scripts_path" native="true">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="MiscSettings">
+     <property name="title">
+      <string>Other</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_5">
+      <item>
+       <widget class="YSpinBoxInputWidget" name="widgets_z" native="true"/>
+      </item>
+      <item>
+       <widget class="YSpinBoxInputWidget" name="map_tile_size" native="true"/>
+      </item>
+      <item>
+       <widget class="YSpinBoxInputWidget" name="map_default_tile" native="true"/>
+      </item>
+      <item>
+       <widget class="YSpinBoxInputWidget" name="day_length" native="true"/>
+      </item>
+      <item>
+       <widget class="YSpinBoxInputWidget" name="action_interval" native="true"/>
+      </item>
+      <item>
+       <widget class="YSpinBoxInputWidget" name="max_spawn" native="true"/>
+      </item>
+      <item>
+       <widget class="YSpinBoxInputWidget" name="max_edibles" native="true"/>
+      </item>
+      <item>
+       <widget class="YSpinBoxInputWidget" name="player_dies" native="true"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>YSimpleInputWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>YSpinBoxInputWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets</header>
+   <container>1</container>
+   <slots>
+    <signal>valueChanged(int)</signal>
+    <slot>setValue(int)</slot>
+   </slots>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>GeneralConfig</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>320</x>
+     <y>401</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>339</x>
+     <y>420</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>GeneralConfig</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>228</x>
+     <y>413</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>258</x>
+     <y>420</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

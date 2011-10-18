@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>YSpinBoxInputWidget</class>
- <widget class="QWidget" name="YSpinBoxInputWidget">
+ <class>YDoubleSpinBoxInputWidget</class>
+ <widget class="QWidget" name="YDoubleSpinBoxInputWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -38,30 +38,21 @@
     </spacer>
    </item>
    <item>
-    <widget class="QSpinBox" name="spinBox">
+    <widget class="QDoubleSpinBox" name="doubleSpinBox_11">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+      <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
      <property name="minimumSize">
       <size>
-       <width>140</width>
+       <width>120</width>
        <height>0</height>
       </size>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-     <property name="minimum">
-      <number>0</number>
-     </property>
-     <property name="maximum">
-      <number>999999999</number>
-     </property>
-     <property name="value">
-      <number>0</number>
      </property>
     </widget>
    </item>
@@ -85,7 +76,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QSpinBox" name="MultiplerSpinBox">
+       <widget class="QSpinBox" name="spinBox_2">
         <property name="maximumSize">
          <size>
           <width>48</width>
@@ -109,25 +100,5 @@
   </layout>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>spinBox</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>YSpinBoxInputWidget</receiver>
-   <slot>_changed(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>228</x>
-     <y>13</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>264</x>
-     <y>25</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
- <slots>
-  <slot>_changed(int)</slot>
- </slots>
+ <connections/>
 </ui>

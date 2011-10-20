@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Ui_YFileInputWidget.ui'
 #
-# Created: Thu Sep 29 23:08:00 2011
+# Created: Thu Oct 20 21:17:04 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_YFileInputWidget(object):
     def setupUi(self, YFileInputWidget):
         YFileInputWidget.setObjectName(_fromUtf8("YFileInputWidget"))
-        YFileInputWidget.resize(333, 24)
+        YFileInputWidget.resize(330, 24)
         YFileInputWidget.setWindowTitle(QtGui.QApplication.translate("YFileInputWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
         self.horizontalLayout = QtGui.QHBoxLayout(YFileInputWidget)
         self.horizontalLayout.setMargin(0)
@@ -29,8 +29,8 @@ class Ui_YFileInputWidget(object):
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.lineEdit = QtGui.QLineEdit(YFileInputWidget)
-        self.lineEdit.setMinimumSize(QtCore.QSize(0, 0))
-        self.lineEdit.setMaximumSize(QtCore.QSize(150, 16777215))
+        self.lineEdit.setMinimumSize(QtCore.QSize(129, 0))
+        self.lineEdit.setMaximumSize(QtCore.QSize(129, 16777215))
         self.lineEdit.setObjectName(_fromUtf8("lineEdit"))
         self.horizontalLayout.addWidget(self.lineEdit)
         self.dialogButtonBox = QtGui.QDialogButtonBox(YFileInputWidget)

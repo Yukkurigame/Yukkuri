@@ -38,7 +38,7 @@
     </spacer>
    </item>
    <item>
-    <widget class="QDoubleSpinBox" name="doubleSpinBox_11">
+    <widget class="QDoubleSpinBox" name="doubleSpinBox">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -47,7 +47,7 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>120</width>
+       <width>122</width>
        <height>0</height>
       </size>
      </property>
@@ -76,7 +76,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QSpinBox" name="spinBox_2">
+       <widget class="QSpinBox" name="MultiplerSpinBox">
         <property name="maximumSize">
          <size>
           <width>48</width>

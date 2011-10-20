@@ -31,6 +31,7 @@ ELEMENT_BOXES = {
     'plant': ['EntityMainBox', 'EntityMiscBox', 'EntityFeedBox'],
     'corpse': ['EntityMainBox', 'EntityFeedBox'],
     'tiles': ['TilesMainBox',],
+    'region': ['MapOptionsBox',],
 }
 
 class Main(QtGui.QMainWindow):
@@ -143,6 +144,8 @@ class Main(QtGui.QMainWindow):
             tabindex = self.ui.MainTabs.currentIndex()
         files = fileManager.getFilesList(config.general.get('configs_path'), TABS_EXTENSION[tabindex])
         self.ui.FilesList.clear()
+        self.ui.ItemsList.clear()
+        self.ClearFields()
         self.__loadedConfig = []
         self.__loadedFile = ''
         self.__loadedElement = ''
@@ -150,8 +153,7 @@ class Main(QtGui.QMainWindow):
             return
         for filename in files:
             QtGui.QListWidgetItem(filename, self.ui.FilesList)
-        self.ui.ItemsList.clear()
-        self.ClearFields()
+
         if tabindex != 3:
             self.__Map.hide()
 
@@ -222,6 +224,7 @@ class Main(QtGui.QMainWindow):
 
     def BlockFields(self):
         map(lambda el: el.setDisabled(True), self._Forms)
+        print self.GetElementType()
         map(lambda el: el.setDisabled(False), self.GetBoxes(
                 self.GetElementType()))
 
@@ -262,7 +265,8 @@ class Main(QtGui.QMainWindow):
                             saved[name] = field
         elname = re.sub('\s+', '_', (saved.get('name') or ''
                 ).strip()) or self.__loadedElement
-        saved['id'] = '%s_%s_%s' % (eltype.lower(), elname, randint(0, 999999))
+        if not saved.has_key('id'):
+            saved['id'] = '%s_%s_%s' % (eltype.lower(), elname, randint(0, 999999))
         if not globalname:
             globalname = str(saved.get('id'))
         for el in range(0, len(data)):

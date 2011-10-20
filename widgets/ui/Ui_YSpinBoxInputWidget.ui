@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>333</width>
+    <width>330</width>
     <height>23</height>
    </rect>
   </property>
@@ -47,8 +47,14 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>140</width>
+       <width>141</width>
        <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>141</width>
+       <height>16777215</height>
       </size>
      </property>
      <property name="alignment">

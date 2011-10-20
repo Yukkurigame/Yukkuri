@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Ui_YImageChooser.ui'
 #
-# Created: Fri Oct 14 18:25:28 2011
+# Created: Thu Oct 20 21:13:03 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_YImageChooser(object):
     def setupUi(self, YImageChooser):
         YImageChooser.setObjectName(_fromUtf8("YImageChooser"))
-        YImageChooser.resize(253, 24)
+        YImageChooser.resize(330, 24)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -39,8 +39,8 @@ class Ui_YImageChooser(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.EntityImgField.sizePolicy().hasHeightForWidth())
         self.EntityImgField.setSizePolicy(sizePolicy)
-        self.EntityImgField.setMinimumSize(QtCore.QSize(0, 0))
-        self.EntityImgField.setMaximumSize(QtCore.QSize(111, 16777215))
+        self.EntityImgField.setMinimumSize(QtCore.QSize(129, 0))
+        self.EntityImgField.setMaximumSize(QtCore.QSize(129, 16777215))
         self.EntityImgField.setReadOnly(True)
         self.EntityImgField.setObjectName(_fromUtf8("EntityImgField"))
         self.horizontalLayout.addWidget(self.EntityImgField)

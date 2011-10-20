@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Ui_YDoubleSpinBoxInputWidget.ui'
 #
-# Created: Thu Sep 29 20:17:56 2011
+# Created: Thu Oct 20 21:18:16 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -28,16 +28,16 @@ class Ui_YDoubleSpinBoxInputWidget(object):
         self.horizontalLayout.addWidget(self.label)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
-        self.doubleSpinBox_11 = QtGui.QDoubleSpinBox(YDoubleSpinBoxInputWidget)
+        self.doubleSpinBox = QtGui.QDoubleSpinBox(YDoubleSpinBoxInputWidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.doubleSpinBox_11.sizePolicy().hasHeightForWidth())
-        self.doubleSpinBox_11.setSizePolicy(sizePolicy)
-        self.doubleSpinBox_11.setMinimumSize(QtCore.QSize(120, 0))
-        self.doubleSpinBox_11.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.doubleSpinBox_11.setObjectName(_fromUtf8("doubleSpinBox_11"))
-        self.horizontalLayout.addWidget(self.doubleSpinBox_11)
+        sizePolicy.setHeightForWidth(self.doubleSpinBox.sizePolicy().hasHeightForWidth())
+        self.doubleSpinBox.setSizePolicy(sizePolicy)
+        self.doubleSpinBox.setMinimumSize(QtCore.QSize(122, 0))
+        self.doubleSpinBox.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.doubleSpinBox.setObjectName(_fromUtf8("doubleSpinBox"))
+        self.horizontalLayout.addWidget(self.doubleSpinBox)
         self.Multipler = QtGui.QWidget(YDoubleSpinBoxInputWidget)
         self.Multipler.setMaximumSize(QtCore.QSize(16777215, 20))
         self.Multipler.setObjectName(_fromUtf8("Multipler"))
@@ -49,13 +49,13 @@ class Ui_YDoubleSpinBoxInputWidget(object):
         self.label_2.setText(QtGui.QApplication.translate("YDoubleSpinBoxInputWidget", "X", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.horizontalLayout_8.addWidget(self.label_2)
-        self.spinBox_2 = QtGui.QSpinBox(self.Multipler)
-        self.spinBox_2.setMaximumSize(QtCore.QSize(48, 16777215))
-        self.spinBox_2.setMinimum(1)
-        self.spinBox_2.setMaximum(999)
-        self.spinBox_2.setProperty("value", 1)
-        self.spinBox_2.setObjectName(_fromUtf8("spinBox_2"))
-        self.horizontalLayout_8.addWidget(self.spinBox_2)
+        self.MultiplerSpinBox = QtGui.QSpinBox(self.Multipler)
+        self.MultiplerSpinBox.setMaximumSize(QtCore.QSize(48, 16777215))
+        self.MultiplerSpinBox.setMinimum(1)
+        self.MultiplerSpinBox.setMaximum(999)
+        self.MultiplerSpinBox.setProperty("value", 1)
+        self.MultiplerSpinBox.setObjectName(_fromUtf8("MultiplerSpinBox"))
+        self.horizontalLayout_8.addWidget(self.MultiplerSpinBox)
         self.horizontalLayout.addWidget(self.Multipler)
 
         self.retranslateUi(YDoubleSpinBoxInputWidget)

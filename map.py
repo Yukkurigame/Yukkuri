@@ -1,8 +1,10 @@
 import math
 
 from PyQt4 import QtGui, QtCore
+from config import config
 from files import *
 from framework import *
+from sprites import manager as sprites
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -86,43 +88,43 @@ class Map(QtGui.QWidget):
             self.__translate['y'] += 64
         elif key == QtCore.Qt.Key_Plus and self.__scale < 9.9:
             self.__scale += 0.1
-        elif key == QtCore.Qt.Key_Minus and self.__scale > 0.2:            
+        elif key == QtCore.Qt.Key_Minus and self.__scale > 0.2:
             self.__scale -= 0.1
         elif key == QtCore.Qt.Key_Shift and self.__brush:
             self.__brush.rectangle = {'x': self.__position['x'], 'y':int(self.__position['y'])}
         self.thisStatusBar.showMessage(str(int(self.__position['x']))+":"+str(int(self.__position['y']))
                                          + " Zoom: " + str(self.__scale * 100) + "%")
         self.update()
-    
+
     def keyReleaseEvent(self, event):
         key = event.key()
-        if key == QtCore.Qt.Key_Shift and self.__brush:            
-            self.__brush.rectangle = None  
-        
+        if key == QtCore.Qt.Key_Shift and self.__brush:
+            self.__brush.rectangle = None
+
     def mousePressEvent(self, event):
         self.__draw = True
-    
+
     def mouseReleaseEvent(self, event):
         self.__draw = False
         self.drawTile()
-    
+
     def wheelEvent(self, event):
         numDegrees = event.delta() / 8;
-        numSteps = numDegrees / 15;        
-        
+        numSteps = numDegrees / 15;
+
         if QtGui.QApplication.keyboardModifiers() & QtCore.Qt.AltModifier:
             if ( numSteps < 0 and self.__scale > 0.2 ) or self.__scale < 9.9:
                 self.__scale += 0.1 * numSteps
         elif event.orientation() == QtCore.Qt.Horizontal or \
             QtGui.QApplication.keyboardModifiers() & QtCore.Qt.ControlModifier:
             self.__translate['x'] -= 64 * numSteps
-        else:          
+        else:
             self.__translate['y'] += 64 * numSteps
-        
+
         self.thisStatusBar.showMessage(str(int(self.__position['x']))+":"+str(int(self.__position['y']))
                                          + " Zoom: " + str(self.__scale * 100) + "%")
         self.update()
-        
+
     def mouseMoveEvent(self, event):
         if not self.__brush: return
         x = (event.x() - self.__translate['x']) / self.__scale
@@ -133,20 +135,20 @@ class Map(QtGui.QWidget):
             self.__position['x'] = x
             self.__position['y'] = y
             self.moveBrush()
-    
+
     def CreateNewSprite(self, x, y, z, offsetx, offsety, w, h, name):
         sprite = Sprite(QtCore.QRect(x, y, w, h), CreatePixmap(name, offsetx, offsety, w, h), depth=z)
         self.__Sprites.append(sprite)
         return sprite
-    
+
     def ClearSprites(self):
         self.__Sprites = []
-    
+
     def drawTile(self):
         if not self.__brush: return
         parent = self.parentWidget()
         if not parent: return
-        for tile in self.__brush.sprites:  
+        for tile in self.__brush.sprites:
             x = tile.x
             y = tile.y
             x, y = toMapPosition(x, y)
@@ -165,18 +167,18 @@ class Map(QtGui.QWidget):
             if depth < 0:
                 parent.mapRegion[x][y]['back'] =  self.__brush.type
             else:
-                parent.mapRegion[x][y]['type'] =  self.__brush.type
+                parent.mapRegion[x][y]['tile'] =  self.__brush.type
             self.__Sprites.append(Sprite(QtCore.QRect(tile.rect),
                                     QtGui.QPixmap(tile.image), depth))
-        self.__brush.sprites = self.__brush.sprites[-1:] 
+        self.__brush.sprites = self.__brush.sprites[-1:]
         self.update()
-    
+
     def setBrush(self, tile):
         if not tile:
             if self.__brush: self.__Sprites.extend(self.__brush.sprites)
             else: return
         else:
-            self.__brush = Tile({'type': tile.name, 'tile': tile, 'sprites': []})
+            self.__brush = Tile({'type': tile.name, 'data': tile, 'sprites': []})
             self.__brush.sprites.append(
                 self.CreateNewSprite(-2147483615, 2147483615, 1,
                                     int(tile.offsetx), int(tile.offsety),
@@ -186,7 +188,7 @@ class Map(QtGui.QWidget):
     def removeBrush(self):
         self.clearBrush()
         self.__brush = None
-    
+
     def clearBrush(self):
         if not self.__brush: return
         for sprite in self.__brush.sprites:
@@ -200,10 +202,10 @@ class Map(QtGui.QWidget):
         except Exception, e:
             print e
             return
-    
+
     def setBrushDrawBack(self, back=False):
         if not self.__brush: return
-        try:            
+        try:
             self.__brush.backed = bool(back)
             for sprite in self.__brush.sprites:
                 sprite.z = 1 + (-2 * bool(back))
@@ -223,18 +225,18 @@ class Map(QtGui.QWidget):
                 for mx in range(minx, maxx+1):
                     for my in range(miny, maxy+1):
                         x, y = fromMapPosition(mx, my)
-                        if len(filter(lambda sprite: sprite.x == x and sprite.y == y, brush.sprites)) < 1:                        
+                        if len(filter(lambda sprite: sprite.x == x and sprite.y == y, brush.sprites)) < 1:
                             brush.sprites.append(self.CreateNewSprite(x, y, z,
                                          int(brush.tile.offsetx), int(brush.tile.offsety),
                                          64, 64, brush.tile.image)
                             )
-                
+
                 def _r(sp):
                    sx, sy = toMapPosition(sp.x, sp.y)
                    if not minx <= sx <= maxx or not miny <= sy <= maxy:
                        self.__Sprites.remove(sp)
                        return False
-                   return True                   
+                   return True
                 brush.sprites = filter(_r, brush.sprites)
             else:
                 if len(filter(lambda sprite: sprite.x == x and sprite.y == y, brush.sprites)) < 1:
@@ -246,11 +248,11 @@ class Map(QtGui.QWidget):
             for sprite in brush.sprites:
                 sprite.rect.moveTo(x, y)
         self.update()
-    
+
     def moveCamera(self, x=0, y=0):
         self.__translate['x'] = x
         self.__translate['y'] = y
-        
+
 class MapWindow(QtGui.QMainWindow):
 
     def __init__(self, parent):
@@ -273,15 +275,15 @@ class MapWindow(QtGui.QMainWindow):
 
     def keyPressEvent(self, event):
         self.__widget.keyPressEvent(event)
-    
+
     def keyReleaseEvent(self, event):
         self.__widget.keyReleaseEvent(event)
-    
-    def LoadRegion(self, region):        
+
+    def LoadRegion(self, region):
         self.hide()
         self.__widget.moveCamera()
         self.ReloadObjects()
-        self.mapRegion.clear()        
+        self.mapRegion.clear()
         self.__widget.ClearSprites()
         self.__widget.setBrush(None)
         self.__regionName = region['name']
@@ -290,16 +292,16 @@ class MapWindow(QtGui.QMainWindow):
             x, y = 0, 0
             if tile.has_key('x'): x = tile['x']
             if tile.has_key('y'): y = tile['y']
-            if not tile.has_key('type'):
+            if not tile.has_key('tile'):
                 print "Bida! Tile at "+str(x)+":"+str(x)+" has no type!"
                 continue
-            if not self.__Tiles.has_key(tile['type']):
-                print "Bida! Tile at "+str(x)+":"+str(x)+" has non-declared or bad type " + tile['type'] 
+            if not self.__Tiles.has_key(tile['tile']):
+                print "Bida! Tile at "+str(x)+":"+str(x)+" has non-declared or bad type " + tile['type']
                 continue
-            tiledata = self.__Tiles[tile['type']]
+            tiledata = self.__Tiles[tile['tile']]
             if not self.mapRegion.has_key(x): self.mapRegion[x] = {}
             if not self.mapRegion[x].has_key(y): self.mapRegion[x][y] = {}
-            self.mapRegion[x][y]['type'] = tile['type']
+            self.mapRegion[x][y]['tile'] = tile['tile']
             if tiledata.backing and tile.has_key('backtype') and self.__Tiles.has_key(tile['backtype']):
                 self.mapRegion[x][y]['back'] = tile['backtype']
             x, y = fromMapPosition(x, y)
@@ -312,15 +314,14 @@ class MapWindow(QtGui.QMainWindow):
         self.show()
 
     def ReloadObjects(self):
-        files = filesManager.getFilesList('tiles')
+        files = fileManager.getFilesList(config.general.get('configs_path'), 'tiles')
         self.__Tiles.clear()
         row, col, maxcol = 0, 0, int(self.__Parent.ui.MapTilesPage.width()/64) - 2
         for file in files:
             data = lua.load(os.path.join(config.path, str(file)))
-            if data[0] != 'Tiles': continue
-            for tile in data[1:]:
-                if type(tile).__name__ == 'dict' and tile.has_key('name') and tile.has_key('image'):
-                    self.__Tiles[tile['name']] = Tile(tile)
+            for tile in data:
+                if type(tile) == dict and tile.has_key('id') and tile.has_key('image'):
+                    self.__Tiles[tile['id']] = Tile(tile)
         for tile in self.__Tiles.values():
             x = int(tile.offsetx)
             y = int(tile.offsety)
@@ -342,7 +343,7 @@ class MapWindow(QtGui.QMainWindow):
         self.__Tiles['eraser'] = Tile(
                 {'name': -1, 'image': 'ground.png', 'offsetx': 192,
                  'button': self.__Parent.ui.MapErase}
-        )  
+        )
 
     def ChangeBrush(self):
         button = self.sender()
@@ -352,7 +353,7 @@ class MapWindow(QtGui.QMainWindow):
             if child != button: child.setChecked(0)
         if not button.isChecked():
             button = None
-        self.__widget.removeBrush()            
+        self.__widget.removeBrush()
         self.__BrushButton = button
         if not button: return
         for tile in self.__Tiles.values():
@@ -360,17 +361,17 @@ class MapWindow(QtGui.QMainWindow):
                 self.__widget.setBrush(tile)
                 self.__widget.setBrushDrawBack(GetField(self.__Parent.ui.MapBack))
                 return
-        
+
     def setBrushBack(self):
         self.__widget.setBrushDrawBack(self.sender().checkState())
-    
+
     def setBrushSize(self):
         self.__widget.setBrushSize(GetField(self.sender().parent()))
-    
+
     #TODO: it's dirty
     def dump(self):
         self.hide()
-        ret = {}        
+        ret = {}
         ret['name'] = self.__regionName
         ret['tiles'] = []
         for i in self.mapRegion:
@@ -378,7 +379,7 @@ class MapWindow(QtGui.QMainWindow):
                 t = 0
                 b = 0
                 try:
-                    t = int(self.mapRegion[i][j]['type'])
+                    t = int(self.mapRegion[i][j]['tile'])
                 except: continue
                 try:
                     b = int(self.mapRegion[i][j]['back'])
@@ -387,7 +388,7 @@ class MapWindow(QtGui.QMainWindow):
                     print 'Tile with name' + str(t) + 'does not not exists'
                     continue
                 if t > 0:
-                    tile = {'x': i, 'y': j, 'type': t}                    
+                    tile = {'x': i, 'y': j, 'tile': t}
                     if self.__Tiles[t].backing and b > 0:
                         if not self.__Tiles.has_key(b):
                             print 'Tile with name' + str(b) + 'does not not exists'

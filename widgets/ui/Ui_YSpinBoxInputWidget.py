@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Ui_YSpinBoxInputWidget.ui'
 #
-# Created: Mon Oct 17 13:30:57 2011
+# Created: Thu Oct 20 21:17:04 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_YSpinBoxInputWidget(object):
     def setupUi(self, YSpinBoxInputWidget):
         YSpinBoxInputWidget.setObjectName(_fromUtf8("YSpinBoxInputWidget"))
-        YSpinBoxInputWidget.resize(333, 23)
+        YSpinBoxInputWidget.resize(330, 23)
         YSpinBoxInputWidget.setWindowTitle(QtGui.QApplication.translate("YSpinBoxInputWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
         self.horizontalLayout = QtGui.QHBoxLayout(YSpinBoxInputWidget)
         self.horizontalLayout.setMargin(0)
@@ -34,7 +34,8 @@ class Ui_YSpinBoxInputWidget(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.spinBox.sizePolicy().hasHeightForWidth())
         self.spinBox.setSizePolicy(sizePolicy)
-        self.spinBox.setMinimumSize(QtCore.QSize(140, 0))
+        self.spinBox.setMinimumSize(QtCore.QSize(141, 0))
+        self.spinBox.setMaximumSize(QtCore.QSize(141, 16777215))
         self.spinBox.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.spinBox.setMinimum(0)
         self.spinBox.setMaximum(999999999)

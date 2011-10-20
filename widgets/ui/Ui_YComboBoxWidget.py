@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Ui_YComboBoxWidget.ui'
 #
-# Created: Wed Oct 12 20:13:43 2011
+# Created: Thu Oct 20 21:13:56 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_YComboBoxWidget(object):
     def setupUi(self, YComboBoxWidget):
         YComboBoxWidget.setObjectName(_fromUtf8("YComboBoxWidget"))
-        YComboBoxWidget.resize(253, 24)
+        YComboBoxWidget.resize(330, 24)
         YComboBoxWidget.setWindowTitle(QtGui.QApplication.translate("YComboBoxWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
         self.horizontalLayout = QtGui.QHBoxLayout(YComboBoxWidget)
         self.horizontalLayout.setMargin(0)
@@ -34,6 +34,8 @@ class Ui_YComboBoxWidget(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.comboBox.sizePolicy().hasHeightForWidth())
         self.comboBox.setSizePolicy(sizePolicy)
+        self.comboBox.setMinimumSize(QtCore.QSize(210, 0))
+        self.comboBox.setMaximumSize(QtCore.QSize(186, 16777215))
         self.comboBox.setObjectName(_fromUtf8("comboBox"))
         self.horizontalLayout.addWidget(self.comboBox)
 

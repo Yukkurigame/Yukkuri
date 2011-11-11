@@ -14,7 +14,6 @@ class YTreeDialog(QtGui.QDialog):
             if type(tree) in [list, tuple]:
                 for subitem in value:
                     addToTree(base, subitem)
-                    return
             else:
                 item = QtGui.QTreeWidgetItem(base)
                 if type(tree) is dict:
@@ -28,9 +27,9 @@ class YTreeDialog(QtGui.QDialog):
 
         for key, value in tree.iteritems():
             item = QtGui.QTreeWidgetItem([key,])
-            item.setExpanded(True)
             item.setFlags(item.flags() & ~QtCore.Qt.ItemIsSelectable)
             self.ui.treeWidget.addTopLevelItem(item)
+            item.setExpanded(True)
             addToTree(item, value)
 
     def getItem(self):
@@ -40,8 +39,4 @@ class YTreeDialog(QtGui.QDialog):
                 return item._additionalId
             except AttributeError:
                 return item.text(0)
-
-
-
-
 

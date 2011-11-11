@@ -27,7 +27,6 @@ class YImageChooser:
         self.cdialog.insertTree(items)
         self.loaded = True
 
-
     def chooseImage(self):
         if not self.loaded:
             self.loadSprites()

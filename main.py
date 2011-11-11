@@ -9,8 +9,10 @@ from framework import *
 from files import *
 from map import *
 from random import randint
+from sprites import manager as sprites
 from PyQt4 import QtCore, QtGui
 from config import config, GeneralConfigDialog
+
 
 TABS_EXTENSION = ['sprites', 'entity', 'widget', 'tiles', 'map']
 
@@ -50,54 +52,57 @@ class Main(QtGui.QMainWindow):
                     self.ui.TilesMainBox]
         self.__Map = MapWindow(self)
         self.EntytyTab = EntityTab(self)
-        self.ReloadFolder(config.path)
+        self.reloadFolder(config.path)
 
         #ololoshenkilolo. FUFUFU is so FUFUFU.
         self.connect(filter(lambda x: self.ui.exitbox.buttonRole(x) == 7, self.ui.exitbox.children()[1:])[0],
-                    QtCore.SIGNAL('clicked()'), self.ReloadContent)
-        self.connect(self.ui.exitbox, QtCore.SIGNAL('accepted()'), self.SaveFile )
+                    QtCore.SIGNAL('clicked()'), self.reloadContent)
         self.connect(self.ui.exitbox, QtCore.SIGNAL('rejected()'), QtGui.qApp, QtCore.SLOT('quit()'))
-        self.connect(self.ui.OpenFolderDBox.children()[1], QtCore.SIGNAL('clicked()'), self.OpenFolder)
-        self.connect(self.ui.NewConfigButton, QtCore.SIGNAL('clicked()'), self.CreateConfigFile)
-        self.connect(self.ui.NewEntryButton, QtCore.SIGNAL('clicked()'), self.CreateConfigRecord)
-        self.connect(self.ui.MainTabs, QtCore.SIGNAL('currentChanged(int)'), self.ReloadFiles)
-        self.connect(self.ui.FilesList, QtCore.SIGNAL("itemActivated(QListWidgetItem*)"), self.ReloadElements)
-        self.connect(self.ui.ItemsList, QtCore.SIGNAL("itemActivated(QListWidgetItem*)"), self.ReloadContent)
 
-        self.ui.actionQuit.triggered.connect(QtGui.qApp.quit)
         self.ui.actionGeneralConfig.triggered.connect(self.generalConfig.show)
 
+
+        from widgets import YImageChooser
         for boxname in TYPES_BOXES.keys():
             try:
                 box = getattr(self.ui, boxname)
             except AttributeError:
                 continue
+
             if boxname == 'SpritesMainBox':
                 GetWidget(box, 'image').setBasePath(os.path.join(
                     config.path, config.general.get('images_path')))
+
             w = GetWidget(box, 'type')
             if w:
                 for item in TYPES_BOXES[boxname]:
                     w.addItem(item.capitalize())
+            img = GetWidget(box, 'image')
+            if img and isinstance(img, YImageChooser):
+                self.connect(img, QtCore.SIGNAL('valueChanged(QString)'), self.setPicture)
 
-    def OpenFolder(self):
+    @QtCore.pyqtSlot()
+    def openFolder(self):
         folder = QtGui.QFileDialog.getExistingDirectory(self, 'Open folder', fileManager.getLast())
-        self.ReloadFolder(folder)
+        self.reloadFolder(folder)
 
-    def OpenTilesImage(self):
-        self.ReloadTilesImage()
+    @QtCore.pyqtSlot()
+    def loadTileImage(self):
+        tabindex = self.ui.MainTabs.currentIndex()
+        boxes = self.getBoxes(['image', 'picture'], ['TilesMainBox',])
+        image = boxes['image'][0].getValue()
+        try:
+            picture = int(boxes['picture'][0].getValue())
+        except:
+            return
+        image = sprites.createPixmap(image, picture)
+        if not image:
+            self.ui.TileImageViewer.clear()
+            return
+        ShowImage(image, self.ui.TileImageViewer)
 
-    def ReloadTilesImage(self):
-        pass
-        #image = CreatePixmap(GetField(GetWidget(self.ui.TilesMainBox, 'image')),
-        #                    GetField(GetWidget(self.ui.TilesMainBox, 'offsetx')),
-        #                    GetField(GetWidget(self.ui.TilesMainBox, 'offsety')))
-        #if not image:
-        #    self.ui.TileImageViewer.clear()
-        #    return
-        #ShowImage(image, self.ui.TileImageViewer)
-
-    def CreateConfigFile(self):
+    @QtCore.pyqtSlot()
+    def createConfigFile(self):
         tabindex = self.ui.MainTabs.currentIndex()
         ext = str(TABS_EXTENSION[tabindex])
         fullpath =str(QtGui.QFileDialog.getSaveFileName(self,
@@ -110,11 +115,12 @@ class Main(QtGui.QMainWindow):
         if not os.path.exists(fullpath):
             open(fullpath,'w').close()
         path, name = os.path.split(fullpath)
-        self.ReloadFolder(config.path)
+        self.reloadFolder(config.path)
         item = self.ui.FilesList.findItems(name, QtCore.Qt.MatchExactly)[0]
         self.ui.FilesList.setCurrentItem(item)
 
-    def CreateConfigRecord(self):
+    @QtCore.pyqtSlot()
+    def createConfigRecord(self):
         if not self.ui.FilesList.currentItem():
             return
         name, ok = QtGui.QInputDialog.getText(self, 'New item', 'Name')
@@ -128,18 +134,19 @@ class Main(QtGui.QMainWindow):
         #self.__loadedElement = str(name)
         item = QtGui.QListWidgetItem(str(name), self.ui.ItemsList)
         self.ui.ItemsList.setCurrentItem(item)
-        self.ReloadContent()
-        self.SaveFile()
+        self.reloadContent(item)
+        self.saveFile()
 
-    def ReloadFolder(self, folder):
+    def reloadFolder(self, folder):
         if folder == '':
             return
         self.ui.FolderPlace.setText(folder)
         fileManager.setFolder(folder)
         config.path = str(folder)
-        self.ReloadFiles()
+        self.reloadFiles()
 
-    def ReloadFiles(self, tabindex=None):
+    @QtCore.pyqtSlot(int)
+    def reloadFiles(self, tabindex=None):
         if tabindex is None:
             tabindex = self.ui.MainTabs.currentIndex()
         files = fileManager.getFilesList(config.general.get('configs_path'), TABS_EXTENSION[tabindex])
@@ -157,13 +164,15 @@ class Main(QtGui.QMainWindow):
         if tabindex != 3:
             self.__Map.hide()
 
-    def ReloadElements(self, luadata=None):
+    @QtCore.pyqtSlot('QListWidgetItem*')
+    def reloadElements(self, item=None, luadata=None):
         self.__loadedConfig = []
         self.__loadedElement = ''
         self.ui.ItemsList.clear()
-        item = self.ui.FilesList.currentItem()
         if not item:
-            return
+            item = self.ui.FilesList.currentItem()
+            if not item:
+                return
         if not luadata or type(luadata) == QtGui.QListWidgetItem:
             luadata = os.path.join(config.path,
                 config.general.get('configs_path'), str(item.text()))
@@ -186,12 +195,15 @@ class Main(QtGui.QMainWindow):
                 print 'Not a dictionary: %s' % value
         self.__loadedConfig = data
 
-    def ReloadContent(self):
+    @QtCore.pyqtSlot()
+    @QtCore.pyqtSlot('QListWidgetItem*')
+    def reloadContent(self, item=None):
         if not self.__loadedConfig:
             return
-        item = self.ui.ItemsList.currentItem()
         if not item:
-            return
+            item = self.ui.ItemsList.currentItem()
+            if not item:
+                return
         self.BlockFields()
         self.ClearFields()
         item = str(item.text()).lower()
@@ -218,22 +230,33 @@ class Main(QtGui.QMainWindow):
                 ELEMENT_BOXES[eltype.lower()]):
             RefillFields(el, element)
         if eltype == "tiles" and element.has_key('image'):
-            self.ReloadTilesImage()
+            self.loadTileImage()
         elif eltype == "region":
             self.__Map.LoadRegion(element)
 
+    @QtCore.pyqtSlot('QString')
+    def setPicture(self, picname):
+        picture = sprites.getImageById(picname)
+        rows = picture.get('rows', 1)
+        cols = picture.get('columns', 1)
+        tabindex = self.ui.MainTabs.currentIndex()
+        boxes = self.getBoxes('picture', boxnames=ELEMENT_BOXES[
+                                        TABS_EXTENSION[tabindex]])
+        box = boxes['picture'][0]
+        for i in range(0, rows*cols):
+            box.addItem(str(i))
+
     def BlockFields(self):
         map(lambda el: el.setDisabled(True), self._Forms)
-        print self.GetElementType()
         map(lambda el: el.setDisabled(False), self.GetBoxes(
                 self.GetElementType()))
 
     def ClearFields(self):
-        self.ReloadTilesImage()
+        self.loadTileImage()
         for el in self._Forms:
             RefillFields(el, {})
 
-    def SaveFile(self):
+    def saveFile(self):
         if not self.__loadedFile:
             return
         data = self.__loadedConfig
@@ -280,9 +303,10 @@ class Main(QtGui.QMainWindow):
             data.append(saved)
         lua.dump(os.path.join(config.path,
             config.general.get('configs_path'), self.__loadedFile), data)
-        self.ReloadElements()
-        self.ui.ItemsList.setCurrentItem(self.ui.ItemsList.findItems(elname, QtCore.Qt.MatchExactly)[0])
-        self.ReloadContent()
+        self.reloadElements()
+        item = self.ui.ItemsList.findItems(elname, QtCore.Qt.MatchExactly)[0]
+        self.ui.ItemsList.setCurrentItem(item)
+        self.reloadContent(item)
 
     def GetBoxes(self, eltype=None):
         if not eltype or eltype not in ELEMENT_BOXES.keys():
@@ -305,6 +329,26 @@ class Main(QtGui.QMainWindow):
             eltype = TYPES_BOXES[
                 TYPES_BOXES_ORDER[self.ui.MainTabs.currentIndex()]][0]
         return eltype
+
+    def getBoxes(self, types, boxnames=None):
+        boxes = {}
+        if type(types) not in [list, tuple]:
+            types = (types,)
+        if not boxnames:
+            boxnames = TYPES_BOXES.keys()
+        for boxname in boxnames:
+            try:
+                box = getattr(self.ui, boxname)
+            except AttributeError:
+                continue
+
+            for t in types:
+                w = GetWidget(box, t)
+                if not boxes.has_key(t):
+                    boxes[t] = []
+                if w:
+                    boxes[t].append(w)
+        return boxes
 
     def test(self):
         print 'ololo'

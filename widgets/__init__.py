@@ -115,8 +115,7 @@ def widget_factory(name):
                         if t >= 0:
                             lines[i].setCurrentIndex(field)
                     values.append(field if type(field) is not str else QtCore.QString(field))
-                types = ', '.join(map(lambda x: type(x).__name__, values))
-                self.emit(QtCore.SIGNAL("valueChanged(%s)" % types), *values)
+                self._changed(*values)
 
         def _changed(self, *values):
             types = ', '.join(map(lambda x: type(x).__name__, values))

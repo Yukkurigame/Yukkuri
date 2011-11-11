@@ -71,7 +71,7 @@
          <item>
           <widget class="QTabWidget" name="MainTabs">
            <property name="currentIndex">
-            <number>0</number>
+            <number>3</number>
            </property>
            <widget class="QWidget" name="SpriteTab">
             <attribute name="title">
@@ -239,6 +239,13 @@
                   </item>
                   <item>
                    <widget class="YImageChooser" name="Image_3" native="true"/>
+                  </item>
+                  <item>
+                   <widget class="YComboBoxWidget" name="Picture" native="true">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="YSpinBoxInputWidget" name="Height" native="true"/>
@@ -1400,6 +1407,13 @@
                  <widget class="YImageChooser" name="Image" native="true"/>
                 </item>
                 <item>
+                 <widget class="YComboBoxWidget" name="Picture_2" native="true">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <widget class="QWidget" name="Passability" native="true">
                   <layout class="QHBoxLayout" name="height_3">
                    <property name="margin">
@@ -1674,8 +1688,8 @@ border: 0px transparent;
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>96</width>
-                  <height>26</height>
+                  <width>280</width>
+                  <height>517</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -2077,6 +2091,9 @@ border: 0px transparent;
    <extends>QWidget</extends>
    <header>widgets</header>
    <container>1</container>
+   <slots>
+    <signal>currentIndexChanged(int)</signal>
+   </slots>
   </customwidget>
   <customwidget>
    <class>YImageChooser</class>
@@ -2117,7 +2134,7 @@ border: 0px transparent;
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>728</x>
+     <x>683</x>
      <y>260</y>
     </hint>
     <hint type="destinationlabel">
@@ -2137,7 +2154,7 @@ border: 0px transparent;
      <y>262</y>
     </hint>
     <hint type="destinationlabel">
-     <x>728</x>
+     <x>683</x>
      <y>260</y>
     </hint>
    </hints>
@@ -2149,7 +2166,7 @@ border: 0px transparent;
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>704</x>
+     <x>711</x>
      <y>392</y>
     </hint>
     <hint type="destinationlabel">
@@ -2169,7 +2186,7 @@ border: 0px transparent;
      <y>394</y>
     </hint>
     <hint type="destinationlabel">
-     <x>704</x>
+     <x>711</x>
      <y>392</y>
     </hint>
    </hints>
@@ -2181,12 +2198,12 @@ border: 0px transparent;
    <slot>setImage(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>297</x>
-     <y>145</y>
+     <x>317</x>
+     <y>151</y>
     </hint>
     <hint type="destinationlabel">
-     <x>547</x>
-     <y>146</y>
+     <x>633</x>
+     <y>123</y>
     </hint>
    </hints>
   </connection>
@@ -2197,12 +2214,12 @@ border: 0px transparent;
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>546</x>
-     <y>165</y>
+     <x>633</x>
+     <y>123</y>
     </hint>
     <hint type="destinationlabel">
-     <x>493</x>
-     <y>163</y>
+     <x>317</x>
+     <y>167</y>
     </hint>
    </hints>
   </connection>
@@ -2213,12 +2230,12 @@ border: 0px transparent;
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>546</x>
-     <y>179</y>
+     <x>633</x>
+     <y>123</y>
     </hint>
     <hint type="destinationlabel">
-     <x>493</x>
-     <y>179</y>
+     <x>317</x>
+     <y>183</y>
     </hint>
    </hints>
   </connection>
@@ -2229,12 +2246,12 @@ border: 0px transparent;
    <slot>setAreaWidth(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>431</x>
-     <y>164</y>
+     <x>317</x>
+     <y>167</y>
     </hint>
     <hint type="destinationlabel">
-     <x>554</x>
-     <y>164</y>
+     <x>633</x>
+     <y>123</y>
     </hint>
    </hints>
   </connection>
@@ -2245,12 +2262,12 @@ border: 0px transparent;
    <slot>setAreaHeight(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>490</x>
-     <y>177</y>
+     <x>317</x>
+     <y>183</y>
     </hint>
     <hint type="destinationlabel">
-     <x>566</x>
-     <y>178</y>
+     <x>633</x>
+     <y>123</y>
     </hint>
    </hints>
   </connection>
@@ -2261,12 +2278,12 @@ border: 0px transparent;
    <slot>setY(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>488</x>
-     <y>210</y>
+     <x>317</x>
+     <y>215</y>
     </hint>
     <hint type="destinationlabel">
-     <x>562</x>
-     <y>212</y>
+     <x>633</x>
+     <y>123</y>
     </hint>
    </hints>
   </connection>
@@ -2277,12 +2294,12 @@ border: 0px transparent;
    <slot>setX(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>498</x>
-     <y>196</y>
+     <x>317</x>
+     <y>199</y>
     </hint>
     <hint type="destinationlabel">
-     <x>546</x>
-     <y>199</y>
+     <x>633</x>
+     <y>123</y>
     </hint>
    </hints>
   </connection>
@@ -2293,12 +2310,12 @@ border: 0px transparent;
    <slot>setRows(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>473</x>
-     <y>226</y>
+     <x>317</x>
+     <y>231</y>
     </hint>
     <hint type="destinationlabel">
-     <x>545</x>
-     <y>229</y>
+     <x>633</x>
+     <y>123</y>
     </hint>
    </hints>
   </connection>
@@ -2309,12 +2326,12 @@ border: 0px transparent;
    <slot>setColumns(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>501</x>
-     <y>244</y>
+     <x>317</x>
+     <y>247</y>
     </hint>
     <hint type="destinationlabel">
-     <x>544</x>
-     <y>246</y>
+     <x>633</x>
+     <y>123</y>
     </hint>
    </hints>
   </connection>
@@ -2325,12 +2342,12 @@ border: 0px transparent;
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>553</x>
-     <y>198</y>
+     <x>633</x>
+     <y>123</y>
     </hint>
     <hint type="destinationlabel">
-     <x>461</x>
-     <y>196</y>
+     <x>317</x>
+     <y>199</y>
     </hint>
    </hints>
   </connection>
@@ -2341,14 +2358,184 @@ border: 0px transparent;
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>545</x>
-     <y>216</y>
+     <x>633</x>
+     <y>123</y>
     </hint>
     <hint type="destinationlabel">
-     <x>478</x>
-     <y>209</y>
+     <x>317</x>
+     <y>215</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>OpenFolderDBox</sender>
+   <signal>clicked(QAbstractButton*)</signal>
+   <receiver>Editor</receiver>
+   <slot>openFolder()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>770</x>
+     <y>677</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>760</x>
+     <y>663</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>NewConfigButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Editor</receiver>
+   <slot>createConfigFile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>65</x>
+     <y>339</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>0</x>
+     <y>335</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>NewEntryButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Editor</receiver>
+   <slot>createConfigRecord()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>37</x>
+     <y>626</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>630</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>exitbox</sender>
+   <signal>accepted()</signal>
+   <receiver>Editor</receiver>
+   <slot>saveFile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>644</x>
+     <y>715</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>645</x>
+     <y>734</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionQuit</sender>
+   <signal>triggered()</signal>
+   <receiver>Editor</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>410</x>
+     <y>377</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>MainTabs</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>Editor</receiver>
+   <slot>reloadFiles(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>512</x>
+     <y>53</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>487</x>
+     <y>19</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>FilesList</sender>
+   <signal>itemActivated(QListWidgetItem*)</signal>
+   <receiver>Editor</receiver>
+   <slot>reloadElements(QListWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>55</x>
+     <y>165</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>166</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ItemsList</sender>
+   <signal>itemActivated(QListWidgetItem*)</signal>
+   <receiver>Editor</receiver>
+   <slot>reloadContent(QListWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>41</x>
+     <y>441</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>442</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>exitbox</sender>
+   <signal>rejected()</signal>
+   <receiver>Editor</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>410</x>
+     <y>713</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>410</x>
+     <y>377</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Picture_2</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>Editor</receiver>
+   <slot>loadTileImage()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>461</x>
+     <y>165</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>533</x>
+     <y>19</y>
     </hint>
    </hints>
   </connection>
  </connections>
+ <slots>
+  <slot>openFolder()</slot>
+  <slot>createConfigFile()</slot>
+  <slot>createConfigRecord()</slot>
+  <slot>saveFile()</slot>
+  <slot>reloadFiles(int)</slot>
+  <slot>reloadElements(QListWidgetItem*)</slot>
+  <slot>reloadContent(QListWidgetItem*)</slot>
+  <slot>loadTileImage()</slot>
+ </slots>
 </ui>

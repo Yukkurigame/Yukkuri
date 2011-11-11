@@ -158,16 +158,16 @@ class Map(QtGui.QWidget):
                 if sprite.x == tile.x and sprite.y == tile.y:
                     if sprite == self.__brush.sprites[-1]:
                         continue
-                    if int(self.__brush.type) < 0 or (sprite != tile and sprite.z == tile.z):
+                    if int(self.__brush.tile) < 0 or (sprite != tile and sprite.z == tile.z):
                         self.__Sprites.remove(sprite)
-            if int(self.__brush.type) < 0:
+            if int(self.__brush.tile) < 0:
                 del parent.mapRegion[x][y]
                 continue
             depth = -1 * int(self.__brush.backed)
             if depth < 0:
-                parent.mapRegion[x][y]['back'] =  self.__brush.type
+                parent.mapRegion[x][y]['back'] =  self.__brush.tile
             else:
-                parent.mapRegion[x][y]['tile'] =  self.__brush.type
+                parent.mapRegion[x][y]['tile'] =  self.__brush.tile
             self.__Sprites.append(Sprite(QtCore.QRect(tile.rect),
                                     QtGui.QPixmap(tile.image), depth))
         self.__brush.sprites = self.__brush.sprites[-1:]
@@ -287,23 +287,25 @@ class MapWindow(QtGui.QMainWindow):
         self.__widget.ClearSprites()
         self.__widget.setBrush(None)
         self.__regionName = region['name']
-        if not self.__Tiles: return
+        if not self.__Tiles:
+            return
         for tile in region['tiles']:
-            x, y = 0, 0
-            if tile.has_key('x'): x = tile['x']
-            if tile.has_key('y'): y = tile['y']
-            if not tile.has_key('tile'):
-                print "Bida! Tile at "+str(x)+":"+str(x)+" has no type!"
+            t = Tile(tile)
+            if not t.tile:
+                print "Bida! Tile at %s:%s has no type!" % (t.x, t.x)
                 continue
-            if not self.__Tiles.has_key(tile['tile']):
-                print "Bida! Tile at "+str(x)+":"+str(x)+" has non-declared or bad type " + tile['type']
+            if not self.__Tiles.has_key(t.tile):
+                print "Bida! Tile at %s:%s has non-declared or bad type %s!" % (t.x, t.x, t.tile)
                 continue
-            tiledata = self.__Tiles[tile['tile']]
-            if not self.mapRegion.has_key(x): self.mapRegion[x] = {}
-            if not self.mapRegion[x].has_key(y): self.mapRegion[x][y] = {}
-            self.mapRegion[x][y]['tile'] = tile['tile']
-            if tiledata.backing and tile.has_key('backtype') and self.__Tiles.has_key(tile['backtype']):
-                self.mapRegion[x][y]['back'] = tile['backtype']
+            x, y = t.x, t.y
+            if not self.mapRegion.has_key(x):
+                self.mapRegion[x] = {}
+            if not self.mapRegion[x].has_key(y):
+                self.mapRegion[x][y] = {}
+            self.mapRegion[x][y]['tile'] = t.tile
+            tiledata = self.__Tiles[t.tile]
+            if tiledata.backing and t.backtype and self.__Tiles.has_key(tile.backtype):
+                self.mapRegion[x][y]['back'] = t.backtype
             x, y = fromMapPosition(x, y)
             self.__widget.CreateNewSprite(x, y, 0, tiledata.offsetx,
                                             tiledata.offsety, 64, 64, tiledata.image)
@@ -326,7 +328,8 @@ class MapWindow(QtGui.QMainWindow):
             x = int(tile.offsetx)
             y = int(tile.offsety)
             image = CreatePixmap(tile.image, x, y)
-            if not image: continue
+            if not image:
+                continue
             l = QtGui.QPushButton(self.__Parent.ui.MapTilesPage)
             tile.button = l
             l.setFlat(1)

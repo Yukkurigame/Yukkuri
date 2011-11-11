@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Editor.ui'
 #
-# Created: Tue Oct 18 16:08:37 2011
+# Created: Wed Nov  9 02:42:10 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -149,6 +149,10 @@ class Ui_Editor(object):
         self.Image_3 = YImageChooser(self.EntityMainBox)
         self.Image_3.setObjectName(_fromUtf8("Image_3"))
         self.verticalLayout_7.addWidget(self.Image_3)
+        self.Picture = YComboBoxWidget(self.EntityMainBox)
+        self.Picture.setEnabled(True)
+        self.Picture.setObjectName(_fromUtf8("Picture"))
+        self.verticalLayout_7.addWidget(self.Picture)
         self.Height = YSpinBoxInputWidget(self.EntityMainBox)
         self.Height.setObjectName(_fromUtf8("Height"))
         self.verticalLayout_7.addWidget(self.Height)
@@ -668,6 +672,10 @@ class Ui_Editor(object):
         self.Image = YImageChooser(self.TilesMainBox)
         self.Image.setObjectName(_fromUtf8("Image"))
         self.verticalLayout_15.addWidget(self.Image)
+        self.Picture_2 = YComboBoxWidget(self.TilesMainBox)
+        self.Picture_2.setEnabled(True)
+        self.Picture_2.setObjectName(_fromUtf8("Picture_2"))
+        self.verticalLayout_15.addWidget(self.Picture_2)
         self.Passability = QtGui.QWidget(self.TilesMainBox)
         self.Passability.setObjectName(_fromUtf8("Passability"))
         self.height_3 = QtGui.QHBoxLayout(self.Passability)
@@ -789,7 +797,7 @@ class Ui_Editor(object):
         self.MapElements.setFrameShape(QtGui.QFrame.NoFrame)
         self.MapElements.setObjectName(_fromUtf8("MapElements"))
         self.MapTilesPage = QtGui.QWidget()
-        self.MapTilesPage.setGeometry(QtCore.QRect(0, 0, 96, 26))
+        self.MapTilesPage.setGeometry(QtCore.QRect(0, 0, 280, 517))
         self.MapTilesPage.setObjectName(_fromUtf8("MapTilesPage"))
         self.gridLayout = QtGui.QGridLayout(self.MapTilesPage)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
@@ -956,7 +964,7 @@ class Ui_Editor(object):
         self.menubar.addAction(self.menuEditor.menuAction())
 
         self.retranslateUi(Editor)
-        self.MainTabs.setCurrentIndex(0)
+        self.MainTabs.setCurrentIndex(3)
         self.MapElements.setCurrentIndex(0)
         QtCore.QObject.connect(self.horizontalScrollBar, QtCore.SIGNAL(_fromUtf8("valueChanged(int)")), self.spinBox_2.setValue)
         QtCore.QObject.connect(self.spinBox_2, QtCore.SIGNAL(_fromUtf8("valueChanged(int)")), self.horizontalScrollBar.setValue)
@@ -973,6 +981,16 @@ class Ui_Editor(object):
         QtCore.QObject.connect(self.Columns, QtCore.SIGNAL(_fromUtf8("valueChanged(int)")), self.SpriteImageViewer.setColumns)
         QtCore.QObject.connect(self.SpriteImageViewer, QtCore.SIGNAL(_fromUtf8("xChanged(int)")), self.OffsetX.setValue)
         QtCore.QObject.connect(self.SpriteImageViewer, QtCore.SIGNAL(_fromUtf8("yChanged(int)")), self.OffsetY.setValue)
+        QtCore.QObject.connect(self.OpenFolderDBox, QtCore.SIGNAL(_fromUtf8("clicked(QAbstractButton*)")), Editor.openFolder)
+        QtCore.QObject.connect(self.NewConfigButton, QtCore.SIGNAL(_fromUtf8("clicked()")), Editor.createConfigFile)
+        QtCore.QObject.connect(self.NewEntryButton, QtCore.SIGNAL(_fromUtf8("clicked()")), Editor.createConfigRecord)
+        QtCore.QObject.connect(self.exitbox, QtCore.SIGNAL(_fromUtf8("accepted()")), Editor.saveFile)
+        QtCore.QObject.connect(self.actionQuit, QtCore.SIGNAL(_fromUtf8("triggered()")), Editor.close)
+        QtCore.QObject.connect(self.MainTabs, QtCore.SIGNAL(_fromUtf8("currentChanged(int)")), Editor.reloadFiles)
+        QtCore.QObject.connect(self.FilesList, QtCore.SIGNAL(_fromUtf8("itemActivated(QListWidgetItem*)")), Editor.reloadElements)
+        QtCore.QObject.connect(self.ItemsList, QtCore.SIGNAL(_fromUtf8("itemActivated(QListWidgetItem*)")), Editor.reloadContent)
+        QtCore.QObject.connect(self.exitbox, QtCore.SIGNAL(_fromUtf8("rejected()")), Editor.close)
+        QtCore.QObject.connect(self.Picture_2, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(int)")), Editor.loadTileImage)
         QtCore.QMetaObject.connectSlotsByName(Editor)
         Editor.setTabOrder(self.FolderPlace, self.exitbox)
 

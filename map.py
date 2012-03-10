@@ -136,8 +136,9 @@ class Map(QtGui.QWidget):
             self.__position['y'] = y
             self.moveBrush()
 
-    def CreateNewSprite(self, x, y, z, offsetx, offsety, w, h, name):
-        sprite = Sprite(QtCore.QRect(x, y, w, h), CreatePixmap(name, offsetx, offsety, w, h), depth=z)
+    def CreateNewSprite(self, x, y, z, name):
+        s = sprites.createPixmap(name)
+        sprite = Sprite(QtCore.QRect(x, y, s.width(), s.height()), s, depth=z)
         self.__Sprites.append(sprite)
         return sprite
 
@@ -180,9 +181,7 @@ class Map(QtGui.QWidget):
         else:
             self.__brush = Tile({'type': tile.name, 'data': tile, 'sprites': []})
             self.__brush.sprites.append(
-                self.CreateNewSprite(-2147483615, 2147483615, 1,
-                                    int(tile.offsetx), int(tile.offsety),
-                                    64, 64, tile.image)
+                self.CreateNewSprite(-2147483615, 2147483615, 1, tile.image)
             )
 
     def removeBrush(self):
@@ -226,10 +225,7 @@ class Map(QtGui.QWidget):
                     for my in range(miny, maxy+1):
                         x, y = fromMapPosition(mx, my)
                         if len(filter(lambda sprite: sprite.x == x and sprite.y == y, brush.sprites)) < 1:
-                            brush.sprites.append(self.CreateNewSprite(x, y, z,
-                                         int(brush.tile.offsetx), int(brush.tile.offsety),
-                                         64, 64, brush.tile.image)
-                            )
+                            brush.sprites.append(self.CreateNewSprite(x, y, z, brush.tile.image))
 
                 def _r(sp):
                    sx, sy = toMapPosition(sp.x, sp.y)
@@ -240,10 +236,7 @@ class Map(QtGui.QWidget):
                 brush.sprites = filter(_r, brush.sprites)
             else:
                 if len(filter(lambda sprite: sprite.x == x and sprite.y == y, brush.sprites)) < 1:
-                    brush.sprites.append(self.CreateNewSprite(x, y, z,
-                                     int(brush.tile.offsetx), int(brush.tile.offsety),
-                                     64, 64, brush.tile.image)
-                    )
+                    brush.sprites.append(self.CreateNewSprite(x, y, z, brush.tile.image))
         else:
             for sprite in brush.sprites:
                 sprite.rect.moveTo(x, y)
@@ -289,7 +282,7 @@ class MapWindow(QtGui.QMainWindow):
         self.__regionName = region['name']
         if not self.__Tiles:
             return
-        for tile in region['tiles']:
+        for tile in region.get('tiles', []):
             t = Tile(tile)
             if not t.tile:
                 print "Bida! Tile at %s:%s has no type!" % (t.x, t.x)
@@ -307,27 +300,23 @@ class MapWindow(QtGui.QMainWindow):
             if tiledata.backing and t.backtype and self.__Tiles.has_key(tile.backtype):
                 self.mapRegion[x][y]['back'] = t.backtype
             x, y = fromMapPosition(x, y)
-            self.__widget.CreateNewSprite(x, y, 0, tiledata.offsetx,
-                                            tiledata.offsety, 64, 64, tiledata.image)
+            self.__widget.CreateNewSprite(x, y, 0, tiledata.image)
             if tiledata.backing and tile.has_key('backtype') and self.__Tiles.has_key(tile['backtype']):
                 tiledata = self.__Tiles[tile['backtype']]
-                self.__widget.CreateNewSprite(x, y, -1, tiledata.offsetx,
-                                                tiledata.offsety, 64, 64, tiledata.image)
+                self.__widget.CreateNewSprite(x, y, -1, tiledata.image)
         self.show()
 
     def ReloadObjects(self):
         files = fileManager.getFilesList(config.general.get('configs_path'), 'tiles')
         self.__Tiles.clear()
         row, col, maxcol = 0, 0, int(self.__Parent.ui.MapTilesPage.width()/64) - 2
-        for file in files:
-            data = lua.load(os.path.join(config.path, str(file)))
+        for f in files:
+            data = lua.loadFile(os.path.join(config.path, config.general.get('configs_path'), str(f)))
             for tile in data:
                 if type(tile) == dict and tile.has_key('id') and tile.has_key('image'):
                     self.__Tiles[tile['id']] = Tile(tile)
         for tile in self.__Tiles.values():
-            x = int(tile.offsetx)
-            y = int(tile.offsety)
-            image = CreatePixmap(tile.image, x, y)
+            image = sprites.createPixmap(tile.image)
             if not image:
                 continue
             l = QtGui.QPushButton(self.__Parent.ui.MapTilesPage)

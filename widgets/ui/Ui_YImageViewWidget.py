@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'Ui_YImageViewWidget.ui'
 #
-# Created: Tue Oct 18 16:05:55 2011
-#      by: PyQt4 UI code generator 4.8.5
+# Created: Fri Mar  9 15:27:43 2012
+#      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -19,7 +19,6 @@ class Ui_YImageViewWidget(object):
         YImageViewWidget.setObjectName(_fromUtf8("YImageViewWidget"))
         YImageViewWidget.resize(597, 304)
         YImageViewWidget.setAcceptDrops(True)
-        YImageViewWidget.setWindowTitle(QtGui.QApplication.translate("YImageViewWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
         YImageViewWidget.setStyleSheet(_fromUtf8("background: transparent;"))
         self.horizontalLayout = QtGui.QHBoxLayout(YImageViewWidget)
         self.horizontalLayout.setMargin(0)
@@ -43,5 +42,5 @@ class Ui_YImageViewWidget(object):
         QtCore.QMetaObject.connectSlotsByName(YImageViewWidget)
 
     def retranslateUi(self, YImageViewWidget):
-        pass
+        YImageViewWidget.setWindowTitle(QtGui.QApplication.translate("YImageViewWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
 

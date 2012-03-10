@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'Ui_YColorInputWidget.ui'
 #
-# Created: Thu Sep 29 20:47:31 2011
-#      by: PyQt4 UI code generator 4.8.5
+# Created: Fri Mar  9 15:27:42 2012
+#      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -18,12 +18,10 @@ class Ui_YColorInputWidget(object):
     def setupUi(self, YColorInputWidget):
         YColorInputWidget.setObjectName(_fromUtf8("YColorInputWidget"))
         YColorInputWidget.resize(333, 23)
-        YColorInputWidget.setWindowTitle(QtGui.QApplication.translate("YColorInputWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
         self.horizontalLayout = QtGui.QHBoxLayout(YColorInputWidget)
         self.horizontalLayout.setMargin(0)
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.label = QtGui.QLabel(YColorInputWidget)
-        self.label.setText(QtGui.QApplication.translate("YColorInputWidget", "Blood color:", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setObjectName(_fromUtf8("label"))
         self.horizontalLayout.addWidget(self.label)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
@@ -73,7 +71,6 @@ class Ui_YColorInputWidget(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.toolButton.sizePolicy().hasHeightForWidth())
         self.toolButton.setSizePolicy(sizePolicy)
-        self.toolButton.setText(QtGui.QApplication.translate("YColorInputWidget", "Choose", None, QtGui.QApplication.UnicodeUTF8))
         self.toolButton.setObjectName(_fromUtf8("toolButton"))
         self.horizontalLayout.addWidget(self.toolButton)
 
@@ -81,5 +78,7 @@ class Ui_YColorInputWidget(object):
         QtCore.QMetaObject.connectSlotsByName(YColorInputWidget)
 
     def retranslateUi(self, YColorInputWidget):
-        pass
+        YColorInputWidget.setWindowTitle(QtGui.QApplication.translate("YColorInputWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("YColorInputWidget", "Blood color:", None, QtGui.QApplication.UnicodeUTF8))
+        self.toolButton.setText(QtGui.QApplication.translate("YColorInputWidget", "Choose", None, QtGui.QApplication.UnicodeUTF8))
 

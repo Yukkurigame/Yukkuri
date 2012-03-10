@@ -22,7 +22,7 @@ TYPES_BOXES_ORDER = ['SpritesMainBox', 'EntityMainBox',
 TYPES_BOXES = {'SpritesMainBox': ['sprite',],
                'EntityMainBox': ['entity', 'plant', 'corpse'],
                'WidgetMainBox': ['widget',],
-               'TilesMainBox': ['tile',],
+               'TilesMainBox': ['tiles',],
                'MapOptionsBox': ['region',]}
 
 #Maybe it could be in Main.__init__?
@@ -71,7 +71,7 @@ class Main(QtGui.QMainWindow):
 
             if boxname == 'SpritesMainBox':
                 GetWidget(box, 'image').setBasePath(os.path.join(
-                    config.path, config.general.get('images_path')))
+                    config.path, config.general.get('images_path', '')))
 
             w = GetWidget(box, 'type')
             if w:
@@ -237,12 +237,15 @@ class Main(QtGui.QMainWindow):
     @QtCore.pyqtSlot('QString')
     def setPicture(self, picname):
         picture = sprites.getImageById(picname)
+        if not picture:
+            return
         rows = picture.get('rows', 1)
         cols = picture.get('columns', 1)
         tabindex = self.ui.MainTabs.currentIndex()
         boxes = self.getBoxes('picture', boxnames=ELEMENT_BOXES[
                                         TABS_EXTENSION[tabindex]])
         box = boxes['picture'][0]
+        box.clear()
         for i in range(0, rows*cols):
             box.addItem(str(i))
 
@@ -356,7 +359,7 @@ class Main(QtGui.QMainWindow):
 def main():
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     app = QtGui.QApplication(sys.argv)
-    window=Main()
+    window = Main()
     window.show()
     e = app.exec_()
     config.save()

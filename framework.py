@@ -1,7 +1,7 @@
 import re
 from files import *
 from PyQt4 import QtGui
-from PyQt4.QtCore import pyqtSignal, SIGNAL
+from PyQt4.QtCore import QRect, pyqtSignal, SIGNAL
 
 class PDict(dict):
     def __init__(self, indict=None):
@@ -117,7 +117,7 @@ class Sprite(dict):
         self.setImage(image)
 
     def setRect(self, rect):
-        if type(rect) == QtGui.QRect:
+        if type(rect) is QRect:
             self.rect = rect
 
     def setImage(self, image):

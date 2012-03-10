@@ -27,7 +27,7 @@ class GeneralConfigDialog(QtGui.QDialog):
             config.general = self._configData
             self.loaded = True
             return True
-        except IndexError:
+        except (IndexError, TypeError):
             print "Bad main config"
 
     def show(self):

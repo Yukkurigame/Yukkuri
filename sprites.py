@@ -30,12 +30,13 @@ class SpriteManager:
         return self.images_by_id
 
     def getImageById(self, iid):
+        iid = unicode(iid)
         if not iid:
             return
         if not self.images:
             self.loadImages()
-        if unicode(iid) in self.images_by_id:
-            return self.images_by_id[unicode(iid)]
+        if iid in self.images_by_id:
+            return self.images_by_id[iid]
 
     def loadImages(self):
         files = fileManager.getFilesList(config.general.get('configs_path'), 'sprites')

@@ -59,6 +59,11 @@ class Lua:
             stream.write(text)
             stream.close()
 
+    def loadFile(self, fname):
+        if not os.path.exists(fname):
+            return
+        return self.load(fname)
+
     def load(self, data):
         stream = None
         try:

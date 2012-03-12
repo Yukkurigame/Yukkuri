@@ -91,14 +91,6 @@ def RefillFields(element, data):
 #           Images              #
 #################################
 
-def CreatePixmap(name, x=0, y=0, width=64, height=64):
-    if not name: return
-    image = QtGui.QPixmap()
-    result = image.load(os.path.join(config.path, '..', 'images', name))
-    if not result: return
-    image = image.copy(x, y, width, height)
-    return image
-
 def ShowImage(image, target):
     target.resize(image.width(), image.height())
     target.setPixmap(image)

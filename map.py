@@ -136,8 +136,8 @@ class Map(QtGui.QWidget):
             self.__position['y'] = y
             self.moveBrush()
 
-    def CreateNewSprite(self, x, y, z, name):
-        s = sprites.createPixmap(name)
+    def CreateNewSprite(self, x, y, z, tile):
+        s = sprites.createPixmap(tile.image, tile.picture)
         sprite = Sprite(QtCore.QRect(x, y, s.width(), s.height()), s, depth=z)
         self.__Sprites.append(sprite)
         return sprite
@@ -146,22 +146,26 @@ class Map(QtGui.QWidget):
         self.__Sprites = []
 
     def drawTile(self):
-        if not self.__brush: return
+        if not self.__brush:
+            return
         parent = self.parentWidget()
-        if not parent: return
+        if not parent:
+            return
         for tile in self.__brush.sprites:
             x = tile.x
             y = tile.y
             x, y = toMapPosition(x, y)
-            if not parent.mapRegion.has_key(x): parent.mapRegion[x] = {}
-            if not parent.mapRegion[x].has_key(y): parent.mapRegion[x][y] = {}
+            if not parent.mapRegion.has_key(x):
+                parent.mapRegion[x] = {}
+            if not parent.mapRegion[x].has_key(y):
+                parent.mapRegion[x][y] = {}
             for sprite in self.__Sprites:
                 if sprite.x == tile.x and sprite.y == tile.y:
                     if sprite == self.__brush.sprites[-1]:
                         continue
-                    if int(self.__brush.tile) < 0 or (sprite != tile and sprite.z == tile.z):
+                    if self.__brush.tile < 0 or (sprite != tile and sprite.z == tile.z):
                         self.__Sprites.remove(sprite)
-            if int(self.__brush.tile) < 0:
+            if self.__brush.tile < 0:
                 del parent.mapRegion[x][y]
                 continue
             depth = -1 * int(self.__brush.backed)
@@ -174,28 +178,41 @@ class Map(QtGui.QWidget):
         self.__brush.sprites = self.__brush.sprites[-1:]
         self.update()
 
-    def setBrush(self, tile):
+    def setBrush(self, tile, back=False):
         if not tile:
-            if self.__brush: self.__Sprites.extend(self.__brush.sprites)
-            else: return
+            if self.__brush:
+                self.__Sprites.extend(self.__brush.sprites)
+            else:
+                return
+        elif type(tile) is not Tile:
+            raise TypeError('Brush tile must be instance of Tile class.')
         else:
-            self.__brush = Tile({'type': tile.name, 'data': tile, 'sprites': []})
+            self.__brush = Tile({'tile': tile.id, 'data': tile, 'sprites': []})
             self.__brush.sprites.append(
-                self.CreateNewSprite(-2147483615, 2147483615, 1, tile.image)
+                self.CreateNewSprite(-2147483615, 2147483615, 1, tile)
             )
+            try:
+                self.__brush.backed = bool(back)
+                for sprite in self.__brush.sprites:
+                    sprite.z = 1 + (-2 * bool(back))
+            except Exception, e:
+                print e
+                return
 
     def removeBrush(self):
         self.clearBrush()
         self.__brush = None
 
     def clearBrush(self):
-        if not self.__brush: return
+        if not self.__brush:
+            return
         for sprite in self.__brush.sprites:
             self.__Sprites.remove(sprite)
         del self.__brush.sprites[:]
 
     def setBrushSize(self, size):
-        if not self.__brush: return
+        if not self.__brush:
+            return
         try:
             self.__brush.size = int(size)
         except Exception, e:
@@ -203,7 +220,8 @@ class Map(QtGui.QWidget):
             return
 
     def setBrushDrawBack(self, back=False):
-        if not self.__brush: return
+        if not self.__brush:
+            return
         try:
             self.__brush.backed = bool(back)
             for sprite in self.__brush.sprites:
@@ -214,7 +232,8 @@ class Map(QtGui.QWidget):
 
     def moveBrush(self):
         brush = self.__brush
-        if not brush: return
+        if not brush:
+            return
         x, y = fromMapPosition(self.__position['x'], self.__position['y'])
         if self.__draw:
             z = 1 + (-2 * bool(brush.backed))
@@ -225,7 +244,7 @@ class Map(QtGui.QWidget):
                     for my in range(miny, maxy+1):
                         x, y = fromMapPosition(mx, my)
                         if len(filter(lambda sprite: sprite.x == x and sprite.y == y, brush.sprites)) < 1:
-                            brush.sprites.append(self.CreateNewSprite(x, y, z, brush.tile.image))
+                            brush.sprites.append(self.CreateNewSprite(x, y, z, brush.data))
 
                 def _r(sp):
                    sx, sy = toMapPosition(sp.x, sp.y)
@@ -236,7 +255,7 @@ class Map(QtGui.QWidget):
                 brush.sprites = filter(_r, brush.sprites)
             else:
                 if len(filter(lambda sprite: sprite.x == x and sprite.y == y, brush.sprites)) < 1:
-                    brush.sprites.append(self.CreateNewSprite(x, y, z, brush.tile.image))
+                    brush.sprites.append(self.CreateNewSprite(x, y, z, brush.data))
         else:
             for sprite in brush.sprites:
                 sprite.rect.moveTo(x, y)
@@ -278,17 +297,16 @@ class MapWindow(QtGui.QMainWindow):
         self.ReloadObjects()
         self.mapRegion.clear()
         self.__widget.ClearSprites()
-        self.__widget.setBrush(None)
         self.__regionName = region['name']
         if not self.__Tiles:
             return
         for tile in region.get('tiles', []):
             t = Tile(tile)
             if not t.tile:
-                print "Bida! Tile at %s:%s has no type!" % (t.x, t.x)
+                print "Bida! Tile at %s:%s has no tile id!" % (t.x, t.x)
                 continue
-            if not self.__Tiles.has_key(t.tile):
-                print "Bida! Tile at %s:%s has non-declared or bad type %s!" % (t.x, t.x, t.tile)
+            if t.tile not in self.__Tiles:
+                print "Bida! Tile at %s:%s has non-declared id!" % (t.x, t.x)
                 continue
             x, y = t.x, t.y
             if not self.mapRegion.has_key(x):
@@ -297,13 +315,12 @@ class MapWindow(QtGui.QMainWindow):
                 self.mapRegion[x][y] = {}
             self.mapRegion[x][y]['tile'] = t.tile
             tiledata = self.__Tiles[t.tile]
-            if tiledata.backing and t.backtype and self.__Tiles.has_key(tile.backtype):
+            mx, my = fromMapPosition(x, y)
+            self.__widget.CreateNewSprite(mx, my, 0, tiledata)
+            if tiledata.backing and t.backtype and t.backtype in self.__Tiles:
                 self.mapRegion[x][y]['back'] = t.backtype
-            x, y = fromMapPosition(x, y)
-            self.__widget.CreateNewSprite(x, y, 0, tiledata.image)
-            if tiledata.backing and tile.has_key('backtype') and self.__Tiles.has_key(tile['backtype']):
-                tiledata = self.__Tiles[tile['backtype']]
-                self.__widget.CreateNewSprite(x, y, -1, tiledata.image)
+                bd = self.__Tiles[t.backtype]
+                self.__widget.CreateNewSprite(mx, my, -1, bd)
         self.show()
 
     def ReloadObjects(self):
@@ -316,7 +333,7 @@ class MapWindow(QtGui.QMainWindow):
                 if type(tile) == dict and tile.has_key('id') and tile.has_key('image'):
                     self.__Tiles[tile['id']] = Tile(tile)
         for tile in self.__Tiles.values():
-            image = sprites.createPixmap(tile.image)
+            image = sprites.createPixmap(tile.image, tile.picture)
             if not image:
                 continue
             l = QtGui.QPushButton(self.__Parent.ui.MapTilesPage)
@@ -325,7 +342,7 @@ class MapWindow(QtGui.QMainWindow):
             l.setCheckable(1)
             l.setIconSize(QtCore.QSize(image.width(), image.height()))
             l.setIcon(QtGui.QIcon(image))
-            l.setObjectName(_fromUtf8('Tile'+str(tile.name)))
+            l.setObjectName(_fromUtf8('Tile'+str(tile.id)))
             self.connect(l, QtCore.SIGNAL("clicked()"), self.ChangeBrush)
             self.__Parent.ui.MapTilesPage.children()[0].addWidget(l, row, col)
             col += 1
@@ -333,7 +350,7 @@ class MapWindow(QtGui.QMainWindow):
                 row += 1
                 col = 0
         self.__Tiles['eraser'] = Tile(
-                {'name': -1, 'image': 'ground.png', 'offsetx': 192,
+                {'id': -1, 'image': 'ground.png', 'offsetx': 192,
                  'button': self.__Parent.ui.MapErase}
         )
 
@@ -347,11 +364,11 @@ class MapWindow(QtGui.QMainWindow):
             button = None
         self.__widget.removeBrush()
         self.__BrushButton = button
-        if not button: return
+        if not button:
+            return
         for tile in self.__Tiles.values():
             if tile.button and tile.button == button:
-                self.__widget.setBrush(tile)
-                self.__widget.setBrushDrawBack(GetField(self.__Parent.ui.MapBack))
+                self.__widget.setBrush(tile, GetField(self.__Parent.ui.MapBack))
                 return
 
     def setBrushBack(self):
@@ -368,22 +385,22 @@ class MapWindow(QtGui.QMainWindow):
         ret['tiles'] = []
         for i in self.mapRegion:
             for j in self.mapRegion[i]:
-                t = 0
-                b = 0
                 try:
-                    t = int(self.mapRegion[i][j]['tile'])
-                except: continue
-                try:
-                    b = int(self.mapRegion[i][j]['back'])
-                except: pass
-                if not self.__Tiles.has_key(t):
-                    print 'Tile with name' + str(t) + 'does not not exists'
+                    t = self.mapRegion[i][j]['tile']
+                except:
                     continue
-                if t > 0:
+                try:
+                    b = self.mapRegion[i][j]['back']
+                except:
+                    b = None
+                if not t in self.__Tiles:
+                    print 'Tile with id %s does not not exists' % t
+                    continue
+                if t != -1:
                     tile = {'x': i, 'y': j, 'tile': t}
                     if self.__Tiles[t].backing and b > 0:
-                        if not self.__Tiles.has_key(b):
-                            print 'Tile with name' + str(b) + 'does not not exists'
+                        if not b in self.__Tiles:
+                            print 'Tile with id %s does not not exists' % b
                             continue
                         tile['backtype'] = b
                     ret['tiles'].append(tile)

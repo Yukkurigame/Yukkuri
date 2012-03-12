@@ -56,6 +56,7 @@ class SpriteManager:
         img = self.getImageById(imgid)
         if not img:
             return
+        imgnum = int(imgnum)
         image = QPixmap()
         name = img.get('image')
         result = image.load(

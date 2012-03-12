@@ -7,7 +7,14 @@ class YComboBoxWidget(object):
     def __init__(self, *args, **kwargs):
         self.connect(self.ui.comboBox, QtCore.SIGNAL('currentIndexChanged(int)'), self, QtCore.SIGNAL('currentIndexChanged(int)'))
 
-    def addItem(self, text):
-        box = filter(lambda x: type(x) == QtGui.QComboBox,
+    def __getBox(self):
+        if not getattr(self,  'box',  None):
+            self.__box = filter(lambda x: type(x) == QtGui.QComboBox,
                             self.children())[0]
-        box.addItem(text)
+        return self.__box
+
+    def addItem(self, text):
+        self.__getBox().addItem(text)
+
+    def clear(self):
+        self.__getBox().clear()

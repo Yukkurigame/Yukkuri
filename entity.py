@@ -56,6 +56,7 @@ class EntityTab:
         self.ChooseAnimationFrame()
 
     def ChooseAnimationFrame(self):
+        #FIXME: Rewrite to new sprite system
         atype = self.main.ui.EntityAnimationChooser.currentIndex()
         animpv = None
         index = None
@@ -88,6 +89,7 @@ class EntityTab:
             starty = row * height
             name = GetField(GetWidget(self.main.ui.EntityMainBox, 'image'))
             print name, startx, starty, width, height
+            #Broken
             frame = CreatePixmap(name, startx, starty, width, height)
             animpv.frames.insert(index, frame)
         self.ShowAnimationPerviewImage(frame)

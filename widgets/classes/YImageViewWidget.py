@@ -27,13 +27,20 @@ class YImageViewWidget(QtGui.QGraphicsView):
         filename = os.path.join(config.path,
             config.general.get('images_path'), str(filename))
         image = QtGui.QPixmap(filename)
+        self.setPixmap(image)
+
+    @QtCore.pyqtSlot(QtGui.QPixmap)
+    def setPixmap(self, image):
+        self.clear()
         w, h = image.width(), image.height()
-        self._scene.clear()
         self._scene.setSceneRect(0, 0, w, h)
         self._scene.addPixmap(image)
         self.areaItem = None
         self.vLines = self.hLines = []
         self._changeAreaSize()
+
+    def clear(self):
+        self._scene.clear()
 
     @QtCore.pyqtSlot(int)
     @QtCore.pyqtSlot(float)
@@ -92,6 +99,10 @@ class YImageViewWidget(QtGui.QGraphicsView):
             self.area.y(), self.area.x() + i,
             self.area.y() + self.area.height(), self.areapen))
         self.cols = cols
+
+    def setScrollPolicy(self, v, h):
+        self.setVerticalScrollBarPolicy(v)
+        self.setHorizontalScrollBarPolicy(h)
 
     def _changeAreaSize(self):
         if self.areaItem:

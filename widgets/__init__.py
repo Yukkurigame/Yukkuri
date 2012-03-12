@@ -112,7 +112,7 @@ def widget_factory(name):
                         lines[i].setChecked(field)
                     elif ltype == QtGui.QComboBox:
                         field = lines[i].findText(str(field))
-                        if t >= 0:
+                        if field >= 0:
                             lines[i].setCurrentIndex(field)
                     values.append(field if type(field) is not str else QtCore.QString(field))
                 self._changed(*values)

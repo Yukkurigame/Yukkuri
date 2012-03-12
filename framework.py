@@ -87,13 +87,6 @@ def RefillFields(element, data):
         except Exception, e:
             SetField(el, value)
 
-#################################
-#           Images              #
-#################################
-
-def ShowImage(image, target):
-    target.resize(image.width(), image.height())
-    target.setPixmap(image)
 
 #################################
 #           Classes             #

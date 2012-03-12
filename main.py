@@ -61,6 +61,8 @@ class Main(QtGui.QMainWindow):
 
         self.ui.actionGeneralConfig.triggered.connect(self.generalConfig.show)
 
+        self.ui.TileImageViewer.setScrollPolicy(
+            QtCore.Qt.ScrollBarAlwaysOff, QtCore.Qt.ScrollBarAlwaysOff)
 
         from widgets import YImageChooser
         for boxname in TYPES_BOXES.keys():
@@ -97,9 +99,8 @@ class Main(QtGui.QMainWindow):
             return
         image = sprites.createPixmap(image, picture)
         if not image:
-            self.ui.TileImageViewer.clear()
-            return
-        ShowImage(image, self.ui.TileImageViewer)
+            return self.ui.TileImageViewer.clear()
+        self.ui.TileImageViewer.setPixmap(image)
 
     @QtCore.pyqtSlot()
     def createConfigFile(self):
@@ -152,7 +153,7 @@ class Main(QtGui.QMainWindow):
         files = fileManager.getFilesList(config.general.get('configs_path'), TABS_EXTENSION[tabindex])
         self.ui.FilesList.clear()
         self.ui.ItemsList.clear()
-        self.ClearFields()
+        self.clearFields()
         self.__loadedConfig = []
         self.__loadedFile = ''
         self.__loadedElement = ''
@@ -204,8 +205,8 @@ class Main(QtGui.QMainWindow):
             item = self.ui.ItemsList.currentItem()
             if not item:
                 return
-        self.BlockFields()
-        self.ClearFields()
+        self.blockFields()
+        self.clearFields()
         item = str(item.text()).lower()
         data = self.__loadedConfig
         element = None
@@ -220,12 +221,12 @@ class Main(QtGui.QMainWindow):
         self.__loadedElement = element.get('id') or element.get('name')
         if element.has_key('animation'):
             RefillFields(self.ui.EntityAnimationBox, element['animation'])
-            self.EntytyTab.LoadAnimationPreview()
+            self.EntytyTab.loadAnimationPreview()
             self.ui.EntityAnimaptionPreview.setDisabled(False)
         else:
             self.ui.EntityAnimaptionPreview.setDisabled(True)
             RefillFields(self.ui.EntityAnimationBox, {})
-        eltype = self.GetElementType(element)
+        eltype = self.getElementType(element)
         for el in map(lambda x: getattr(self.ui, x),
                 ELEMENT_BOXES[eltype.lower()]):
             RefillFields(el, element)
@@ -249,12 +250,12 @@ class Main(QtGui.QMainWindow):
         for i in range(0, rows*cols):
             box.addItem(str(i))
 
-    def BlockFields(self):
+    def blockFields(self):
         map(lambda el: el.setDisabled(True), self._Forms)
-        map(lambda el: el.setDisabled(False), self.GetBoxes(
-                self.GetElementType()))
+        map(lambda el: el.setDisabled(False), self.getBoxesByElement(
+                self.getElementType()))
 
-    def ClearFields(self):
+    def clearFields(self):
         self.loadTileImage()
         for el in self._Forms:
             RefillFields(el, {})
@@ -266,8 +267,8 @@ class Main(QtGui.QMainWindow):
         if not data:
             return
         globalname = self.__loadedElement
-        eltype = self.GetElementType()
-        boxes = self.GetBoxes(eltype)
+        eltype = self.getElementType()
+        boxes = self.getBoxesByElement(eltype)
         if not boxes:
             print "No boxes to save for %s" % eltype
             return
@@ -311,27 +312,27 @@ class Main(QtGui.QMainWindow):
         self.ui.ItemsList.setCurrentItem(item)
         self.reloadContent(item)
 
-    def GetBoxes(self, eltype=None):
-        if not eltype or eltype not in ELEMENT_BOXES.keys():
-            eltype = self.GetElementType()
-        boxes = ELEMENT_BOXES[eltype.lower()]
-        return map(lambda x: getattr(self.ui, x), boxes)
-
-    def GetCurrentConfig(self):
+    def getCurrentConfig(self):
         try:
             return filter(lambda x: self.__loadedElement == x.get('id') \
                         or x.get('name'), self.__loadedConfig)[0]
         except IndexError:
             return {}
 
-    def GetElementType(self, element={}):
+    def getElementType(self, element={}):
         try:
             eltype = element.get('type') or \
-                        self.GetCurrentConfig()['type']
+                        self.getCurrentConfig()['type']
         except KeyError:
             eltype = TYPES_BOXES[
                 TYPES_BOXES_ORDER[self.ui.MainTabs.currentIndex()]][0]
         return eltype
+
+    def getBoxesByElement(self, eltype=None):
+        if not eltype or eltype not in ELEMENT_BOXES.keys():
+            eltype = self.getElementType()
+        boxes = ELEMENT_BOXES[eltype.lower()]
+        return map(lambda x: getattr(self.ui, x), boxes)
 
     def getBoxes(self, types, boxnames=None):
         boxes = {}

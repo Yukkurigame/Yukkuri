@@ -6,7 +6,7 @@ from PyQt4 import QtCore, QtGui
 export_classes = ['YSimpleInputWidget', 'YSpinBoxInputWidget',
                 'YDoubleSpinBoxInputWidget', 'YColorInputWidget',
                 'YFileInputWidget', 'YComboBoxWidget', 'YImageChooser',
-                'YImageViewWidget']
+                'YImageViewWidget', 'YTableWidget']
 extern_classes = ['YReadOnlySimpleInputWidget', 'YReadOnlySpinBoxInputWidget']
 
 

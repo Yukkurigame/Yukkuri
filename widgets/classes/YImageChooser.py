@@ -6,7 +6,7 @@ from sprites import manager as sprites
 
 
 
-class YImageChooser:
+class YImageChooser(object):
 
     def __init__(self, parent=None):
         self.cdialog = YTreeDialog(self)

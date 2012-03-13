@@ -7,7 +7,7 @@ try:
 except AttributeError:
     _fromUtf8 = lambda s: s
 
-class YSpinBoxInputWidget:
+class YSpinBoxInputWidget(object):
 
     def __init__(self, parent=None):
         self.connect(self.ui.MultiplerSpinBox, QtCore.SIGNAL('valueChanged(int)'),

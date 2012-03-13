@@ -12,8 +12,21 @@ class EntityTab:
         main.connect(main.ui.EntityAnimationFrame.children()[1], QtCore.SIGNAL("valueChanged(int)"),
             self.chooseAnimationFrame)
 
-        self.main.ui.EntityAnimationViewer.setScrollPolicy(
+        main.ui.EntityAnimationViewer.setScrollPolicy(
             QtCore.Qt.ScrollBarAlwaysOff, QtCore.Qt.ScrollBarAlwaysOff)
+
+        main.ui.EntityAnimationTable.setHorizontalHeaderLabels(
+            ['Animation name', 'Start', 'End'])
+        main.ui.EntityAnimationTable.loadDataDict({
+            'rightup': [0, 1],
+            'right': [0, 1],
+            'up': [0, 1],
+            'down': [0, 1],
+            'leftdown': [0, 1],
+            'rightdown': [0, 1],
+            'leftup': [0, 1],
+            'left': [0, 1],
+        })
 
         self.__AnimationPreview = []
 
@@ -27,6 +40,10 @@ class EntityTab:
         field = self.main.sender()
         height = field.value()
         self.main.ui.EntityAnimationViewer.resize(self.main.ui.EntityAnimationViewer.width(), height)
+
+    def loadAnimation(self, data):
+        self.main.ui.EntityAnimationTable.loadDataDict(data)
+        self.loadAnimationPreview()
 
     def loadAnimationPreview(self):
         abox = self.main.ui.EntityAnimationBox

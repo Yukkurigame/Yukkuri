@@ -2,7 +2,7 @@
 
 from PyQt4 import QtCore, QtGui
 
-class YColorInputWidget:
+class YColorInputWidget(object):
 
     def __init__(self, parent=None):
         self.connect(self.ui.toolButton, QtCore.SIGNAL('clicked()'),

@@ -220,8 +220,7 @@ class Main(QtGui.QMainWindow):
             return
         self.__loadedElement = element.get('id') or element.get('name')
         if element.has_key('animation'):
-            RefillFields(self.ui.EntityAnimationBox, element['animation'])
-            self.EntytyTab.loadAnimationPreview()
+            self.EntytyTab.loadAnimation(element['animation'])
             self.ui.EntityAnimaptionPreview.setDisabled(False)
         else:
             self.ui.EntityAnimaptionPreview.setDisabled(True)

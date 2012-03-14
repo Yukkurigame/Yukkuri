@@ -30,7 +30,8 @@ class SpriteManager:
         return self.images_by_id
 
     def getImageById(self, iid):
-        iid = unicode(iid)
+        if iid is not None:
+            iid = unicode(iid)
         if not iid:
             return
         if not self.images:

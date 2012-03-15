@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Ui_YAnimationPreviewWidget.ui'
 #
-# Created: Wed Mar 14 23:14:57 2012
+# Created: Thu Mar 15 22:45:31 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -19,7 +19,7 @@ class Ui_YAnimationPreviewWidget(object):
         YAnimationPreviewWidget.setObjectName(_fromUtf8("YAnimationPreviewWidget"))
         YAnimationPreviewWidget.resize(313, 191)
         self.horizontalLayout = QtGui.QHBoxLayout(YAnimationPreviewWidget)
-        self.horizontalLayout.setSpacing(0)
+        self.horizontalLayout.setSpacing(6)
         self.horizontalLayout.setMargin(0)
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.View = QtGui.QFrame(YAnimationPreviewWidget)
@@ -53,12 +53,30 @@ class Ui_YAnimationPreviewWidget(object):
         self.Delay = YSpinBoxInputWidget(self.Control)
         self.Delay.setObjectName(_fromUtf8("Delay"))
         self.verticalLayout_5.addWidget(self.Delay)
+        self.horizontalLayout_2 = QtGui.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
         self.pushButton = QtGui.QPushButton(self.Control)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton.sizePolicy().hasHeightForWidth())
+        self.pushButton.setSizePolicy(sizePolicy)
         self.pushButton.setAutoDefault(False)
         self.pushButton.setDefault(False)
         self.pushButton.setFlat(False)
         self.pushButton.setObjectName(_fromUtf8("pushButton"))
-        self.verticalLayout_5.addWidget(self.pushButton)
+        self.horizontalLayout_2.addWidget(self.pushButton)
+        self.Loop = QtGui.QCheckBox(self.Control)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.Loop.sizePolicy().hasHeightForWidth())
+        self.Loop.setSizePolicy(sizePolicy)
+        self.Loop.setMaximumSize(QtCore.QSize(52, 16777215))
+        self.Loop.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.Loop.setObjectName(_fromUtf8("Loop"))
+        self.horizontalLayout_2.addWidget(self.Loop)
+        self.verticalLayout_5.addLayout(self.horizontalLayout_2)
         self.horizontalLayout.addWidget(self.Control)
 
         self.retranslateUi(YAnimationPreviewWidget)
@@ -67,5 +85,6 @@ class Ui_YAnimationPreviewWidget(object):
     def retranslateUi(self, YAnimationPreviewWidget):
         YAnimationPreviewWidget.setWindowTitle(QtGui.QApplication.translate("YAnimationPreviewWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton.setText(QtGui.QApplication.translate("YAnimationPreviewWidget", "Play", None, QtGui.QApplication.UnicodeUTF8))
+        self.Loop.setText(QtGui.QApplication.translate("YAnimationPreviewWidget", "Loop", None, QtGui.QApplication.UnicodeUTF8))
 
 from widgets import YImageViewWidget, YScrollBarInputWidget, YSpinBoxInputWidget

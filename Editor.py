@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Editor.ui'
 #
-# Created: Wed Mar 14 23:14:57 2012
+# Created: Thu Mar 15 21:58:18 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -535,6 +535,7 @@ class Ui_Editor(object):
         QtCore.QObject.connect(self.exitbox, QtCore.SIGNAL(_fromUtf8("rejected()")), Editor.close)
         QtCore.QObject.connect(self.Picture_2, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(int)")), Editor.loadTileImage)
         QtCore.QObject.connect(self.EntityAnimationTable, QtCore.SIGNAL(_fromUtf8("changed(PyQt_PyObject)")), self.EntityAnimationSettings.updateData)
+        QtCore.QObject.connect(self.Image_3, QtCore.SIGNAL(_fromUtf8("valueChanged(QString)")), self.EntityAnimationSettings.updateTypes)
         QtCore.QMetaObject.connectSlotsByName(Editor)
         Editor.setTabOrder(self.FolderPlace, self.exitbox)
 

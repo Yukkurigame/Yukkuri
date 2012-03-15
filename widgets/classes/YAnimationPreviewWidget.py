@@ -10,9 +10,12 @@ class YAnimationPreviewWidget(object):
         self.ui.comboBox.currentIndexChanged.connect(self.setFrames)
         self.connect(self.ui.Frame, QtCore.SIGNAL('valueChanged(int)'), self.setImage)
         self.connect(self.ui.Frame, QtCore.SIGNAL('valueChanged()'), self.setImage)
+        self.connect(self.ui.pushButton, QtCore.SIGNAL('clicked()'), self.playAnimation)
         self.data = None
         self._imageName = lambda: None
         self.__animationPreview = []
+        self.timer = QtCore.QTimer()
+        self.connect(self.timer, QtCore.SIGNAL('timeout()'), self.nextFrame)
 
     @QtCore.pyqtSlot(list)
     def updateData(self, data):
@@ -21,17 +24,29 @@ class YAnimationPreviewWidget(object):
 
     #@QtCore.pyqtSlot(int)
     def setFrames(self, tp):
-        if not self.data:
+        if not self.data or tp < 0:
             return
         self.ui.Frame.setRange(*self.data[tp][1:])
+
+    @QtCore.pyqtSlot()
+    def nextFrame(self):
+        framebox = self.ui.Frame
+        frame = framebox.getValue()
+        if frame >= framebox.maximum():
+            if not self.ui.Loop.isChecked():
+                self.timer.stop()
+            frame = framebox.minimum() - 1
+        framebox.setValue(frame + 1)
 
     @QtCore.pyqtSlot()
     @QtCore.pyqtSlot(int)
     def setImage(self, index=None):
         typebox = self.ui.comboBox
+        atype = typebox.currentIndex()
+        if atype < 0:
+            return
         if not self.__animationPreview:
             self.__animationPreview = [[] for i in range(0, typebox.count())]
-        atype = typebox.currentIndex()
         animpv = self.__animationPreview[atype]
         if index is None:
             index = self.ui.Frame.getValue()
@@ -48,6 +63,7 @@ class YAnimationPreviewWidget(object):
         if frame:
             self.ui.AnimationViewer.setPixmap(frame)
 
+    @QtCore.pyqtSlot()
     def updateTypes(self):
         box = self.ui.comboBox
         box.clear()
@@ -58,3 +74,11 @@ class YAnimationPreviewWidget(object):
                 box.addItem(item[0])
         box.setCurrentIndex(0)
         self.__animationPreview = []
+
+    @QtCore.pyqtSlot()
+    def playAnimation(self):
+        delay = self.ui.Delay.getValue()
+        if delay <= 0:
+            delay = 0.24
+        self.timer.start(delay * 100)
+

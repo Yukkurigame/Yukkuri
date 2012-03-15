@@ -9,14 +9,14 @@ class EntityTab:
         main.ui.EntityAnimationTable.setHorizontalHeaderLabels(
             ['Animation name', 'Start', 'End'])
         main.ui.EntityAnimationTable.loadDataDict({
-            'rightup': [0, 1],
-            'right': [0, 1],
-            'up': [0, 1],
-            'down': [0, 1],
-            'leftdown': [0, 1],
-            'rightdown': [0, 1],
-            'leftup': [0, 1],
-            'left': [0, 1],
+            'rightup': [0, 0],
+            'right': [0, 0],
+            'up': [0, 0],
+            'down': [0, 0],
+            'leftdown': [0, 0],
+            'rightdown': [0, 0],
+            'leftup': [0, 0],
+            'left': [0, 0],
         })
         #lol
         main.ui.EntityAnimationSettings._imageName = lambda: \

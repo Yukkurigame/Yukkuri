@@ -28,3 +28,4 @@ class YScrollBarInputWidget(object):
             maximum = 0
         bar.setRange(minimum, maximum)
         bar.setValue(minimum)
+        bar.emit(QtCore.SIGNAL("valueChanged(int)"), minimum)

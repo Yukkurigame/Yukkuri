@@ -1072,6 +1072,9 @@ border: 0px transparent;
    <extends>QWidget</extends>
    <header>widgets</header>
    <container>1</container>
+   <slots>
+    <signal>valueChanged(QString)</signal>
+   </slots>
   </customwidget>
   <customwidget>
    <class>YImageViewWidget</class>
@@ -1108,6 +1111,7 @@ border: 0px transparent;
    <container>1</container>
    <slots>
     <slot>updateData()</slot>
+    <slot>updateTypes()</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -1124,11 +1128,11 @@ border: 0px transparent;
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>683</x>
+     <x>665</x>
      <y>260</y>
     </hint>
     <hint type="destinationlabel">
-     <x>764</x>
+     <x>756</x>
      <y>262</y>
     </hint>
    </hints>
@@ -1140,11 +1144,11 @@ border: 0px transparent;
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>764</x>
+     <x>756</x>
      <y>262</y>
     </hint>
     <hint type="destinationlabel">
-     <x>683</x>
+     <x>665</x>
      <y>260</y>
     </hint>
    </hints>
@@ -1156,12 +1160,12 @@ border: 0px transparent;
    <slot>setImage(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>317</x>
-     <y>151</y>
+     <x>564</x>
+     <y>142</y>
     </hint>
     <hint type="destinationlabel">
-     <x>633</x>
-     <y>123</y>
+     <x>608</x>
+     <y>94</y>
     </hint>
    </hints>
   </connection>
@@ -1172,12 +1176,12 @@ border: 0px transparent;
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>633</x>
-     <y>123</y>
+     <x>608</x>
+     <y>94</y>
     </hint>
     <hint type="destinationlabel">
-     <x>317</x>
-     <y>167</y>
+     <x>564</x>
+     <y>158</y>
     </hint>
    </hints>
   </connection>
@@ -1188,12 +1192,12 @@ border: 0px transparent;
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>633</x>
-     <y>123</y>
+     <x>608</x>
+     <y>94</y>
     </hint>
     <hint type="destinationlabel">
-     <x>317</x>
-     <y>183</y>
+     <x>564</x>
+     <y>174</y>
     </hint>
    </hints>
   </connection>
@@ -1204,12 +1208,12 @@ border: 0px transparent;
    <slot>setAreaWidth(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>317</x>
-     <y>167</y>
+     <x>564</x>
+     <y>158</y>
     </hint>
     <hint type="destinationlabel">
-     <x>633</x>
-     <y>123</y>
+     <x>608</x>
+     <y>94</y>
     </hint>
    </hints>
   </connection>
@@ -1220,12 +1224,12 @@ border: 0px transparent;
    <slot>setAreaHeight(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>317</x>
-     <y>183</y>
+     <x>564</x>
+     <y>174</y>
     </hint>
     <hint type="destinationlabel">
-     <x>633</x>
-     <y>123</y>
+     <x>608</x>
+     <y>94</y>
     </hint>
    </hints>
   </connection>
@@ -1236,12 +1240,12 @@ border: 0px transparent;
    <slot>setY(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>317</x>
-     <y>215</y>
+     <x>564</x>
+     <y>206</y>
     </hint>
     <hint type="destinationlabel">
-     <x>633</x>
-     <y>123</y>
+     <x>608</x>
+     <y>94</y>
     </hint>
    </hints>
   </connection>
@@ -1252,12 +1256,12 @@ border: 0px transparent;
    <slot>setX(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>317</x>
-     <y>199</y>
+     <x>564</x>
+     <y>190</y>
     </hint>
     <hint type="destinationlabel">
-     <x>633</x>
-     <y>123</y>
+     <x>608</x>
+     <y>94</y>
     </hint>
    </hints>
   </connection>
@@ -1268,12 +1272,12 @@ border: 0px transparent;
    <slot>setRows(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>317</x>
-     <y>231</y>
+     <x>564</x>
+     <y>222</y>
     </hint>
     <hint type="destinationlabel">
-     <x>633</x>
-     <y>123</y>
+     <x>608</x>
+     <y>94</y>
     </hint>
    </hints>
   </connection>
@@ -1284,12 +1288,12 @@ border: 0px transparent;
    <slot>setColumns(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>317</x>
-     <y>247</y>
+     <x>564</x>
+     <y>238</y>
     </hint>
     <hint type="destinationlabel">
-     <x>633</x>
-     <y>123</y>
+     <x>608</x>
+     <y>94</y>
     </hint>
    </hints>
   </connection>
@@ -1300,12 +1304,12 @@ border: 0px transparent;
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>633</x>
-     <y>123</y>
+     <x>608</x>
+     <y>94</y>
     </hint>
     <hint type="destinationlabel">
-     <x>317</x>
-     <y>199</y>
+     <x>564</x>
+     <y>190</y>
     </hint>
    </hints>
   </connection>
@@ -1316,12 +1320,12 @@ border: 0px transparent;
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>633</x>
-     <y>123</y>
+     <x>608</x>
+     <y>94</y>
     </hint>
     <hint type="destinationlabel">
-     <x>317</x>
-     <y>215</y>
+     <x>564</x>
+     <y>206</y>
     </hint>
    </hints>
   </connection>
@@ -1476,8 +1480,8 @@ border: 0px transparent;
    <slot>loadTileImage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>461</x>
-     <y>165</y>
+     <x>277</x>
+     <y>158</y>
     </hint>
     <hint type="destinationlabel">
      <x>533</x>
@@ -1498,6 +1502,22 @@ border: 0px transparent;
     <hint type="destinationlabel">
      <x>643</x>
      <y>199</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Image_3</sender>
+   <signal>valueChanged(QString)</signal>
+   <receiver>EntityAnimationSettings</receiver>
+   <slot>updateTypes()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>402</x>
+     <y>149</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>596</x>
+     <y>159</y>
     </hint>
    </hints>
   </connection>

@@ -10,6 +10,9 @@ class YTableWidget(object):
         table.customContextMenuRequested.connect(self.tableContextMenu)
         table.cellChanged.connect(self.tableChanged)
 
+    def getValue(self):
+        return self.getDataDict()
+
     @QtCore.pyqtSlot(int)
     def tableAddRow(self, row):
         self._table.insertRow(row + 1)
@@ -78,12 +81,12 @@ class YTableWidget(object):
         for row in range(0, table.rowCount()):
             key = table.item(row, 0)
             if key:
-                key = key.text()
+                key = str(key.text())
             if not key:
                 continue
             cdata = []
             for column in range(1, table.columnCount()):
                 item = table.item(row, column)
-                cdata.append(item.text() if item else 0)
+                cdata.append(int(item.text()) if item else 0)
             data[key] = cdata
         return data

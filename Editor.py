@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Editor.ui'
 #
-# Created: Thu Mar 15 21:58:18 2012
+# Created: Thu Mar 15 23:32:01 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -152,9 +152,6 @@ class Ui_Editor(object):
         self.Width = YSpinBoxInputWidget(self.EntityMainBox)
         self.Width.setObjectName(_fromUtf8("Width"))
         self.verticalLayout_7.addWidget(self.Width)
-        self.Meeting = QtGui.QWidget(self.EntityMainBox)
-        self.Meeting.setObjectName(_fromUtf8("Meeting"))
-        self.verticalLayout_7.addWidget(self.Meeting)
         self.verticalLayout_10.addWidget(self.EntityMainBox)
         self.EntityEntityBox = QtGui.QGroupBox(self.EntityTab)
         self.EntityEntityBox.setMaximumSize(QtCore.QSize(300, 16777215))
@@ -188,6 +185,9 @@ class Ui_Editor(object):
         self.Hp = YDoubleSpinBoxInputWidget(self.EntityMiscBox)
         self.Hp.setObjectName(_fromUtf8("Hp"))
         self.verticalLayout_13.addWidget(self.Hp)
+        self.Meeting = YDoubleSpinBoxInputWidget(self.EntityMiscBox)
+        self.Meeting.setObjectName(_fromUtf8("Meeting"))
+        self.verticalLayout_13.addWidget(self.Meeting)
         self.verticalLayout_10.addWidget(self.EntityMiscBox)
         spacerItem2 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout_10.addItem(spacerItem2)
@@ -198,9 +198,9 @@ class Ui_Editor(object):
         self.EntityAnimationBox.setObjectName(_fromUtf8("EntityAnimationBox"))
         self.verticalLayout_9 = QtGui.QVBoxLayout(self.EntityAnimationBox)
         self.verticalLayout_9.setObjectName(_fromUtf8("verticalLayout_9"))
-        self.EntityAnimationTable = YTableWidget(self.EntityAnimationBox)
-        self.EntityAnimationTable.setObjectName(_fromUtf8("EntityAnimationTable"))
-        self.verticalLayout_9.addWidget(self.EntityAnimationTable)
+        self.Animation = YTableWidget(self.EntityAnimationBox)
+        self.Animation.setObjectName(_fromUtf8("Animation"))
+        self.verticalLayout_9.addWidget(self.Animation)
         self.verticalLayout_14.addWidget(self.EntityAnimationBox)
         self.EntityAnimaptionPreview = QtGui.QGroupBox(self.EntityTab)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.MinimumExpanding)
@@ -534,7 +534,7 @@ class Ui_Editor(object):
         QtCore.QObject.connect(self.ItemsList, QtCore.SIGNAL(_fromUtf8("itemActivated(QListWidgetItem*)")), Editor.reloadContent)
         QtCore.QObject.connect(self.exitbox, QtCore.SIGNAL(_fromUtf8("rejected()")), Editor.close)
         QtCore.QObject.connect(self.Picture_2, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(int)")), Editor.loadTileImage)
-        QtCore.QObject.connect(self.EntityAnimationTable, QtCore.SIGNAL(_fromUtf8("changed(PyQt_PyObject)")), self.EntityAnimationSettings.updateData)
+        QtCore.QObject.connect(self.Animation, QtCore.SIGNAL(_fromUtf8("changed(PyQt_PyObject)")), self.EntityAnimationSettings.updateData)
         QtCore.QObject.connect(self.Image_3, QtCore.SIGNAL(_fromUtf8("valueChanged(QString)")), self.EntityAnimationSettings.updateTypes)
         QtCore.QMetaObject.connectSlotsByName(Editor)
         Editor.setTabOrder(self.FolderPlace, self.exitbox)

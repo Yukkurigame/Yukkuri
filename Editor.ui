@@ -253,9 +253,6 @@
                   <item>
                    <widget class="YSpinBoxInputWidget" name="Width" native="true"/>
                   </item>
-                  <item>
-                   <widget class="QWidget" name="Meeting" native="true"/>
-                  </item>
                  </layout>
                 </widget>
                </item>
@@ -316,6 +313,9 @@
                   <item>
                    <widget class="YDoubleSpinBoxInputWidget" name="Hp" native="true"/>
                   </item>
+                  <item>
+                   <widget class="YDoubleSpinBoxInputWidget" name="Meeting" native="true"/>
+                  </item>
                  </layout>
                 </widget>
                </item>
@@ -343,7 +343,7 @@
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_9">
                   <item>
-                   <widget class="YTableWidget" name="EntityAnimationTable" native="true"/>
+                   <widget class="YTableWidget" name="Animation" native="true"/>
                   </item>
                  </layout>
                 </widget>
@@ -1490,7 +1490,7 @@ border: 0px transparent;
    </hints>
   </connection>
   <connection>
-   <sender>EntityAnimationTable</sender>
+   <sender>Animation</sender>
    <signal>changed(PyQt_PyObject)</signal>
    <receiver>EntityAnimationSettings</receiver>
    <slot>updateData(PyQt_PyObject)</slot>

@@ -6,9 +6,9 @@ class EntityTab:
 
     def __init__(self, main):
         self.main = main
-        main.ui.EntityAnimationTable.setHorizontalHeaderLabels(
+        main.ui.Animation.setHorizontalHeaderLabels(
             ['Animation name', 'Start', 'End'])
-        main.ui.EntityAnimationTable.loadDataDict({
+        main.ui.Animation.loadDataDict({
             'rightup': [0, 0],
             'right': [0, 0],
             'up': [0, 0],
@@ -34,4 +34,4 @@ class EntityTab:
         self.main.ui.EntityAnimationViewer.resize(self.main.ui.EntityAnimationViewer.width(), height)
 
     def loadAnimation(self, data):
-        self.main.ui.EntityAnimationTable.loadDataDict(data)
+        self.main.ui.Animation.loadDataDict(data)

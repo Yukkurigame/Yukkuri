@@ -47,6 +47,10 @@ def widget_factory(name):
                 pass
 
         def getValue(self):
+            try:
+                return super(_YAbstractWidget, self).getValue()
+            except AttributeError:
+                pass
             ret = []
             lines = filter(lambda x: type(x) in [QtGui.QLineEdit,
                         QtGui.QSpinBox, QtGui.QDoubleSpinBox,

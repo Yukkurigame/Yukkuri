@@ -21,9 +21,12 @@ function Configs:load( filename )
 	local filedata = file:read("*all")
 	local data = assert(loadstring('return ' .. filedata))()
 	file:close()
-	ctype = string.lower(data[1])
-	table.remove(data,1)
 	for i,j in ipairs(data) do
+		if j.type == nil then
+			Debug(4, "Config has no type.")
+			break
+		end
+		ctype = string.lower(j.type)
 		if self.configs[ctype] == nil then
 			self.configs[ctype] = {}
 		end
@@ -42,7 +45,7 @@ function Configs:load( filename )
 end
 
 function Configs:loadAll( type )
-	path = self:get("configs_path", "general", "general")
+	path = self:get("configs_path", "general", "config")
 	if path == nil then
 		path = getcwd() .. "/" .. "data/defs/"
 	end
@@ -89,17 +92,27 @@ end
 
 function Configs:getSubconfigsList( config )
 	t = {}
-	for i,j in pairs(self.configs[string.lower(config)]) do
-		table.insert(t, i)
+	cname = string.lower(config)
+	if self.configs[cname] == nil then
+		Debug(4, "Config " .. cname .. " does not exist")
+	else
+		for i,j in pairs(self.configs[cname]) do
+			table.insert(t, i)
+		end
 	end
 	return t
 end
 
 function Configs:getSubconfigsLength( config )
 	len = 0
-	--- Я не смог в #
-	for i in pairs(self.configs[string.lower(config)]) do
-		len = len + 1
+	cname = string.lower(config)
+	if self.configs[cname] == nil then
+		Debug(4, "Config " .. cname .. " does not exist")
+	else
+		--- Я не смог в #
+		for i in pairs(self.configs[cname]) do
+			len = len + 1
+		end
 	end
 	return len
 end

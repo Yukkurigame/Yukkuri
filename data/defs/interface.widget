@@ -1,8 +1,8 @@
 {
-	"Widget",
 	{
 		name = "time",
-		type = 2,
+		type = "Widget",
+		wtype = 2,
 		x = 0,
 		y = 0,
 		align = 3,
@@ -19,7 +19,8 @@
 	},
 	{
 		name = "fps",
-		type = 2,
+		type = "Widget",
+		wtype = 2,
 		x = 10,
 		y = 0,
 		valign = 3,
@@ -32,7 +33,8 @@
 	},
 	{
 		name = "pstats", --- Хак такой хак.
-		type = 1,
+		type = "Widget",
+		wtype = 1,
 		x = 0,
 		y = 0,
 		depth = 0,
@@ -51,7 +53,8 @@
 	},
 	{
 		name = "plevel",
-		type = 2,
+		type = "Widget",
+		wtype = 2,
 		x = -35,
 		y = 15,
 		align = 3,
@@ -65,7 +68,8 @@
 	},
 	{
 		name = "pdays",
-		type = 2,
+		type = "Widget",
+		wtype = 2,
 		x = -50,
 		y = 45,
 		align = 3,
@@ -78,7 +82,8 @@
 	},
 	{
 		name = "phpbar",
-		type = 3,
+		type = "Widget",
+		wtype = 3,
 		x = 15,
 		y = 100,
 		width = 146,
@@ -99,7 +104,8 @@
 	},
 	{
 		name = "pfedbar",
-		type = 3,
+		type = "Widget",
+		wtype = 3,
 		x = 15,
 		y = 145,
 		width = 146,
@@ -120,7 +126,8 @@
 	},
 	{
 		name = "pexpbar",
-		type = 3,
+		type = "Widget",
+		wtype = 3,
 		x = 15,
 		y = 190,
 		width = 146,

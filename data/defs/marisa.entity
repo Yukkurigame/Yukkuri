@@ -1,5 +1,4 @@
 {
-	"Entity",
 	{
 		bloodcolor = {50, 50, 50},
 		damage = 3.0,
@@ -23,6 +22,7 @@
 		imagerows = 1,
 		meeting = 39.93,
 		name = "Marisa",
+		type = "Entity",
 		speed = 80,
 		width = 90
 	}

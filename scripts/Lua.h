@@ -60,7 +60,7 @@ public:
 			string err;
 			getValue( Lst, -1, err );
 			debug( 4, "Lua function '" + function + "' execute error: " + err + "\n" );
-			lua_pop( Lst, 1 );
+			lua_pop( Lst, 1 + szadd );
 			return false;
 		}
 		bool res = getValue( Lst, -1, ret );

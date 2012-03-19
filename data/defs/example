@@ -1,12 +1,16 @@
+--- little obsolete
+
 --- Some config files description here.
+
 
 --- Structure:
 {
-	"ConfigType",
 	{element1},
 	{element2},
 	{	
-		subelement1 = "value", --- string
+		name = "Element name",
+		type = "ConfigType",
+		subelement1 = "value", --- string		
 		subelement2 = 3, --- integer
 		subelement3 = 24.5, --- float
 		subelement4 = {
@@ -15,7 +19,7 @@
 	}
 },
 
---- Name field in elements is required.
+--- Name and type field in elements is required.
 
 --- Config types
 
@@ -23,7 +27,6 @@
 --- *.entity
 
 {
-	"Entity",
 	{
 		bloodcolor = {1, 1, 1},
 		damage = 1.0,
@@ -43,6 +46,7 @@
 		height = 1, --- Image height
 		hp = 1.0,  
 		image = "filename",
+		name = "Entity",
 		imagecols = 1, --- Columns in image gird
 		imagerows = 1, --- Rows in image gird
 		meeting = 1.0, --- Chance to meet in percents
@@ -53,7 +57,6 @@
 }
 
 {
-	"Plant",
 	{
 		height = 1,
 		hp = 1.0,
@@ -62,13 +65,13 @@
 		imagerows = 1,
 		meeting = 1.0,
 		name = "name",
+		type = "Plant",
 		nutritive = 1.0, --- Feed nutritive
 		width = 1
 	}
 }
 
 {
-	"Corpse",
 	{
 		height = 1,
 		image = "filename",
@@ -76,6 +79,7 @@
 		imagerows = 1,
 		meeting = 1.0,
 		name = "name",
+		type = "Corpse",
 		nutritive = 1.0,
 		width = 1,
 	}
@@ -87,12 +91,12 @@
 --- All unspecified fields are 0 by default.
 --- children - it's array of widget names.
 {
-	"Widget",
 	{
 		--- A null widget.
 		--- Nothig. Only position.
 		name = "null",
-		type = 0,
+		type = "Widget",
+		wtype = 0,
 		x = 1,
 		y = 1,
 		width = 1,
@@ -104,7 +108,8 @@
 		--- A blank widget
 		--- Widget with background only. If background property not defined, it's will be filled by one color.
 		name = "blank",
-		type = 1,
+		type = "Widget",
+		wtype = 1,
 		x = 1,
 		y = 1,
 		width = 1,
@@ -120,7 +125,8 @@
 		--- A text widget
 		--- Widget with textline and background. If background not defined, it's transparent.
 		name = "text",
-		type = 1,
+		type = "Widget",
+		wtype = 1,
 		x = 1,
 		y = 1,
 		width = 1,
@@ -143,7 +149,8 @@
 		--- A bar widget
 		--- Bar widget with text string. If background not defined, it's transparent.
 		name = "bar",
-		type = 1,
+		type = "Widget",
+		wtype = 1,
 		x = 1,
 		y = 1,
 		width = 1,
@@ -182,9 +189,9 @@
 --- Keybindings
 --- *.config
 {
-	"Bindings",
 	{
 		name = "name",
+		type = "Bindings",
 		keys = {
 			--- Enumeration of the keys here.
 			--- Format: key = "action" 
@@ -199,9 +206,9 @@
 --- Map
 --- *.map
 {
-	"MapRegion",
 	{
 		name = "test", --- Name of region
+		type = "MapRegion",
 		tiles = { --- Map tiles
 			{
 				x = 1,
@@ -221,9 +228,9 @@
 --- Map tiles
 --- *.tiles
 {
-	"Tiles",
 	{
 		name = 1, --- Number type of element 
+		type = "Tiles",
 		image = "filename",
 		--- Left top corner offset of sprite in image.
 		offsetx = 1.0,
@@ -232,13 +239,13 @@
 	},
 	{
 		name = 2,
+		type = "Tiles",
 	}
 }
 
 --- Configuration file
 --- main.config
 {
-	"General",
 	{
 	--- Predetermined fields
 	}

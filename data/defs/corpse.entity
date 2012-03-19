@@ -1,7 +1,7 @@
 {
-	"Corpse",
 	{
 		height = 45,
+		type = "Corpse",
 		image = "entitymisc.png",
 		imagecols = 2,
 		imagerows = 1,

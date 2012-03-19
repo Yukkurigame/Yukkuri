@@ -1,5 +1,4 @@
 {
-	"Entity",
 	{
 		bloodcolor = {250, 220, 100},
 		damage = 3.0,
@@ -18,6 +17,7 @@
 		},
 		height = 74,
 		hp = 10.0,
+		type = "Entity",
 		image = "alice_1.png",
 		imagecols = 1,
 		imagerows = 1,

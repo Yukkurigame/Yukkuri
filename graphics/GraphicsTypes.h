@@ -9,6 +9,10 @@
 
 #include "SDL/SDL_opengl.h"
 
+#include <string>
+#include <cstdlib>
+using std::string;
+
 struct Color
 {
 	unsigned int r;
@@ -29,6 +33,31 @@ struct Color
 	void set( Color* c ) { if( !c ) return; r = c->r; g = c->g; b = c->b; a = c->a; }
 };
 
+struct rect2i
+{
+	int x;
+	int y;
+	int width;
+	int height;
+};
+
+struct rect2f
+{
+	float x;
+	float y;
+	float width;
+	float height;
+
+	rect2f () {}
+
+	rect2f ( rect2i* r ){
+		x = r->x;
+		y = r->y;
+		width = r->width;
+		height = r->height;
+	}
+};
+
 struct Texture
 {
 	GLuint* texture;
@@ -45,6 +74,71 @@ struct Texture
 
 };
 
+struct TextureS
+{
+	int width;
+	int height;
+	int offsetx;
+	int offsety;
+	int rows;
+	int cols;
+	int atlasX;
+	int atlasY;
+	string id;
+	string name;
+	string image;
+	rect2f atlas;
+	GLuint* texture;
+
+	TextureS() {}
+
+	TextureS( string i, string n, string img, int w, int h, int ox, int oy, int r, int c ){
+		id = i;
+		name = n;
+		image = img;
+		width = w;
+		height = h;
+		offsetx = ox;
+		offsety = oy;
+		rows = r;
+		cols = c;
+	}
+
+	bool operator < ( TextureS t ) {
+		return t.width * t.height < height * width;
+	}
+
+};
+
+struct TextureInfo
+{
+	int rows;
+	int cols;
+	int swidth; // width of one section
+	int sheight; // height of one section
+	string id;
+	string name;
+	rect2f rect;
+	TextureInfo ( string i, string n, int x, int y, int w, int h, int c, int r ){
+		if( cols < 1 )
+			cols = 1;
+		if( rows < 1 )
+			rows = 1;
+		id = i;
+		name = n;
+		rect.x = x;
+		rect.y = y;
+		rect.width = w;
+		rect.height = h;
+		cols = c;
+		rows = r;
+		swidth = w / cols;
+		sheight = h / rows;
+	}
+};
+
+
+
 struct s2f
 {
 	float x;
@@ -58,6 +152,11 @@ struct coord2farr
 	s2f lb; //left-bottom
 	s2f rt; //right-top
 	s2f rb; //right-bottom
+
+	// Calculated by top side only
+	float width(){ return abs(rt.x - lt.x); }
+	// Calculated by right side only
+	float height(){ return abs(rt.y - rb.y); }
 };
 
 struct vertex3farr
@@ -125,7 +224,7 @@ struct Sprite
 	void setPosition( float x, float y ){
 		if( !vertices ) return;
 		float width = vertices->rb.x - vertices->lb.x;
-		float height = vertices->rt.y - vertices->lb.y;
+		float height = vertices->rt.y - vertices->lb.y; // FIXME: lb is rb?
 		posx = x;
 		posy = y;
 		if(centered){

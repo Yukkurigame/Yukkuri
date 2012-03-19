@@ -15,11 +15,13 @@ bool MainConfig::load( )
 
 	string subconfig;
 	string config;
-	subconfig = config = "general";
+	subconfig = "general";
+	config = "config";
 	lc->getValue( "windows_width" , subconfig, config, windowWidth );
 	lc->getValue( "windows_height" , subconfig, config, windowHeight );
 	lc->getValue( "maximum_frame_rate" , subconfig, config, maxFrameRate );
 	lc->getValue( "minimum_frame_rate" , subconfig, config, minFrameRate );
+	lc->getValue( "texture_border" , subconfig, config, textureBorder );
 
 	lc->getValue( "images_path" , subconfig, config, imagePath );
 	lc->getValue( "default_image_name" , subconfig, config, defaultImage );

@@ -1,65 +1,75 @@
 {
-	"Tiles",
 	{
 		image = "ground.png",
+		type = "Tiles",
 		passability = 1.0,
 		name = 1,
 	},
 	{
 		offsetx = 64,
+		type = "Tiles",
 		image = "ground.png",
 		passability = 1.0,
 		name = 2,
 	},
 	{
 		image = "iso-64x64-outside.png",
+		type = "Tiles",
 		passability = 1.0,
 		name = 3,
 	},
 	{
 		offsetx = 64,
+		type = "Tiles",
 		image = "iso-64x64-outside.png",
 		passability = 1.0,
 		name = 4,
 	},
 	{
 		passability = 1.0,
+		type = "Tiles",
 		image = "iso-64x64-outside.png",
 		offsetx = 128,
 		name = 5,
 	},
 	{
 		offsetx = 192,
+		type = "Tiles",
 		image = "iso-64x64-outside.png",
 		passability = 1.0,
 		name = 6,
 	},
 	{
 		passability = 1.0,
+		type = "Tiles",
 		image = "iso-64x64-outside.png",
 		offsetx = 256,
 		name = 7,
 	},
 	{
 		offsetx = 320,
+		type = "Tiles",
 		image = "iso-64x64-outside.png",
 		passability = 1.0,
 		name = 8,
 	},
 	{
 		passability = 1.0,
+		type = "Tiles",
 		image = "iso-64x64-outside.png",
 		offsetx = 384,
 		name = 9,
 	},
 	{
 		image = "iso-64x64-outside.png",
+		type = "Tiles",
 		passability = 1.0,
 		name = 10,
 		offsety = 64,
 	},
 	{
 		offsetx = 64,
+		type = "Tiles",
 		image = "iso-64x64-outside.png",
 		passability = 1.0,
 		name = 11,
@@ -67,6 +77,7 @@
 	},
 	{
 		offsetx = 128,
+		type = "Tiles",
 		image = "iso-64x64-outside.png",
 		passability = 1.0,
 		name = 12,
@@ -74,6 +85,7 @@
 	},
 	{
 		passability = 1.0,
+		type = "Tiles",
 		image = "iso-64x64-outside.png",
 		offsetx = 192,
 		name = 13,
@@ -81,6 +93,7 @@
 	},
 	{
 		passability = 1.0,
+		type = "Tiles",
 		image = "iso-64x64-outside.png",
 		offsetx = 256,
 		name = 14,
@@ -88,6 +101,7 @@
 	},
 	{
 		offsetx = 320,
+		type = "Tiles",
 		image = "iso-64x64-outside.png",
 		passability = 1.0,
 		name = 15,
@@ -95,6 +109,7 @@
 	},
 	{
 		passability = 1.0,
+		type = "Tiles",
 		image = "iso-64x64-outside.png",
 		offsetx = 384,
 		name = 16,
@@ -102,6 +117,7 @@
 	},
 	{
 		offsetx = 448,
+		type = "Tiles",
 		image = "iso-64x64-outside.png",
 		passability = 1.0,
 		name = 17,
@@ -109,6 +125,7 @@
 	},
 	{
 		image = "iso-64x64-outside.png",
+		type = "Tiles",
 		passability = 1.0,
 		name = 18,
 		offsety = 128,
@@ -116,6 +133,7 @@
 	{
 		offsetx = 64,
 		image = "iso-64x64-outside.png",
+		type = "Tiles",
 		passability = 1.0,
 		name = 19,
 		offsety = 128,
@@ -123,6 +141,7 @@
 	{
 		passability = 1.0,
 		image = "iso-64x64-outside.png",
+		type = "Tiles",
 		offsetx = 128,
 		name = 20,
 		offsety = 128,
@@ -130,29 +149,34 @@
 	{
 		offsetx = 192,
 		image = "iso-64x64-outside.png",
+		type = "Tiles",
 		passability = 1.0,
 		name = 21,
 		offsety = 128,
 	},
 	{
 		image = "iso-64x64-outside.png",
+		type = "Tiles",
 		name = 22,
 		offsety = 192,
 	},
 	{
 		image = "iso-64x64-outside.png",
+		type = "Tiles",
 		offsetx = 64,
 		name = 23,
 		offsety = 192,
 	},
 	{
 		image = "iso-64x64-outside.png",
+		type = "Tiles",
 		offsetx = 128,
 		name = 24,
 		offsety = 192,
 	},
 	{
 		image = "iso-64x64-outside.png",
+		type = "Tiles",
 		offsetx = 192,
 		name = 25,
 		offsety = 192,

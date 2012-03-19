@@ -9,6 +9,9 @@
 #include <dirent.h>
 #include "config.h"
 #include "debug.h"
+#include "hacks.h"
+#include "ElasticBox.h"
+#include "Luaconfig.h"
 #if WIN32
 extern "C" {
 #endif
@@ -17,13 +20,56 @@ extern "C" {
 }
 #endif
 
+
+#ifdef GL_EXT_framebuffer_object
+	// EXT_framebuffer_object - http://oss.sgi.com/projects/ogl-sample/registry/EXT/framebuffer_object.txt
+	extern PFNGLISRENDERBUFFEREXTPROC glIsRenderbufferEXT = NULL;
+	extern PFNGLBINDRENDERBUFFEREXTPROC glBindRenderbufferEXT = NULL;
+	extern PFNGLDELETERENDERBUFFERSEXTPROC glDeleteRenderbuffersEXT = NULL;
+	extern PFNGLGENRENDERBUFFERSEXTPROC glGenRenderbuffersEXT = NULL;
+	extern PFNGLRENDERBUFFERSTORAGEEXTPROC glRenderbufferStorageEXT = NULL;
+	extern PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC glGetRenderbufferParameterivEXT = NULL;
+	extern PFNGLISFRAMEBUFFEREXTPROC glIsFramebufferEXT = NULL;
+	extern PFNGLBINDFRAMEBUFFEREXTPROC glBindFramebufferEXT = NULL;
+	extern PFNGLDELETEFRAMEBUFFERSEXTPROC glDeleteFramebuffersEXT = NULL;
+	extern PFNGLGENFRAMEBUFFERSEXTPROC glGenFramebuffersEXT = NULL;
+	extern PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC glCheckFramebufferStatusEXT = NULL;
+	extern PFNGLFRAMEBUFFERTEXTURE1DEXTPROC glFramebufferTexture1DEXT = NULL;
+	extern PFNGLFRAMEBUFFERTEXTURE2DEXTPROC glFramebufferTexture2DEXT = NULL;
+	extern PFNGLFRAMEBUFFERTEXTURE3DEXTPROC glFramebufferTexture3DEXT = NULL;
+	extern PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT = NULL;
+	extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC glGetFramebufferAttachmentParameterivEXT = NULL;
+	extern PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT = NULL;
+#endif
+
+
+#ifdef GL_ARB_shader_objects
+	// Saders, ftgg.
+	PFNGLCREATEPROGRAMOBJECTARBPROC  glCreateProgramObjectARB  = NULL;
+	PFNGLDELETEOBJECTARBPROC         glDeleteObjectARB         = NULL;
+	PFNGLUSEPROGRAMOBJECTARBPROC     glUseProgramObjectARB     = NULL;
+	PFNGLCREATESHADEROBJECTARBPROC   glCreateShaderObjectARB   = NULL;
+	PFNGLSHADERSOURCEARBPROC         glShaderSourceARB         = NULL;
+	PFNGLCOMPILESHADERARBPROC        glCompileShaderARB        = NULL;
+	PFNGLGETOBJECTPARAMETERIVARBPROC glGetObjectParameterivARB = NULL;
+	PFNGLATTACHOBJECTARBPROC         glAttachObjectARB         = NULL;
+	PFNGLGETINFOLOGARBPROC           glGetInfoLogARB           = NULL;
+	PFNGLLINKPROGRAMARBPROC          glLinkProgramARB          = NULL;
+	PFNGLGETUNIFORMLOCATIONARBPROC   glGetUniformLocationARB   = NULL;
+	PFNGLUNIFORM4FARBPROC            glUniform4fARB            = NULL;
+	PFNGLUNIFORM1IARBPROC            glUniform1iARB            = NULL;
+	PFNGLUNIFORMMATRIX4FVARBPROC	 glUniformMatrix4fvARB	   = NULL;
+#endif
+
+
+
 extern MainConfig conf;
 
 Graphics* Graphics::graph = 0;
 
 namespace Screenshot
 {
-	/*Generate screenshot name. From MPlayer */
+	/* Generate screenshot name. */
 	static int Exists( char *name )
 	{
 		struct stat dummy;
@@ -43,6 +89,7 @@ namespace Screenshot
 		}
 	}
 }
+
 
 //FIXME: duplicate in Font.cpp
 inline int next_p2( int a )
@@ -94,6 +141,8 @@ void Graphics::openglInit( )
 
 void Graphics::openglSetup( int wwidth, int wheight )
 {
+	LoadExtensions();
+
 	glEnable( GL_TEXTURE_2D );
 
 	glViewport( 0, 0, wwidth, wheight );
@@ -126,8 +175,11 @@ void Graphics::openglSetup( int wwidth, int wheight )
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
 
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxAtlasSize);
+
 }
 
+/*
 Texture* Graphics::LoadGLTexture( string name )
 {
 	Texture* tex;
@@ -164,38 +216,53 @@ Texture* Graphics::LoadGLTexture( string name )
 
 	return tex;
 }
+/
+
+GLuint* Graphics::LoadGLTexture( string path, int width, int height, int offsetx, int offsety )
+{
+	SDL_Surface img = NULL;
+	GLuint* texture = NULL;
+
+	img = GetSDLImage(path);
+
+
+
+
+	return texture;
+}
+
 
 //FIXME: depreciated?
 void Graphics::LoadAllTTFonts( int size )
 {
 	debug( 3, "Loading fonts" );
 	string dirname = conf.fontsPath;
-    DIR *dp;
-    struct dirent *ep;
-    dp = opendir (dirname.c_str());
-    int success = 0;
-    int files = 0;
-    if( dp != NULL ){
-        while ( ( ep = readdir( dp ) ) != NULL) {
-            string fname = string(ep->d_name);
-            int d = fname.find_last_of(".");
-            if(fname.substr(d + 1) == "ttf"){
-            	files++;
-            	fname = fname.substr(0, d);
-                if ( LoadTTFont( dirname, fname, size ) )
-                	success++;
-            }
-        }
-        closedir(dp);
-    }else{
-    	debug( 3, "\tFAIL Bad directory." );
-        return;
-    }
-    //pdbg(3, "Done.\n");
-    //FIXME: debug print
-    char dbg[38];
-    snprintf( dbg, 38, "Loaded %d from %d font files.", success, files );
-    debug(3, dbg);
+	DIR *dp;
+	struct dirent *ep;
+	dp = opendir (dirname.c_str());
+	int success = 0;
+	int files = 0;
+	if( dp != NULL ){
+		while ( ( ep = readdir( dp ) ) != NULL) {
+			string fname = string(ep->d_name);
+			int d = fname.find_last_of(".");
+			if(fname.substr(d + 1) == "ttf"){
+				files++;
+				fname = fname.substr(0, d);
+				if ( LoadTTFont( dirname, fname, size ) )
+					success++;
+			}
+		}
+		closedir(dp);
+	}else{
+		debug( 3, "\tFAIL Bad directory." );
+		return;
+	}
+	//pdbg(3, "Done.\n");
+	//FIXME: debug print
+	char dbg[38];
+	snprintf( dbg, 38, "Loaded %d from %d font files.", success, files );
+	debug(3, dbg);
 	return;
 }
 
@@ -222,7 +289,7 @@ Sprite* Graphics::CreateTextSprite( string fontname, int size, float x, float y,
 {
 	font_data* font = GetFont( fontname, size );
 	if(!font){
-		debug( 3,"Font " + fontname + " not found.\n" );
+		debug( 3, "Font " + fontname + " not found.\n" );
 		return NULL;
 	}
 	return CreateTextTexture( font, x, y, z, color, text );
@@ -395,6 +462,187 @@ void Graphics::CreateGLTextureAtlas( int size, imageRect rects[], int count )
 
 }
 
+
+bool Graphics::LoadTextures( )
+{
+	LuaConfig* lc = new LuaConfig;
+	std::vector< string > names;
+	int textures_count;
+	string config = "sprite";
+
+	lc->getSubconfigsLength(config, textures_count);
+
+	char dbg[20];
+	snprintf( dbg, 20, "%d textures found.\n", textures_count );
+	debug(2, dbg);
+
+	if( !textures_count )
+		return false;
+
+	lc->getSubconfigsList(config, names);
+
+	for( std::vector< string >:: iterator it = names.begin(), vend = names.end(); it != vend; ++it ){
+		AddTexture(*it);
+	}
+
+	return CreateAtlas();
+}
+
+
+
+void Graphics::AddTexture( string name ){
+	LuaConfig* lc = new LuaConfig;
+	string config = "sprite";
+	TextureS* t = new TextureS();
+
+	lc->getValue("id", name, config, t->id);
+	lc->getValue("image", name, config, t->image);
+	lc->getValue("width", name, config, t->width);
+	lc->getValue("height", name, config, t->height);
+	lc->getValue("rows", name, config, t->rows);
+	lc->getValue("columns", name, config, t->cols);
+	lc->getValue("offsetx", name, config, t->offsetx);
+	lc->getValue("offsety", name, config, t->offsety);
+
+	internalTextures.push_back(t);
+}
+
+
+void Graphics::AddTexture( string id, string name, string path, int width, int height,
+							int offsetx, int offsety, int rows, int cols)
+{
+	TextureS* t = new TextureS(id, name, path, width, height, offsetx, offsety, rows, cols);
+	t->texture = LoadGLTexture( path );
+	internalTextures.push_back(t);
+}
+
+
+bool Graphics::CreateAtlas( )
+{
+	if( internalTextures.size() < 1 ){
+		debug(2, "Textures is missing");
+		return false;
+	}
+	sort( internalTextures.begin(), internalTextures.end() );
+	if( !BuildAtlasMap() ){
+		debug(2, "Cannot build atlas map.\n");
+		return false;
+	}
+	if ( !BuildAtlas() ){
+		debug(2, "Cannot build map.\n");
+		return false;
+	}
+	clear_vector( &internalTextures );
+	return true;
+}
+
+bool Graphics::BuildAtlasMap()
+{
+	float texelW = 1.0f;
+	float texelH = 1.0f;
+
+	ElasticBox box = ElasticBox(minAtlasSize, maxAtlasSize);
+
+	for( vector < TextureS* >:: iterator it = internalTextures.begin(),
+			vend = internalTextures.end(); it != vend; ++it ){
+		if ( ! box.InsertItem(
+				&((*it)->atlasX), &((*it)->atlasY),
+				(*it)->width, (*it)->height ) )
+			return false;
+	}
+
+	this->atlasWidth = box.Width;
+	this->atlasHeight = box.Height;
+
+	texelW = texelW / static_cast<float>( box.Width );
+	texelH = texelH / static_cast<float>( box.Height );
+
+	// Build absolute map
+	for( unsigned int i = 0; i < internalTextures.size(); i++ ){
+		internalTextures[i]->atlas.x = static_cast<float>(internalTextures[i]->atlasX) * texelW;
+		internalTextures[i]->atlas.y = static_cast<float>(internalTextures[i]->atlasY) * texelH;
+		internalTextures[i]->atlas.width = internalTextures[i]->width * texelW;
+		internalTextures[i]->atlas.height = internalTextures[i]->height * texelH;
+	}
+
+	return true;
+}
+
+
+bool Graphics::BuildAtlas()
+{
+	atlasHandle = new GLuint();
+
+	// Рисуем в атлас, как в текстуру, используя FBO.
+	// Настройка текстуры.
+	glGenTextures(1, atlasHandle);
+	glBindTexture(GL_TEXTURE_2D, *atlasHandle);
+
+	glTexImage2D( GL_TEXTURE_2D, 0, 4, atlasWidth, atlasHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	//GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
+	//GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
+
+	// Настройка FBO.
+	GLuint atlasFBO; // Хэндл FBO.
+
+	glGenFramebuffersEXT(1, &atlasFBO);
+
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, atlasFBO);
+
+	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, *atlasHandle, 0);
+
+	GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+	if( status != GL_FRAMEBUFFER_COMPLETE_EXT ){
+		debug(2, "Your framebuffer is broken. Use top NV to play this Crusis");
+		return false;
+	}
+
+	glPushAttrib(GL_COLOR_BUFFER_BIT); // Сохраняем ClearColor
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+	// Изменение вьюпорта и матриц для FBO
+	glViewport(0, 0, atlasWidth, atlasHeight);
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	glOrtho(0, atlasWidth, 0, atlasHeight, -2.0, 2.0);
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+
+	// Отрисовка текстур в атлас.
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor4f(0.0f, 0.0f, 0.0f, 0.0f);
+	glEnable(GL_TEXTURE_2D);
+	for ( unsigned int i = 0; i < internalTextures.size(); i++ ){
+		glBindTexture(GL_TEXTURE_2D, *internalTextures[i]->texture);
+		glBegin(GL_QUADS);
+		{
+			glTexCoord2f(0.0, 0.0); glVertex2f(internalTextures[i]->atlasX, internalTextures[i]->atlasY);
+			glTexCoord2f(1.0, 0.0); glVertex2f(internalTextures[i]->atlasX + internalTextures[i]->width, internalTextures[i]->atlasY);
+			glTexCoord2f(1.0, 1.0); glVertex2f(internalTextures[i]->atlasX + internalTextures[i]->width, internalTextures[i]->atlasY + internalTextures[i]->height);
+			glTexCoord2f(0.0, 1.0); glVertex2f(internalTextures[i]->atlasX, internalTextures[i]->atlasY + internalTextures[i]->height);
+		}
+		glEnd();
+	}
+
+	// Возвращаем как было.
+	glDisable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+	glDeleteFramebuffersEXT(1, &atlasFBO);
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
+	glPopAttrib();
+
+	return true;
+}
+
+
 //TODO: array of rects
 void Graphics::AddImageRectArray( vector < imageRect* >* rects )
 {
@@ -517,8 +765,8 @@ void Graphics::LoadAnimation( string name, int rows, int cols, int width, int he
 							width, height,
 							texw, texh, 0)
 				);
-	   }
-   }
+	}
+}
 }
 
 void Graphics::MoveGlScene( int x, int y, int z )
@@ -600,16 +848,19 @@ bool Graphics::SaveScreenshot( )
 
 Graphics::Graphics( ){
 	ImageRects = NULL;
+	minAtlasSize = 64;
 }
 
 Graphics::~Graphics( )
 {
+	clear_vector( &internalTextures );
 	for( std::map< string, vector<coord2farr*> >::iterator it = Animations.begin(), end = Animations.end();
 			it != end; ++it ){
-		for( vector<coord2farr*>::iterator vit = it->second.begin(), vend = it->second.end(); vit != vend; ++vit ){
-			delete (*vit);
-		}
-		it->second.clear();
+		clear_vector( &it->second );
+		//for( vector<coord2farr*>::iterator vit = it->second.begin(), vend = it->second.end(); vit != vend; ++vit ){
+		//	delete (*vit);
+		//}
+		//it->second.clear();
 	}
 	Animations.clear();
 	for( std::map< string, Texture* >::iterator it = LoadedGLTextures.begin(), end = LoadedGLTextures.end();
@@ -638,6 +889,77 @@ Graphics::~Graphics( )
 		it->second.clear();
 	}
 	LoadedFonts.clear();
+}
+
+bool Graphics::LoadExtensions( )
+{
+
+#ifdef GL_EXT_framebuffer_object
+	// Load FramebufferEXT
+	//glIsRenderbufferEXT = (PFNGLISRENDERBUFFEREXTPROC)SDL_GL_GetProcAddress("glIsRenderbufferEXT");
+	//glBindRenderbufferEXT = (PFNGLBINDRENDERBUFFEREXTPROC)SDL_GL_GetProcAddress("glBindRenderbufferEXT");
+	//glDeleteRenderbuffersEXT = (PFNGLDELETERENDERBUFFERSEXTPROC)SDL_GL_GetProcAddress("glDeleteRenderbuffersEXT");
+	//glGenRenderbuffersEXT = (PFNGLGENRENDERBUFFERSEXTPROC)SDL_GL_GetProcAddress("glGenRenderbuffersEXT");
+	//glRenderbufferStorageEXT = (PFNGLRENDERBUFFERSTORAGEEXTPROC)SDL_GL_GetProcAddress("glRenderbufferStorageEXT");
+	//glGetRenderbufferParameterivEXT = (PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC)SDL_GL_GetProcAddress("glGetRenderbufferParameterivEXT");
+	glIsFramebufferEXT = (PFNGLISFRAMEBUFFEREXTPROC)SDL_GL_GetProcAddress("glIsFramebufferEXT");
+	glBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC)SDL_GL_GetProcAddress("glBindFramebufferEXT");
+	glDeleteFramebuffersEXT = (PFNGLDELETEFRAMEBUFFERSEXTPROC)SDL_GL_GetProcAddress("glDeleteFramebuffersEXT");
+	glGenFramebuffersEXT = (PFNGLGENFRAMEBUFFERSEXTPROC)SDL_GL_GetProcAddress("glGenFramebuffersEXT");
+	glCheckFramebufferStatusEXT = (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)SDL_GL_GetProcAddress("glCheckFramebufferStatusEXT");
+	//glFramebufferTexture1DEXT = (PFNGLFRAMEBUFFERTEXTURE1DEXTPROC)SDL_GL_GetProcAddress("glFramebufferTexture1DEXT");
+	glFramebufferTexture2DEXT = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)SDL_GL_GetProcAddress("glFramebufferTexture2DEXT");
+	//glFramebufferTexture3DEXT = (PFNGLFRAMEBUFFERTEXTURE3DEXTPROC)SDL_GL_GetProcAddress("glFramebufferTexture3DEXT");
+	//glFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)SDL_GL_GetProcAddress("glFramebufferRenderbufferEXT");
+	glGetFramebufferAttachmentParameterivEXT = (PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC)SDL_GL_GetProcAddress("glGetFramebufferAttachmentParameterivEXT");
+	//glGenerateMipmapEXT = (PFNGLGENERATEMIPMAPEXTPROC)SDL_GL_GetProcAddress("glGenerateMipmapEXT");
+
+	if( //!glIsRenderbufferEXT || !glBindRenderbufferEXT || !glDeleteRenderbuffersEXT ||
+		//!glGenRenderbuffersEXT || !glRenderbufferStorageEXT || !glGetRenderbufferParameterivEXT ||
+		!glIsFramebufferEXT || !glBindFramebufferEXT || !glDeleteFramebuffersEXT ||
+		!glGenFramebuffersEXT || !glCheckFramebufferStatusEXT || // ! glFramebufferTexture1DEXT ||
+		!glFramebufferTexture2DEXT || // !glFramebufferTexture3DEXT || !glFramebufferRenderbufferEXT||
+		!glGetFramebufferAttachmentParameterivEXT // || !glGenerateMipmapEXT
+		){
+		debug(2, "One or more EXT_framebuffer_object functions were not found.\n");
+		return false;
+	}
+#else
+	debug(2, "No framebuffer support.");
+#endif
+
+#ifdef GL_ARB_shader_objects
+	// Load shaders
+	/*
+	glCreateProgramObjectARB  = (PFNGLCREATEPROGRAMOBJECTARBPROC)SDL_GL_GetProcAddress("glCreateProgramObjectARB");
+	glDeleteObjectARB         = (PFNGLDELETEOBJECTARBPROC)SDL_GL_GetProcAddress("glDeleteObjectARB");
+	glUseProgramObjectARB     = (PFNGLUSEPROGRAMOBJECTARBPROC)SDL_GL_GetProcAddress("glUseProgramObjectARB");
+	glCreateShaderObjectARB   = (PFNGLCREATESHADEROBJECTARBPROC)SDL_GL_GetProcAddress("glCreateShaderObjectARB");
+	glShaderSourceARB         = (PFNGLSHADERSOURCEARBPROC)SDL_GL_GetProcAddress("glShaderSourceARB");
+	glCompileShaderARB        = (PFNGLCOMPILESHADERARBPROC)SDL_GL_GetProcAddress("glCompileShaderARB");
+	glGetObjectParameterivARB = (PFNGLGETOBJECTPARAMETERIVARBPROC)SDL_GL_GetProcAddress("glGetObjectParameterivARB");
+	glAttachObjectARB         = (PFNGLATTACHOBJECTARBPROC)SDL_GL_GetProcAddress("glAttachObjectARB");
+	glGetInfoLogARB           = (PFNGLGETINFOLOGARBPROC)SDL_GL_GetProcAddress("glGetInfoLogARB");
+	glLinkProgramARB          = (PFNGLLINKPROGRAMARBPROC)SDL_GL_GetProcAddress("glLinkProgramARB");
+	glGetUniformLocationARB   = (PFNGLGETUNIFORMLOCATIONARBPROC)SDL_GL_GetProcAddress("glGetUniformLocationARB");
+	glUniform4fARB            = (PFNGLUNIFORM4FARBPROC)SDL_GL_GetProcAddress("glUniform4fARB");
+	glUniform1iARB            = (PFNGLUNIFORM1IARBPROC)SDL_GL_GetProcAddress("glUniform1iARB");
+	glUniformMatrix4fvARB	  = (PFNGLUNIFORMMATRIX4FVARBPROC)SDL_GL_GetProcAddress("glUniformMatrix4fvARB");
+
+	if( !glCreateProgramObjectARB || !glDeleteObjectARB || !glUseProgramObjectARB ||
+		!glCreateShaderObjectARB || !glCreateShaderObjectARB || !glCompileShaderARB ||
+		!glGetObjectParameterivARB || !glAttachObjectARB || !glGetInfoLogARB ||
+		!glLinkProgramARB || !glGetUniformLocationARB || !glUniform4fARB ||
+		!glUniform1iARB ){
+		debug(2, "One or more GL_ARB_shader_objects functions were not found");
+		return false;
+	}
+	*/
+#else
+	debug(2, "No shaders support.");
+#endif
+
+	return true;
 }
 
 void Graphics::DrawImageRects( vector < imageRect* >* rects )
@@ -939,7 +1261,21 @@ Texture* Graphics::CreateGlTexture( SDL_Surface* surface )
 
 }
 
-//TODO: one more cache?
+
+SDL_Surface* Graphics::GetSDLImage( string name )
+{
+	SDL_Surface* img;
+
+	if( imagesCache.count(name) > 0 ){
+		return imagesCache[name];
+	}
+
+	img = LoadImage(name.c_str());
+	imagesCache[name] = img;
+
+	return img;
+}
+
 SDL_Surface* Graphics::LoadImage( const char* name )
 {
 	SDL_Surface* pImg = NULL;
@@ -962,7 +1298,7 @@ SDL_Surface* Graphics::LoadImage( const char* name )
 }
 
 /** Load image file
-    @return A pointer to the SDL_Surface surface.
+	@return A pointer to the SDL_Surface surface.
 **/
 SDL_Surface* Graphics::OpenImage( const char* filename )
 {
@@ -975,7 +1311,7 @@ SDL_Surface* Graphics::OpenImage( const char* filename )
 		if( ( loadedImage->w & (loadedImage->w - 1) ) != 0 ){
 			strcpy( dbg, filename );
 			strcat( dbg, " width is not a power of 2!\n" );
-        	debug( 3, dbg );
+			debug( 3, dbg );
 		}else if( (loadedImage->h & (loadedImage->h - 1) ) != 0 ){
 			strcpy( dbg, filename );
 			strcat( dbg, " height is not a power of 2!\n" );

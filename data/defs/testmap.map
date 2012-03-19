@@ -1,6 +1,6 @@
 {
-	"MapRegion",
 	{
+		type = "MapRegion",
 		tiles = {
 			{
 				y = 0,

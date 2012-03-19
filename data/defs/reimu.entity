@@ -1,7 +1,7 @@
 {
-	"Entity",
 	{
 		name = "Reimu",
+		type = "Entity",
 		speed = 80,
 		image = "reimu.png",
 		animation = {

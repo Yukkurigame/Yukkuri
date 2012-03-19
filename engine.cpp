@@ -34,7 +34,7 @@ void CEngine::SetSize()
 bool CEngine::Init()
 {
 
-	debug( 3, "Loading defaults.\n" );
+	debug( 1, "Loading defaults.\n" );
 	if( !conf.load( ) ){
 		debug( 1, "Loading default configuration failed. Exiting." );
 		return false;
@@ -78,6 +78,14 @@ bool CEngine::Init()
 	Graphics::Instance()->openglSetup( conf.windowWidth, conf.windowHeight );
 
 	debug( 0, "Done\n" );
+
+	debug( 1, "Load sprites.\n" );
+
+	if( !Graphics::Instance()->LoadTextures( ) ){
+		debug( 1, "Sprites loading failed." );
+		return false;
+	}
+
 
 #ifdef JOYSTICKENABLE
 	if( SDL_NumJoysticks() > 0 ){

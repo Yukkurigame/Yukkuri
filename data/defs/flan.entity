@@ -1,6 +1,6 @@
 {
-	"Entity",
 	{
+		type = "Entity",
 		bloodcolor = {215, 180, 70},
 		damage = 3.0,
 		animation = {

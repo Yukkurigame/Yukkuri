@@ -24,6 +24,7 @@ struct MainConfig
 	int maxSpawn;
 	int maxEdibles;
 	int playerDies;
+	int textureBorder;
 	std::string imagePath;
 	std::string defaultImage;
 	std::string fontsPath;

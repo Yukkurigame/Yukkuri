@@ -46,6 +46,8 @@ public:
 
 	Texture* LoadGLTexture( string name );
 
+	GLuint* LoadGLTexture( string path, int width, int height, int offsetx, int offsety );
+
 	void LoadAllTTFonts( int size );
 	bool LoadTTFont( string dir, string filename, int size );
 	Sprite* CreateTextSprite( string font, int size, float x, float y, float z, Color* color, string text, short cached=0 );
@@ -69,6 +71,16 @@ public:
 	void CreateGLSpriteList( vector<Sprite* >* sprites );
 	void CreateGLTextureAtlas( int size, imageRect rects[], int count );
 
+	bool LoadTextures( );
+
+	void AddTexture( string name );
+	void AddTexture( string id, string name, string path, int w, int h, int ox, int oy, int rows, int cols);
+
+	bool CreateAtlas( );
+	// To private funcs
+	bool BuildAtlasMap();
+	bool BuildAtlas();
+
 	void AddImageRectArray( vector < imageRect* >* rects );
 	void RemoveImageRectArray( vector < imageRect* >* rects );
 
@@ -78,7 +90,7 @@ public:
 	void SetVertex( vertex3farr* v, float x, float y, float z, float width, float height, short centered );
 
 	coord2farr* GetAnimation( string , unsigned int );
-	
+
 	inline void LoadAnimation( string name, int rows, int cols, int width, int height, Sprite* s ){
 		if( s->tex )
 			return LoadAnimation( name, rows, cols, width, height, s->tex->w, s->tex->h );
@@ -102,6 +114,8 @@ private:
 
 	SDL_Surface* screen;
 
+	bool LoadExtensions( );
+
 	void DrawImageRects( vector < imageRect* >* rects );
 
 	void AddGLTexture( Texture* , string );
@@ -124,6 +138,7 @@ private:
 
 	Texture* CreateGlTexture( SDL_Surface* );
 
+	SDL_Surface* GetSDLImage( string name );
 	SDL_Surface* LoadImage( const char* );
 	SDL_Surface* OpenImage( const char* );
 
@@ -133,7 +148,19 @@ private:
 	void DrawSDLSurface( SDL_Surface* surface );
 
 
+	int minAtlasSize;
+	int maxAtlasSize;
+	int atlasWidth, atlasHeight;
+
+	GLuint* atlasHandle;
+
+	TextureInfo textures[];
+	vector < TextureS* > internalTextures;
+	std::map < string, SDL_Surface* > imagesCache;
+
+
 	vector < Sprite* > GLSprites;
+
 	std::map < string, vector< coord2farr* > > Animations;
 	std::map < string, Texture* > LoadedGLTextures;
 	std::map < string, std::map< int, font_data* > > LoadedFonts;

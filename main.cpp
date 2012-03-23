@@ -1,5 +1,14 @@
+
 #include <stdlib.h>
 #include "yukkuri.h"
+#include "Render.h"
+#include "Bindings.h"
+#include "Interface.h"
+#include "Camera.h"
+#include "map.h"
+#include "debug.h"
+
+using namespace Debug;
 
 
 // Entry point
@@ -23,7 +32,7 @@ bool Yukkuri::Init()
 	ls = new LuaScript;
 
 	if( !ls->Init( ) || !ls->OpenFile( "init" ) ){
-		debug( 1, "Lua loading failed.\n" );
+		debug( MAIN, "Lua loading failed.\n" );
 		return false;
 	}
 
@@ -34,10 +43,10 @@ bool Yukkuri::AdditionalInit()
 {
 	extern Map map;
 
-	debug( 1, "Additional Init\n" );
+	debug( MAIN, "Additional Init\n" );
 
 	if( !ls->OpenFile( "start" ) ){
-		debug( 1, "Starting lua failed.\n" );
+		debug( SCRIPT, "Starting lua failed.\n" );
 		return false;
 	}
 
@@ -68,21 +77,21 @@ void Yukkuri::Render( )
 {
 	extern Map map;
 
-	Graphics::Instance()->CleanGLScene( );
+	RenderManager::Instance()->CleanGLScene( );
 
 	YCamera::CameraControl.Update( );
 
 	// Display slick graphics on screen
-	units->DrawUnits( );
+	units->onDraw( );
 
-	map.Draw( );
+	map.onDraw( );
 
-	daytime.draw( );
+	daytime.onDraw( );
 
 	UI::yui.GetWidget("fps")->setText( GetFPSText() );
 
 	//Draw to screen
-	Graphics::Instance()->DrawGLScene( );
+	RenderManager::Instance()->DrawGLScene( );
 }
 
 void Yukkuri::MouseMoved( const int& Button, const int& X, const int& Y, const int& RelX, const int& RelY )
@@ -115,7 +124,5 @@ void Yukkuri::WindowActive()
 
 void Yukkuri::End()
 {
-	//FIXME: графика уничтожается, а потом начинают уничтожаться спрайты, да.
-	//теги: ололо-сегфолты
-	//Graphics::Destroy();
+	RenderManager::Destroy();
 }

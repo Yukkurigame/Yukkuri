@@ -44,7 +44,7 @@ struct font_data {
 
 
 	//Print text string to sprite
-	void print( Texture* spr, int* sw, int* sh, const char* text );
+	void print( Sprite* spr, int* sw, int* sh, const char* text );
 };
 
 

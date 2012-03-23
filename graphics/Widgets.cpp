@@ -4,12 +4,13 @@
  *  Created on: 30.06.2010
  */
 #include "Widgets.h"
+#include "Render.h"
 #include "Luaconfig.h"
 #include "config.h"
 
+
 Widget::Widget()
 {
-	graph = Graphics::Instance();
 	Type = NONE;
 	Width = 0;
 	Height = 0;
@@ -25,7 +26,7 @@ Widget::Widget()
 
 Widget::~Widget()
 {
-	graph->FreeGLSprite( background );
+	RenderManager::Instance()->FreeGLSprite( background );
 	Parent = NULL;
 	//FIXME: parent dies but children overcomes this.
 	Children.clear();
@@ -34,9 +35,8 @@ Widget::~Widget()
 bool Widget::create( string name, string text, int x, int y )
 {
 	//FIXME: text not used it is bad;
-	Texture* tex;
-	tex = graph->LoadGLTexture( name );
-	background = graph->CreateGLSprite( PosX, PosY, getZ(), x, y, Width, Height, tex );
+	tex = RenderManager::Instance()->LoadGLTexture( name );
+	background = RenderManager::Instance()->CreateGLSprite( PosX, PosY, getZ(), x, y, Width, Height, tex );
 	if(!background)
 		return false;
 	return true;
@@ -203,8 +203,8 @@ TextWidget::TextWidget( )
 
 TextWidget::~TextWidget( )
 {
-	graph->FreeTextSprite( &TextSprite );
-	graph->FreeTextSprite( &StaticTextSprite );
+	RenderManager::Instance()->FreeTextSprite( &TextSprite );
+	RenderManager::Instance()->FreeTextSprite( &StaticTextSprite );
 }
 
 bool TextWidget::create( string name, string text, int x, int y )
@@ -216,11 +216,11 @@ bool TextWidget::create( string name, string text, int x, int y )
 			background = NULL;
 	}
 	if( text != "" ){
-		StaticTextSprite = graph->CreateGLSprite( x, y, getZ(), 20, 20, Width, Height, NULL );
+		StaticTextSprite = RenderManager::Instance()->CreateGLSprite( x, y, getZ(), 20, 20, Width, Height, NULL );
 		StaticTextSprite->clr->set( 0 );
 	}
 	Text = text;
-	TextSprite = graph->CreateGLSprite( x, y, getZ(), 20, 20, Width, Height, NULL );
+	TextSprite = RenderManager::Instance()->CreateGLSprite( x, y, getZ(), 20, 20, Width, Height, NULL );
 	TextSprite->clr->set( 0 );
 	return true;
 }
@@ -232,7 +232,7 @@ bool TextWidget::load( string config )
 
 	string font;
 	int fontsize = 12;
-	vector<int> vcolor;
+	std::vector<int> vcolor;
 	LuaConfig* cfg = new LuaConfig;
 	//float textx, texty;
 	//textx = texty = 0;
@@ -303,12 +303,12 @@ void TextWidget::setText( string text )
 		return;
 	if( StaticTextSprite ){
 		if( Text != "" && !StaticTextSprite->tex ){
-			graph->ChangeTextSprite( StaticTextSprite, FontName, FontSize, Text, 1 );
+			RenderManager::Instance()->ChangeTextSprite( StaticTextSprite, FontName, FontSize, Text, 1 );
 			TextSprite->setPosition( TextSprite->posx + StaticTextSprite->width, TextSprite->posy );
 		}
 	}
 	AddText = text;
-	graph->ChangeTextSprite( TextSprite, FontName, FontSize, AddText );
+	RenderManager::Instance()->ChangeTextSprite( TextSprite, FontName, FontSize, AddText );
 	w = Width;
 	h = Height;
 	if( !Width || Width < TextSprite->width ){
@@ -365,8 +365,8 @@ BarWidget::BarWidget()
 
 BarWidget::~BarWidget( )
 {
-	graph->FreeGLSprite( BarSprite );
-	graph->FreeGLSprite( TopSprite );
+	RenderManager::Instance()->FreeGLSprite( BarSprite );
+	RenderManager::Instance()->FreeGLSprite( TopSprite );
 }
 
 bool BarWidget::load( string config )
@@ -375,7 +375,7 @@ bool BarWidget::load( string config )
 		return false;
 	string imgname;
 	int position[6];
-	vector<int> vcolor;
+	std::vector<int> vcolor;
 	LuaConfig* cfg = new LuaConfig;
 
 	//Order: topimgx, topimgy, barx, bary, barwidth, barheight
@@ -407,11 +407,10 @@ bool BarWidget::load( string config )
 
 void BarWidget::createBar( string name, int* pos)
 {
-	Texture* tex;
-	tex = graph->LoadGLTexture( name );
-	BarSprite = graph->CreateGLSprite( PosX + BarX, PosY + BarY, getZ(), BarWidth, pos[2] );
+	tex = RenderManager::Instance()->LoadGLTexture( name );
+	BarSprite = RenderManager::Instance()->CreateGLSprite( PosX + BarX, PosY + BarY, getZ(), BarWidth, pos[2] );
 	if( tex )
-		TopSprite = graph->CreateGLSprite( PosX, PosY, getZ() + 0.1f, pos[0], pos[1], Width, Height, tex );
+		TopSprite = RenderManager::Instance()->CreateGLSprite( PosX, PosY, getZ() + 0.1f, pos[0], pos[1], Width, Height, tex );
 	if( BarSprite ){
 		BarSprite->clr->set( pos[3], pos[4], pos[5] );
 	}

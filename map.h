@@ -21,8 +21,9 @@ struct MapTile
 	signed int posY;
 	int BackType;
 	float Passability;
-	imageRect Image;
-	imageRect BackImage;
+	int picture;
+	std::string image;
+	TextureInfo* texture;
 	MapTile( signed int x, signed int y );
 	~MapTile();
 };
@@ -80,7 +81,7 @@ public:
 
 	void Clean( );
 
-	void Draw( );
+	void onDraw( );
 
 private:
 	bool Updated;
@@ -88,7 +89,6 @@ private:
 	float posY;
 
 	std::vector< MapTile* > Tilesvec;
-	std::vector< imageRect* > TileSprites;
 
 };
 

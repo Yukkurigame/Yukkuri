@@ -44,9 +44,7 @@ public:
 	void openglInit();
 	void openglSetup( int wwidth, int wheight );
 
-	Texture* LoadGLTexture( string name );
-
-	GLuint* LoadGLTexture( string path, int width, int height, int offsetx, int offsety );
+	GLuint* LoadGLTexture( string name );
 
 	void LoadAllTTFonts( int size );
 	bool LoadTTFont( string dir, string filename, int size );
@@ -158,11 +156,13 @@ private:
 	vector < TextureS* > internalTextures;
 	std::map < string, SDL_Surface* > imagesCache;
 
+	std::map < string, GLuint* > texturesCache;
+
 
 	vector < Sprite* > GLSprites;
 
 	std::map < string, vector< coord2farr* > > Animations;
-	std::map < string, Texture* > LoadedGLTextures;
+
 	std::map < string, std::map< int, font_data* > > LoadedFonts;
 	std::map < font_data*, std::map< string, Texture* > > CachedTexts;
 

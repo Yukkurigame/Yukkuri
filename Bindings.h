@@ -10,7 +10,6 @@
 #include "debug.h"
 
 #include <string>
-using std::string;
 #include <map>
 
 //FIXME: это все как-то криво. Прямо FUUUUUUUUUUUUUUUU~
@@ -26,7 +25,7 @@ public:
 
 	void process( int num, short down );
 
-	void BindKey( int key, string name );
+	void BindKey( int key, std::string name );
 	void unBindKey( int key );
 
 	void LoadKeys();
@@ -35,8 +34,8 @@ public:
 
 private:
 	const void* engine;
-	std::map< int, string> Keys;
-	std::map< string, string> Bindkeys;
+	std::map< int, std::string> Keys;
+	std::map< std::string, std::string> Bindkeys;
 };
 
 //TODO: Как-то нехорошо.

@@ -1,4 +1,5 @@
 #include "daytime.h"
+#include "Interface.h"
 #include "unitmanager.h"
 #include "config.h"
 
@@ -13,12 +14,12 @@ DayTime::DayTime()
 
 DayTime::~DayTime()
 {
-	Graphics::Instance()->FreeGLSprite(sfield);
+	RenderManager::Instance()->FreeGLSprite( sfield );
 }
 
 void DayTime::loadInterface()
 {
-	sfield = Graphics::Instance()->CreateGLSprite(0, 0, 4, conf.windowWidth, conf.windowHeight );
+	sfield = RenderManager::Instance()->CreateGLSprite(0, 0, 4, conf.windowWidth, conf.windowHeight );
 	sfield->clr->set( 0, 0, 0, 0 );
 	text = UI::yui.GetWidget("time");
 }
@@ -78,7 +79,7 @@ void DayTime::update( const int& dt )
 	}
 }
 
-void DayTime::draw( ){
+void DayTime::onDraw( ){
 	if( ldark != dark && sfield ){
 		sfield->clr->a = dark;
 	}

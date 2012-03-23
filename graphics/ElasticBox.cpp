@@ -4,6 +4,8 @@
 #include "ElasticBox.h"
 #include "debug.h"
 
+using namespace Debug;
+
 #define BOX_CHILDREN 4
 
 //enum SearchResults { OK, MORE, WIDTH, HEIGHT, };
@@ -39,7 +41,7 @@ bool ElasticBox::InsertItem(int* x, int* y, int itemWidth, int itemHeight)
 	SearchResults spaceFound = MORE;
 	while ( ( spaceFound = FindSpace( x, y, itemWidth, itemHeight ) ) != OK ) {
 		if ( Width * 2 > maxSize && Height * 2 > maxSize ){
-			debug(2, "Textures to big to be placed in atlas.\n");
+			debug( GRAPHICS, "Textures to big to be placed in atlas.\n");
 			return false;
 		}
 		switch (spaceFound)	{

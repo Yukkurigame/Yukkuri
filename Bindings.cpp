@@ -10,7 +10,7 @@
 #include "yukkuri.h"
 #include "Luaconfig.h"
 #include "unitmanager.h"
-#include "Graphics.h"
+#include "sdl_graphics.h"
 
 Bindings Bindings::bnd;
 
@@ -285,7 +285,7 @@ void Binds::playerEat( )
 
 void Binds::screenshot( )
 {
-	Graphics::Instance()->SaveScreenshot( );
+	Screenshot::Save( );
 }
 
 void Binds::exit( const void* e )

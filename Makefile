@@ -13,7 +13,7 @@ CFLAGS= -O2 -g -Wall $(DEFINES)
 
 
 UNITS =  unitmanager.cpp unit.cpp Animated.cpp Plant.cpp Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp
-GRAPHICS = Font.cpp ElasticBox.cpp Graphics.cpp Interface.cpp Widgets.cpp pngfuncs.c
+GRAPHICS = Font.cpp ElasticBox.cpp sdl_graphics.cpp Render.cpp Interface.cpp Widgets.cpp pngfuncs.c
 SCRIPTS = Lua.cpp Luaconfig.cpp LuaScript.cpp LuaThread.cpp api.cpp
 
 SRCS =   main.cpp config.cpp engine.cpp Bindings.cpp Spawner.cpp map.cpp\

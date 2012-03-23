@@ -2,15 +2,11 @@
 #define YUKKURI_H
 
 #include "engine.h"
-#include "Bindings.h"
 #include "unitmanager.h"
-//#include "map.h"
-#include "Interface.h"
-#include "Camera.h"
 #include "daytime.h"
 #include "Spawner.h"
 #include "LuaScript.h"
-#include "map.h"
+
 
 class Yukkuri: public CEngine
 {

@@ -179,8 +179,8 @@ void Graphics::openglSetup( int wwidth, int wheight )
 
 }
 
-/*
-Texture* Graphics::LoadGLTexture( string name )
+
+GLuint* Graphics::LoadGLTexture( string name )
 {
 	Texture* tex;
 	Texture* cached;
@@ -215,20 +215,6 @@ Texture* Graphics::LoadGLTexture( string name )
 
 
 	return tex;
-}
-/
-
-GLuint* Graphics::LoadGLTexture( string path, int width, int height, int offsetx, int offsety )
-{
-	SDL_Surface img = NULL;
-	GLuint* texture = NULL;
-
-	img = GetSDLImage(path);
-
-
-
-
-	return texture;
 }
 
 

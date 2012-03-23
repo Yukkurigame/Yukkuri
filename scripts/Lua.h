@@ -16,21 +16,20 @@ extern "C" {
 #include <map>
 #include <vector>
 #include <string>
-using std::string;
 
 #include "debug.h"
 
 class LuaStackChecker
 {
 public:
-LuaStackChecker(lua_State* L, const char* filename = "", int line = 0);
-~LuaStackChecker();
+	LuaStackChecker(lua_State* L, const char* filename = "", int line = 0);
+	~LuaStackChecker();
 
 private:
-lua_State* luaState_;
-const char* filename_;
-int line_;
-int top_;
+	lua_State* luaState_;
+	const char* filename_;
+	int line_;
+	int top_;
 };
 
 
@@ -40,14 +39,14 @@ public:
 	LuaMain( );
 	~LuaMain( );
 
-	bool OpenFile( string name );
+	bool OpenFile( std::string name );
 
 	//Какого хрена шаблоны перестают работать, если их вынести?
 	//FIXME: move from header
 
 	//TODO: exec without returned values
 	template<typename T>
-	bool execFunction( string function, const char* params[], const int sz, T& ret)
+	bool execFunction( std::string function, const char* params[], const int sz, T& ret)
 	{
 		LuaStackChecker sc(Lst, __FILE__, __LINE__);
 
@@ -57,9 +56,9 @@ public:
 			lua_pushstring( Lst, params[i] );
 		}
 		if( lua_pcall( Lst, sz + szadd, 1, 0 ) ){
-			string err;
+			std::string err;
 			getValue( Lst, -1, err );
-			debug( 4, "Lua function '" + function + "' execute error: " + err + "\n" );
+			debug( Debug::SCRIPT, "Lua function '" + function + "' execute error: " + err + "\n" );
 			lua_pop( Lst, 1 + szadd );
 			return false;
 		}
@@ -129,7 +128,7 @@ protected:
 
 private:
 	static int count;
-	int execFunction( string );
+	int execFunction( std::string );
 
 };
 

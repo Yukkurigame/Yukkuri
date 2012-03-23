@@ -1,31 +1,24 @@
 #include "map.h"
 #include "config.h"
 #include "Camera.h"
-#include "Graphics.h"
+#include "Render.h"
 #include "Luaconfig.h"
 #include "safestring.h"
 #include <map>
 #include <math.h>
 #include <iterator>
 
+#include "debug.h"
+using namespace Debug;
+
 extern MainConfig conf;
 static unsigned int TilesCount = 0;
 //FIXME: Я не знаю, почему не вношу это в Map
 static unsigned int TileTypesCount = 0;
-static imageRect* TilesArray = NULL;
+
 static bool TilesLoaded = false;
 
 Map map;
-
-static int compareRects( const void * a, const void * b )
-{
-	const imageRect* aI = static_cast<const imageRect*>(a);
-	const imageRect* bI = static_cast<const imageRect*>(b);
-	if( aI && bI )
-		return ( aI->id - bI->id );
-	else
-		return 0;
-}
 
 namespace Region
 {
@@ -34,7 +27,7 @@ namespace Region
 	static std::map< signed int, std::map< signed int, unsigned int > >  RegionBackDump;
 
 	void Load( std::string name ){
-		debug( 5, "Loading region " + name + ".\n" );
+		debug( MAP, "Loading region " + name + ".\n" );
 		bool Backing;
 		char BackName[3];
 		LuaConfig* cfg = new LuaConfig;
@@ -53,8 +46,6 @@ namespace Region
 					y = (*it)["y"];
 				RegionDump[x][y] = type;
 
-				//FIXME: Убрать этот костыль, перенести в imageRect
-				//FIXME: А как?
 				snprintf( BackName, 3, "%d", type );
 				cfg->getValue( "backing", BackName, "tiles", Backing );
 				if( Backing ){
@@ -455,7 +446,7 @@ void Map::Clean( )
 	}
 }
 
-void Map::Draw( )
+void Map::onDraw( )
 {
 	int cx, cy;
 	cx = static_cast<int>(YCamera::CameraControl.GetX());
@@ -475,7 +466,7 @@ void Map::Draw( )
 		/*char d[3];
 		snprintf(d, 3, "%d\n", Tilesvec.size());
 		debug(0, d);*/
-		Graphics::Instance()->AddImageRectArray( &TileSprites );
+		RenderManager::Instance()->AddImageRectArray( &TileSprites );
 		Updated = false;
 	}
 }

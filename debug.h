@@ -16,18 +16,23 @@
 #include <stdio.h>
 #include <string>
 
-//TODO: string to char*
-inline void debug( int level, std::string txt )
+namespace Debug
 {
-#ifdef DEBUG
-	if( level > 0 ){
-		if( level <= DEBUGLEVEL )
-			printf("%d: %s", level, txt.c_str());
-	}else{
-		printf("%s", txt.c_str());
-	}
-#endif
-};
+	enum dbg_level { NONE, MAIN, OS, GRAPHICS, SCRIPT, INTERFACE, MAP };
+
+	//TODO: string to char*
+	inline void debug( enum dbg_level level, std::string txt )
+	{
+	#ifdef DEBUG
+		if( level != NONE ){
+			if( level <= DEBUGLEVEL )
+				printf("%d: %s", level, txt.c_str());
+		}else{
+			printf("%s", txt.c_str());
+		}
+	#endif
+	};
+}
 
 
 #endif /* YUKKURIDEBUG_H_ */

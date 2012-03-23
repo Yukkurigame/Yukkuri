@@ -10,40 +10,39 @@ using std::vector;
 #include "Corpse.h"
 #include "Entity.h"
 #include "Player.h"
-#include "Graphics.h"
+#include "Render.h"
 
 class UnitManager
 {
-    public:
-        UnitManager();
-        virtual ~UnitManager();
+	public:
+		UnitManager();
+		virtual ~UnitManager();
 
-        static UnitManager units;
+		static UnitManager units;
 
-        Unit* CreateUnit( enum unitType type, float x, float y );
-        void DeleteUnit( Unit* u );
-        Unit* GetUnit( unsigned int id );
-        Unit* GetPlayer() { return player; }
-        int GetUnitsSize( enum unitType type );
-        int GetUnitVecSize() { return (int)Units.size();}
+		Unit* CreateUnit( enum unitType type, float x, float y );
+		void DeleteUnit( Unit* u );
+		Unit* GetUnit( unsigned int id );
+		Unit* GetPlayer() { return player; }
+		int GetUnitsSize( enum unitType type );
+		int GetUnitVecSize() { return (int)Units.size();}
 
-        void tick( const int& );
+		void tick( const int& );
 
-        Unit* closer( Unit* u, string type, float limit = 100.0 );
-        Unit* closer( Unit* u, vector< string >* types, float limit = 100.0 );
-        void grow( ); //FUUUUU
+		Unit* closer( Unit* u, string type, float limit = 100.0 );
+		Unit* closer( Unit* u, vector< string >* types, float limit = 100.0 );
+		void grow( ); //FUUUUU
 
-        void DrawUnits( );
+		void onDraw( );
 
 
-    private:
-        Graphics* graph;
-        void AddUnit( Unit* pUnit );
-        //coord2farr* getAnim( Unit* );
-        void ChangeUnitsSize( enum unitType type, signed int size );
-        vector< Unit* > Units;
-        std::map< enum unitType, int > Size;
-        Unit* player;
+	private:
+		RenderManager* graph;
+		void AddUnit( Unit* pUnit );
+		void ChangeUnitsSize( enum unitType type, signed int size );
+		vector< Unit* > Units;
+		std::map< enum unitType, int > Size;
+		Unit* player;
 };
 
 #endif // UNITMANAGER_H

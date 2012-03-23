@@ -11,17 +11,60 @@
 
 #include <string>
 #include <cstdlib>
-using std::string;
 
-struct Color
+
+struct s2f
+{
+	float x;
+	float y;
+	s2f() : x(), y() {}
+};
+
+
+struct s4u
+{
+	unsigned int r;
+	unsigned int g;
+	unsigned int b;
+	unsigned int a;
+	s4u() : r(), g(), b(), a() {}
+};
+
+
+struct coord2farr
+{
+	s2f lt; //left-top
+	s2f lb; //left-bottom
+	s2f rt; //right-top
+	s2f rb; //right-bottom
+
+	// Calculated by top side only
+	float width(){ return abs(rt.x - lt.x); }
+	// Calculated by right side only
+	float height(){ return abs(rt.y - rb.y); }
+};
+
+
+struct vertex3farr
+{
+	s2f lt; //left-top
+	s2f lb; //left-bottom
+	s2f rt; //right-top
+	s2f rb; //right-bottom
+	float z;
+	vertex3farr(): z() {};
+};
+
+
+struct color4u
 {
 	unsigned int r;
 	unsigned int b;
-	unsigned g;
-	unsigned a;
-	Color(): r(255), b(255), g(255), a(255) {};
-	Color(unsigned int r, unsigned int b, unsigned int g): r(r), b(b), g(g), a(255) {};
-	Color(unsigned int r, unsigned int b, unsigned int g, unsigned int a): r(r), b(b), g(g), a(a) {};
+	unsigned int g;
+	unsigned int a;
+	color4u(): r(255), b(255), g(255), a(255) {};
+	color4u(unsigned int r, unsigned int b, unsigned int g): r(r), b(b), g(g), a(255) {};
+	color4u(unsigned int r, unsigned int b, unsigned int g, unsigned int a): r(r), b(b), g(g), a(a) {};
 	bool isMax( ){
 		if( r != 255 || g != 255 || b != 255 ) return false;
 		return true;
@@ -30,8 +73,9 @@ struct Color
 	void set( unsigned int c ) { r = g = b = c; }
 	void set( unsigned int cr, unsigned int cg, unsigned int cb ) { r = cr; g = cg; b = cb; }
 	void set( unsigned int cr, unsigned int cg, unsigned int cb, unsigned int ca ) { r = cr; g = cg; b = cb; a = ca; }
-	void set( Color* c ) { if( !c ) return; r = c->r; g = c->g; b = c->b; a = c->a; }
+	void set( color4u* c ) { if( !c ) return; r = c->r; g = c->g; b = c->b; a = c->a; }
 };
+
 
 struct rect2i
 {
@@ -40,6 +84,7 @@ struct rect2i
 	int width;
 	int height;
 };
+
 
 struct rect2f
 {
@@ -58,21 +103,6 @@ struct rect2f
 	}
 };
 
-struct Texture
-{
-	GLuint* texture;
-	int w;
-	int h;
-	Color clr;
-	Texture() { texture = NULL; w = 0; h = 0; }
-	Texture( Texture* o ){
-		texture = o->texture;
-		w = o->w;
-		h = o->h;
-		clr = o->clr;
-	}
-
-};
 
 struct TextureS
 {
@@ -84,15 +114,15 @@ struct TextureS
 	int cols;
 	int atlasX;
 	int atlasY;
-	string id;
-	string name;
-	string image;
+	std::string id;
+	std::string name;
+	std::string image;
 	rect2f atlas;
 	GLuint* texture;
 
-	TextureS() {}
+	TextureS( ){}
 
-	TextureS( string i, string n, string img, int w, int h, int ox, int oy, int r, int c ){
+	TextureS( std::string i, std::string n, std::string img, int w, int h, int ox, int oy, int r, int c ){
 		id = i;
 		name = n;
 		image = img;
@@ -110,90 +140,86 @@ struct TextureS
 
 };
 
+
 struct TextureInfo
 {
 	int rows;
 	int cols;
 	int swidth; // width of one section
 	int sheight; // height of one section
-	string id;
-	string name;
-	rect2f rect;
-	TextureInfo ( string i, string n, int x, int y, int w, int h, int c, int r ){
-		if( cols < 1 )
-			cols = 1;
-		if( rows < 1 )
-			rows = 1;
-		id = i;
-		name = n;
-		rect.x = x;
-		rect.y = y;
-		rect.width = w;
-		rect.height = h;
-		cols = c;
-		rows = r;
-		swidth = w / cols;
-		sheight = h / rows;
+	GLuint* atlas;
+	std::string id;
+	std::string name;
+	rect2f pos;
+	TextureInfo ( std::string i, std::string n, int x, int y, int w, int h, int c, int r ){
+		atlas = NULL;
+	}
+	void fromTextureS( TextureS* t ){
+		fromTextureS(t, NULL);
+	}
+	void fromTextureS( TextureS* t, GLuint* a ){
+		cols = ( t->cols < 1 ? 1 : t->cols );
+		rows = ( t->rows < 1 ? 1 : t->rows );
+		id = t->id;
+		name = t->name;
+		pos = t->atlas;
+		swidth = t->width / cols;
+		sheight = t->height / rows;
+		atlas = a;
+	}
+	coord2farr getSubTexture(int col, int row){
+		coord2farr rect;
+		col %= cols;
+		row %= rows;
+		int x = pos.x + col * swidth;
+		int y = pos.y + row * sheight;
+		rect.lb.x = rect.lt.x = x;
+		rect.lb.y = rect.rb.y = y;
+		rect.rb.x = rect.rt.x = x + swidth;
+		rect.lt.y = rect.rt.y = y + sheight;
+		return rect;
 	}
 };
 
 
-
-struct s2f
+struct VertexV2FT2FC4UI
 {
-	float x;
-	float y;
-	s2f() : x(), y() {}
-};
-
-struct coord2farr
-{
-	s2f lt; //left-top
-	s2f lb; //left-bottom
-	s2f rt; //right-top
-	s2f rb; //right-bottom
-
-	// Calculated by top side only
-	float width(){ return abs(rt.x - lt.x); }
-	// Calculated by right side only
-	float height(){ return abs(rt.y - rb.y); }
-};
-
-struct vertex3farr
-{
-	s2f lt; //left-top
-	s2f lb; //left-bottom
-	s2f rt; //right-top
-	s2f rb; //right-bottom
-	float z;
-	vertex3farr(): z() {};
-};
-
-struct imageRect
-{
-	int id;
-	char imageName[65];
-	float x;
-	float y;
-	float z;
-	float width;
-	float height;
-	Texture* texture;
-	coord2farr* coordinates;
-	imageRect() {
-		id = -1;
-		x = y = z = width = height = 0;
-		texture = NULL;
-		coordinates = NULL;
+	s2f verticles;
+	s2f coordinates;
+	s4u color;
+	VertexV2FT2FC4UI(s2f p, s2f t, color4u* c){
+		verticles = p;
+		coordinates = t;
+		color.r = c->r;
+		color.g = c->g;
+		color.b = c->b;
+		color.a = c->a;
 	}
 };
+
+
+struct VBOStructureHandle
+{
+	TextureInfo* texture;
+	int shaders;
+	int number;
+	VBOStructureHandle* next;
+	VBOStructureHandle(TextureInfo* a, int s, int num, VBOStructureHandle* nxt){
+		texture = a;
+		shaders = s;
+		number = num;
+		next = nxt;
+	}
+};
+
 
 struct Sprite
 {
-	Texture* tex;
+	TextureInfo* tex;
 	vertex3farr* vertices;
-	coord2farr* coordinates;
-	Color* clr;
+	color4u* clr;
+	int col;
+	int row;
 	float width;
 	float height;
 	float posx;
@@ -201,15 +227,20 @@ struct Sprite
 	bool visible;
 	bool centered;
 	bool fixed;
+
 	Sprite(){
 		tex = NULL;
 		vertices = NULL;
-		coordinates = NULL;
 		clr = NULL;
-		posx = posy = width = height = 0;
+		col = row = posx = posy = width = height = 0;
 		fixed = visible = true;
 		centered = false;
 	}
+
+	coord2farr getTextureCoordinates(){
+		return tex->getSubTexture(col, row);
+	}
+
 	void resize( float w, float h ){
 		if( !vertices ) return;
 		if( w >= 0 ){
@@ -253,6 +284,15 @@ struct Sprite
 			visible = true;
 	}
 
+	inline bool operator < ( Sprite* s2 ){
+		//add atlas check
+		if( vertices->z == s2->vertices->z ){
+			if( posy == s2->posy )
+				return ( posx > s2->posx );
+			return ( posy > s2->posy );
+		}
+		return ( vertices->z < s2->vertices->z );
+	}
 };
 
 

@@ -1,15 +1,8 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-//На самом деле я не хочу сюда лазить, здесь грязно и пакостно.
-
+#include "SDL/SDL.h"
 #include "Define.h"
-#include "safestring.h"
-using std::string;
-
-#include "Graphics.h"
-#include "Bindings.h"
-#include "debug.h"
 
 /** The base engine class. **/
 class CEngine

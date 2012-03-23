@@ -8,10 +8,8 @@
 #define WIDGETS_H_
 
 #include "safestring.h"
-using std::string;
 #include <vector>
 
-#include "Graphics.h"
 #include "debug.h"
 
 enum wType { NONE = 0, BLANK, TEXT, BAR};
@@ -25,13 +23,13 @@ public:
 	Widget();
 	virtual ~Widget();
 
-	virtual bool create( string name, string text, int x=0, int y=0 );
-	virtual bool load( string config );
+	virtual bool create( std::string name, std::string text, int x=0, int y=0 );
+	virtual bool load( std::string config );
 
 	void setType( wType t ){ Type = t; }
 	wType getType( ){ return Type; }
 
-	string getName( ){ return Name; }
+	std::string getName( ){ return Name; }
 
 	float getX( ){ return PosX; }
 	float getY( ){ return PosY; }
@@ -60,18 +58,17 @@ public:
 
 	virtual void toggleVisibility( );
 
-	virtual void setFont( string, int ) {};
+	virtual void setFont( std::string, int ) {};
 	virtual void setFontColor( int r, int g, int b ) {};
-	virtual void setText( string ) {};
+	virtual void setText( std::string ) {};
 	virtual void setTextPosition( float, float ) {};
 
-	virtual void createBar( string name, int* ) {};
+	virtual void createBar( std::string name, int* ) {};
 	virtual void setBarSize( float size ) {};
 	virtual void setBarValue( int val ) {};
 
 protected:
 	bool visible;
-	Graphics* graph;
 	Sprite* background;
 
 	int Width;
@@ -85,7 +82,7 @@ protected:
 
 private:
 	unsigned int ID;
-	string Name;
+	std::string Name;
 	wType Type;
 	int Align;
 	int VAlign; //FIXME: two align is bad?
@@ -100,14 +97,14 @@ public:
 	TextWidget( );
 	~TextWidget( );
 
-	bool create( string name, string text, int x=0, int y=0 );
-	bool load( string config );
+	bool create( std::string name, std::string text, int x=0, int y=0 );
+	bool load( std::string config );
 
 	void updatePosition( );
 
-	void setFont( string name, int size ){ FontName = name; FontSize = size; }
+	void setFont( std::string name, int size ){ FontName = name; FontSize = size; }
 	void setFontColor( int r, int g, int b );
-	void setText( string text );
+	void setText( std::string text );
 	void setTextPosition( float x, float y );
 	float getTextX( ){ return TextX; }
 	float getTextY( ){ return TextY; }
@@ -117,15 +114,15 @@ public:
 	void toggleVisibility( );
 
 protected:
-	string AddText;
+	std::string AddText;
 
 private:
 	Sprite* StaticTextSprite;
 	Sprite* TextSprite;
 	float TextX, TextY;
 	int TextAlign;
-	string Text;
-	string FontName;
+	std::string Text;
+	std::string FontName;
 	int FontSize;
 
 	float BindedCache;
@@ -137,9 +134,9 @@ public:
 	BarWidget( );
 	~BarWidget( );
 
-	bool load( string config );
+	bool load( std::string config );
 
-	void createBar( string name, int* position );
+	void createBar( std::string name, int* position );
 	void setBarValue( float val );
 	void setBarSize( float val );
 

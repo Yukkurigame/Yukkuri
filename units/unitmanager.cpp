@@ -6,7 +6,7 @@ static unsigned int LastId = 1;
 
 UnitManager::UnitManager()
 {
-	graph = Graphics::Instance();
+	graph = RenderManager::Instance();
 	player = NULL;
 }
 
@@ -172,7 +172,7 @@ Unit* UnitManager::GetUnit( unsigned int id )
 	return u;
 }
 
-void UnitManager::DrawUnits( )
+void UnitManager::onDraw( )
 {
 	Unit* u = NULL;
 	for( vector< Unit* >::iterator it = Units.begin(), end = Units.end(); it != end; ++it ){

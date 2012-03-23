@@ -2,10 +2,9 @@
 #define TIMEOFDAY_H
 
 #include <math.h>
-#include "Graphics.h"
-#include "Interface.h"	//FUUUU
+#include "Render.h" //FUUUU
 #include "Widgets.h"		//UUUUU
-#include "Define.h"
+
 
 class DayTime
 {
@@ -13,7 +12,7 @@ public:
 	DayTime();
 	~DayTime();
 	void update( const int& dt );
-	void draw( );
+	void onDraw( );
 	int getDay( ){ return Day; }
 	void loadInterface();
 

@@ -5,11 +5,19 @@
  */
 
 #include "Interface.h"
+#include "widgets/TextWidget.h"
+#include "widgets/BarWidget.h"
 #include "Luaconfig.h"
+
+#include "debug.h"
+
 
 UI UI::yui; // :3
 
+
 static unsigned int LastWidgetId = 1;
+
+
 
 UI::~UI( )
 {
@@ -20,26 +28,26 @@ UI::~UI( )
 
 void UI::LoadAllWidgets( )
 {
-	std::vector< string > v;
+	std::vector< std::string > v;
 	LuaConfig* lc = new LuaConfig;
 	lc->getSubconfigsList("widget", v);
-	for(std::vector <string>::iterator it = v.begin(); it != v.end(); ++it ){
+	for(std::vector < std::string >::iterator it = v.begin(); it != v.end(); ++it ){
 		LoadWidget( (*it) );
 	}
 	delete lc;
 }
 
-Widget* UI::LoadWidget( string name )
+Widget* UI::LoadWidget( std::string name )
 {
 	Widget* w;
 	LuaConfig* conf = new LuaConfig;
 
-	debug(5, "Loading widget " + name + "\n");
+	debug( Debug::INTERFACE, "Loading widget " + name + "\n" );
 
 	//Prevent loop inheritance.
 	//w = GetWidget( name );
 	//if( w ){
-		//debug(5, "Widget with name " + name + " already exists.\n");
+		//debug( Debug::INTERFACE, "Widget with name " + name + " already exists.\n");
 		//return w;
 	//}
 
@@ -75,9 +83,9 @@ Widget* UI::LoadWidget( string name )
 	//Add in cache;
 	widgets.push_back(w);
 
-	std::vector < string > childs;
+	std::vector < std::string > childs;
 	conf->getValue("children", name, "widget", childs);
-	for(std::vector <string>::iterator it = childs.begin(); it != childs.end(); ++it ){
+	for(std::vector < std::string >::iterator it = childs.begin(); it != childs.end(); ++it ){
 		Widget* cld = LoadWidget( (*it) );
 		if(cld){
 			w->addChild(cld);
@@ -101,7 +109,7 @@ Widget* UI::GetWidget( unsigned int id )
 	return NULL;
 }
 
-Widget* UI::GetWidget( string name )
+Widget* UI::GetWidget( std::string name )
 {
 	for (std::vector< Widget* >::iterator it=widgets.begin() ; it != widgets.end(); it++ ){
 		if( (*it)->getName() == name )

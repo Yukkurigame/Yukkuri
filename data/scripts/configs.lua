@@ -30,16 +30,16 @@ function Configs:load( filename )
 		if self.configs[ctype] == nil then
 			self.configs[ctype] = {}
 		end
-		if j.name == nil then
-			Debug(4, i .. " in " .. filename ..  ": no name given. Skipped.")
+		if j.id == nil then
+			Debug(4, "Error in " .. filename ..  ": no id given. Skipped.")
 			break
 		end
-		local name = string.lower(j.name)
-		if self.configs[ctype][name] ~= nil then
-			Debug(4, "Config with name " .. name .. " already loaded. Skipped.\n")
+		local id = string.lower(j.id)
+		if self.configs[ctype][id] ~= nil then
+			Debug(4, "Config with id " .. id .. " already loaded. Skipped.\n")
 			break
 		end
-		self.configs[ctype][name] = j
+		self.configs[ctype][id] = j
 	end
 	return true
 end

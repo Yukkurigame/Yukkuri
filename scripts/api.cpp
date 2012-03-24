@@ -6,11 +6,17 @@
 
 #include "api.h"
 #include "Interface.h"
+#include "widgets/BarWidget.h"
 #include "Luaconfig.h"
 #include "unitmanager.h"
 #include "LuaThread.h"
 #include "Camera.h"
+#include <cstring>
 #include <dirent.h>
+
+#include "debug.h"
+using namespace Debug;
+
 
 int scriptApi::ReadDirectory( lua_State* L )
 {
@@ -58,12 +64,12 @@ int scriptApi::GetCWD( lua_State* L )
 
 int scriptApi::Debug( lua_State* L )
 {
-	int level;
+	enum dbg_level level;
 	string str;
 	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Debug level expected." );
 	luaL_argcheck( L, lua_isstring( L, 2 ), 2, "Debug string expected." );
 
-	level = static_cast<int>(lua_tointeger( L, 1 ));
+	level = static_cast<enum dbg_level>(lua_tointeger( L, 1 ));
 	str = lua_tostring( L, 2 );
 	debug( level, str + "\n" );
 	lua_pop( L, lua_gettop( L ) );

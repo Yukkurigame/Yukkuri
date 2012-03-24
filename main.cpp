@@ -88,7 +88,7 @@ void Yukkuri::Render( )
 
 	daytime.onDraw( );
 
-	UI::yui.GetWidget("fps")->setText( GetFPSText() );
+	//UI::yui.GetWidget("fps")->setText( GetFPSText() );
 
 	//Draw to screen
 	RenderManager::Instance()->DrawGLScene( );

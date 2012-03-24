@@ -6,10 +6,6 @@
 using std::vector;
 
 #include "unit.h"
-#include "Plant.h"
-#include "Corpse.h"
-#include "Entity.h"
-#include "Player.h"
 #include "Render.h"
 
 class UnitManager

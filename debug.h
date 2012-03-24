@@ -18,7 +18,7 @@
 
 namespace Debug
 {
-	enum dbg_level { NONE, MAIN, OS, GRAPHICS, SCRIPT, INTERFACE, MAP };
+	enum dbg_level { NONE, MAIN, OS, CONFIG, GRAPHICS, SCRIPT, INTERFACE, MAP };
 
 	//TODO: string to char*
 	inline void debug( enum dbg_level level, std::string txt )

@@ -13,32 +13,32 @@ bool MainConfig::load( )
 {
 	LuaConfig* lc = new LuaConfig;
 
-	string subconfig;
-	string config;
-	subconfig = "general";
+	std::string id;
+	std::string config;
+	id = "config_general";
 	config = "config";
-	lc->getValue( "windows_width" , subconfig, config, windowWidth );
-	lc->getValue( "windows_height" , subconfig, config, windowHeight );
-	lc->getValue( "maximum_frame_rate" , subconfig, config, maxFrameRate );
-	lc->getValue( "minimum_frame_rate" , subconfig, config, minFrameRate );
-	lc->getValue( "texture_border" , subconfig, config, textureBorder );
+	lc->getValue( "windows_width" , id, config, windowWidth );
+	lc->getValue( "windows_height" , id, config, windowHeight );
+	lc->getValue( "maximum_frame_rate" , id, config, maxFrameRate );
+	lc->getValue( "minimum_frame_rate" , id, config, minFrameRate );
+	lc->getValue( "texture_border" , id, config, textureBorder );
 
-	lc->getValue( "images_path" , subconfig, config, imagePath );
-	lc->getValue( "default_image_name" , subconfig, config, defaultImage );
-	lc->getValue( "fonts_path" , subconfig, config, fontsPath );
-	lc->getValue( "scripts_path" , subconfig, config, scriptsPath );
-	lc->getValue( "configs_path" , subconfig, config, configsPath );
+	lc->getValue( "images_path" , id, config, imagePath );
+	lc->getValue( "default_image_name" , id, config, defaultImage );
+	lc->getValue( "fonts_path" , id, config, fontsPath );
+	lc->getValue( "scripts_path" , id, config, scriptsPath );
+	lc->getValue( "configs_path" , id, config, configsPath );
 
-	lc->getValue( "widgets_z" , subconfig, config, widgetsPosZ );
+	lc->getValue( "widgets_z" , id, config, widgetsPosZ );
 
-	lc->getValue( "map_tile_size" , subconfig, config, mapTileSize );
-	lc->getValue( "map_default_tile" , subconfig, config, mapDefaultTile );
-	lc->getValue( "day_length" , subconfig, config, dayLength );
-	lc->getValue( "action_interval" , subconfig, config, actionInterval );
-	lc->getValue( "max_spawn" , subconfig, config, maxSpawn );
-	lc->getValue( "max_edibles" , subconfig, config, maxEdibles );
+	lc->getValue( "map_tile_size" , id, config, mapTileSize );
+	lc->getValue( "map_default_tile" , id, config, mapDefaultTile );
+	lc->getValue( "day_length" , id, config, dayLength );
+	lc->getValue( "action_interval" , id, config, actionInterval );
+	lc->getValue( "max_spawn" , id, config, maxSpawn );
+	lc->getValue( "max_edibles" , id, config, maxEdibles );
 
-	lc->getValue( "player_dies" , subconfig, config, playerDies );
+	lc->getValue( "player_dies" , id, config, playerDies );
 
 	delete lc;
 

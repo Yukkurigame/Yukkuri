@@ -5,21 +5,24 @@
  */
 
 #include "LuaThread.h"
-#include "debug.h"
 #include <list>
+
+#include "debug.h"
+using namespace Debug;
+
 
 static int threadsCounter = 0;
 
 static std::list<LuaThread*> threads;
 
-static string getDebugInfo( lua_State* L )
+static std::string getDebugInfo( lua_State* L )
 {
 	lua_Debug ar;
 	//FIXME: it's cruve.
 	char d[65];
 	lua_getinfo(L, ">S", &ar);
 	sprintf(d, "%s line %d", ar.short_src, ar.linedefined );
-	return (string)d;
+	return (std::string)d;
 }
 
 LuaThread::LuaThread( )
@@ -44,7 +47,7 @@ unsigned int threadsManager::NewThread( lua_State* L )
 	if( !L )
 		return 0;
 	if( lua_gettop( L ) < 1 || lua_gettop( L ) > 2 ){
-		debug(3, "Wrong arguments count passed:" + getDebugInfo( L ) + ".\n");
+		debug( SCRIPT, "Wrong arguments count passed:" + getDebugInfo( L ) + ".\n");
 		return 0;
 	}
 
@@ -55,7 +58,7 @@ unsigned int threadsManager::NewThread( lua_State* L )
 	}
 
 	if( !lua_isfunction( L, 1 ) || lua_iscfunction( L, 1 ) ){
-		debug(3, "Wrong first argument passed:" + getDebugInfo( L ) + ". Function expected.\n");
+		debug( SCRIPT, "Wrong first argument passed:" + getDebugInfo( L ) + ". Function expected.\n" );
 		return 0;
 	}
 
@@ -98,13 +101,13 @@ int threadsManager::ResumeThread( lua_State *L )
 		int status = lua_resume( thread->Thread, lua_gettop( thread->Thread ) - 1 );
 		if( status != LUA_YIELD ){
 			if( status > 1 ){
-				string err = lua_tostring( thread->Thread, -1 );
-				debug( 3, "Thread resumption failed: " + err + ".\n" );
+				std::string err = lua_tostring( thread->Thread, -1 );
+				debug( SCRIPT, "Thread resumption failed: " + err + ".\n" );
 			}
 			RemoveThread( thread->ThreadId );
 		}
 	}else{
-		debug( 3, "Thread not registred: " + getDebugInfo( L ) + ".\n" );
+		debug( SCRIPT, "Thread not registred: " + getDebugInfo( L ) + ".\n" );
 	}
 
 	return 0;
@@ -118,7 +121,7 @@ int threadsManager::ThreadWait( lua_State* L )
 
 	if( lua_pushthread(L) ){
 		luaL_where(L, 0);
-		debug( 3, "Main thread is not a coroutine: " + getDebugInfo( L ) + lua_tostring(L, -1) + ".\n" );
+		debug( SCRIPT, "Main thread is not a coroutine: " + getDebugInfo( L ) + lua_tostring(L, -1) + ".\n" );
 		lua_pop(L, lua_gettop(L));
 		return 0;
 	}else{

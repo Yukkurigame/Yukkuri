@@ -1,5 +1,6 @@
 *.o
 *~
+Yukkuri
 .cproject
 .project
 .settings/

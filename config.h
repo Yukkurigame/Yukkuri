@@ -18,7 +18,7 @@ struct MainConfig
 	float minFrameRate;
 	float widgetsPosZ;
 	int mapTileSize;
-	int mapDefaultTile;
+	std::string mapDefaultTile;
 	int dayLength;
 	int actionInterval;
 	int maxSpawn;

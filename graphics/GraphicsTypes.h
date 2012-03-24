@@ -42,6 +42,12 @@ struct coord2farr
 	float width(){ return abs(rt.x - lt.x); }
 	// Calculated by right side only
 	float height(){ return abs(rt.y - rb.y); }
+	coord2farr(){
+		lb.x = lt.x = 0.0;
+		lb.y = rb.y = 0.0;
+		rb.x = rt.x = 1.0;
+		lt.y = rt.y = 1.0;
+	}
 };
 
 
@@ -115,7 +121,6 @@ struct TextureS
 	int atlasX;
 	int atlasY;
 	std::string id;
-	std::string name;
 	std::string image;
 	rect2f atlas;
 	GLuint* texture;
@@ -124,7 +129,6 @@ struct TextureS
 
 	TextureS( std::string i, std::string n, std::string img, int w, int h, int ox, int oy, int r, int c ){
 		id = i;
-		name = n;
 		image = img;
 		width = w;
 		height = h;
@@ -148,35 +152,40 @@ struct TextureInfo
 	int swidth; // width of one section
 	int sheight; // height of one section
 	GLuint* atlas;
-	std::string id;
-	std::string name;
+	const char* id;
 	rect2f pos;
-	TextureInfo ( std::string i, std::string n, int x, int y, int w, int h, int c, int r ){
+	TextureInfo () {
 		atlas = NULL;
 	}
 	void fromTextureS( TextureS* t ){
 		fromTextureS(t, NULL);
 	}
 	void fromTextureS( TextureS* t, GLuint* a ){
-		cols = ( t->cols < 1 ? 1 : t->cols );
 		rows = ( t->rows < 1 ? 1 : t->rows );
-		id = t->id;
-		name = t->name;
-		pos = t->atlas;
+		cols = ( t->cols < 1 ? 1 : t->cols );
 		swidth = t->width / cols;
 		sheight = t->height / rows;
 		atlas = a;
+		id = t->id.c_str();
+		pos = t->atlas;
 	}
 	coord2farr getSubTexture(int col, int row){
 		coord2farr rect;
-		col %= cols;
-		row %= rows;
-		int x = pos.x + col * swidth;
-		int y = pos.y + row * sheight;
-		rect.lb.x = rect.lt.x = x;
-		rect.lb.y = rect.rb.y = y;
-		rect.rb.x = rect.rt.x = x + swidth;
-		rect.lt.y = rect.rt.y = y + sheight;
+		if( cols < 1 && rows < 1 ){
+			rect.lb.x = rect.lt.x = 0;
+			rect.lb.y = rect.rb.y = 0;
+			rect.rb.x = rect.rt.x = 1.0;
+			rect.lt.y = rect.rt.y = 1.0;
+		}else{
+			col %= cols;
+			row %= rows;
+			int x = pos.x + col * swidth;
+			int y = pos.y + row * sheight;
+			rect.lb.x = rect.lt.x = x;
+			rect.lb.y = rect.rb.y = y;
+			rect.rb.x = rect.rt.x = x + swidth;
+			rect.lt.y = rect.rt.y = y + sheight;
+		}
 		return rect;
 	}
 };
@@ -215,9 +224,6 @@ struct VBOStructureHandle
 
 struct Sprite
 {
-	TextureInfo* tex;
-	vertex3farr* vertices;
-	color4u* clr;
 	int col;
 	int row;
 	float width;
@@ -227,6 +233,10 @@ struct Sprite
 	bool visible;
 	bool centered;
 	bool fixed;
+	TextureInfo* tex;
+	vertex3farr* vertices;
+	color4u* clr;
+
 
 	Sprite(){
 		tex = NULL;
@@ -238,7 +248,14 @@ struct Sprite
 	}
 
 	coord2farr getTextureCoordinates(){
-		return tex->getSubTexture(col, row);
+		if( tex != NULL )
+			return tex->getSubTexture(col, row);
+		coord2farr rect;
+		rect.lb.x = rect.lt.x = 0;
+		rect.lb.y = rect.rb.y = 0;
+		rect.rb.x = rect.rt.x = 1.0;
+		rect.lt.y = rect.rt.y = 1.0;
+		return rect;
 	}
 
 	void resize( float w, float h ){

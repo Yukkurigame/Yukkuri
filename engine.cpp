@@ -60,7 +60,7 @@ bool CEngine::Init()
 	// Initialize SDL's subsystems - in this case, only video.
 	if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) < 0 ) {
 		debug( NONE, "[FAIL]\n" );
-		debug( MAIN, "Couldn't initialize SDL: " + static_cast<string>(SDL_GetError( )) + "\n" );
+		debug( MAIN, "Couldn't initialize SDL: " + static_cast<std::string>(SDL_GetError( )) + "\n" );
 		return false;
 	}
 
@@ -72,7 +72,7 @@ bool CEngine::Init()
 	videoInfo = SDL_GetVideoInfo( );
 
 	if( !videoInfo ) {
-		debug( MAIN, "Video query failed: " + static_cast<string>(SDL_GetError( )) + "\n" );
+		debug( MAIN, "Video query failed: " + static_cast<std::string>(SDL_GetError( )) + "\n" );
 	}
 
 	videoFlags = SDL_OPENGL; // Enable OpenGL in SDL
@@ -83,7 +83,7 @@ bool CEngine::Init()
 	// Attempt to create a window with the specified height and width.
 	if( !SDLGraphics::SetScreen( SDL_SetVideoMode( conf.windowWidth, conf.windowHeight, 0, videoFlags ) ) ) {
 		debug( NONE, "[FAIL]\n" );
-		debug( MAIN, "Unable to set up video: " + static_cast<string>(SDL_GetError( )) + "\n" );
+		debug( MAIN, "Unable to set up video: " + static_cast<std::string>(SDL_GetError( )) + "\n" );
 		return false;
 	}
 
@@ -104,9 +104,9 @@ bool CEngine::Init()
 		int jnum = SDL_NumJoysticks();
 		char d[2]; //100 joystics, lol
 		snprintf( d, 2, "%d", jnum );
-		debug( MAIN, (string)(d) + " joysticks were found:\n" );
+		debug( MAIN, (std::string)(d) + " joysticks were found:\n" );
 		for( int i=0; i < jnum; i++ )
-			debug( MAIN, static_cast<string>(SDL_JoystickName(i)) + "\n" );
+			debug( MAIN, static_cast<std::string>(SDL_JoystickName(i)) + "\n" );
 		SDL_JoystickEventState(SDL_ENABLE);
 		joystick = SDL_JoystickOpen(0);
 	}

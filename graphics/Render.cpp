@@ -11,7 +11,10 @@
 #include "ElasticBox.h"
 #include "Luaconfig.h"
 
+#include <algorithm>
+
 #include "debug.h"
+#include "hacks.h"
 
 using std::string;
 using namespace Debug;
@@ -111,24 +114,27 @@ void RenderManager::AddTexture( string name ){
 	lc->getValue("offsetx", name, config, t->offsetx);
 	lc->getValue("offsety", name, config, t->offsety);
 
-	t->texture = LoadGLTexture( name );
+	t->texture = LoadGLTexture( t->image );
 
 	internalTextures.push_back(t);
+
+	delete lc;
 }
 
 
-void RenderManager::AddTexture( string id, string name, string path, int width, int height,
-							int offsetx, int offsety, int rows, int cols)
+TextureInfo* RenderManager::GetTextureById( std::string id )
 {
-	TextureS* t = new TextureS(id, name, path, width, height, offsetx, offsety, rows, cols);
-	t->texture = LoadGLTexture( path );
-	internalTextures.push_back(t);
+	for( int i = 0; i < texturesCount; ++i )
+		if( id.compare(textures[i].id) == 0 )
+			return &textures[i];
+	return NULL;
 }
+
 
 
 GLuint* RenderManager::GetGLTexture( string name )
 {
-	std::map < string, Texture* >::iterator it;
+	std::map < std::string, GLuint* >::iterator it;
 	it = texturesCache.find(name);
 	if( it != texturesCache.end() ){
 		return it->second;
@@ -181,6 +187,20 @@ void RenderManager::AddGLTexture( string name, GLuint* texture )
 }
 
 
+Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int height, int texture_id,
+						int picture, short centered )
+{
+	TextureInfo* tex = NULL;
+	if( texture_id > 0){
+		if( texture_id >= texturesCount )
+			debug( GRAPHICS, "Bad texture id passed.\n" );
+		else
+			tex = &textures[texture_id];
+	}
+
+	return CreateGLSprite( x, y, z, width, height, tex, picture, centered );
+}
+
 /* This function creating sprite structure with texture.
  * x, y, z - right top coordinates;
  * texX, texY - right top coordinates of texture rectangle;
@@ -191,12 +211,15 @@ void RenderManager::AddGLTexture( string name, GLuint* texture )
  * centered - origin at the center of the object if not 0;
  * return Sprite*
  */
-Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int height, int texture_id,
-						int picture, short centered = 0 )
+Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int height, TextureInfo* tex,
+						int picture, short centered )
 {
 	Sprite* sprite = new Sprite();
+	sprite->tex = tex;
 	sprite->vertices = new vertex3farr();
 	sprite->clr = new color4u();
+
+	//TODO: picture not used;
 
 	if(centered)
 		sprite->centered = true;
@@ -216,8 +239,11 @@ void RenderManager::FreeGLSprite( Sprite* sprite )
 	it = std::find( GLSprites.begin(), GLSprites.end(), sprite );
 	if( it != GLSprites.end() )
 		GLSprites.erase(it);
-	delete sprite->vertices;
-
+	if( sprite ){
+		if( sprite->vertices )
+			delete sprite->vertices;
+		delete sprite;
+	}
 }
 
 
@@ -236,9 +262,11 @@ bool RenderManager::CreateAtlas( )
 		debug( GRAPHICS, "Cannot build map.\n" );
 		return false;
 	}
-	textures = (TextureInfo)malloc( sizeof(TextureInfo) * internalTextures.size() );
-	for( unsigned int i = 0; i < internalTextures.size(); ++i ){
+	int tcount = internalTextures.size() + texturesCount;
+	textures = (TextureInfo*)realloc(textures, sizeof(TextureInfo) * tcount );
+	for( int i = texturesCount; i < tcount; ++i ){
 		textures[i].fromTextureS(internalTextures[i], atlasHandle);
+		texturesCount++;
 	}
 	clear_vector( &internalTextures );
 	return true;
@@ -305,9 +333,10 @@ void RenderManager::CleanGLScene()
 
 
 RenderManager::RenderManager( ){
-	VBOHandle = NULL;
+	textures = NULL;
 	verticlesSize = 0;
 	minAtlasSize = 64;
+	texturesCount = 0;
 }
 
 
@@ -345,7 +374,7 @@ void RenderManager::ExtendVerticles(int count)
 	if( count <= 0 )
 		return;
 	verticlesSize += count;
-	verticles = (VertexV2FT2FC4UI)realloc( verticles, sizeof(VertexV2FT2FC4UI) * verticlesSize );
+	verticles = (VertexV2FT2FC4UI*)realloc( verticles, sizeof(VertexV2FT2FC4UI) * verticlesSize * 4 );
 }
 
 
@@ -358,9 +387,9 @@ int RenderManager::PrepareVBO(VBOStructureHandle* v)
 		s = GLSprites[sprite];
 		if(!s->visible)
 			continue;
+		coord2farr texcoord = s->getTextureCoordinates();
 		if(!v || s->tex != v->texture)
 			v = new VBOStructureHandle(s->tex, 0, sprite, v);
-		coord2farr texcoord = s->getTextureCoordinates();
 		verticles[sprite    ] = VertexV2FT2FC4UI(s->vertices->lt, texcoord.lt, s->clr);
 		verticles[sprite + 1] = VertexV2FT2FC4UI(s->vertices->rt, texcoord.rt, s->clr);
 		verticles[sprite + 2] = VertexV2FT2FC4UI(s->vertices->rb, texcoord.rb, s->clr);
@@ -453,7 +482,7 @@ bool RenderManager::BuildAtlas()
 	glColor4f(0.0f, 0.0f, 0.0f, 0.0f);
 	glEnable(GL_TEXTURE_2D);
 	for ( unsigned int i = 0; i < internalTextures.size(); i++ ){
-		glBindTexture(GL_TEXTURE_2D, *internalTextures[i]->texture);
+		glBindTexture(GL_TEXTURE_2D, *(internalTextures[i]->texture));
 		glBegin(GL_QUADS);
 		{
 			glTexCoord2f(0.0, 0.0); glVertex2f(internalTextures[i]->atlasX, internalTextures[i]->atlasY);

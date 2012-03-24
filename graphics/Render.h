@@ -42,7 +42,7 @@ public:
 	bool LoadTextures( );
 
 	void AddTexture( std::string name );
-	void AddTexture( std::string id, std::string name, std::string path, int w, int h, int ox, int oy, int rows, int cols);
+	TextureInfo* GetTextureById( std::string id );
 
 	GLuint* GetGLTexture( std::string name );
 	GLuint* LoadGLTexture( std::string name );
@@ -54,6 +54,8 @@ public:
 		return CreateGLSprite( x, y, z, width, height, -1, 0);
 	}
 	Sprite* CreateGLSprite( float x, float y, float z, int width, int height, int texture_id,
+							int picture, short centered = 0 );
+	Sprite* CreateGLSprite( float x, float y, float z, int width, int height, TextureInfo* tex,
 							int picture, short centered = 0 );
 	void FreeGLSprite( Sprite* sprite );
 
@@ -72,7 +74,8 @@ private:
 	RenderManager& operator= ( const RenderManager& );
 	static RenderManager* graph;
 
-	TextureInfo textures[];
+	int texturesCount;
+	TextureInfo* textures;
 	std::vector < TextureS* > internalTextures;
 	std::map < std::string, GLuint* > texturesCache;
 
@@ -82,11 +85,11 @@ private:
 	std::vector < Sprite* > GLSprites;
 
 	int verticlesSize;
-	VertexV2FT2FC4UI verticles[];
+	VertexV2FT2FC4UI* verticles;
 
 	void ExtendVerticles( int count );
 
-	GLuint* VBOHandle;
+	GLuint VBOHandle;
 
 	// Returns count of breakings
 	int PrepareVBO( VBOStructureHandle* v );

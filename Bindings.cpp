@@ -10,6 +10,7 @@
 #include "yukkuri.h"
 #include "Luaconfig.h"
 #include "unitmanager.h"
+#include "Player.h"
 #include "sdl_graphics.h"
 
 Bindings Bindings::bnd;

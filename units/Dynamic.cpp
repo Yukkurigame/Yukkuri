@@ -1,7 +1,18 @@
 #include "Dynamic.h"
-#include "map.h"
-#include <math.h>
+#include "Corpse.h"
+
 #include "unitmanager.h"
+
+#include <stdlib.h>
+#include <math.h>
+#include <iostream>
+#include <string>
+#include <math.h>
+#include "map.h"
+
+
+
+
 
 DynamicUnit::DynamicUnit()
 {
@@ -64,7 +75,7 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 		float dx = speed * x;// / l;
 		float dy = speed * y ;// / l;
 		MapTile* currentTile = map.GetTile( X , Y );
-		if( currentTile && !currentTile->Passability ){
+		if( currentTile && !currentTile->Type->passability ){
 			//FIXME: Bad
 			int x, y, px, py;
 			MapTile* nextTile;
@@ -78,7 +89,7 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 					if( !i && !j )
 						continue;
 					nextTile = map.GetTile( px + i, py + j );
-					if( !nextTile || !nextTile->Passability )
+					if( !nextTile || !nextTile->Type->passability )
 						continue;
 					//Если стоять в центре следующего тайла, то не сработает.
 					float f = sqrt( pow( static_cast<float>(nextTile->RealX) - X, 2 ) +
@@ -101,7 +112,7 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 			}
 		}else{
 			MapTile* nextTile = map.GetTile( X + dx * x, Y + dy * y );
-			if( nextTile ) zone = nextTile->Passability;
+			if( nextTile ) zone = nextTile->Type->passability;
 			if( !zone )
 				zone = -0.5;
 		}
@@ -272,12 +283,12 @@ void DynamicUnit::attackUnit( Unit* victim )
 		return;
 	if( Parameters["fed"] > 1 )
 		Parameters["fed"] -= 0.1f;
-    float dmg =  Parameters["damage"] * Parameters["fed"] / 100;
-    if( dmg < 0.4 )
-        dmg = 0.4f;
-    DynamicUnit* dvictim = dynamic_cast<DynamicUnit*>(victim);
-    if( dvictim && dvictim->Attacker() != this )
-    	dvictim->Attacker( this );
+	float dmg =  Parameters["damage"] * Parameters["fed"] / 100;
+	if( dmg < 0.4 )
+		dmg = 0.4f;
+	DynamicUnit* dvictim = dynamic_cast<DynamicUnit*>(victim);
+	if( dvictim && dvictim->Attacker() != this )
+		dvictim->Attacker( this );
 	victim->hit( dmg );
 }
 

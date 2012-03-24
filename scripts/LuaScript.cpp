@@ -45,7 +45,7 @@ void LuaScript::RegisterApi( )
 	lua_register( Lst, "SetCameraTarget", &scriptApi::SetCameraTarget );
 }
 
-bool LuaScript::OpenFile( string name )
+bool LuaScript::OpenFile( std::string name )
 {
 	extern MainConfig conf;
 	return LuaMain::OpenFile( ( ( conf.scriptsPath != "" ) ? conf.scriptsPath : "data/scripts/" ) + name + ".lua" );

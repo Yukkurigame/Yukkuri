@@ -20,15 +20,9 @@ namespace SDLGraphics {
 
 	void DrawSurface( SDL_Surface* surface );
 
-	SDL_Surface* screen;
+	bool SetScreen( SDL_Surface* s );
 
-	bool SetScreen( SDL_Surface* s ){
-		if( s == NULL )
-			return false;
-		screen = s;
-		return true;
-	}
-
+	static SDL_Surface* screen;
 }
 
 namespace Screenshot

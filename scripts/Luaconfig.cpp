@@ -18,7 +18,7 @@ LuaConfig::~LuaConfig( )
 
 }
 
-bool LuaConfig::LoadAll( string type )
+bool LuaConfig::LoadAll( std::string type )
 {
 	const int prmsz = 1;
 	bool ret;
@@ -38,9 +38,9 @@ bool LuaConfig::OpenConfig( std::string filename )
 }
 
 //TODO: Как-то оно не так делает.
-string LuaConfig::getRandom( string field, string config )
+std::string LuaConfig::getRandom( std::string field, std::string config )
 {
-	string ret;
+	std::string ret;
 	const int prmsz = 2;
 	const char* prm[prmsz] = { field.c_str(), config.c_str() };
 	//bool res = execFunction("getOneFromSeveral", prm, prmsz, ret);
@@ -50,7 +50,7 @@ string LuaConfig::getRandom( string field, string config )
 
 /*	Returns subconfig names list
  */
-bool LuaConfig::getSubconfigsList( string config, std::vector< string >& ret )
+bool LuaConfig::getSubconfigsList( std::string config, std::vector< std::string >& ret )
 {
 	const int prmsz = 1;
 	const char* prm[prmsz] = { config.c_str() };
@@ -58,7 +58,7 @@ bool LuaConfig::getSubconfigsList( string config, std::vector< string >& ret )
 	return res;
 }
 
-bool LuaConfig::getSubconfigsLength( string config, int& len )
+bool LuaConfig::getSubconfigsLength( std::string config, int& len )
 {
 	const int prmsz = 1;
 	const char* prm[prmsz] = { config.c_str() };

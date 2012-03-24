@@ -163,6 +163,12 @@ void SDLGraphics::DrawSurface( SDL_Surface* surface )
 
 }
 
+bool SDLGraphics::SetScreen( SDL_Surface* s ){
+	if( s == NULL )
+		return false;
+	screen = s;
+	return true;
+}
 
 
 bool Screenshot::Save( )
@@ -212,7 +218,7 @@ bool Screenshot::Save( )
 	return true;
 }
 
-static int Screenshot::Exists( char *name )
+int Screenshot::Exists( char *name )
 {
 	struct stat dummy;
 	if( stat( name, &dummy ) == 0 )
@@ -220,7 +226,7 @@ static int Screenshot::Exists( char *name )
 	return 0;
 }
 
-static void Screenshot::GenerateName( char* name )
+void Screenshot::GenerateName( char* name )
 {
 	int iter = 0;
 	do{

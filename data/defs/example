@@ -1,27 +1,59 @@
---- little obsolete
-
 --- Some config files description here.
-
+--- v. 0.3
 
 --- Structure:
 {
 	{element1},
 	{element2},
-	{	
-		name = "Element name",
-		type = "ConfigType",
-		subelement1 = "value", --- string		
-		subelement2 = 3, --- integer
-		subelement3 = 24.5, --- float
-		subelement4 = {
-			subsubelements
+	{
+		id = "element_id_999", --- Base id
+		name = "Element name", --- Human readable, in most cases used by editor only
+		type = "ConfigType", --- Base type
+		subelement1 = "value", --- string type
+		subelement2 = 3, --- integer type
+		subelement3 = 24.5, --- float type
+		subelement4 = { 1, 2 }, --- array type
+		subelement5 = {
+			subsubelements = 1 --- hash type
 		}
 	}
 },
 
+
 --- Name and type field in elements is required.
 
 --- Config types
+
+
+--- Sprites
+--- *.sprites
+
+{
+	{
+		id = "sprite_ground_600587",
+		type = "Sprite",
+		name = "ground", --- Editor only
+		image = "./iso-64x64-outside.png", --- Image path
+		rows = 3, --- Rows in image
+		columns = 8, --- Columns in image
+		height = 192,
+		width = 512,
+	},
+	{
+		id = "sprite_shrubs_847420",
+		name = "shrubs",
+		type = "Sprite",
+		image = "./iso-64x64-outside.png",
+		rows = 1,
+		columns = 4,
+		height = 64,
+		width = 256,
+		offsetx = 384, --- X offset of image in file
+		offsety = 768, --- Y offset of image in file
+	},
+	{another sprite},
+}
+
 
 --- Entity:
 --- *.entity
@@ -44,7 +76,7 @@
 			up = {0, 1}
 		},
 		height = 1, --- Image height
-		hp = 1.0,  
+		hp = 1.0,
 		image = "filename",
 		name = "Entity",
 		imagecols = 1, --- Columns in image gird
@@ -85,6 +117,7 @@
 	}
 }
 
+
 --- Widget:
 --- *.widget
 --- Widgets has some types(variable type).
@@ -94,50 +127,59 @@
 	{
 		--- A null widget.
 		--- Nothig. Only position.
-		name = "null",
+		id = "widget_new_999",
+		name = "null", --- Editor only
 		type = "Widget",
 		wtype = 0,
-		x = 1,
-		y = 1,
+		--- Widget's align, 1 by default.
+		--- Choices are: left: 1, center: 2, right: 3
+		align = 1,
+		--- Widget's vertical align, 1 by default.
+		--- Choices are: top: 1, bottom: 3
+		valign = 1,
+		x = 1, --- X position
+		y = 1, --- Y position
 		width = 1,
 		height = 1,
 		children = {
+			--- array of widgets id
 		}
 	},
 	{
 		--- A blank widget
 		--- Widget with background only. If background property not defined, it's will be filled by one color.
+		id = "widget_newbg_999",
 		name = "blank",
 		type = "Widget",
 		wtype = 1,
 		x = 1,
 		y = 1,
 		width = 1,
-		height = 1,		
-		bgimage = "filename",
-		--- Left top corner position of sprite in image.
-		bgposx = 1,
-		bgposy = 1,
+		height = 1,
+		image = "sprite_ground_600587", --- Sprite id
+		picture = 0, --- Image picture
 		children = {
 		}
 	},
 	{
 		--- A text widget
 		--- Widget with textline and background. If background not defined, it's transparent.
+		id = "widget_newtext_999",
 		name = "text",
 		type = "Widget",
-		wtype = 1,
+		wtype = 2,
 		x = 1,
 		y = 1,
 		width = 1,
 		height = 1,
-		bgimage = "filename",
-		bgposx = 1,
-		bgposy = 1,
-		--- Text position calculated from top left corner of widget and besides {0,0} - it's down left corner. 
+		image = "sprite_ground_600587",
+		--- Text position calculated from top left corner of widget and besides {0,0} - it's down left corner.
 		text = "textstring",
 		textx = 1.0,
 		texty = 1.0,
+		--- Widget's text align, 1 by default.
+		--- Choices are: left: 1, center: 2, right: 3
+		textalign = 1,
 		font = "True type font file name without .ttf",
 		fontsize = 1,
 		--- Color array: red, green, blue.
@@ -148,16 +190,15 @@
 	{
 		--- A bar widget
 		--- Bar widget with text string. If background not defined, it's transparent.
+		id = "widget_newbar_999",
 		name = "bar",
 		type = "Widget",
-		wtype = 1,
+		wtype = 3,
 		x = 1,
 		y = 1,
 		width = 1,
 		height = 1,
-		bgimage = "filename",
-		bgposx = 1,
-		bgposy = 1,
+		image = "sprite_ground_600587",
 		--- Text position calculated from top left corner of widget.
 		text = "textstring",
 		textx = 1.0,
@@ -168,17 +209,13 @@
 		fontcolor = { 1, 1, 1 },
 		--- Bar consists from progress line and cover(decorative element, for example sprite with a transparent center and frame on sides),
 		--- which is drawn on top of final sprite. Cover places only in 0,0 of sprite.
-		source = "Source image file for top image",
-		--- Position of cover's sprite top left corner in source
-		topimgx = 1, 
-		topimgy = 1,
-		--- Position of progress line top left corner
+		topimage = "sprite_topground_600587", --- Image for cover
+		toppicture = 0, --- Cover image picture
+		--- Position of progress line (top left corner)
 		barx = 1,
 		bary = 1,
-		--- Width of progress line. Widget width if not defined.
-		barwidth = 1,
-		--- Height of progress line. Widget Height if not defined.
-		barheight = 1,
+		barwidth = 1, --- Width of progress line. Widget width if not defined.
+		barheight = 1, --- Height of progress line. Widget Height if not defined.
 		--- Progress line color array: red, green, blue.
 		barcolor = { 1, 1, 1},
 		children = {
@@ -190,11 +227,12 @@
 --- *.config
 {
 	{
+		id = "id_bindings_0"
 		name = "name",
 		type = "Bindings",
 		keys = {
 			--- Enumeration of the keys here.
-			--- Format: key = "action" 
+			--- Format: key = "action"
 			up = "up",
 			down = "down",
 			joyaxis10 = "up",
@@ -207,19 +245,19 @@
 --- *.map
 {
 	{
+		id = "region_new_000",
 		name = "test", --- Name of region
 		type = "MapRegion",
 		tiles = { --- Map tiles
 			{
 				x = 1,
 				y = 1,
-				type = 2, --- Number - tile name. All Tiles 1 by default.
+				tile = "tile_new_000", --- Tile id.
 			},
 			{
 				x = 1,
 				y = 2,
-				type = 1,
-				backtype = 1 --- Number - Name of current tile background image tile. If tile has background it 1 by default.
+				tile = "tile_old_000",
 			}
 		}.
 	}
@@ -229,18 +267,14 @@
 --- *.tiles
 {
 	{
-		name = 1, --- Number type of element 
+		id = "tile_new_000" --- Unique tile id.
 		type = "Tiles",
-		image = "filename",
-		--- Left top corner offset of sprite in image.
-		offsetx = 1.0,
-		offsety = 1.0,		
-		backing = false, --- Could tile has Background image or not. 
+		name = "some name" --- Human readable name, used by editor only.
+		image = "sprite_newtile_600587", --- Some unique sprite name
+		picture = "0", --- Number of picture in sprite table
+		passability = 1.0,
 	},
-	{
-		name = 2,
-		type = "Tiles",
-	}
+	{other tile},
 }
 
 --- Configuration file

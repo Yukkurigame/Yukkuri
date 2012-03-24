@@ -1,5 +1,6 @@
 #include "unit.h"
 #include "unitmanager.h" //FUUUUUUUUUUUUU~
+#include <cmath>
 
 Unit::Unit()
 {
@@ -13,6 +14,7 @@ Unit::Unit()
 	Type = "";
 	Deleted = false;
 	Image = NULL;
+	defs = NULL;
 }
 
 Unit::~Unit()
@@ -92,7 +94,7 @@ void Unit::setUnitY( float y )
 void Unit::setUnitSize( float size )
 {
 	Scale = size;
-	Image->resize( defs->width * Scale, defs->height * Scale );
+	//Image->resize( defs->width * Scale, defs->height * Scale );
 }
 
 void Unit::setUnitParameter( string name, float value )

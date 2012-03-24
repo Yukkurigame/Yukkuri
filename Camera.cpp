@@ -1,6 +1,6 @@
 #include "Camera.h"
 #include "config.h"
-#include "Graphics.h"
+#include "Render.h"
 #include <math.h>
 //#include <cstdlib>
 
@@ -17,7 +17,7 @@ YCamera::YCamera( )
 
 void YCamera::Update( )
 {
-	Graphics::Instance()->MoveGlScene( -floor( posX - offsetX ) , -floor( posY - offsetY ), 0 );
+	RenderManager::Instance()->MoveGlScene( -floor( posX - offsetX ) , -floor( posY - offsetY ), 0 );
 	if( TargetX && TargetY ){
 		if( (*TargetX) != posX || (*TargetY) != posY ){
 			Move( posX - (*TargetX), posY - (*TargetY) );

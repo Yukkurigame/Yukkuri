@@ -1,4 +1,8 @@
 #include "unitmanager.h"
+#include "Plant.h"
+#include "Corpse.h"
+#include "Entity.h"
+#include "Player.h"
 
 UnitManager UnitManager::units;
 
@@ -28,16 +32,16 @@ Unit* UnitManager::CreateUnit( enum unitType type, float x, float y )
 {
 	Unit* temp;
 	switch(type){
-		case 1:
+		case PLAYER:
 			temp = new Player();
 			break;
-		case 2:
+		case ENTITY:
 			temp = new Entity();
 			break;
-		case 3:
+		case PLANT:
 			temp = new Plant();
 			break;
-		case 4:
+		case CORPSE:
 			temp = new Corpse();
 			break;
 		default:
@@ -47,19 +51,19 @@ Unit* UnitManager::CreateUnit( enum unitType type, float x, float y )
 
 	temp->setUnitType( type );
 
-	if( !temp->Create( LastId ) ||
+	/*if( !temp->Create( LastId ) ||
 		!temp->setUnitImage( graph->CreateGLSprite( temp->getUnitImageName( ) ) ) ||
-		!temp->loadAnimation()
+		//!temp->loadAnimation()
 	)
 	{
 		delete temp;
 		return NULL;
-	}
+	}*/
 
 
-	graph->LoadAnimation( temp->getUnitName(), temp->getUnitImageRows(),
-								temp->getUnitImageCols(), temp->getUnitWidth(), temp->getUnitHeight(),
-								temp->getUnitImage());
+	//graph->LoadAnimation( temp->getUnitName(), temp->getUnitImageRows(),
+	//							temp->getUnitImageCols(), temp->getUnitWidth(), temp->getUnitHeight(),
+	//							temp->getUnitImage());
 
 	temp->setUnitPos( x, y );
 
@@ -174,14 +178,14 @@ Unit* UnitManager::GetUnit( unsigned int id )
 
 void UnitManager::onDraw( )
 {
-	Unit* u = NULL;
+	/*Unit* u = NULL;
 	for( vector< Unit* >::iterator it = Units.begin(), end = Units.end(); it != end; ++it ){
 		if( (*it) ){
 			u = (*it);
 			u->getUnitImage( )->setPosition( u->getUnitX( ), u->getUnitY( ) );
 			u->getUnitImage()->coordinates = graph->GetAnimation( u->getUnitName( ), u->getUnitAnim( ) );
 		}
-	}
+	}*/
 }
 
 void UnitManager::AddUnit( Unit* unit )

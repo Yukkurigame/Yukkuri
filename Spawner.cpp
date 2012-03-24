@@ -4,6 +4,7 @@
  *  Created on: 26.08.2010
  */
 #include "Spawner.h"
+#include "Dynamic.h"
 #include "config.h"
 
 extern MainConfig conf;
@@ -16,8 +17,10 @@ void Spawner::Spawn( )
 		getPosition( &x, &y );
 		DynamicUnit* u = dynamic_cast<DynamicUnit*>( UnitManager::units.CreateUnit( ENTITY, x, y ) );
 		DynamicUnit* p = dynamic_cast<DynamicUnit*>( UnitManager::units.GetPlayer( ) );
-		if( u && p )
-			u->levelUp( rand( ) % static_cast<int>(p->getUnitParameter("level")) + 3 );
+		if( u && p ){
+			float level = p->getUnitParameter("level");
+			u->levelUp( rand( ) % static_cast<int>( level ? level : 1 ) + 3 );
+		}
 	}
 	if( UnitManager::units.GetUnitsSize(PLANT) < conf.maxEdibles ){
 		x = y = 0;

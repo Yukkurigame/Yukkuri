@@ -4,7 +4,6 @@
 #include "Render.h"
 #include "Luaconfig.h"
 #include "safestring.h"
-#include <map>
 #include <math.h>
 #include <iterator>
 
@@ -12,105 +11,61 @@
 using namespace Debug;
 
 extern MainConfig conf;
+
 static unsigned int TilesCount = 0;
+
+
+
 //FIXME: Я не знаю, почему не вношу это в Map
 static unsigned int TileTypesCount = 0;
-
+static std::map< std::string, TileInfo > tiles;
 static bool TilesLoaded = false;
 
+
 Map map;
+
 
 namespace Region
 {
 
-	static std::map< signed int, std::map< signed int, unsigned int > >  RegionDump;
-	static std::map< signed int, std::map< signed int, unsigned int > >  RegionBackDump;
+	static std::map< signed int, std::map< signed int, TileInfo* > >  RegionDump;
 
 	void Load( std::string name ){
 		debug( MAP, "Loading region " + name + ".\n" );
-		bool Backing;
-		char BackName[3];
+		if( !TilesLoaded ){
+			debug( MAP, "Cannot load region " + name + " without tiles.\n");
+			return;
+		}
 		LuaConfig* cfg = new LuaConfig;
 		std::vector< std::map< string, int > > Tiles;
 		cfg->getValue( "tiles", name, "mapregion", Tiles );
-		//Lua cannot into number keys
 		for( std::vector< std::map< string, int > >::iterator it = Tiles.begin(), end = Tiles.end();
 			it != end; ++it ){
-			if( it->count( "type" ) > 0 ){
-				int x, y, type;
+			if( it->count( "tile" ) > 0 ){
+				int x, y;
+				string type;
 				x = y = 0;
 				type = (*it)["type"];
 				if( it->count( "x" ) > 0 )
 					x = (*it)["x"];
 				if( it->count( "y" ) > 0 )
 					y = (*it)["y"];
-				RegionDump[x][y] = type;
-
-				snprintf( BackName, 3, "%d", type );
-				cfg->getValue( "backing", BackName, "tiles", Backing );
-				if( Backing ){
-					if( it->count( "backtype" ) > 0 )
-						RegionBackDump[x][y] = (*it)["backtype"];
-					else
-						RegionBackDump[x][y] = conf.mapDefaultTile;
-				}
+				RegionDump[x][y] = &tiles[type];
 			}
 		}
 		delete cfg;
 	}
 
-	unsigned int GetTile( signed int x, signed int y ){
+	TileInfo* GetTile( signed int x, signed int y ){
 		if( RegionDump.count( x ) > 0) {
 			if( RegionDump[x].count( y ) > 0 ){
 				return RegionDump[x][y];
 			}
 		}
-		return conf.mapDefaultTile;
-	}
-
-	unsigned int GetTileBack( signed int x, signed int y ){
-		if( RegionBackDump.count( x ) > 0) {
-			if( RegionBackDump[x].count( y ) > 0 ){
-				return RegionBackDump[x][y];
-			}
-		}
-		return 0;
+		return &tiles[conf.mapDefaultTile];
 	}
 }
 
-/* Return tile with passed id.
- * If id not found and tiles array exists its return first tile.
- * Otherwise returns tile with -1 as id.
- */
-static inline imageRect getTileById( int tileid )
-{
-	if( TilesLoaded && TilesArray ){
-		int first;
-		int last;
-		int mid;
-
-		if( TilesArray[0].id <= tileid && TilesArray[TileTypesCount-1].id >= tileid ){
-			first = 0;
-			last = TileTypesCount;
-			while( first < last ){
-				mid = first + ( last - first ) / 2;
-				if( tileid <= TilesArray[mid].id )
-					last = mid;
-				else
-					first = mid + 1;
-			}
-			if( TilesArray[last].id == tileid )
-				return TilesArray[last];
-		}
-		char d[30];
-		snprintf( d, 30, "Tile with id %d not found.\n", tileid );
-		debug( 3, d );
-		return TilesArray[0];
-	}
-	debug( 3, "Tiles not loaded.\n" );
-	imageRect fake;
-	return fake;
-}
 
 static struct MapDefines{
 	int XCount;
@@ -141,45 +96,24 @@ MapTile::MapTile( signed int x, signed int y ) {
 	RealX = posX = x;
 	RealY = posY = y;
 
-	TypeID = Region::GetTile( x, y );
-	if( TypeID > TileTypesCount )
-		TypeID = 0;
-
-	Image = getTileById( TypeID );
-
-	BackType = Region::GetTileBack(x, y);
+	Type = Region::GetTile( x, y );
 
 	map.fromMapCoordinates( &RealX, &RealY );
 
+	sprite = RenderManager::Instance()->CreateGLSprite( RealX - ( conf.mapTileSize >> 1 ),
+							RealY - ( conf.mapTileSize >> 2 ), 0,
+							conf.mapTileSize, conf.mapTileSize,
+							Type->texture, Type->picture );
+
 	//FIXME: я не уверен, что это правильно, но выглядит нормально. Может внезапно вылезти боком.
-	Image.x = RealX - ( conf.mapTileSize >> 1 );
-	Image.y = RealY - ( conf.mapTileSize >> 2 );
+	//Image.x = RealX - ( conf.mapTileSize >> 1 );
+	//Image.y = RealY - ( conf.mapTileSize >> 2 );
 
-	if( BackType ){
-		BackImage = getTileById( BackType );
-		BackImage.x = RealX - ( conf.mapTileSize >> 1 );
-		BackImage.y = RealY - ( conf.mapTileSize >> 2 );
-		BackImage.z -= 0.01f;
-	}
-
-
-	if( TypeID ){
-		//FIXME: ororoshenkiroro
-		char name[ sizeof(TypeID) ];
-		LuaConfig* cfg = new LuaConfig;
-		memset( name, 0, sizeof(name) );
-		snprintf( name, sizeof(TypeID), "%d", TypeID );
-		cfg->getValue( "passability", name, "tiles", Passability );
-		delete cfg;
-	}
 }
 
 MapTile::~MapTile( )
 {
-	//Graphics::Instance()->FreeGLSprite( Image );
-	//Image = NULL;
-	//Graphics::Instance()->FreeGLSprite( BackImage );
-	//BackImage = NULL;
+	RenderManager::Instance()->FreeGLSprite( sprite );
 }
 
 Map::Map( )
@@ -193,38 +127,33 @@ bool Map::LoadTiles( )
 {
 	char dbg[25];
 	if(TilesLoaded){
-		debug( 5, "Tiles already loaded." );
+		debug( MAP, "Tiles already loaded." );
 		return false;
 	}
 	LuaConfig* cfg = new LuaConfig;
 	//FIXME: И тут, внезапно, в функцию врываются костыли.
 	std::vector <  std::map < string, string > > Subconfigs;
-	std::map < string, string > blank; //First element is blank.
-	Subconfigs.push_back( blank );
 	if( !cfg->getSubconfigs( "tiles", Subconfigs ) || ! Subconfigs.size() ){
-		debug(1, "Tiles configs opening error or no tiles found.\n");
+		debug( CONFIG, "Tiles configs opening error or no tiles found.\n");
 		return false;
 	}else{
 		TileTypesCount = Subconfigs.size();
 		snprintf( dbg, 25, "Tiles found: %lu\n", Subconfigs.size() );
-		debug( 5, dbg );
+		debug( MAP, dbg );
 	}
-	TilesArray = (imageRect*)malloc( sizeof(imageRect) * ( TileTypesCount ) );
 	for( unsigned int i = 0; i < TileTypesCount; ++i ){
-		char name[65];
-		memset(name, 0, 65);
-		if( Subconfigs[i].count("image") )
-			strcpy(name, Subconfigs[i]["image"].c_str());
-		TilesArray[i].id =  Subconfigs[i].count("name") ? atoi(Subconfigs[i]["name"].c_str()) : 0;
-		strcpy( TilesArray[i].imageName, name );
-		TilesArray[i].x = Subconfigs[i].count("offsetx") ? atof(Subconfigs[i]["offsetx"].c_str()) : 0;
-		TilesArray[i].y = Subconfigs[i].count("offsety") ? atof(Subconfigs[i]["offsety"].c_str()) : 0;
-		TilesArray[i].z = 0;
-		TilesArray[i].coordinates = NULL;
-		TilesArray[i].width = TilesArray[i].height = conf.mapTileSize;
+		if( Subconfigs[i].count("id") ){
+			debug( MAP, "Tile have no id." );
+			continue;
+		}
+		string id = Subconfigs[i]["id"];
+		tiles[id].id = Subconfigs[i]["id"];
+		if( Subconfigs[i].count("image") ){
+			string image = Subconfigs[i]["image"];
+			tiles[id].texture = RenderManager::Instance()->GetTextureById( image );
+		}
+		tiles[id].picture = Subconfigs[i].count("picture") ? atoi(Subconfigs[i]["picture"].c_str()) : 0;
 	}
-	qsort(TilesArray, TileTypesCount, sizeof(imageRect), compareRects);
-	Graphics::Instance()->CreateGLTextureAtlas( conf.mapTileSize, &TilesArray[0], TileTypesCount );
 
 	TilesLoaded = true;
 
@@ -239,7 +168,7 @@ bool Map::Init( )
 	posY = YCamera::CameraControl.GetY();
 	Region::Load("test");
 	Defines.Init();
-	CreateTilesRectangle( 3, 16, 21, 14 );
+	//CreateTilesRectangle( 3, 16, 21, 14 );
 	return true;
 }
 
@@ -274,10 +203,6 @@ MapTile* Map::CreateTile( signed int x, signed int y )
 	}
 	tile = new MapTile( x, y );
 	Tilesvec.insert(tit, tile);
-	if( tile->Image.texture )
-		TileSprites.push_back( &tile->Image );
-	if( tile->BackType )
-		TileSprites.push_back( &tile->BackImage );
 	Updated = true;
 	return tile;
 }
@@ -300,22 +225,6 @@ void Map::DeleteTile( MapTile* tile )
 	if( !tile )
 		return;
 	Updated = true;
-	for( vector< imageRect* >::iterator it = TileSprites.begin(), end = TileSprites.end(); it != end; ++it ){
-		//FIXME: null pointer error?
-		if( (*it) == &tile->Image ){
-			TileSprites.erase( it );
-			break;
-		}
-	}
-	if( tile->BackType ){
-		for( vector< imageRect* >::iterator it = TileSprites.begin(), end = TileSprites.end(); it != end; ++it ){
-			//FIXME: null pointer error?
-			if( (*it) == &tile->BackImage ){
-				TileSprites.erase( it );
-				break;
-			}
-		}
-	}
 	delete tile;
 }
 
@@ -466,7 +375,6 @@ void Map::onDraw( )
 		/*char d[3];
 		snprintf(d, 3, "%d\n", Tilesvec.size());
 		debug(0, d);*/
-		RenderManager::Instance()->AddImageRectArray( &TileSprites );
 		Updated = false;
 	}
 }

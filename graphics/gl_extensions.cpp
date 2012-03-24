@@ -9,6 +9,7 @@
 
 bool GLExtensions::load( )
 {
+#ifdef LOCAL_EXTENSIONS
 
 #ifdef GL_ARB_vertex_buffer_object
 		glGenBuffers = (PFNGLGENBUFFERSARBPROC)SDL_GL_GetProcAddress("glGenBuffersARB");
@@ -88,6 +89,8 @@ bool GLExtensions::load( )
 	*/
 #else
 	debug( dbg_level::GRAPHICS, "No shaders support.\n" );
+#endif
+
 #endif
 
 	return true;

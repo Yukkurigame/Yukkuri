@@ -11,19 +11,23 @@ enum {
 	TILE_TYPE_BLOCK
 };
 
+struct TileInfo
+{
+	unsigned int picture;
+	float passability;
+	std::string id;
+	TextureInfo* texture;
+};
+
 struct MapTile
 {
 	unsigned int TileID;
-	unsigned int TypeID;
 	signed int RealX;
 	signed int RealY;
 	signed int posX;
 	signed int posY;
-	int BackType;
-	float Passability;
-	int picture;
-	std::string image;
-	TextureInfo* texture;
+	TileInfo* Type;
+	Sprite* sprite;
 	MapTile( signed int x, signed int y );
 	~MapTile();
 };

@@ -7,7 +7,9 @@
 #include "Font.h"
 
 #include "safestring.h"
-using std::string;
+#include "debug.h"
+using namespace Debug;
+
 
 #include <vector>
 
@@ -25,14 +27,14 @@ void makeChar( FT_Face face, unsigned int ch, Char* letter )
 
 	//Load the Glyph for our character.
 	if( FT_Load_Glyph( face, FT_Get_Char_Index( face, ch ), FT_LOAD_DEFAULT ) ){
-		debug(4, "FT_Load_Glyph failed\n");
+		debug( GRAPHICS, "FT_Load_Glyph failed\n" );
 		return;
 	}
 
 	//Move the face's glyph into a Glyph object.
 	FT_Glyph glyph;
 	if(FT_Get_Glyph( face->glyph, &glyph )){
-		debug(4, "FT_Get_Glyph failed\n");
+		debug( GRAPHICS, "FT_Get_Glyph failed\n" );
 		return;
 	}
 
@@ -63,7 +65,7 @@ bool font_data::load( const char * fname, unsigned int height ) {
 
 	char fs[4];
 	snprintf( fs, 4, "%d", height );
-	debug( 3, "Loading font " +  (string)fname + ". Size: " + fs + "\n" );
+	debug( GRAPHICS, "Loading font " +  (std::string)fname + ". Size: " + fs + "\n" );
 
 	//Allocate some memory to store the texture ids.
 	//textures = new GLuint[CHARSIZE];
@@ -73,7 +75,7 @@ bool font_data::load( const char * fname, unsigned int height ) {
 	//Create and initilize a freetype font library.
 	FT_Library library;
 	if( FT_Init_FreeType( &library ) ){
-		debug(3, "FT_Init_FreeType failed in " +  (string)fname + "\n");
+		debug( GRAPHICS, "FT_Init_FreeType failed in " +  (std::string)fname + "\n" );
 		return false;
 	}
 
@@ -85,7 +87,7 @@ bool font_data::load( const char * fname, unsigned int height ) {
 	//Of all the places where the code might die, this is the most likely,
 	//as FT_New_Face will die if the font file does not exist or is somehow broken.
 	if( FT_New_Face( library, fname, 0, &face ) ){
-		debug( 3, "FT_New_Face failed in " + (string)fname + " (there is probably a problem with your font file)\n" );
+		debug( GRAPHICS, "FT_New_Face failed in " + (std::string)fname + " (there is probably a problem with your font file)\n" );
 		return false;
 	}
 
@@ -152,7 +154,7 @@ void font_data::size( int* w, int* h, const char* str )
 		(*h) = ( lineheight + lineheight/4 ) * ( nlines - 1 );
 }
 
-void font_data::print( Texture* tex, int* sw, int* sh, const char* str )
+void font_data::print( Sprite* tex, int* sw, int* sh, const char* str )
 {
 	GLuint* texture;
 	int width, height, swidth, sheight;
@@ -258,14 +260,14 @@ void font_data::print( Texture* tex, int* sw, int* sh, const char* str )
 	//that we are using GL_LUMINANCE_ALPHA to indicate that
 	//we are using 2 channel data.
 	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height,
-		  0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, expanded_data );
+		0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, expanded_data );
 
 	//With the texture created, we don't need to expanded data anymore
 
 	delete [] expanded_data;
 
-	tex->texture = texture;
-	tex->w = width;
-	tex->h = height;
+	//tex->texture = texture;
+	//tex->w = width;
+	//tex->h = height;
 
 }

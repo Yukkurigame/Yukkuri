@@ -8,11 +8,7 @@
 #define INTERFACE_H_
 
 #include <string>
-using std::string;
-#include <map>
-
-#include "Widgets.h"
-#include "debug.h"
+#include "widgets/Widget.h"
 
 
 class UI
@@ -23,17 +19,17 @@ public:
 	static UI yui;
 
 	void LoadAllWidgets();
-	Widget* LoadWidget( string name );
+	Widget* LoadWidget( std::string name );
 
 	Widget* GetWidget( unsigned int id );
-	Widget* GetWidget( string name );
+	Widget* GetWidget( std::string name );
 
 	void Update( );
 
 
 private:
 
-	void DeleteWidget( string name );
+	void DeleteWidget( std::string name );
 
 	std::vector< Widget* > widgets;
 

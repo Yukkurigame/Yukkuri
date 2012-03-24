@@ -9,6 +9,8 @@
 
 #include "SDL/SDL_opengl.h"
 
+#ifdef LOCAL_EXTENSIONS
+
 #ifdef GL_ARB_vertex_buffer_object
 	extern PFNGLGENBUFFERSARBPROC glGenBuffers;
 	extern PFNGLBINDBUFFERARBPROC glBindBuffer;
@@ -56,6 +58,7 @@
 	extern PFNGLUNIFORMMATRIX4FVARBPROC		glUniformMatrix4fvARB;
 #endif
 
+#endif
 
 namespace GLExtensions
 {

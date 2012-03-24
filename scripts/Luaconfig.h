@@ -11,7 +11,6 @@
 
 //#include <sys/types.h>
 #include <string>
-using std::string;
 #include <vector>
 
 #include "debug.h"
@@ -22,17 +21,17 @@ public:
 	LuaConfig( );
 	~LuaConfig( );
 
-	bool OpenConfig( string );
-	bool LoadAll( string );
+	bool OpenConfig( std::string );
+	bool LoadAll( std::string );
 
-	string getRandom( string field, string config );
+	std::string getRandom( std::string field, std::string config );
 
-	bool getSubconfigsList( string config, std::vector< string >& ret );
+	bool getSubconfigsList( std::string config, std::vector< std::string >& ret );
 
-	bool getSubconfigsLength( string config, int& len );
+	bool getSubconfigsLength( std::string config, int& len );
 
 	template<typename T>
-	bool getValue( string field, string subconfig, string config, T& ret)
+	bool getValue( std::string field, std::string subconfig, std::string config, T& ret)
 	{
 		const int prmsz = 3;
 		const char* prm[prmsz] = { field.c_str(), subconfig.c_str(), config.c_str() };
@@ -41,7 +40,7 @@ public:
 	}
 
 	template<typename T>
-	bool getSubconfigs( string config, T& ret)
+	bool getSubconfigs( std::string config, T& ret)
 	{
 		const int prmsz = 1;
 		const char* prm[prmsz] = { config.c_str() };

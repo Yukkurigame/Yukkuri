@@ -15,7 +15,7 @@ public:
 	LuaScript();
 	bool Init();
 	void RegisterApi( );
-	bool OpenFile( string name );
+	bool OpenFile( std::string name );
 };
 
 #endif /* LUASCRIPT_H_ */

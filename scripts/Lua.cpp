@@ -6,6 +6,9 @@
 #include "Lua.h"
 #include <cstring>
 
+#include "debug.h"
+using namespace Debug;
+
 lua_State* LuaMain::Lst = NULL;
 int LuaMain::count = 0;
 
@@ -44,25 +47,25 @@ LuaMain::~LuaMain()
 	if( count == 0 ){
 		lua_close(Lst);
 		Lst = NULL;
-		debug( 4, "Lua engine closed.\n" );
+		debug( SCRIPT, "Lua engine closed.\n" );
 	}
 }
 
-bool LuaMain::OpenFile( string name )
+bool LuaMain::OpenFile( std::string name )
 {
 	int result;
 
 	result = luaL_loadfile( Lst, name.c_str() );
 	if( result ){
-		string e = lua_tostring( Lst, -1 );
-		debug( 3, "Open " + name + " failed " + e + "\n" );
+		std::string e = lua_tostring( Lst, -1 );
+		debug( SCRIPT, "Open " + name + " failed " + e + "\n" );
 		return false;
 	}
 
 	result = lua_pcall( Lst, 0, 0, 0);
 	if( result ){
-		string e = lua_tostring( Lst, -1 );
-		debug( 3, "Execute " + name + " failed: " + e + "\n" );
+		std::string e = lua_tostring( Lst, -1 );
+		debug( SCRIPT, "Execute " + name + " failed: " + e + "\n" );
 		return false;
 	}
 
@@ -111,7 +114,7 @@ template<> bool LuaMain::getValue( lua_State* L, int index, int& ret)
 	return false;
 }
 
-template<> bool LuaMain::getValue( lua_State* L, int index, string& ret)
+template<> bool LuaMain::getValue( lua_State* L, int index, std::string& ret)
 {
 	ret = "";
 	if( lua_isstring(L, index) ){
@@ -121,7 +124,7 @@ template<> bool LuaMain::getValue( lua_State* L, int index, string& ret)
 	return false;
 }
 
-int LuaMain::execFunction( string function )
+int LuaMain::execFunction( std::string function )
 {
 	int cnum;
 	int szadd = 0;

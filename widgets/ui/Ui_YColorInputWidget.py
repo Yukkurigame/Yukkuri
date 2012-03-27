@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Ui_YColorInputWidget.ui'
 #
-# Created: Fri Mar  9 15:27:42 2012
+# Created: Mon Mar 26 22:16:53 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!

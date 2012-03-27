@@ -44,7 +44,8 @@ class Files:
             f = []
             if extension:
                 for name in files:
-                    if name.rfind('.'+extension) == len(name) - len(extension) - 1:
+                    e = name.rfind('.'+extension)
+                    if e > 0 and e == len(name) - len(extension) - 1:
                         f.append(name)
             else:
                 f = files

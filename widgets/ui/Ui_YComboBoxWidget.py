@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'Ui_YComboBoxWidget.ui'
 #
-# Created: Thu Oct 20 21:13:56 2011
-#      by: PyQt4 UI code generator 4.8.5
+# Created: Mon Mar 26 22:16:54 2012
+#      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -18,12 +18,10 @@ class Ui_YComboBoxWidget(object):
     def setupUi(self, YComboBoxWidget):
         YComboBoxWidget.setObjectName(_fromUtf8("YComboBoxWidget"))
         YComboBoxWidget.resize(330, 24)
-        YComboBoxWidget.setWindowTitle(QtGui.QApplication.translate("YComboBoxWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
         self.horizontalLayout = QtGui.QHBoxLayout(YComboBoxWidget)
         self.horizontalLayout.setMargin(0)
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.label = QtGui.QLabel(YComboBoxWidget)
-        self.label.setText(QtGui.QApplication.translate("YComboBoxWidget", "Text", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setObjectName(_fromUtf8("label"))
         self.horizontalLayout.addWidget(self.label)
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
@@ -43,5 +41,6 @@ class Ui_YComboBoxWidget(object):
         QtCore.QMetaObject.connectSlotsByName(YComboBoxWidget)
 
     def retranslateUi(self, YComboBoxWidget):
-        pass
+        YComboBoxWidget.setWindowTitle(QtGui.QApplication.translate("YComboBoxWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("YComboBoxWidget", "Text", None, QtGui.QApplication.UnicodeUTF8))
 

@@ -168,17 +168,14 @@ class Map(QtGui.QWidget):
             if self.__brush.tile < 0:
                 del parent.mapRegion[x][y]
                 continue
-            depth = -1 * int(self.__brush.backed)
-            if depth < 0:
-                parent.mapRegion[x][y]['back'] =  self.__brush.tile
-            else:
-                parent.mapRegion[x][y]['tile'] =  self.__brush.tile
+            depth = 0
+            parent.mapRegion[x][y]['tile'] =  self.__brush.tile
             self.__Sprites.append(Sprite(QtCore.QRect(tile.rect),
                                     QtGui.QPixmap(tile.image), depth))
         self.__brush.sprites = self.__brush.sprites[-1:]
         self.update()
 
-    def setBrush(self, tile, back=False):
+    def setBrush(self, tile):
         if not tile:
             if self.__brush:
                 self.__Sprites.extend(self.__brush.sprites)
@@ -192,9 +189,8 @@ class Map(QtGui.QWidget):
                 self.CreateNewSprite(-2147483615, 2147483615, 1, tile)
             )
             try:
-                self.__brush.backed = bool(back)
                 for sprite in self.__brush.sprites:
-                    sprite.z = 1 + (-2 * bool(back))
+                    sprite.z = 1
             except Exception, e:
                 print e
                 return
@@ -219,24 +215,13 @@ class Map(QtGui.QWidget):
             print e
             return
 
-    def setBrushDrawBack(self, back=False):
-        if not self.__brush:
-            return
-        try:
-            self.__brush.backed = bool(back)
-            for sprite in self.__brush.sprites:
-                sprite.z = 1 + (-2 * bool(back))
-        except Exception, e:
-            print e
-            return
-
     def moveBrush(self):
         brush = self.__brush
         if not brush:
             return
         x, y = fromMapPosition(self.__position['x'], self.__position['y'])
         if self.__draw:
-            z = 1 + (-2 * bool(brush.backed))
+            z = 1
             if brush.rectangle:
                 minx, maxx = sorted([self.__position['x'], brush.rectangle['x']])
                 miny, maxy = sorted([self.__position['y'], brush.rectangle['y']])
@@ -279,8 +264,6 @@ class MapWindow(QtGui.QMainWindow):
         self.__Tiles = {}
         self.mapRegion = {}
         self.__regionName = None
-        self.connect(self.__Parent.ui.MapBack.children()[-1],
-                        QtCore.SIGNAL("stateChanged(int)"), self.setBrushBack)
         self.connect(self.__Parent.ui.BrushSize.children()[-1],
                         QtCore.SIGNAL("valueChanged(int)"), self.setBrushSize)
         self.connect(self.__Parent.ui.MapErase, QtCore.SIGNAL("clicked()"), self.ChangeBrush)
@@ -317,10 +300,6 @@ class MapWindow(QtGui.QMainWindow):
             tiledata = self.__Tiles[t.tile]
             mx, my = fromMapPosition(x, y)
             self.__widget.CreateNewSprite(mx, my, 0, tiledata)
-            if tiledata.backing and t.backtype and t.backtype in self.__Tiles:
-                self.mapRegion[x][y]['back'] = t.backtype
-                bd = self.__Tiles[t.backtype]
-                self.__widget.CreateNewSprite(mx, my, -1, bd)
         self.show()
 
     def ReloadObjects(self):
@@ -368,11 +347,8 @@ class MapWindow(QtGui.QMainWindow):
             return
         for tile in self.__Tiles.values():
             if tile.button and tile.button == button:
-                self.__widget.setBrush(tile, GetField(self.__Parent.ui.MapBack))
+                self.__widget.setBrush(tile)
                 return
-
-    def setBrushBack(self):
-        self.__widget.setBrushDrawBack(self.sender().checkState())
 
     def setBrushSize(self):
         self.__widget.setBrushSize(GetField(self.sender().parent()))
@@ -389,19 +365,10 @@ class MapWindow(QtGui.QMainWindow):
                     t = self.mapRegion[i][j]['tile']
                 except:
                     continue
-                try:
-                    b = self.mapRegion[i][j]['back']
-                except:
-                    b = None
                 if not t in self.__Tiles:
                     print 'Tile with id %s does not not exists' % t
                     continue
                 if t != -1:
                     tile = {'x': i, 'y': j, 'tile': t}
-                    if self.__Tiles[t].backing and b > 0:
-                        if not b in self.__Tiles:
-                            print 'Tile with id %s does not not exists' % b
-                            continue
-                        tile['backtype'] = b
                     ret['tiles'].append(tile)
         return ret

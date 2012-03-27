@@ -53,6 +53,9 @@ class SpriteManager:
             else:
                 print "Image has no id: %s" % image
 
+    def unloadImages(self):
+        self.images = None
+
     def createPixmap(self, imgid, imgnum=0):
         img = self.getImageById(imgid)
         if not img:

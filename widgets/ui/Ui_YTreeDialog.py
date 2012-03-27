@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'Ui_YTreeDialog.ui'
 #
-# Created: Thu Oct 20 18:45:04 2011
-#      by: PyQt4 UI code generator 4.8.5
+# Created: Mon Mar 26 22:16:54 2012
+#      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -18,14 +18,12 @@ class Ui_YTreeDialog(object):
     def setupUi(self, YTreeDialog):
         YTreeDialog.setObjectName(_fromUtf8("YTreeDialog"))
         YTreeDialog.resize(398, 292)
-        YTreeDialog.setWindowTitle(QtGui.QApplication.translate("YTreeDialog", "Dialog", None, QtGui.QApplication.UnicodeUTF8))
         self.verticalLayout = QtGui.QVBoxLayout(YTreeDialog)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.treeWidget = QtGui.QTreeWidget(YTreeDialog)
         self.treeWidget.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
         self.treeWidget.setAlternatingRowColors(True)
         self.treeWidget.setObjectName(_fromUtf8("treeWidget"))
-        self.treeWidget.headerItem().setText(0, QtGui.QApplication.translate("YTreeDialog", "Sprites", None, QtGui.QApplication.UnicodeUTF8))
         self.verticalLayout.addWidget(self.treeWidget)
         self.buttonBox = QtGui.QDialogButtonBox(YTreeDialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
@@ -39,5 +37,6 @@ class Ui_YTreeDialog(object):
         QtCore.QMetaObject.connectSlotsByName(YTreeDialog)
 
     def retranslateUi(self, YTreeDialog):
-        pass
+        YTreeDialog.setWindowTitle(QtGui.QApplication.translate("YTreeDialog", "Dialog", None, QtGui.QApplication.UnicodeUTF8))
+        self.treeWidget.headerItem().setText(0, QtGui.QApplication.translate("YTreeDialog", "Sprites", None, QtGui.QApplication.UnicodeUTF8))
 

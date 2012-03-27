@@ -71,7 +71,7 @@
          <item>
           <widget class="QTabWidget" name="MainTabs">
            <property name="currentIndex">
-            <number>1</number>
+            <number>4</number>
            </property>
            <widget class="QWidget" name="SpriteTab">
             <attribute name="title">
@@ -409,7 +409,7 @@
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_15">
                 <item>
-                 <widget class="YReadOnlySpinBoxInputWidget" name="ID_4" native="true">
+                 <widget class="YReadOnlySimpleInputWidget" name="ID_4" native="true">
                   <property name="enabled">
                    <bool>true</bool>
                   </property>
@@ -533,48 +533,6 @@
                   </layout>
                  </widget>
                 </item>
-                <item>
-                 <widget class="QWidget" name="Backing" native="true">
-                  <layout class="QHBoxLayout" name="width_2">
-                   <property name="margin">
-                    <number>0</number>
-                   </property>
-                   <item>
-                    <widget class="QLabel" name="label_27">
-                     <property name="text">
-                      <string>Backing:</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <spacer name="horizontalSpacer_26">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item>
-                    <widget class="QCheckBox" name="checkBox">
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="checked">
-                      <bool>false</bool>
-                     </property>
-                     <property name="tristate">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
                </layout>
               </widget>
              </item>
@@ -674,8 +632,8 @@ border: 0px transparent;
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>100</width>
-                  <height>30</height>
+                  <width>96</width>
+                  <height>26</height>
                  </rect>
                 </property>
                 <attribute name="label">
@@ -768,7 +726,7 @@ border: 0px transparent;
                     </widget>
                    </item>
                    <item>
-                    <widget class="YSimpleInputWidget" name="RegionName" native="true">
+                    <widget class="YSimpleInputWidget" name="Name_3" native="true">
                      <property name="enabled">
                       <bool>true</bool>
                      </property>
@@ -779,48 +737,6 @@ border: 0px transparent;
                      <property name="enabled">
                       <bool>true</bool>
                      </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QWidget" name="MapBack" native="true">
-                     <layout class="QHBoxLayout" name="width_3">
-                      <property name="margin">
-                       <number>0</number>
-                      </property>
-                      <item>
-                       <widget class="QLabel" name="label_30">
-                        <property name="text">
-                         <string>Backing:</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <spacer name="horizontalSpacer_29">
-                        <property name="orientation">
-                         <enum>Qt::Horizontal</enum>
-                        </property>
-                        <property name="sizeHint" stdset="0">
-                         <size>
-                          <width>40</width>
-                          <height>20</height>
-                         </size>
-                        </property>
-                       </spacer>
-                      </item>
-                      <item>
-                       <widget class="QCheckBox" name="checkBox_2">
-                        <property name="text">
-                         <string/>
-                        </property>
-                        <property name="checked">
-                         <bool>false</bool>
-                        </property>
-                        <property name="tristate">
-                         <bool>false</bool>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
                     </widget>
                    </item>
                    <item>
@@ -1029,12 +945,6 @@ border: 0px transparent;
     <signal>valueChanged(int)</signal>
     <slot>setValue(int)</slot>
    </slots>
-  </customwidget>
-  <customwidget>
-   <class>YReadOnlySpinBoxInputWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>YDoubleSpinBoxInputWidget</class>

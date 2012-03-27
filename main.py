@@ -218,7 +218,7 @@ class Main(QtGui.QMainWindow):
                     break
         if not element:
             return
-        self.__loadedElement = element.get('id') or element.get('name')
+        self.__loadedElement = str(element.get('id') or element.get('name'))
         if element.has_key('animation'):
             self.EntytyTab.loadAnimation(element['animation'])
             self.ui.EntityAnimaptionPreview.setDisabled(False)
@@ -306,6 +306,8 @@ class Main(QtGui.QMainWindow):
         item = self.ui.ItemsList.findItems(elname, QtCore.Qt.MatchExactly)[0]
         self.ui.ItemsList.setCurrentItem(item)
         self.reloadContent(item)
+        if eltype == "sprite":
+            sprites.unloadImages()
 
     def getCurrentConfig(self):
         try:

@@ -1,0 +1,53 @@
+{
+	{
+		rows = 11,
+		name = "Reimu",
+		image = "./reimu.png",
+		height = 770,
+		width = 320,
+		type = "Sprite",
+		id = "sprite_Reimu_743643",
+		columns = 4
+	},
+	{
+		name = "Marisa",
+		image = "./marisa_face_0.png",
+		height = 80,
+		width = 90,
+		type = "Sprite",
+		id = "sprite_Marisa_832187"
+	},
+	{
+		name = "Alice",
+		image = "./alice_1.png",
+		height = 74,
+		width = 80,
+		type = "Sprite",
+		id = "sprite_Alice_646735"
+	},
+	{
+		name = "Flan",
+		image = "./flan_1.png",
+		height = 69,
+		width = 84,
+		type = "Sprite",
+		id = "sprite_Flan_137737"
+	},
+	{
+		name = "Remi",
+		image = "./remi_1.png",
+		height = 69,
+		width = 111,
+		type = "Sprite",
+		id = "sprite_Remi_22746"
+	},
+	{
+		name = "Corpse",
+		image = "./entitymisc.png",
+		height = 47,
+		width = 150,
+		type = "Sprite",
+		id = "sprite_Corpse_952625",
+		columns = 2
+	}
+}

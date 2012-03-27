@@ -92,7 +92,7 @@ private:
 	GLuint VBOHandle;
 
 	// Returns count of breakings
-	int PrepareVBO( VBOStructureHandle* v );
+	int PrepareVBO( VBOStructureHandle** v );
 
 
 	int minAtlasSize;
@@ -101,9 +101,12 @@ private:
 	GLuint* atlasHandle;
 
 	bool BuildAtlasMap( );
-	bool BuildAtlas( );
+	GLuint BuildAtlas( );
 
 	ViewPoint vpoint;
+
+
+	void TestDrawAtlas(int x, int y);
 };
 
 

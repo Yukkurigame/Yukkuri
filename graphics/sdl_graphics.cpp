@@ -141,7 +141,7 @@ void SDLGraphics::DrawSurface( SDL_Surface* surface )
 
 	glRasterPos3i( 0, 0, 1 );
 
-	glDisable( GL_TEXTURE_2D );
+	//glDisable( GL_TEXTURE_2D );
 
 	switch( bytes ){
 		case 4:
@@ -159,7 +159,7 @@ void SDLGraphics::DrawSurface( SDL_Surface* surface )
 			break;
 	}
 
-	glEnable( GL_TEXTURE_2D );
+	//glEnable( GL_TEXTURE_2D );
 
 }
 

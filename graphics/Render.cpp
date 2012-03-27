@@ -37,7 +37,7 @@ void RenderManager::openglSetup( int wwidth, int wheight )
 {
 	GLExtensions::load();
 
-	glEnable( GL_TEXTURE_2D );
+	//glEnable( GL_TEXTURE_2D );
 
 	glViewport( 0, 0, wwidth, wheight );
 
@@ -64,7 +64,7 @@ void RenderManager::openglSetup( int wwidth, int wheight )
 	glLoadIdentity();
 
 	glOrtho(0.0, wwidth, 0.0, wheight, -10.0, 1.0);
-	//glOrtho(-wwidth*1.5, wwidth*1.5, -wheight*1.5, wheight*1.5, -10.0, 1.0);
+	//glOrtho(-wwidth*3, wwidth*3, -wheight*3, wheight*3, -10.0, 1.0);
 
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
@@ -216,8 +216,6 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 {
 	Sprite* sprite = new Sprite();
 	sprite->tex = tex;
-	sprite->vertices = new vertex3farr();
-	sprite->clr = new color4u();
 
 	//TODO: picture not used;
 
@@ -237,13 +235,13 @@ void RenderManager::FreeGLSprite( Sprite* sprite )
 {
 	std::vector< Sprite* >::iterator it;
 	it = std::find( GLSprites.begin(), GLSprites.end(), sprite );
-	if( it != GLSprites.end() )
+	if( it != GLSprites.end() ){
 		GLSprites.erase(it);
-	if( sprite ){
-		if( sprite->vertices )
-			delete sprite->vertices;
-		delete sprite;
+	}else{
+		//debug( GRAPHICS, "Sprite not under control.\n" );
 	}
+	if( sprite )
+		delete sprite;
 }
 
 
@@ -258,10 +256,12 @@ bool RenderManager::CreateAtlas( )
 		debug( GRAPHICS, "Cannot build atlas map.\n" );
 		return false;
 	}
-	if ( !BuildAtlas() ){
+	GLuint atlas = BuildAtlas();
+	if ( !atlas ){
 		debug( GRAPHICS, "Cannot build map.\n" );
 		return false;
 	}
+	atlasHandle = new GLuint(atlas);
 	int tcount = internalTextures.size() + texturesCount;
 	textures = (TextureInfo*)realloc(textures, sizeof(TextureInfo) * tcount );
 	for( int i = texturesCount; i < tcount; ++i ){
@@ -287,23 +287,28 @@ void RenderManager::DrawGLScene()
 {
 	VBOStructureHandle* vbostructure = NULL;
 	VBOStructureHandle* temp = NULL;
-	int count = PrepareVBO(vbostructure);
+	int count = PrepareVBO(&vbostructure);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnable(GL_TEXTURE_2D);
 	glBindBuffer(GL_ARRAY_BUFFER, VBOHandle);
 
+	glBufferData(GL_ARRAY_BUFFER, sizeof(VertexV2FT2FC4UI) * count * 4, verticles, GL_DYNAMIC_DRAW);
+
 	// Определяем указатели.
 	glVertexPointer(2, GL_FLOAT, sizeof(VertexV2FT2FC4UI), 0);
 	glTexCoordPointer(2, GL_FLOAT, sizeof(VertexV2FT2FC4UI), (const GLubyte*)0 + sizeof(s2f));
 	glColorPointer(4, GL_INT, sizeof(VertexV2FT2FC4UI), (const GLubyte*)0 + (sizeof(s2f) * 2));
 
+	int first = 0;
+	int nextcount = count;
 	while(vbostructure != NULL){
-		glBindTexture(GL_TEXTURE_2D, *(vbostructure->texture->atlas));
+		glBindTexture(GL_TEXTURE_2D, ( vbostructure->texture != NULL ? *(vbostructure->texture->atlas) : 0 ));
 		//StartShader(vbostructure->shaders);
-		glDrawArrays(GL_QUADS, vbostructure->number,
-					((vbostructure->next != NULL ? vbostructure->next->number : count) - vbostructure->number) * 4);
+		nextcount = vbostructure->number - first + 1;
+		glDrawArrays(GL_QUADS, first, nextcount * 4);
+		first += nextcount;
 		//StopShader(vbostructure->shaders);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -317,6 +322,20 @@ void RenderManager::DrawGLScene()
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
+
+
+	/*
+	glColor4ub( 0, 255, 0, 255 );
+	glBegin(GL_QUADS);
+	glVertex2f(-1000, -1000);
+	glVertex2f(1100, -1000);
+	glVertex2f(1000, 1000);
+	glVertex2f(-1000, 1000);
+	glEnd();
+	*/
+
+	//TestDrawAtlas(-2500, -1000);
+
 	glLoadIdentity();
 	SDL_GL_SwapBuffers();
 }
@@ -337,6 +356,7 @@ RenderManager::RenderManager( ){
 	verticlesSize = 0;
 	minAtlasSize = 64;
 	texturesCount = 0;
+	GLSprites.clear();
 }
 
 
@@ -378,24 +398,32 @@ void RenderManager::ExtendVerticles(int count)
 }
 
 
-int RenderManager::PrepareVBO(VBOStructureHandle* v)
+int RenderManager::PrepareVBO(VBOStructureHandle** v)
 {
 	sort(GLSprites.begin(), GLSprites.end());
 	int count = 0;
 	Sprite* s;
-	for(int sprite=GLSprites.size(); sprite >= 0 ; --sprite){
-		s = GLSprites[sprite];
-		if(!s->visible)
+	VBOStructureHandle* first;
+	for( std::vector< Sprite* >::iterator it = GLSprites.begin(), end = GLSprites.end(); it != end; ++it ){
+		s = *(it);
+		if( s == NULL || !s->visible )
 			continue;
 		coord2farr texcoord = s->getTextureCoordinates();
-		if(!v || s->tex != v->texture)
-			v = new VBOStructureHandle(s->tex, 0, sprite, v);
-		verticles[sprite    ] = VertexV2FT2FC4UI(s->vertices->lt, texcoord.lt, s->clr);
-		verticles[sprite + 1] = VertexV2FT2FC4UI(s->vertices->rt, texcoord.rt, s->clr);
-		verticles[sprite + 2] = VertexV2FT2FC4UI(s->vertices->rb, texcoord.rb, s->clr);
-		verticles[sprite + 3] = VertexV2FT2FC4UI(s->vertices->lb, texcoord.lb, s->clr);
+		if(!(*v) ){
+			first = (*v) = new VBOStructureHandle(s->tex, 0);
+		}else if( s->tex != (*v)->texture ){
+			(*v)->next = new VBOStructureHandle(s->tex, 0);
+			(*v)->number = count;
+			(*v) = (*v)->next;
+		}
+		verticles[count    ] = VertexV2FT2FC4UI(s->vertices.lt, texcoord.lt, &s->clr);
+		verticles[count + 1] = VertexV2FT2FC4UI(s->vertices.rt, texcoord.rt, &s->clr);
+		verticles[count + 2] = VertexV2FT2FC4UI(s->vertices.rb, texcoord.rb, &s->clr);
+		verticles[count + 3] = VertexV2FT2FC4UI(s->vertices.lb, texcoord.lb, &s->clr);
 		count++;
 	}
+	(*v)->number = count;
+	(*v) = first;
 	return count;
 }
 
@@ -434,14 +462,15 @@ bool RenderManager::BuildAtlasMap()
 }
 
 
-bool RenderManager::BuildAtlas()
+GLuint RenderManager::BuildAtlas()
 {
-	atlasHandle = new GLuint();
+	//atlasHandle = new GLuint();
+	GLuint ahandle;
 
 	// Рисуем в атлас, как в текстуру, используя FBO.
 	// Настройка текстуры.
-	glGenTextures(1, atlasHandle);
-	glBindTexture(GL_TEXTURE_2D, *atlasHandle);
+	glGenTextures(1, &ahandle);
+	glBindTexture(GL_TEXTURE_2D, ahandle);
 
 	glTexImage2D( GL_TEXTURE_2D, 0, 4, atlasWidth, atlasHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
@@ -456,18 +485,19 @@ bool RenderManager::BuildAtlas()
 
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, atlasFBO);
 
-	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, *atlasHandle, 0);
+	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, ahandle, 0);
 
 	GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 	if( status != GL_FRAMEBUFFER_COMPLETE_EXT ){
 		debug( GRAPHICS, "Your framebuffer is broken. Use top NV to play this Crusis" );
-		return false;
+		return 0;
 	}
 
 	glPushAttrib(GL_COLOR_BUFFER_BIT); // Сохраняем ClearColor
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	// Изменение вьюпорта и матриц для FBO
+	glPushAttrib(GL_VIEWPORT_BIT);
 	glViewport(0, 0, atlasWidth, atlasHeight);
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
@@ -479,7 +509,7 @@ bool RenderManager::BuildAtlas()
 
 	// Отрисовка текстур в атлас.
 	glClear(GL_COLOR_BUFFER_BIT);
-	glColor4f(0.0f, 0.0f, 0.0f, 0.0f);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glEnable(GL_TEXTURE_2D);
 	for ( unsigned int i = 0; i < internalTextures.size(); i++ ){
 		glBindTexture(GL_TEXTURE_2D, *(internalTextures[i]->texture));
@@ -495,15 +525,41 @@ bool RenderManager::BuildAtlas()
 
 	// Возвращаем как было.
 	glDisable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
 	glDeleteFramebuffersEXT(1, &atlasFBO);
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
+	//viewport
 	glPopAttrib();
+	//color
+	glPopAttrib();
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	return ahandle;
+}
 
-	return true;
+
+
+void RenderManager::TestDrawAtlas(int x, int y)
+{
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, *atlasHandle);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glBegin(GL_QUADS);
+	{
+		glTexCoord2f(0.0, 0.0);
+		glVertex2f(x, y);
+		glTexCoord2f(1, 0);
+		glVertex2f(x + atlasWidth, y);
+		glTexCoord2f(1, 1);
+		glVertex2f(x + atlasWidth, y + atlasHeight);
+		glTexCoord2f(0, 1);
+		glVertex2f(x, y + atlasHeight);
+	}
+	glEnd();
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_TEXTURE_2D);
 }
 

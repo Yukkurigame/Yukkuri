@@ -90,7 +90,7 @@ void TextWidget::updatePosition( )
 
 void TextWidget::setFontColor( int r, int g, int b )
 {
-	TextSprite->clr->set( r, g, b );
+	TextSprite->clr.set( r, g, b );
 }
 
 void TextWidget::setText( std::string text )

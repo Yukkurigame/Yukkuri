@@ -20,7 +20,7 @@ DayTime::~DayTime()
 void DayTime::loadInterface()
 {
 	sfield = RenderManager::Instance()->CreateGLSprite(0, 0, 4, conf.windowWidth, conf.windowHeight );
-	sfield->clr->set( 0, 0, 0, 0 );
+	sfield->clr.set( 0, 0, 0, 0 );
 	text = UI::yui.GetWidget("time");
 }
 
@@ -81,7 +81,7 @@ void DayTime::update( const int& dt )
 
 void DayTime::onDraw( ){
 	if( ldark != dark && sfield ){
-		sfield->clr->a = dark;
+		sfield->clr.a = dark;
 	}
 	ldark = dark;
 }

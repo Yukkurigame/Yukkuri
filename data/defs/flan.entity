@@ -1,30 +1,69 @@
 {
 	{
-		type = "Entity",
-		bloodcolor = {215, 180, 70},
-		damage = 3.0,
-		animation = {
-			down = {0, 1},
-			growth = {0, 1},
-			left = {0, 1},
-			leftdown = {0, 1},
-			leftup = {0, 1},
-			raped = {0, 1},
-			raping = {0, 1},
-			right = {0, 1},
-			rightdown = {0, 1},
-			rightup = {0, 1},
-			up = {0, 1}
-		},
-		height = 69,
+		picture = "0",
 		hp = 10.0,
-		image = "flan_1.png",
-		imagecols = 1,
-		imagerows = 1,
-		meeting = 0.87,
-		name = "Flan",
 		predator = true,
-		speed = 80,
+		height = 69,
+		imagecols = 1,
+		bloodcolor = 		{
+0,
+0,
+0
+		},
+		imagerows = 1,
+		speed = 80.0,
+		id = "entity_Flan_700488",
+		name = "Flan",
+		type = "Entity",
+		damage = 3.0,
 		width = 84,
+		animation = 		{
+			rightup = 			{
+0,
+0
+			},
+			right = 			{
+0,
+0
+			},
+			raping = 			{
+0,
+0
+			},
+			up = 			{
+0,
+0
+			},
+			raped = 			{
+0,
+0
+			},
+			down = 			{
+0,
+0
+			},
+			leftdown = 			{
+0,
+0
+			},
+			growth = 			{
+0,
+0
+			},
+			rightdown = 			{
+0,
+0
+			},
+			leftup = 			{
+0,
+0
+			},
+			left = 			{
+0,
+0
+			}
+		},
+		meeting = 0.89,
+		image = "sprite_Flan_137737"
 	}
 }

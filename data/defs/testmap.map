@@ -1,990 +1,1362 @@
 {
 	{
-		type = "MapRegion",
-		tiles = {
+		tiles = 		{
 			{
 				y = 0,
 				x = 0,
-				type = 4,
+				type = 4
 			},
 			{
 				y = 1,
 				x = 0,
-				type = 2,
+				type = 2
 			},
 			{
 				y = -21,
 				x = 0,
-				type = 22,
+				type = 22
 			},
 			{
 				y = -20,
 				x = 0,
-				type = 33,
+				type = 33
 			},
 			{
 				y = -19,
 				x = 0,
-				type = 47,
+				type = 47
 			},
 			{
 				y = -18,
 				x = 0,
-				type = 34,
+				type = 34
 			},
 			{
 				y = -17,
 				x = 0,
-				type = 25,
+				type = 25
 			},
 			{
 				y = -15,
 				x = 0,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -14,
 				x = 0,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -13,
 				x = 0,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -12,
 				x = 0,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -11,
 				x = 0,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -10,
 				x = 0,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -9,
 				x = 0,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -8,
 				x = 0,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -7,
 				x = 0,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -1,
 				x = 0,
-				type = 2,
+				type = 2
 			},
 			{
 				y = 0,
 				x = 1,
-				type = 2,
+				type = 2
 			},
 			{
 				y = 1,
 				x = 1,
-				type = 2,
+				type = 2
 			},
 			{
 				y = -21,
 				x = 1,
-				type = 27,
+				type = 27
 			},
 			{
 				y = -20,
 				x = 1,
-				type = 32,
+				type = 32
 			},
 			{
 				y = -19,
 				x = 1,
-				type = 26,
+				type = 26
 			},
 			{
 				y = -18,
 				x = 1,
-				type = 39,
+				type = 39
 			},
 			{
 				y = -17,
 				x = 1,
-				type = 34,
+				type = 34
 			},
 			{
 				y = -16,
 				x = 1,
-				type = 25,
+				type = 25
 			},
 			{
 				y = -15,
 				x = 1,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -14,
 				x = 1,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -13,
 				x = 1,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -12,
 				x = 1,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -11,
 				x = 1,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -10,
 				x = 1,
-				type = 19,
+				type = 19
 			},
 			{
 				y = -9,
 				x = 1,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -8,
 				x = 1,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -7,
 				x = 1,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -1,
 				x = 1,
-				type = 2,
+				type = 2
 			},
 			{
 				y = -20,
 				x = 2,
-				type = 27,
+				type = 27
 			},
 			{
 				y = -19,
 				x = 2,
-				type = 32,
+				type = 32
 			},
 			{
 				y = -18,
 				x = 2,
-				type = 31,
+				type = 31
 			},
 			{
 				y = -17,
 				x = 2,
-				type = 32,
+				type = 32
 			},
 			{
 				y = -16,
 				x = 2,
-				type = 28,
+				type = 28
 			},
 			{
 				y = -15,
 				x = 2,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -14,
 				x = 2,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -13,
 				x = 2,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -12,
 				x = 2,
-				type = 14,
+				type = 14
 			},
 			{
 				y = -11,
 				x = 2,
-				type = 12,
+				type = 12
 			},
 			{
 				y = -10,
 				x = 2,
-				type = 6,
+				type = 6
 			},
 			{
 				y = -9,
 				x = 2,
-				type = 8,
+				type = 8
 			},
 			{
 				y = -8,
 				x = 2,
-				type = 14,
+				type = 14
 			},
 			{
 				y = -7,
 				x = 2,
-				type = 21,
+				type = 21
 			},
 			{
 				y = -6,
 				x = 2,
-				type = 9,
+				type = 9
 			},
 			{
 				y = -17,
 				x = 3,
-				type = 27,
+				type = 27
 			},
 			{
 				y = -16,
 				x = 3,
-				type = 30,
+				type = 30
 			},
 			{
 				y = -15,
 				x = 3,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -14,
 				x = 3,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -13,
 				x = 3,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -12,
 				x = 3,
-				type = 12,
+				type = 12
 			},
 			{
 				y = -11,
 				x = 3,
-				type = 19,
+				type = 19
 			},
 			{
 				y = -10,
 				x = 3,
-				type = 16,
+				type = 16
 			},
 			{
 				y = -9,
 				x = 3,
-				type = 20,
+				type = 20
 			},
 			{
 				y = -8,
 				x = 3,
-				type = 18,
+				type = 18
 			},
 			{
 				y = -7,
 				x = 3,
-				type = 8,
+				type = 8
 			},
 			{
 				y = -6,
 				x = 3,
-				type = 10,
+				type = 10
 			},
 			{
 				y = -11,
 				x = 4,
-				type = 20,
+				type = 20
 			},
 			{
 				y = -10,
 				x = 4,
 				type = 54,
-				backtype = 12,
+				backtype = 12
 			},
 			{
 				y = -9,
 				x = 4,
 				type = 55,
-				backtype = 12,
+				backtype = 12
 			},
 			{
 				y = -8,
 				x = 4,
 				type = 55,
-				backtype = 12,
+				backtype = 12
 			},
 			{
 				y = -7,
 				x = 4,
 				type = 55,
-				backtype = 12,
+				backtype = 12
 			},
 			{
 				y = -6,
 				x = 4,
 				type = 55,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -5,
 				x = 4,
 				type = 55,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -4,
 				x = 4,
 				type = 55,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -3,
 				x = 4,
 				type = 55,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -2,
 				x = 4,
 				type = 57,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -11,
 				x = 5,
 				type = 64,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -10,
 				x = 5,
 				type = 73,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -9,
 				x = 5,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -8,
 				x = 5,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -7,
 				x = 5,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -6,
 				x = 5,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -5,
 				x = 5,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -4,
 				x = 5,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -3,
 				x = 5,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -2,
 				x = 5,
 				type = 61,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -11,
 				x = 6,
 				type = 66,
-				backtype = 13,
+				backtype = 13
 			},
 			{
 				y = -10,
 				x = 6,
-				type = 8,
+				type = 8
 			},
 			{
 				y = -9,
 				x = 6,
 				type = 60,
-				backtype = 14,
+				backtype = 14
 			},
 			{
 				y = -8,
 				x = 6,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -7,
 				x = 6,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -6,
 				x = 6,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -5,
 				x = 6,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -4,
 				x = 6,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -3,
 				x = 6,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -2,
 				x = 6,
 				type = 61,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -11,
 				x = 7,
 				type = 68,
-				backtype = 18,
+				backtype = 18
 			},
 			{
 				y = -10,
 				x = 7,
 				type = 67,
-				backtype = 18,
+				backtype = 18
 			},
 			{
 				y = -9,
 				x = 7,
-				type = 9,
+				type = 9
 			},
 			{
 				y = -8,
 				x = 7,
 				type = 56,
-				backtype = 18,
+				backtype = 18
 			},
 			{
 				y = -7,
 				x = 7,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -6,
 				x = 7,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -5,
 				x = 7,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -4,
 				x = 7,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -3,
 				x = 7,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -2,
 				x = 7,
 				type = 61,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -12,
 				x = 8,
 				type = 54,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -11,
 				x = 8,
 				type = 55,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -10,
 				x = 8,
 				type = 72,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -9,
 				x = 8,
 				type = 55,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -8,
 				x = 8,
 				type = 73,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -7,
 				x = 8,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -6,
 				x = 8,
-				type = 74,
+				type = 74
 			},
 			{
 				y = -5,
 				x = 8,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -4,
 				x = 8,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -3,
 				x = 8,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -2,
 				x = 8,
 				type = 61,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -12,
 				x = 9,
 				type = 60,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -11,
 				x = 9,
 				type = 71,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -10,
 				x = 9,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -9,
 				x = 9,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -8,
 				x = 9,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -7,
 				x = 9,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -6,
 				x = 9,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -5,
 				x = 9,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -4,
 				x = 9,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -3,
 				x = 9,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -2,
 				x = 9,
 				type = 61,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -11,
 				x = 10,
 				type = 56,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -10,
 				x = 10,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -9,
 				x = 10,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -8,
 				x = 10,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -7,
 				x = 10,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -6,
 				x = 10,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -5,
 				x = 10,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -4,
 				x = 10,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -3,
 				x = 10,
-				type = 58,
+				type = 58
 			},
 			{
 				y = -2,
 				x = 10,
 				type = 61,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -11,
 				x = 11,
 				type = 60,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -10,
 				x = 11,
 				type = 62,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -9,
 				x = 11,
 				type = 62,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -8,
 				x = 11,
 				type = 62,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -7,
 				x = 11,
 				type = 62,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -6,
 				x = 11,
 				type = 62,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -5,
 				x = 11,
 				type = 62,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -4,
 				x = 11,
 				type = 62,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -3,
 				x = 11,
 				type = 62,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -2,
 				x = 11,
 				type = 63,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = 0,
 				x = -1,
-				type = 2,
+				type = 2
 			},
 			{
 				y = 1,
 				x = -1,
-				type = 2,
+				type = 2
 			},
 			{
 				y = -20,
 				x = -1,
-				type = 24,
+				type = 24
 			},
 			{
 				y = -19,
 				x = -1,
-				type = 26,
+				type = 26
 			},
 			{
 				y = -18,
 				x = -1,
-				type = 31,
+				type = 31
 			},
 			{
 				y = -17,
 				x = -1,
-				type = 30,
+				type = 30
 			},
 			{
 				y = -15,
 				x = -1,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -14,
 				x = -1,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -13,
 				x = -1,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -12,
 				x = -1,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -11,
 				x = -1,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -10,
 				x = -1,
 				type = 75,
-				backtype = 4,
+				backtype = 4
 			},
 			{
 				y = -9,
 				x = -1,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -8,
 				x = -1,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -7,
 				x = -1,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -1,
 				x = -1,
-				type = 2,
+				type = 2
 			},
 			{
 				y = -19,
 				x = -3,
-				type = 22,
+				type = 22
 			},
 			{
 				y = -18,
 				x = -3,
-				type = 23,
+				type = 23
 			},
 			{
 				y = -17,
 				x = -3,
-				type = 25,
+				type = 25
 			},
 			{
 				y = -15,
 				x = -3,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -14,
 				x = -3,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -13,
 				x = -3,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -12,
 				x = -3,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -11,
 				x = -3,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -10,
 				x = -3,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -9,
 				x = -3,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -8,
 				x = -3,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -7,
 				x = -3,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -20,
 				x = -2,
-				type = 22,
+				type = 22
 			},
 			{
 				y = -19,
 				x = -2,
-				type = 33,
+				type = 33
 			},
 			{
 				y = -18,
 				x = -2,
-				type = 26,
+				type = 26
 			},
 			{
 				y = -17,
 				x = -2,
-				type = 28,
+				type = 28
 			},
 			{
 				y = -15,
 				x = -2,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -14,
 				x = -2,
 				type = 35,
-				backtype = 7,
+				backtype = 7
 			},
 			{
 				y = -13,
 				x = -2,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -12,
 				x = -2,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -11,
 				x = -2,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -10,
 				x = -2,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -9,
 				x = -2,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -8,
 				x = -2,
-				type = 4,
+				type = 4
 			},
 			{
 				y = -7,
 				x = -2,
-				type = 4,
-			},
+				type = 4
+			}
 		},
-		name = "test",
+		type = "region",
+		name = "test_old"
 	},
 	{
-		tiles = {
+		tiles = 		{
 			{
-				y = 1,
-				x = 1,
-				type = 2,
+				y = -19,
+				x = -11,
+				tile = "tiles_ground_8_716489"
 			},
 			{
-				y = 2,
-				x = 1,
-				type = 1,
+				y = -18,
+				x = -11,
+				tile = "tiles_ground_8_716489"
 			},
+			{
+				y = -17,
+				x = -11,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -19,
+				x = -10,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -18,
+				x = -10,
+				tile = "tiles_ground_19_690738"
+			},
+			{
+				y = -17,
+				x = -10,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -16,
+				x = -10,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -15,
+				x = -10,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -14,
+				x = -10,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -13,
+				x = -10,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -12,
+				x = -10,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -11,
+				x = -10,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -18,
+				x = -9,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -17,
+				x = -9,
+				tile = "tiles_ground_6_193504"
+			},
+			{
+				y = -16,
+				x = -9,
+				tile = "tiles_ground_17_959654"
+			},
+			{
+				y = -15,
+				x = -9,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -14,
+				x = -9,
+				tile = "tiles_ground_1_880550"
+			},
+			{
+				y = -13,
+				x = -9,
+				tile = "tiles_ground_1_880550"
+			},
+			{
+				y = -12,
+				x = -9,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -11,
+				x = -9,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -18,
+				x = -8,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -17,
+				x = -8,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -16,
+				x = -8,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -15,
+				x = -8,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -14,
+				x = -8,
+				tile = "tiles_ground_1_880550"
+			},
+			{
+				y = -13,
+				x = -8,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -12,
+				x = -8,
+				tile = "tiles_ground_1_880550"
+			},
+			{
+				y = -11,
+				x = -8,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -18,
+				x = -7,
+				tile = "tiles_ground_19_690738"
+			},
+			{
+				y = -17,
+				x = -7,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -16,
+				x = -7,
+				tile = "tiles_hill_0_405642"
+			},
+			{
+				y = -15,
+				x = -7,
+				tile = "tiles_hill_3_250627"
+			},
+			{
+				y = -14,
+				x = -7,
+				tile = "tiles_ground_1_880550"
+			},
+			{
+				y = -13,
+				x = -7,
+				tile = "tiles_ground_1_880550"
+			},
+			{
+				y = -12,
+				x = -7,
+				tile = "tiles_ground_14_138147"
+			},
+			{
+				y = -11,
+				x = -7,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -18,
+				x = -6,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -17,
+				x = -6,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -16,
+				x = -6,
+				tile = "tiles_hill_2_297499"
+			},
+			{
+				y = -15,
+				x = -6,
+				tile = "tiles_hill_12_974117"
+			},
+			{
+				y = -14,
+				x = -6,
+				tile = "tiles_ground_1_880550"
+			},
+			{
+				y = -13,
+				x = -6,
+				tile = "tiles_ground_1_880550"
+			},
+			{
+				y = -12,
+				x = -6,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -11,
+				x = -6,
+				tile = "tiles_ground_12_79108"
+			},
+			{
+				y = -18,
+				x = -5,
+				tile = "tiles_ground_0_666443"
+			},
+			{
+				y = -17,
+				x = -5,
+				tile = "tiles_ground_13_4256"
+			},
+			{
+				y = -16,
+				x = -5,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -15,
+				x = -5,
+				tile = "tiles_ground_16_809147"
+			},
+			{
+				y = -14,
+				x = -5,
+				tile = "tiles_ground_1_880550"
+			},
+			{
+				y = -13,
+				x = -5,
+				tile = "tiles_ground_1_880550"
+			},
+			{
+				y = -12,
+				x = -5,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -11,
+				x = -5,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -18,
+				x = -4,
+				tile = "tiles_ground_14_138147"
+			},
+			{
+				y = -17,
+				x = -4,
+				tile = "tiles_ground_1_880550"
+			},
+			{
+				y = -16,
+				x = -4,
+				tile = "tiles_ground_1_880550"
+			},
+			{
+				y = -15,
+				x = -4,
+				tile = "tiles_ground_16_809147"
+			},
+			{
+				y = -14,
+				x = -4,
+				tile = "tiles_ground_1_880550"
+			},
+			{
+				y = -13,
+				x = -4,
+				tile = "tiles_ground_1_880550"
+			},
+			{
+				y = -12,
+				x = -4,
+				tile = "tiles_ground_12_79108"
+			},
+			{
+				y = -11,
+				x = -4,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -18,
+				x = -3,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -17,
+				x = -3,
+				tile = "tiles_ground_12_79108"
+			},
+			{
+				y = -16,
+				x = -3,
+				tile = "tiles_ground_1_880550"
+			},
+			{
+				y = -15,
+				x = -3,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -14,
+				x = -3,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -13,
+				x = -3,
+				tile = "tiles_ground_1_880550"
+			},
+			{
+				y = -12,
+				x = -3,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -11,
+				x = -3,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -18,
+				x = -2,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -17,
+				x = -2,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -16,
+				x = -2,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -15,
+				x = -2,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -14,
+				x = -2,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -13,
+				x = -2,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -12,
+				x = -2,
+				tile = "tiles_ground_8_716489"
+			},
+			{
+				y = -11,
+				x = -2,
+				tile = "tiles_ground_8_716489"
+			}
 		},
 		name = "test2",
-	},
+		type = "region",
+		id = "region_test2_881880"
+	}
 }

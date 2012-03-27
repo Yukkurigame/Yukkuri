@@ -51,14 +51,15 @@ Unit* UnitManager::CreateUnit( enum unitType type, float x, float y )
 
 	temp->setUnitType( type );
 
-	/*if( !temp->Create( LastId ) ||
+	if( !temp->Create( LastId )/* ||
 		!temp->setUnitImage( graph->CreateGLSprite( temp->getUnitImageName( ) ) ) ||
-		//!temp->loadAnimation()
+		!temp->loadAnimation()
+	*/
 	)
 	{
 		delete temp;
 		return NULL;
-	}*/
+	}
 
 
 	//graph->LoadAnimation( temp->getUnitName(), temp->getUnitImageRows(),

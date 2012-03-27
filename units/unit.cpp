@@ -26,14 +26,13 @@ bool Unit::Create( int id )
 {
 	UnitId = id;
 
-	setUnitName( Type );
+	if( !setUnitName( Type ) )
+		return false;
 
 	//FIXME: where is my debug??
 	defs = new EntityDefs;
 	//FIXME: It,s so long
 	getConfigValue( "name", defs->Name );
-	if( defs->Name != UnitName )
-		UnitName = defs->Name;
 	getConfigValue( "image", defs->imageName );
 	getConfigValue( "height", defs->height );
 	getConfigValue( "width", defs->width );
@@ -73,12 +72,15 @@ void Unit::setUnitType( enum unitType type )
 	}
 }
 
-void Unit::setUnitName( string type )
+bool Unit::setUnitName( string type )
 {
 	//FIXME: it's bad.
 	LuaConfig* cfg = new LuaConfig;
 	UnitName = cfg->getRandom("meeting", type);
 	delete cfg;
+	if( UnitName == "" )
+		return false;
+	return true;
 }
 
 void Unit::setUnitX( float x )
@@ -125,7 +127,7 @@ bool Unit::setUnitImage( Sprite* image )
 		Image = image;
 		Image->centered = true;
 		Image->fixed = false;
-		Image->vertices->z = Z;
+		Image->vertices.z = Z;
 		setUnitSize(1);
 		return true;
 	}

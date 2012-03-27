@@ -213,11 +213,11 @@ struct VBOStructureHandle
 	int shaders;
 	int number;
 	VBOStructureHandle* next;
-	VBOStructureHandle(TextureInfo* a, int s, int num, VBOStructureHandle* nxt){
+	VBOStructureHandle(TextureInfo* a, int s){
 		texture = a;
 		shaders = s;
-		number = num;
-		next = nxt;
+		number = 0;
+		next = NULL;
 	}
 };
 
@@ -234,14 +234,12 @@ struct Sprite
 	bool centered;
 	bool fixed;
 	TextureInfo* tex;
-	vertex3farr* vertices;
-	color4u* clr;
+	vertex3farr vertices;
+	color4u clr;
 
 
 	Sprite(){
 		tex = NULL;
-		vertices = NULL;
-		clr = NULL;
 		col = row = posx = posy = width = height = 0;
 		fixed = visible = true;
 		centered = false;
@@ -259,40 +257,37 @@ struct Sprite
 	}
 
 	void resize( float w, float h ){
-		if( !vertices ) return;
 		if( w >= 0 ){
-			vertices->rb.x = vertices->rt.x = vertices->lb.x + w;
+			vertices.rb.x = vertices.rt.x = vertices.lb.x + w;
 			width = w;
 		}
 		if( h >= 0 ){
-			vertices->rt.y = vertices->lt.y = vertices->lb.y + h;
+			vertices.rt.y = vertices.lt.y = vertices.lb.y + h;
 			height = h;
 		}
 	}
 	void setPosition( float x, float y ){
-		if( !vertices ) return;
-		float width = vertices->rb.x - vertices->lb.x;
-		float height = vertices->rt.y - vertices->lb.y; // FIXME: lb is rb?
+		float width = vertices.rb.x - vertices.lb.x;
+		float height = vertices.rt.y - vertices.lb.y; // FIXME: lb is rb?
 		posx = x;
 		posy = y;
 		if(centered){
 			float halfwidth = width/2;
 			float halfheight = height/2;
-			vertices->lb.x = vertices->lt.x = x - halfwidth;
-			vertices->lb.y = vertices->rb.y = y - halfheight;
-			vertices->rb.x = vertices->rt.x = x + halfwidth;
-			vertices->lt.y = vertices->rt.y = y + halfheight;
+			vertices.lb.x = vertices.lt.x = x - halfwidth;
+			vertices.lb.y = vertices.rb.y = y - halfheight;
+			vertices.rb.x = vertices.rt.x = x + halfwidth;
+			vertices.lt.y = vertices.rt.y = y + halfheight;
 		}else{
-			vertices->lb.x = vertices->lt.x = x;
-			vertices->lb.y = vertices->rb.y = y;
-			vertices->rb.x = vertices->rt.x = x + width;
-			vertices->lt.y = vertices->rt.y = y + height;
+			vertices.lb.x = vertices.lt.x = x;
+			vertices.lb.y = vertices.rb.y = y;
+			vertices.rb.x = vertices.rt.x = x + width;
+			vertices.lt.y = vertices.rt.y = y + height;
 		}
 	}
 	void setPosition( float x, float y, float z ){
-		if( !vertices ) return;
 		setPosition( x, y );
-		vertices->z = z;
+		vertices.z = z;
 	}
 	void toggleVisibility( ){
 		if( visible )
@@ -303,12 +298,12 @@ struct Sprite
 
 	inline bool operator < ( Sprite* s2 ){
 		//add atlas check
-		if( vertices->z == s2->vertices->z ){
+		if( vertices.z == s2->vertices.z ){
 			if( posy == s2->posy )
 				return ( posx > s2->posx );
 			return ( posy > s2->posy );
 		}
-		return ( vertices->z < s2->vertices->z );
+		return ( vertices.z < s2->vertices.z );
 	}
 };
 

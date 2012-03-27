@@ -294,7 +294,7 @@ void DynamicUnit::attackUnit( Unit* victim )
 
 void DynamicUnit::hit( float damage )
 {
-	this->getUnitImage()->clr->set( 255, 0, 0 );
+	this->getUnitImage()->clr.set( 255, 0, 0 );
 	Parameters["hp"] -= damage;
 }
 

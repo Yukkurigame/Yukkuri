@@ -1,54 +1,56 @@
 {
 	{
-		name = "Reimu",
-		type = "Entity",
-		speed = 80,
-		image = "reimu.png",
-		animation = {
-			rightup = {
-				28,
-				4,
-			},
-			right = {
-				24,
-				4,
-			},
-			up = {
-				4,
-				4,
-			},
-			down = {
-				0,
-				4,
-			},
-			leftdown = {
-				8,
-				4,
-			},
-			rightdown = {
-				20,
-				4,
-			},
-			leftup = {
-				16,
-				4,
-			},
-			left = {
-				12,
-				4,
-			},
-		},
-		damage = 3.0,
+		picture = "0",
+		image = "sprite_Reimu_743643",
 		height = 70,
-		width = 80,
 		imagecols = 4,
-		bloodcolor = {
-			170,
-			55,
-			55,
+		bloodcolor = 		{
+0,
+0,
+0
 		},
 		imagerows = 12,
+		speed = 80.0,
+		id = "entity_Reimu_115418",
+		name = "Reimu",
 		meeting = 47.0,
-		hp = 10.0,
-	},
+		damage = 3.0,
+		width = 80,
+		animation = 		{
+			rightup = 			{
+28,
+31
+			},
+			right = 			{
+24,
+27
+			},
+			up = 			{
+4,
+7
+			},
+			down = 			{
+0,
+3
+			},
+			leftdown = 			{
+8,
+11
+			},
+			rightdown = 			{
+20,
+23
+			},
+			leftup = 			{
+16,
+19
+			},
+			left = 			{
+12,
+15
+			}
+		},
+		type = "Entity",
+		hp = 10.0
+	}
 }

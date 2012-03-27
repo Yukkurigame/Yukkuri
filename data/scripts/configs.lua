@@ -22,30 +22,32 @@ function Configs:load( filename )
 	local data = assert(loadstring('return ' .. filedata))()
 	file:close()
 	for i,j in ipairs(data) do
-		if j.type == nil then
-			Debug(4, "Config has no type.")
-			break
-		end
-		ctype = string.lower(j.type)
-		if self.configs[ctype] == nil then
-			self.configs[ctype] = {}
-		end
-		if j.id == nil then
-			Debug(4, "Error in " .. filename ..  ": no id given. Skipped.")
-			break
-		end
-		local id = string.lower(j.id)
-		if self.configs[ctype][id] ~= nil then
-			Debug(4, "Config with id " .. id .. " already loaded. Skipped.\n")
-			break
-		end
-		self.configs[ctype][id] = j
+		repeat
+			if j.type == nil then
+				Debug(4, "Config has no type.")
+				break
+			end
+			ctype = string.lower(j.type)
+			if self.configs[ctype] == nil then
+				self.configs[ctype] = {}
+			end
+			if j.id == nil then
+				Debug(4, "Error in " .. filename ..  ": no id given. Skipped.")
+				break
+			end
+			local id = string.lower(j.id)
+			if self.configs[ctype][id] ~= nil then
+				Debug(4, "Config with id " .. id .. " already loaded. Skipped.\n")
+				break
+			end
+			self.configs[ctype][id] = j
+		until true
 	end
 	return true
 end
 
 function Configs:loadAll( type )
-	path = self:get("configs_path", "general", "config")
+	path = self:get("configs_path", "config_general", "config")
 	if path == nil then
 		path = getcwd() .. "/" .. "data/defs/"
 	end
@@ -57,14 +59,14 @@ function Configs:loadAll( type )
 	files = 0
 	success = 0
 	for i, filename in ipairs(listing) do
-		if filename:match("%a+." .. type) then
+		if filename:match("%a+%." .. type .. "$") then
 			files = files + 1
 			if self:load(path .. filename) then
 				success = success + 1
 			end
 		end
 	end
-	Debug(4, "Loaded " .. success .. " from " .. files .. " config files")
+	Debug(4, "Loaded " .. success .. " from " .. files .. " " .. type .. " files")
 end
 
 function Configs:get( value, subconfig, config )

@@ -221,7 +221,7 @@ void Bindings::process( int num, short down )
 
 void Bindings::LoadKeys( )
 {
-	string subconfig = "game";
+	string subconfig = "bindings_game";
 	string config = "bindings";
 	LuaConfig* cfg = new LuaConfig;
 	cfg->getValue( "keys", subconfig, config, Bindkeys );

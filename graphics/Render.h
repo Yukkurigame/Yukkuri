@@ -44,11 +44,6 @@ public:
 	void AddTexture( std::string name );
 	TextureInfo* GetTextureById( std::string id );
 
-	GLuint* GetGLTexture( std::string name );
-	GLuint* LoadGLTexture( std::string name );
-	void AddGLTexture( std::string name, GLuint* tex );
-
-
 	// Sprites
 	inline Sprite* CreateGLSprite( float x, float y, float z, int width, int height ){
 		return CreateGLSprite( x, y, z, width, height, -1, 0);
@@ -77,10 +72,15 @@ private:
 	int texturesCount;
 	TextureInfo* textures;
 	std::vector < TextureS* > internalTextures;
-	std::map < std::string, GLuint* > texturesCache;
 
-	void FreeGLTexture( GLuint* );
+
+	std::map < std::string, Texture* > texturesCache;
+	Texture* GetGLTexture( std::string name );
+	Texture* LoadGLTexture( std::string name );
+	void AddGLTexture( std::string name, Texture* tex );
+	void FreeGLTexture( Texture* );
 	void ClearGLTexturesCache( );
+
 
 	std::vector < Sprite* > GLSprites;
 
@@ -92,7 +92,7 @@ private:
 	GLuint VBOHandle;
 
 	// Returns count of breakings
-	int PrepareVBO( VBOStructureHandle** v );
+	VBOStructureHandle* PrepareVBO( int* count );
 
 
 	int minAtlasSize;

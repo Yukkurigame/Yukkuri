@@ -45,7 +45,7 @@ void RenderManager::openglSetup( int wwidth, int wheight )
 
 	glTranslatef(0.0f, 0.0f, 6.0f);
 
-	glClearColor( 0.25, 0.43, 0.0, -1.0 );
+	glClearColor( 0, 0, 0, -1 ); //0.25, 0.43, 0.0, -1.0 );
 
 	glClearDepth( 10.0f );
 
@@ -64,7 +64,7 @@ void RenderManager::openglSetup( int wwidth, int wheight )
 	glLoadIdentity();
 
 	glOrtho(0.0, wwidth, 0.0, wheight, -10.0, 1.0);
-	//glOrtho(-wwidth*3, wwidth*3, -wheight*3, wheight*3, -10.0, 1.0);
+	//glOrtho(-wwidth*1.5, wwidth*1.5, -wheight*1.5, wheight*1.5, -10.0, 1.0);
 
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
@@ -124,66 +124,11 @@ void RenderManager::AddTexture( string name ){
 
 TextureInfo* RenderManager::GetTextureById( std::string id )
 {
-	for( int i = 0; i < texturesCount; ++i )
+	for( int i = 0; i < texturesCount; ++i ){
 		if( id.compare(textures[i].id) == 0 )
 			return &textures[i];
-	return NULL;
-}
-
-
-
-GLuint* RenderManager::GetGLTexture( string name )
-{
-	std::map < std::string, GLuint* >::iterator it;
-	it = texturesCache.find(name);
-	if( it != texturesCache.end() ){
-		return it->second;
 	}
 	return NULL;
-}
-
-
-GLuint* RenderManager::LoadGLTexture( string name )
-{
-	GLuint* tex;
-	SDL_Surface* surface;
-
-	if( name == "" )
-		return NULL;
-
-	tex = GetGLTexture( name );
-
-	if( !tex ){
-
-		surface = SDLGraphics::LoadImage( name.c_str() );
-
-		if( !surface ){
-			debug( GRAPHICS, name + " not loaded.\n" );
-			return NULL;
-		}
-
-		tex = SDLGraphics::CreateGlTexture( surface );
-
-		AddGLTexture( name,  tex );
-
-		if( surface )
-			SDL_FreeSurface( surface );
-	}
-
-	return tex;
-}
-
-
-void RenderManager::AddGLTexture( string name, GLuint* texture )
-{
-	GLuint* cached;
-	if( !texture )
-		return;
-	cached = GetGLTexture( name );
-	if( cached == texture )
-		return;
-	FreeGLTexture( cached );
-	texturesCache[name] = texture;
 }
 
 
@@ -266,6 +211,8 @@ bool RenderManager::CreateAtlas( )
 	textures = (TextureInfo*)realloc(textures, sizeof(TextureInfo) * tcount );
 	for( int i = texturesCount; i < tcount; ++i ){
 		textures[i].fromTextureS(internalTextures[i], atlasHandle);
+		textures[i].id = new char[internalTextures[i]->id.size() + 1];
+		strcpy(textures[i].id, internalTextures[i]->id.c_str());
 		texturesCount++;
 	}
 	clear_vector( &internalTextures );
@@ -285,54 +232,39 @@ void RenderManager::MoveGlScene( int x, int y, int z )
 
 void RenderManager::DrawGLScene()
 {
-	VBOStructureHandle* vbostructure = NULL;
 	VBOStructureHandle* temp = NULL;
-	int count = PrepareVBO(&vbostructure);
+	int count;
+	VBOStructureHandle* vbostructure = PrepareVBO(&count);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnable(GL_TEXTURE_2D);
-	glBindBuffer(GL_ARRAY_BUFFER, VBOHandle);
+	//glBindBuffer(GL_ARRAY_BUFFER, VBOHandle);
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(VertexV2FT2FC4UI) * count * 4, verticles, GL_DYNAMIC_DRAW);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(VertexV2FT2FC4UI) * count, verticles, GL_STREAM_DRAW);
 
 	// Определяем указатели.
-	glVertexPointer(2, GL_FLOAT, sizeof(VertexV2FT2FC4UI), 0);
-	glTexCoordPointer(2, GL_FLOAT, sizeof(VertexV2FT2FC4UI), (const GLubyte*)0 + sizeof(s2f));
-	glColorPointer(4, GL_INT, sizeof(VertexV2FT2FC4UI), (const GLubyte*)0 + (sizeof(s2f) * 2));
+	glVertexPointer(3, GL_FLOAT, sizeof(VertexV2FT2FC4UI), &(verticles[0].verticles));
+	glTexCoordPointer(2, GL_FLOAT, sizeof(VertexV2FT2FC4UI), &(verticles[0].coordinates));
+	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(VertexV2FT2FC4UI), &(verticles[0].color));
 
-	int first = 0;
-	int nextcount = count;
 	while(vbostructure != NULL){
 		glBindTexture(GL_TEXTURE_2D, ( vbostructure->texture != NULL ? *(vbostructure->texture->atlas) : 0 ));
 		//StartShader(vbostructure->shaders);
-		nextcount = vbostructure->number - first + 1;
-		glDrawArrays(GL_QUADS, first, nextcount * 4);
-		first += nextcount;
+		glDrawArrays(GL_QUADS, vbostructure->start, vbostructure->end - vbostructure->start);
 		//StopShader(vbostructure->shaders);
-		glBindTexture(GL_TEXTURE_2D, 0);
 
 		//Clean vbos
 		temp = vbostructure;
 		vbostructure = vbostructure->next;
 		delete temp;
 	}
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisable(GL_TEXTURE_2D);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
-
-
-	/*
-	glColor4ub( 0, 255, 0, 255 );
-	glBegin(GL_QUADS);
-	glVertex2f(-1000, -1000);
-	glVertex2f(1100, -1000);
-	glVertex2f(1000, 1000);
-	glVertex2f(-1000, 1000);
-	glEnd();
-	*/
 
 	//TestDrawAtlas(-2500, -1000);
 
@@ -370,23 +302,81 @@ RenderManager::~RenderManager( )
 
 
 
-void RenderManager::FreeGLTexture( GLuint* tex )
+Texture* RenderManager::GetGLTexture( string name )
 {
-	if( tex ){
-		glDeleteTextures( 1, tex );
+	std::map < std::string, Texture* >::iterator it;
+	it = texturesCache.find(name);
+	if( it != texturesCache.end() ){
+		return it->second;
+	}
+	return NULL;
+}
+
+Texture* RenderManager::LoadGLTexture( string name )
+{
+	Texture* tex;
+	SDL_Surface* surface;
+
+	if( name == "" )
+		return NULL;
+
+	tex = GetGLTexture( name );
+
+	if( !tex ){
+
+		surface = SDLGraphics::LoadImage( name.c_str() );
+
+		if( !surface ){
+			debug( GRAPHICS, name + " not loaded.\n" );
+			return NULL;
+		}
+
+		tex = new Texture();
+		tex->tex = SDLGraphics::CreateGlTexture( surface );
+		tex->w = surface->w;
+		tex->h = surface->h;
+
+		AddGLTexture( name,  tex );
+
+		if( surface )
+			SDL_FreeSurface( surface );
+	}
+
+	return tex;
+}
+
+void RenderManager::AddGLTexture( string name, Texture* texture )
+{
+	Texture* cached;
+	if( !texture )
+		return;
+	cached = GetGLTexture( name );
+	if( cached == texture )
+		return;
+	FreeGLTexture( cached );
+	texturesCache[name] = texture;
+}
+
+void RenderManager::FreeGLTexture( Texture* tex )
+{
+	if( tex && tex->tex ){
+		glDeleteTextures( 1, tex->tex );
+		delete tex;
 		tex = NULL;
 	}
 }
 
 void RenderManager::ClearGLTexturesCache( )
 {
-	for( std::map< string, GLuint* >::iterator it = texturesCache.begin(), end = texturesCache.end();
+	for( std::map< string, Texture* >::iterator it = texturesCache.begin(), end = texturesCache.end();
 			it != end; ++it ){
 		FreeGLTexture( it->second );
 		it->second = NULL;
 	}
 	texturesCache.clear();
 }
+
+
 
 
 void RenderManager::ExtendVerticles(int count)
@@ -398,33 +388,35 @@ void RenderManager::ExtendVerticles(int count)
 }
 
 
-int RenderManager::PrepareVBO(VBOStructureHandle** v)
+VBOStructureHandle* RenderManager::PrepareVBO(int* c)
 {
 	sort(GLSprites.begin(), GLSprites.end());
 	int count = 0;
 	Sprite* s;
-	VBOStructureHandle* first;
+	VBOStructureHandle* v = NULL;
+	VBOStructureHandle* first = NULL;
+	memset(verticles, '0', verticlesSize);
 	for( std::vector< Sprite* >::iterator it = GLSprites.begin(), end = GLSprites.end(); it != end; ++it ){
 		s = *(it);
 		if( s == NULL || !s->visible )
 			continue;
 		coord2farr texcoord = s->getTextureCoordinates();
-		if(!(*v) ){
-			first = (*v) = new VBOStructureHandle(s->tex, 0);
-		}else if( s->tex != (*v)->texture ){
-			(*v)->next = new VBOStructureHandle(s->tex, 0);
-			(*v)->number = count;
-			(*v) = (*v)->next;
+		if( !v ){
+			first = v = new VBOStructureHandle(s->tex, 0, count);
+		}else if( s->tex != v->texture ){
+			v->next = new VBOStructureHandle(s->tex, 0, count);
+			v->end = count;
+			v = v->next;
 		}
-		verticles[count    ] = VertexV2FT2FC4UI(s->vertices.lt, texcoord.lt, &s->clr);
-		verticles[count + 1] = VertexV2FT2FC4UI(s->vertices.rt, texcoord.rt, &s->clr);
-		verticles[count + 2] = VertexV2FT2FC4UI(s->vertices.rb, texcoord.rb, &s->clr);
-		verticles[count + 3] = VertexV2FT2FC4UI(s->vertices.lb, texcoord.lb, &s->clr);
-		count++;
+		verticles[count++] = VertexV2FT2FC4UI(s->vertices.lt, texcoord.lt, &s->clr);
+		verticles[count++] = VertexV2FT2FC4UI(s->vertices.rt, texcoord.rt, &s->clr);
+		verticles[count++] = VertexV2FT2FC4UI(s->vertices.rb, texcoord.rb, &s->clr);
+		verticles[count++] = VertexV2FT2FC4UI(s->vertices.lb, texcoord.lb, &s->clr);
 	}
-	(*v)->number = count;
-	(*v) = first;
-	return count;
+	if( v != NULL)
+		v->end = count;
+	(*c) = count;
+	return first;
 }
 
 
@@ -512,13 +504,25 @@ GLuint RenderManager::BuildAtlas()
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glEnable(GL_TEXTURE_2D);
 	for ( unsigned int i = 0; i < internalTextures.size(); i++ ){
-		glBindTexture(GL_TEXTURE_2D, *(internalTextures[i]->texture));
+		glBindTexture(GL_TEXTURE_2D, *(internalTextures[i]->texture->tex));
 		glBegin(GL_QUADS);
 		{
-			glTexCoord2f(0.0, 0.0); glVertex2f(internalTextures[i]->atlasX, internalTextures[i]->atlasY);
-			glTexCoord2f(1.0, 0.0); glVertex2f(internalTextures[i]->atlasX + internalTextures[i]->width, internalTextures[i]->atlasY);
-			glTexCoord2f(1.0, 1.0); glVertex2f(internalTextures[i]->atlasX + internalTextures[i]->width, internalTextures[i]->atlasY + internalTextures[i]->height);
-			glTexCoord2f(0.0, 1.0); glVertex2f(internalTextures[i]->atlasX, internalTextures[i]->atlasY + internalTextures[i]->height);
+			float x = static_cast<float>(internalTextures[i]->offsetx) / static_cast<float>(internalTextures[i]->texture->w);
+			float y = static_cast<float>(internalTextures[i]->offsety) / static_cast<float>(internalTextures[i]->texture->h);
+			float dx = static_cast<float>(internalTextures[i]->width) / static_cast<float>(internalTextures[i]->texture->w);
+			float dy = static_cast<float>(internalTextures[i]->height) / static_cast<float>(internalTextures[i]->texture->h);
+			//Bottom-left vertex
+			glTexCoord2f(x, y);
+			glVertex2f(internalTextures[i]->atlasX, internalTextures[i]->atlasY);
+			//Bottom-right vertex
+			glTexCoord2f(x + dx, y);
+			glVertex2f(internalTextures[i]->atlasX + internalTextures[i]->width, internalTextures[i]->atlasY);
+			//Top-right vertex
+			glTexCoord2f(x + dx, y + dy);
+			glVertex2f(internalTextures[i]->atlasX + internalTextures[i]->width, internalTextures[i]->atlasY + internalTextures[i]->height);
+			//Top-left vertex
+			glTexCoord2f(x, y + dy);
+			glVertex2f(internalTextures[i]->atlasX, internalTextures[i]->atlasY + internalTextures[i]->height);
 		}
 		glEnd();
 	}

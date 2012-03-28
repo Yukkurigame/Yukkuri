@@ -20,14 +20,22 @@ struct s2f
 	s2f() : x(), y() {}
 };
 
-
-struct s4u
+struct s3f
 {
-	unsigned int r;
-	unsigned int g;
-	unsigned int b;
-	unsigned int a;
-	s4u() : r(), g(), b(), a() {}
+	float x;
+	float y;
+	float z;
+	s3f() : x(), y(), z() {}
+};
+
+
+struct s4ub
+{
+	GLubyte r;
+	GLubyte g;
+	GLubyte b;
+	GLubyte a;
+	s4ub() : r(), g(), b(), a() {}
 };
 
 
@@ -110,6 +118,14 @@ struct rect2f
 };
 
 
+struct Texture
+{
+	GLuint* tex;
+	int w;
+	int h;
+};
+
+
 struct TextureS
 {
 	int width;
@@ -123,7 +139,7 @@ struct TextureS
 	std::string id;
 	std::string image;
 	rect2f atlas;
-	GLuint* texture;
+	Texture* texture;
 
 	TextureS( ){}
 
@@ -151,8 +167,10 @@ struct TextureInfo
 	int cols;
 	int swidth; // width of one section
 	int sheight; // height of one section
+	float twidth; // section width in atlas coordinates
+	float theight; // section height in atlas coordinates
 	GLuint* atlas;
-	const char* id;
+	char* id;
 	rect2f pos;
 	TextureInfo () {
 		atlas = NULL;
@@ -166,8 +184,9 @@ struct TextureInfo
 		swidth = t->width / cols;
 		sheight = t->height / rows;
 		atlas = a;
-		id = t->id.c_str();
 		pos = t->atlas;
+		twidth = pos.width / static_cast<float>(cols);
+		theight = pos.height / static_cast<float>(rows);
 	}
 	coord2farr getSubTexture(int col, int row){
 		coord2farr rect;
@@ -179,12 +198,12 @@ struct TextureInfo
 		}else{
 			col %= cols;
 			row %= rows;
-			int x = pos.x + col * swidth;
-			int y = pos.y + row * sheight;
+			float x = pos.x + col * twidth;
+			float y = pos.y + row * theight;
 			rect.lb.x = rect.lt.x = x;
 			rect.lb.y = rect.rb.y = y;
-			rect.rb.x = rect.rt.x = x + swidth;
-			rect.lt.y = rect.rt.y = y + sheight;
+			rect.rb.x = rect.rt.x = x + twidth;
+			rect.lt.y = rect.rt.y = y + theight;
 		}
 		return rect;
 	}
@@ -193,11 +212,13 @@ struct TextureInfo
 
 struct VertexV2FT2FC4UI
 {
-	s2f verticles;
+	s3f verticles;
 	s2f coordinates;
-	s4u color;
+	s4ub color;
 	VertexV2FT2FC4UI(s2f p, s2f t, color4u* c){
-		verticles = p;
+		verticles.x = p.x;
+		verticles.y = p.y;
+		verticles.z = 0.0;
 		coordinates = t;
 		color.r = c->r;
 		color.g = c->g;
@@ -211,12 +232,14 @@ struct VBOStructureHandle
 {
 	TextureInfo* texture;
 	int shaders;
-	int number;
+	int start;
+	int end;
 	VBOStructureHandle* next;
-	VBOStructureHandle(TextureInfo* a, int s){
+	VBOStructureHandle(TextureInfo* a, int shd, int s){
 		texture = a;
-		shaders = s;
-		number = 0;
+		shaders = shd;
+		start = s;
+		end = 0;
 		next = NULL;
 	}
 };

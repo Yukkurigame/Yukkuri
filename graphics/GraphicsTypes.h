@@ -26,6 +26,13 @@ struct s3f
 	float y;
 	float z;
 	s3f() : x(), y(), z() {}
+	s3f operator-(const s3f& b){
+		s3f result = *this;
+		result.x -= b.x;
+		result.y -= b.y;
+		result.z -= b.z;
+		return result;
+	}
 };
 
 
@@ -61,12 +68,11 @@ struct coord2farr
 
 struct vertex3farr
 {
-	s2f lt; //left-top
-	s2f lb; //left-bottom
-	s2f rt; //right-top
-	s2f rb; //right-bottom
-	float z;
-	vertex3farr(): z() {};
+	s3f lt; //left-top
+	s3f lb; //left-bottom
+	s3f rt; //right-top
+	s3f rb; //right-bottom
+	vertex3farr() {};
 };
 
 
@@ -91,15 +97,6 @@ struct color4u
 };
 
 
-struct rect2i
-{
-	int x;
-	int y;
-	int width;
-	int height;
-};
-
-
 struct rect2f
 {
 	float x;
@@ -107,14 +104,7 @@ struct rect2f
 	float width;
 	float height;
 
-	rect2f () {}
-
-	rect2f ( rect2i* r ){
-		x = r->x;
-		y = r->y;
-		width = r->width;
-		height = r->height;
-	}
+	rect2f () : x(), y(), width(), height() {}
 };
 
 
@@ -215,10 +205,8 @@ struct VertexV2FT2FC4UI
 	s3f verticles;
 	s2f coordinates;
 	s4ub color;
-	VertexV2FT2FC4UI(s2f p, s2f t, color4u* c){
-		verticles.x = p.x;
-		verticles.y = p.y;
-		verticles.z = 0.0;
+	VertexV2FT2FC4UI(s3f p, s2f t, color4u* c){
+		verticles = p;
 		coordinates = t;
 		color.r = c->r;
 		color.g = c->g;
@@ -247,8 +235,7 @@ struct VBOStructureHandle
 
 struct Sprite
 {
-	int col;
-	int row;
+	int picture;
 	float width;
 	float height;
 	float posx;
@@ -258,25 +245,30 @@ struct Sprite
 	bool fixed;
 	TextureInfo* tex;
 	vertex3farr vertices;
+	coord2farr coordinates;
 	color4u clr;
 
 
 	Sprite(){
 		tex = NULL;
-		col = row = posx = posy = width = height = 0;
-		fixed = visible = true;
-		centered = false;
+		posx = posy = width = height = 0;
+		visible = true;
+		fixed = centered = false;
 	}
 
-	coord2farr getTextureCoordinates(){
-		if( tex != NULL )
-			return tex->getSubTexture(col, row);
-		coord2farr rect;
-		rect.lb.x = rect.lt.x = 0;
-		rect.lb.y = rect.rb.y = 0;
-		rect.rb.x = rect.rt.x = 1.0;
-		rect.lt.y = rect.rt.y = 1.0;
-		return rect;
+	void setPicture( int pic ){
+		int row = 0;
+		int col = 0;
+		if( tex ){
+			row = pic / tex->cols;
+			col = pic - row * tex->cols;
+			coordinates = tex->getSubTexture(col, row);
+		}else{
+			coordinates.lb.x = coordinates.lt.x = 0;
+			coordinates.lb.y = coordinates.rb.y = 0;
+			coordinates.rb.x = coordinates.rt.x = 1.0;
+			coordinates.lt.y = coordinates.rt.y = 1.0;
+		}
 	}
 
 	void resize( float w, float h ){
@@ -289,6 +281,7 @@ struct Sprite
 			height = h;
 		}
 	}
+
 	void setPosition( float x, float y ){
 		float width = vertices.rb.x - vertices.lb.x;
 		float height = vertices.rt.y - vertices.lb.y; // FIXME: lb is rb?
@@ -308,10 +301,12 @@ struct Sprite
 			vertices.lt.y = vertices.rt.y = y + height;
 		}
 	}
+
 	void setPosition( float x, float y, float z ){
 		setPosition( x, y );
-		vertices.z = z;
+		vertices.lb.z = vertices.lt.z = vertices.rt.z = vertices.rb.z = z;
 	}
+
 	void toggleVisibility( ){
 		if( visible )
 			visible = false;
@@ -319,15 +314,6 @@ struct Sprite
 			visible = true;
 	}
 
-	inline bool operator < ( Sprite* s2 ){
-		//add atlas check
-		if( vertices.z == s2->vertices.z ){
-			if( posy == s2->posy )
-				return ( posx > s2->posx );
-			return ( posy > s2->posy );
-		}
-		return ( vertices.z < s2->vertices.z );
-	}
 };
 
 

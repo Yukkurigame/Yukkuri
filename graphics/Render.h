@@ -13,14 +13,6 @@
 #include <vector>
 #include <map>
 
-struct ViewPoint {
-	int x;
-	int y;
-	int z;
-	ViewPoint(): x(), y(), z() {};
-};
-
-
 class RenderManager
 {
 public:
@@ -87,9 +79,9 @@ private:
 	int verticlesSize;
 	VertexV2FT2FC4UI* verticles;
 
-	void ExtendVerticles( int count );
+	void ExtendVerticles( );
 
-	GLuint VBOHandle;
+	//GLuint VBOHandle;
 
 	// Returns count of breakings
 	VBOStructureHandle* PrepareVBO( int* count );
@@ -103,7 +95,7 @@ private:
 	bool BuildAtlasMap( );
 	GLuint BuildAtlas( );
 
-	ViewPoint vpoint;
+	s3f vpoint;
 
 
 	void TestDrawAtlas(int x, int y);

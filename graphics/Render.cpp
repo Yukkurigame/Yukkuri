@@ -71,7 +71,7 @@ void RenderManager::openglSetup( int wwidth, int wheight )
 
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxAtlasSize);
 
-	glGenBuffers(1, &VBOHandle);
+	//glGenBuffers(1, &VBOHandle);
 }
 
 
@@ -162,16 +162,17 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 	Sprite* sprite = new Sprite();
 	sprite->tex = tex;
 
-	//TODO: picture not used;
-
 	if(centered)
 		sprite->centered = true;
 	sprite->resize( width, height );
 	sprite->setPosition( x, y, z );
+	sprite->setPicture(picture);
 
 	GLSprites.push_back( sprite );
 
-	ExtendVerticles( GLSprites.size() - verticlesSize );
+	int vcount = GLSprites.size() - verticlesSize;
+	if( vcount > 0 )
+		ExtendVerticles( );
 
 	return sprite;
 }
@@ -222,7 +223,6 @@ bool RenderManager::CreateAtlas( )
 
 void RenderManager::MoveGlScene( int x, int y, int z )
 {
-	//FIXME: double cast
 	vpoint.x = x;
 	vpoint.y = y;
 	vpoint.z = z;
@@ -285,7 +285,7 @@ void RenderManager::CleanGLScene()
 
 RenderManager::RenderManager( ){
 	textures = NULL;
-	verticlesSize = 0;
+	verticlesSize = 1; // for success multiplication
 	minAtlasSize = 64;
 	texturesCount = 0;
 	GLSprites.clear();
@@ -379,18 +379,27 @@ void RenderManager::ClearGLTexturesCache( )
 
 
 
-void RenderManager::ExtendVerticles(int count)
+void RenderManager::ExtendVerticles( )
 {
-	if( count <= 0 )
-		return;
-	verticlesSize += count;
+	verticlesSize *= 2;
 	verticles = (VertexV2FT2FC4UI*)realloc( verticles, sizeof(VertexV2FT2FC4UI) * verticlesSize * 4 );
 }
 
 
+inline bool compareSprites( Sprite* s1, Sprite* s2 )
+{
+	if( s1->vertices.rt.z == s2->vertices.rt.z ){
+		if( s1->posy == s2->posy ){
+			return ( s1->posx > s2->posx );
+		}
+		return ( s1->posy > s2->posy );
+	}
+	return ( s1->vertices.rt.z < s2->vertices.rt.z );
+}
+
 VBOStructureHandle* RenderManager::PrepareVBO(int* c)
 {
-	sort(GLSprites.begin(), GLSprites.end());
+	sort(GLSprites.begin(), GLSprites.end(), compareSprites);
 	int count = 0;
 	Sprite* s;
 	VBOStructureHandle* v = NULL;
@@ -400,7 +409,6 @@ VBOStructureHandle* RenderManager::PrepareVBO(int* c)
 		s = *(it);
 		if( s == NULL || !s->visible )
 			continue;
-		coord2farr texcoord = s->getTextureCoordinates();
 		if( !v ){
 			first = v = new VBOStructureHandle(s->tex, 0, count);
 		}else if( s->tex != v->texture ){
@@ -408,10 +416,14 @@ VBOStructureHandle* RenderManager::PrepareVBO(int* c)
 			v->end = count;
 			v = v->next;
 		}
-		verticles[count++] = VertexV2FT2FC4UI(s->vertices.lt, texcoord.lt, &s->clr);
-		verticles[count++] = VertexV2FT2FC4UI(s->vertices.rt, texcoord.rt, &s->clr);
-		verticles[count++] = VertexV2FT2FC4UI(s->vertices.rb, texcoord.rb, &s->clr);
-		verticles[count++] = VertexV2FT2FC4UI(s->vertices.lb, texcoord.lb, &s->clr);
+		//TODO: fixed in sprites not used
+		s3f offset;
+		if( s->fixed )
+			offset = vpoint;
+		verticles[count++] = VertexV2FT2FC4UI(s->vertices.lb - offset, s->coordinates.lt, &s->clr);
+		verticles[count++] = VertexV2FT2FC4UI(s->vertices.rb - offset, s->coordinates.rt, &s->clr);
+		verticles[count++] = VertexV2FT2FC4UI(s->vertices.rt - offset, s->coordinates.rb, &s->clr);
+		verticles[count++] = VertexV2FT2FC4UI(s->vertices.lt - offset, s->coordinates.lb, &s->clr);
 	}
 	if( v != NULL)
 		v->end = count;
@@ -525,6 +537,7 @@ GLuint RenderManager::BuildAtlas()
 			glVertex2f(internalTextures[i]->atlasX, internalTextures[i]->atlasY + internalTextures[i]->height);
 		}
 		glEnd();
+
 	}
 
 	// Возвращаем как было.

@@ -11,6 +11,7 @@
 #include "unitmanager.h"
 #include "LuaThread.h"
 #include "Camera.h"
+#include <string>
 #include <cstring>
 #include <dirent.h>
 
@@ -22,7 +23,7 @@ int scriptApi::ReadDirectory( lua_State* L )
 {
 	DIR *dp;
 	struct dirent *ep;
-	string dirname;
+	std::string dirname;
 	int top;
 	int count = 0;
 
@@ -65,7 +66,7 @@ int scriptApi::GetCWD( lua_State* L )
 int scriptApi::Debug( lua_State* L )
 {
 	enum dbg_level level;
-	string str;
+	std::string str;
 	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Debug level expected." );
 	luaL_argcheck( L, lua_isstring( L, 2 ), 2, "Debug string expected." );
 
@@ -83,7 +84,7 @@ int scriptApi::CreateWidget( lua_State* L )
 
 int scriptApi::LoadWidget( lua_State* L )
 {
-	string wname;
+	std::string wname;
 
 	luaL_argcheck( L, lua_isstring( L, 1 ), 1, "Widget name not given." );
 
@@ -102,7 +103,7 @@ int scriptApi::BindWidget( lua_State* L )
 {
 	Widget* w;
 	Unit* u;
-	string param;
+	std::string param;
 	bool result;
 
 	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Widget id not given." );
@@ -125,7 +126,7 @@ int scriptApi::BindWidgetMaxBar( lua_State* L )
 {
 	BarWidget* w;
 	Unit* u;
-	string param;
+	std::string param;
 	bool result;
 
 	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Widget id not given." );

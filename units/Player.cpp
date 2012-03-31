@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "Interface.h"
 #include "config.h"
+#include <cstdio>
 
 extern MainConfig conf;
 
@@ -26,7 +27,7 @@ void Player::moveUnit( short axis, signed int val )
 	else
 		moveY = val;
 	if( moveX == 0 && moveY == 0 )
-		setFirstFrame( );
+		Image.setDefault();
 }
 
 void Player::update( const int& dt )

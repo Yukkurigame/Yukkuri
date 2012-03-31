@@ -1,26 +1,28 @@
+
 #include "unit.h"
 #include "unitmanager.h" //FUUUUUUUUUUUUU~
 #include <cmath>
 
+#include "Luaconfig.h"
+
+
 Unit::Unit()
 {
 	UnitId = 0;
-	Anim = 0;
 	X = 0.0;
 	Y = 0.0;
 	Z = 1;
-	Scale = 1.0;
 	UnitName = "";
 	Type = "";
 	Deleted = false;
-	Image = NULL;
-	defs = NULL;
 }
+
 
 Unit::~Unit()
 {
-	delete defs;
+
 }
+
 
 bool Unit::Create( int id )
 {
@@ -29,17 +31,8 @@ bool Unit::Create( int id )
 	if( !setUnitName( Type ) )
 		return false;
 
-	//FIXME: where is my debug??
-	defs = new EntityDefs;
-	//FIXME: It,s so long
-	getConfigValue( "name", defs->Name );
-	getConfigValue( "image", defs->imageName );
-	getConfigValue( "height", defs->height );
-	getConfigValue( "width", defs->width );
-	getConfigValue( "imagecols", defs->imagecols );
-	getConfigValue( "imagerows", defs->imagerows );
-	getConfigValue( "imgx", defs->imgoffsetx );
-	getConfigValue( "imgy", defs->imgoffsety );
+	if( !Image.init( UnitName, Type ) )
+		return false;
 
 	return true;
 }
@@ -72,7 +65,7 @@ void Unit::setUnitType( enum unitType type )
 	}
 }
 
-bool Unit::setUnitName( string type )
+bool Unit::setUnitName( std::string type )
 {
 	//FIXME: it's bad.
 	LuaConfig* cfg = new LuaConfig;
@@ -83,55 +76,35 @@ bool Unit::setUnitName( string type )
 	return true;
 }
 
-void Unit::setUnitX( float x )
+void Unit::setUnitPos( float x, float y )
 {
 	X = x;
-}
-
-void Unit::setUnitY( float y )
-{
 	Y = y;
+	Image.setPosition( x, y, Z );
+
 }
 
 void Unit::setUnitSize( float size )
 {
-	Scale = size;
-	//Image->resize( defs->width * Scale, defs->height * Scale );
+	Image.setSize(size);
 }
 
-void Unit::setUnitParameter( string name, float value )
+void Unit::setUnitParameter( std::string name, float value )
 {
 	Parameters[name] = value;
 }
 
-void Unit::increaseUnitParameter( string name, float value )
+void Unit::increaseUnitParameter( std::string name, float value )
 {
 	Parameters[name] += value;
 }
 
-void Unit::setUnitAnim( int num )
-{
-	Anim = num;
-}
 
-float* Unit::getUnitpParameter( string name )
+float* Unit::getUnitpParameter( std::string name )
 {
 	if( Parameters.count(name) > 0 )
 		return &Parameters[name];
 	return NULL;
-}
-
-bool Unit::setUnitImage( Sprite* image )
-{
-	if( image != NULL ){
-		Image = image;
-		Image->centered = true;
-		Image->fixed = false;
-		Image->vertices.z = Z;
-		setUnitSize(1);
-		return true;
-	}
-	return false;
 }
 
 float Unit::dist( Unit* target )

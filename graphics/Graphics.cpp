@@ -775,7 +775,7 @@ void Graphics::DrawGLScene()
 		}
 	}
 
-	glLoadIdentity();
+
 	SDL_GL_SwapBuffers();
 }
 

@@ -3,6 +3,8 @@
 
 #include "unitmanager.h"
 
+#include "Luaconfig.h"
+
 #include <stdlib.h>
 #include <math.h>
 #include <iostream>
@@ -12,12 +14,9 @@
 
 
 
-
-
 DynamicUnit::DynamicUnit()
 {
 	TotalDistance = 0;
-	anim = NULL;
 	Attacked = NULL;
 
 	//FIXME: get it from config
@@ -28,37 +27,27 @@ bool DynamicUnit::Create( int id )
 {
 	if( !AnimatedUnit::Create( id ) )
 		return false;
-	getConfigValue("hp", Parameters["hp"]);
+
+	LuaConfig* cfg = new LuaConfig;
+	cfg->getValue( "hp", UnitName, Type, Parameters["hp"] );
+	cfg->getValue( "damage", UnitName, Type, Parameters["damage"] );
+	cfg->getValue( "damage", UnitName, Type, Parameters["damage"] );
+	cfg->getValue( "speed", UnitName, Type, Parameters["speed"]);
 	Parameters["hpmax"] = Parameters["hp"];
 	Parameters["fed"] = 100;
 	Parameters["exp"] = 20;
 	Parameters["expmax"] = 200;
-	getConfigValue("damage", Parameters["damage"]);
 	Parameters["level"] = 1;
-	getConfigValue("speed", Parameters["speed"]);
 	Parameters["days"] = 0;
-	return true;
-}
 
-bool DynamicUnit::loadAnimation()
-{
-	std::map < string, std::vector <int> > AnimTmp;
-	//FIXME: it's so long
-	getConfigValue( "animation", AnimTmp );
-	copy(AnimTmp["down"].begin(), AnimTmp["down"].begin()+2, Animdef.down);
-	copy(AnimTmp["leftdown"].begin(), AnimTmp["leftdown"].begin()+2, Animdef.leftdown);
-	copy(AnimTmp["left"].begin(), AnimTmp["left"].begin()+2, Animdef.left);
-	copy(AnimTmp["leftup"].begin(), AnimTmp["leftup"].begin()+2, Animdef.leftup);
-	copy(AnimTmp["up"].begin(), AnimTmp["up"].begin()+2, Animdef.up);
-	copy(AnimTmp["right"].begin(), AnimTmp["right"].begin()+2, Animdef.right);
-	copy(AnimTmp["rightdown"].begin(), AnimTmp["rightdown"].begin()+2, Animdef.rightdown);
-	copy(AnimTmp["rightup"].begin(), AnimTmp["rightup"].begin()+2, Animdef.rightup);
-
-	//FIXME: move from here
 	setUnitSize( 0.35f );
 
+	delete cfg;
+
 	return true;
 }
+
+
 
 /** Move the unit according to the eight cardinal directions.
 	@return Boolean value represents a Collision (true)
@@ -120,27 +109,28 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 		dy *= zone;
 		float distance = sqrt( dx * dx + dy * dy );
 		TotalDistance += distance;
-		if( dx || dy ) {
-			if( dx < 0 && dy > 0 ) 			//FUUUU
-				anim = Animdef.leftup;		//UUUUU
-			else if( dx < 0 && dy < 0 ) 	//UUUUU
-				anim = Animdef.leftdown;	//UUUUU
-			else if( dx > 0 && dy > 0 ) 	//UUUUU
-				anim = Animdef.rightup; 	//UUUUU
-			else if( dx > 0 && dy < 0 ) 	//UUUUU
-				anim = Animdef.rightdown;	//UUUUU
-			else if( dy > 0 ) 				//UUUUU
-				anim = Animdef.up;	 		//UUUUU
-			else if( dy < 0 ) 				//UUUUU
-				anim = Animdef.down;	 	//UUUUU
-			else if( dx < 0 ) 				//UUUUU
-				anim = Animdef.left;	 	//UUUUU
-			else if( dx > 0 ) 				//UUUUU
-				anim = Animdef.right;		//UUUUU
-			setUnitAnim( anim[0] + ( anim[1] > 1 ? ( static_cast<int>(TotalDistance) / m_animdistance) % anim[1] : 0 ) );
+		if( dx || dy ) { //FUUU
+			if( dx < 0 && dy > 0 )
+				Image.setAnimation("leftup");
+			else if( dx < 0 && dy < 0 )
+				Image.setAnimation("leftdown");
+			else if( dx > 0 && dy > 0 )
+				Image.setAnimation("rightup");
+			else if( dx > 0 && dy < 0 )
+				Image.setAnimation("rightdown");
+			else if( dy > 0 )
+				Image.setAnimation("up");
+			else if( dy < 0 )
+				Image.setAnimation("down");
+			else if( dx < 0 )
+				Image.setAnimation("left");
+			else if( dx > 0 )
+				Image.setAnimation("right");
+			Image.setFrame( Image.getCount() ? ( static_cast<int>(TotalDistance) / m_animdistance) % Image.getCount() : 0 );
 		}
 		X += dx;
 		Y += dy;
+		Image.setPosition(X, Y);
 		if( Parameters["fed"] > 1 )
 			Parameters["fed"] -= distance / 200;
 	}
@@ -203,14 +193,16 @@ void DynamicUnit::Die( )
 	Corpse* corpse;
 	corpse = dynamic_cast<Corpse*>( UnitManager::units.CreateUnit( CORPSE, getUnitX(), getUnitY() ) );
 	if( corpse ){
-		vector<int> bcolor;
-		getConfigValue( "bloodcolor", bcolor );
+		LuaConfig* cfg = new LuaConfig;
+		std::vector<int> bcolor;
+		cfg->getValue( "bloodcolor", UnitName, Type, bcolor );
 		if( bcolor.size() >= 3 )
 			corpse->setBloodColor( bcolor[0], bcolor[1], bcolor[2] );
 		else if( bcolor.size() >= 1 )
 			corpse->setBloodColor( bcolor[0] );
 		corpse->setUnitParameter( "hp", getUnitParameter( "hpmax" ) * getUnitParameter( "fed" ) / 100 );
-		corpse->setUnitSize( this->getUnitSize( ) );
+		corpse->setUnitSize( Image.getSize() );
+		delete cfg;
 	}
 	if( this->Attacked ){
 		this->Attacked->increaseUnitParameter( "exp", getUnitParameter( "hpmax" ) / getUnitParameter( "level" ) );
@@ -234,7 +226,7 @@ void DynamicUnit::levelUp( int addlevel )
 			scale = 0.35f;
 		else if( scale > 1.3 )
 			scale = 1.3f;
-		setUnitSize( scale );
+		Image.setSize( scale );
 		hpmax = Parameters["hpmax"];
 		if( hpmax == 0 ) hpmax = 1;
 		expmax = Parameters["expmax"];
@@ -294,12 +286,6 @@ void DynamicUnit::attackUnit( Unit* victim )
 
 void DynamicUnit::hit( float damage )
 {
-	this->getUnitImage()->clr.set( 255, 0, 0 );
+	Image.getSprite()->clr.set( 255, 0, 0 );
 	Parameters["hp"] -= damage;
-}
-
-void DynamicUnit::setFirstFrame( )
-{
-	if( anim != NULL )
-		setUnitAnim( anim[0] );
 }

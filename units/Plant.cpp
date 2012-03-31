@@ -4,6 +4,7 @@
  *  Created on: 18.07.2010
  */
 #include "Plant.h"
+#include "Luaconfig.h"
 
 Plant::Plant( )
 {
@@ -12,14 +13,14 @@ Plant::Plant( )
 
 bool Plant::Create( int id )
 {
-	float nutritive;
-	float hp;
 	if( !Unit::Create( id ) )
 		return false;
-	getConfigValue( "nutritive", nutritive );
-	getConfigValue( "hp", hp );
-	Parameters["nutritive"] = nutritive;
-	Parameters["hp"] = hp;
+
+	LuaConfig* cfg = new LuaConfig;
+	cfg->getValue( "nutritive", UnitName, Type, Parameters["nutritive"] );
+	cfg->getValue( "hp", UnitName, Type, Parameters["hp"] );
+	delete cfg;
+
 	return true;
 }
 

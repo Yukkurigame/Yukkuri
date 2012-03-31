@@ -22,11 +22,11 @@ void Spawner::Spawn( )
 			u->levelUp( rand( ) % static_cast<int>( level ? level : 1 ) + 3 );
 		}
 	}
-	if( UnitManager::units.GetUnitsSize(PLANT) < conf.maxEdibles ){
+	/*if( UnitManager::units.GetUnitsSize(PLANT) < conf.maxEdibles ){
 		x = y = 0;
 		getPosition( &x, &y );
 		UnitManager::units.CreateUnit( PLANT, x, y );
-	}
+	}*/
 }
 
 void Spawner::getPosition( float* retx, float* rety )

@@ -23,12 +23,12 @@ extern "C" {
 #endif
 
 
-
 GLuint* SDLGraphics::CreateGlTexture( SDL_Surface* surface )
 {
 	GLuint* image;
 	GLint  nOfColors;
 	GLenum texture_format = 0;
+
 
 	/*if( surface->format->colorkey != 0 ){
 		//FIXME: Indexed images support.

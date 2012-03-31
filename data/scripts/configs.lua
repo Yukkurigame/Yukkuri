@@ -120,12 +120,13 @@ function Configs:getSubconfigsLength( config )
 end
 
 function Configs:getOneFromSeveral( field, config )
-	ctype = string.lower(config)
-	config = self.configs[ctype]
+	local ctype = string.lower(config)
+	local config = self.configs[ctype]
 	if config == nil then
 		Debug(4, "Config " .. ctype .. " does not exist")
 		return
 	end
+
 	local t = {}
 	for i, j in pairs(config) do
 		t[i] = config[i][field]

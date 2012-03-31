@@ -4,7 +4,6 @@
  *  Created on: 20.07.2010
  */
 #include "Animated.h"
-#include "Define.h"
 #include "config.h"
 
 AnimatedUnit::AnimatedUnit( )

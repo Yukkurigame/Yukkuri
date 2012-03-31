@@ -16,6 +16,7 @@ extern "C" {
 #include <map>
 #include <vector>
 #include <string>
+#include <utility>
 
 #include "debug.h"
 
@@ -70,6 +71,28 @@ public:
 
 	template<typename T>
 	bool getValue( lua_State* L, int index, T& ret);
+
+	template<typename T1, typename T2>
+	bool getValue( lua_State* L, int index, std::pair<T1, T2>& ret )
+	{
+		// stack:
+		if(!lua_istable(L, index))
+			return false;
+
+		LuaStackChecker sc(L, __FILE__, __LINE__);
+
+		lua_pushvalue(L, index); // stack: pair
+		lua_pushnumber(L, 1); // stack: pair first
+		lua_gettable(L, -2); // stack: pair value
+		getValue(L, -1, ret.first);
+		lua_pop(L, 1); // stack: pair
+		lua_pushnumber(L, 2);
+		lua_gettable(L, -2);
+		getValue(L, -1, ret.second); // stack: pair value2
+		lua_pop(L, 2); // stack:
+
+		return true;
+	}
 
 
 	template<typename T>

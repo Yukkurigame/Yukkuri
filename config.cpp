@@ -6,8 +6,14 @@
 
 #include "config.h"
 #include "Luaconfig.h"
+#include <cstring>
 
 MainConfig conf;
+
+MainConfig::MainConfig()
+{
+		memset( this, 0, sizeof(this) );
+}
 
 bool MainConfig::load( )
 {

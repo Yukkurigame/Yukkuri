@@ -8,7 +8,7 @@
 #define CONFIG_H_
 
 #include <string>
-#include <cstring>
+
 
 struct MainConfig
 {
@@ -31,9 +31,8 @@ struct MainConfig
 	std::string scriptsPath;
 	std::string configsPath;
 
-	MainConfig(){
-		memset( this, 0, sizeof(this) );
-	}
+	MainConfig();
+
 	bool load();
 
 };

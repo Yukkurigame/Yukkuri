@@ -59,6 +59,7 @@ bool Widget::load( std::string config )
 		cfg->getValue( "image", config, "widget", picture );
 		background = RenderManager::Instance()->CreateGLSprite( PosX, PosY, getZ(), Width, Height,
 				RenderManager::Instance()->GetTextureById( imgname ), picture );
+		background->fixed = true;
 	}
 
 	delete cfg;

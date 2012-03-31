@@ -28,13 +28,8 @@ public:
 	void attackUnit( Unit* victim );
 	void hit( float damage );
 
-	void setFirstFrame(  );
-
-
 protected:
-	std::vector< string > FoodTypes;
-	AnimationDefs Animdef;
-	bool loadAnimation();
+	std::vector< std::string > FoodTypes;
 	Unit* Attacked;
 	float TotalDistance;
 	const static int m_animdistance = 20;

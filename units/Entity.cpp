@@ -47,7 +47,7 @@ void Entity::takeAction( )
 void Entity::move( const int& dt )
 {
 	if( !isMoved() ){
-		setFirstFrame();
+		Image.setFrame(0);
 		return;
 	}
 	int dx = 0, dy = 0;

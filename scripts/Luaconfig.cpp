@@ -43,7 +43,6 @@ std::string LuaConfig::getRandom( std::string field, std::string config )
 	std::string ret;
 	const int prmsz = 2;
 	const char* prm[prmsz] = { field.c_str(), config.c_str() };
-	//bool res = execFunction("getOneFromSeveral", prm, prmsz, ret);
 	execFunction("configs:getOneFromSeveral", prm, prmsz, ret);
 	return ret;
 }

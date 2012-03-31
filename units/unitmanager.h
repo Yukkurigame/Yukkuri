@@ -3,7 +3,7 @@
 
 #include <map>
 #include <vector>
-using std::vector;
+#include <string>
 
 #include "unit.h"
 #include "Render.h"
@@ -25,8 +25,8 @@ class UnitManager
 
 		void tick( const int& );
 
-		Unit* closer( Unit* u, string type, float limit = 100.0 );
-		Unit* closer( Unit* u, vector< string >* types, float limit = 100.0 );
+		Unit* closer( Unit* u, std::string type, float limit = 100.0 );
+		Unit* closer( Unit* u, std::vector< std::string >* types, float limit = 100.0 );
 		void grow( ); //FUUUUU
 
 		void onDraw( );
@@ -36,7 +36,7 @@ class UnitManager
 		RenderManager* graph;
 		void AddUnit( Unit* pUnit );
 		void ChangeUnitsSize( enum unitType type, signed int size );
-		vector< Unit* > Units;
+		std::vector< Unit* > Units;
 		std::map< enum unitType, int > Size;
 		Unit* player;
 };

@@ -1,21 +1,21 @@
 {
 	{
-		type = "Tiles",
-		image = "ground.png",
 		passability = 1.0,
+		image = "ground.png",
+		type = "Tiles",
 		name = 1
 	},
 	{
-		offsetx = 64,
-		image = "ground.png",
 		type = "Tiles",
+		image = "ground.png",
+		offsetx = 64,
 		name = 2,
 		passability = 1.0
 	},
 	{
-		type = "Tiles",
-		image = "iso-64x64-outside.png",
 		passability = 1.0,
+		image = "iso-64x64-outside.png",
+		type = "Tiles",
 		name = 3
 	},
 	{
@@ -185,6 +185,7 @@
 		name = "ground_19",
 		image = "sprite_ground_600587",
 		offsety = 192,
+		passability = 1.0,
 		type = "Tiles",
 		id = "tiles_ground_19_690738"
 	},

@@ -51,20 +51,10 @@ Unit* UnitManager::CreateUnit( enum unitType type, float x, float y )
 
 	temp->setUnitType( type );
 
-	if( !temp->Create( LastId )/* ||
-		!temp->setUnitImage( graph->CreateGLSprite( temp->getUnitImageName( ) ) ) ||
-		!temp->loadAnimation()
-	*/
-	)
-	{
+	if( !temp->Create( LastId ) ){
 		delete temp;
 		return NULL;
 	}
-
-
-	//graph->LoadAnimation( temp->getUnitName(), temp->getUnitImageRows(),
-	//							temp->getUnitImageCols(), temp->getUnitWidth(), temp->getUnitHeight(),
-	//							temp->getUnitImage());
 
 	temp->setUnitPos( x, y );
 
@@ -88,8 +78,6 @@ void UnitManager::DeleteUnit( Unit* u )
 	if( u == player )
 		player = NULL;
 	ChangeUnitsSize( u->geteUnitType( ), -1 );
-	graph->FreeGLSprite( u->getUnitImage() );
-	u->setUnitImage( NULL );
 	delete u;
 }
 
@@ -100,7 +88,7 @@ int UnitManager::GetUnitsSize( enum unitType type )
 	return 0;
 }
 
-Unit* UnitManager::closer( Unit* u, string type, float limit )
+Unit* UnitManager::closer( Unit* u, std::string type, float limit )
 {
 	//FIXME: quick and dirty
 	Unit* ret = NULL;
@@ -118,7 +106,7 @@ Unit* UnitManager::closer( Unit* u, string type, float limit )
 	return ret;
 }
 
-Unit* UnitManager::closer( Unit* u, vector< string >* types, float limit )
+Unit* UnitManager::closer( Unit* u, std::vector< string >* types, float limit )
 {
 	//FIXME: quick and dirty
 	Unit* ret = NULL;
@@ -126,7 +114,7 @@ Unit* UnitManager::closer( Unit* u, vector< string >* types, float limit )
 	limit *= u->getUnitSize();
 	for (int i = 0; i < (int)Units.size(); i++) {
 		if( Units[i] != u ){
-			for( vector< string >::iterator it = types->begin(), end = types->end(); it != end; ++it ){
+			for( std::vector< string >::iterator it = types->begin(), end = types->end(); it != end; ++it ){
 				if( Units[i]->getUnitType() == (*it) ){
 					float dist = u->dist(Units[i]);
 					if( dist < limit && dist < distance ){
@@ -168,7 +156,7 @@ Unit* UnitManager::GetUnit( unsigned int id )
 {
 	Unit* u = NULL;
 	if( id > 0 && id <= LastId ){
-		for( vector< Unit* >::iterator it = Units.begin(), end = Units.end(); it != end; ++it ){
+		for( std::vector< Unit* >::iterator it = Units.begin(), end = Units.end(); it != end; ++it ){
 			if( (*it)->getUnitId( ) == id ){
 				u = (*it);
 			}
@@ -180,11 +168,9 @@ Unit* UnitManager::GetUnit( unsigned int id )
 void UnitManager::onDraw( )
 {
 	/*Unit* u = NULL;
-	for( vector< Unit* >::iterator it = Units.begin(), end = Units.end(); it != end; ++it ){
+	for( std::vector< Unit* >::iterator it = Units.begin(), end = Units.end(); it != end; ++it ){
 		if( (*it) ){
-			u = (*it);
-			u->getUnitImage( )->setPosition( u->getUnitX( ), u->getUnitY( ) );
-			u->getUnitImage()->coordinates = graph->GetAnimation( u->getUnitName( ), u->getUnitAnim( ) );
+			(*it)->onDraw();
 		}
 	}*/
 }

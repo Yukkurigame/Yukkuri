@@ -24,7 +24,7 @@ public:
 	/// <param name="y">Возвращает Y координату расположения нового элемента в контейнере.</param>
 	/// <param name="itemWidth">Ширина нового элемента.</param>
 	/// <param name="itemHeight">Высота нового элемента.</param>
-	bool InsertItem(int* x, int* y, int itemWidth, int itemHeight);
+	bool InsertItem( int* x, int* y, int itemWidth, int itemHeight);
 
 private:
 	enum SearchResults { OK, MORE, WIDTH, HEIGHT, };
@@ -35,7 +35,7 @@ private:
 
 	ElasticBox** children;
 
-	SearchResults FindSpace(int* x, int* y, int itemWidth, int itemHeight);
+	SearchResults FindSpace( int* x, int* y, int itemWidth, int itemHeight);
 
 	void AdjustChildren();
 	void Resize(int x, int y, int width, int height);

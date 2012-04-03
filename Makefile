@@ -9,11 +9,12 @@ LIBS= $(shell sdl-config --libs) -lpng -lSDL_image -lGL -lfreetype -llua
 
 
 DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1
-CFLAGS= -O0 -g -Wall $(DEFINES)
+CFLAGS= -O0 -g -W  -Wall $(DEFINES)
 
 
 UNITS =  unitmanager.cpp unit.cpp Animated.cpp Plant.cpp Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp
-GRAPHICS = Font.cpp ElasticBox.cpp sdl_graphics.cpp gl_extensions.cpp Animation.cpp Render.cpp pngfuncs.c
+GRAPHICS = Font.cpp Text.cpp ElasticBox.cpp sdl_graphics.cpp gl_extensions.cpp Animation.cpp Render.cpp \
+			pngfuncs.c
 SCRIPTS = Lua.cpp Luaconfig.cpp LuaScript.cpp LuaThread.cpp api.cpp
 INTERFACE = Interface.cpp Widget.cpp TextWidget.cpp BarWidget.cpp
 

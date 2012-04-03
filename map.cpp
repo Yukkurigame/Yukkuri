@@ -100,10 +100,11 @@ MapTile::MapTile( signed int x, signed int y ) {
 
 	map.fromMapCoordinates( &RealX, &RealY );
 
-	sprite = RenderManager::Instance()->CreateGLSprite( RealX - ( conf.mapTileSize >> 1 ),
-							RealY - ( conf.mapTileSize >> 2 ), 0,
-							conf.mapTileSize, conf.mapTileSize,
-							Type->texture, Type->picture );
+	sprite = NULL;
+	//sprite = RenderManager::Instance()->CreateGLSprite( RealX - ( conf.mapTileSize >> 1 ),
+	//						RealY - ( conf.mapTileSize >> 2 ), 0,
+	//						conf.mapTileSize, conf.mapTileSize,
+	//						Type->texture, Type->picture );
 
 	//FIXME: я не уверен, что это правильно, но выглядит нормально. Может внезапно вылезти боком.
 	//Image.x = RealX - ( conf.mapTileSize >> 1 );
@@ -150,7 +151,7 @@ bool Map::LoadTiles( )
 		tiles[id].id = Subconfigs[i]["id"];
 		if( Subconfigs[i].count("image") ){
 			std::string image = Subconfigs[i]["image"];
-			tiles[id].texture = RenderManager::Instance()->GetTextureById( image );
+			tiles[id].texture = RenderManager::Instance()->GetTextureNumberById( image );
 		}
 		tiles[id].picture = Subconfigs[i].count("picture") ? atoi(Subconfigs[i]["picture"].c_str()) : 0;
 		tiles[id].passability = Subconfigs[i].count("passability") ? atoi(Subconfigs[i]["passability"].c_str()) : 0;

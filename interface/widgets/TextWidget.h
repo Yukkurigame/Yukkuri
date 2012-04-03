@@ -8,7 +8,8 @@
 #ifndef TEXTWIDGET_H_
 #define TEXTWIDGET_H_
 
-#include "widgets/Widget.h"
+#include "interface/widgets/Widget.h"
+#include "graphics/Text.h"
 
 class TextWidget: public Widget
 {
@@ -32,10 +33,10 @@ public:
 	void toggleVisibility( );
 
 private:
-	Sprite* TextSprite;
+	Text TextSprite;
 	float TextX, TextY;
 	int TextAlign;
-	std::string Text;
+	std::string TextContent;
 	std::string FontName;
 	int FontSize;
 	float BindedCache;

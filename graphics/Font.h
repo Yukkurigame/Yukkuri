@@ -7,9 +7,7 @@
 #ifndef YUKKURIFONT_H_
 #define YUKKURIFONT_H_
 
-#include "debug.h"
 #include "GraphicsTypes.h"
-
 #include <ft2build.h>
 #include <freetype/freetype.h>
 #include <freetype/ftglyph.h>
@@ -21,15 +19,25 @@
 struct Char{
 	FT_Glyph gl;
 	FT_Bitmap bm;
+	FT_Glyph_Metrics metrics;
 	signed long horiAdvance;
 	signed long vertAdvance;
 	int top;
 	int height;
-	Char( ) { horiAdvance = vertAdvance = 0; top = height = 0; }
+	char id[40];
+	unsigned int chr;
+	int pic;
+	Char( ) {
+		horiAdvance = vertAdvance = 0; top = height = 0;
+		pic = 0;
+	}
 };
 
 struct font_data {
 	int fontHeight;			// Font height.
+	int cellHeight;
+	int cellWidth;
+	int texture;
 	Char* chars[CHARSIZE];
 
 	//The init function will create a font of
@@ -38,6 +46,10 @@ struct font_data {
 
 	//Free all the resources assosiated with the font.
 	void clean();
+
+	Char* getChar( unsigned int );
+
+	Texture* glTexture( Char *, int sw, int sh );
 
 	//Calculate text size.
 	void size( int* w, int* h, const char* str );

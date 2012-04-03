@@ -1,9 +1,9 @@
 
 gui = require("data/scripts/gui").create()
 
-gui:addWidget("fps")
-gui:addWidget("time")
-gui:addWidget("pstats")
+gui:addWidget("widget_fps_428624")
+gui:addWidget("widget_time_493245")
+-- gui:addWidget("pstats")
 
 CreateUnit(1)
 SetCameraTarget(1)

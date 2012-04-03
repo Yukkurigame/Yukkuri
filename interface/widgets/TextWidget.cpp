@@ -17,8 +17,7 @@ TextWidget::TextWidget( )
 	TextX = 0;
 	TextY = 0;
 	TextAlign = NONE;
-	Text = "";
-	TextSprite = NULL;
+	TextContent = "";
 	BindedCache = 0.00123f;
 }
 
@@ -48,7 +47,12 @@ bool TextWidget::load( std::string config )
 	cfg->getValue( "fontsize", config, "widget", fontsize );
 	cfg->getValue( "fontcolor", config, "widget", vcolor );
 
-	TextSprite = RenderManager::Instance()->CreateGLSprite( TextX, TextX, getZ(), Width, Height, (TextureInfo*)NULL, 0 );
+	TextSprite.setPosition( TextX, TextX, getZ() );
+	TextSprite.setFont( font, fontsize );
+	//TextSprite.setFixed( true );
+	TextSprite.setText( "The quick brown fox jumps over the \n lazy dog." );
+
+	//RenderManager::Instance()->CreateGLSprite( TextX, TextX, getZ(), Width, Height, (TextureInfo*)NULL, 0 );
 
 	updatePosition( );
 
@@ -66,11 +70,11 @@ void TextWidget::updatePosition( )
 	float posx, posy, swidth, width, height;
 	Widget::updatePosition( );
 	posx = posy = swidth = width = height = 0;
-	if( TextSprite ){
-		width = TextSprite->width;
-		if( !height || height < TextSprite->height )
-			height = TextSprite->height;
-	}
+	//if( TextSprite ){
+		//width = TextSprite->width;
+		//if( !height || height < TextSprite->height )
+		//	height = TextSprite->height;
+	//}
 	switch(TextAlign){
 		case CENTER:
 			posx = PosX + this->Width * 0.5 - ( swidth + width ) * 0.5 + TextX;
@@ -84,30 +88,31 @@ void TextWidget::updatePosition( )
 			break;
 	}
 	posy = PosY - TextY;
-	if( TextSprite )
-		TextSprite->setPosition( posx + swidth, posy, getZ( ) + 0.1f );
+	//if( TextSprite )
+		TextSprite.setPosition( posx + swidth, posy, getZ( ) + 0.1f );
 }
 
 void TextWidget::setFontColor( int r, int g, int b )
 {
-	TextSprite->clr.set( r, g, b );
+	//TextSprite->clr.set( r, g, b );
 }
 
 void TextWidget::setText( std::string text )
 {
 	float w, h;
-	if( Text == text )
+	if( TextContent == text )
 		return;
-	Text = text;
+	TextContent = text;
+	TextSprite.setText( text.c_str() );
 	//RenderManager::Instance()->ChangeTextSprite( TextSprite, FontName, FontSize, Text );
 	w = Width;
 	h = Height;
-	if( !Width || Width < TextSprite->width ){
-		w = TextSprite->width;
-	}
-	if( !Height || Height < TextSprite->height ){
-		h = TextSprite->height;
-	}
+	//if( !Width || Width < TextSprite->width ){
+	//	w = TextSprite->width;
+	//}
+	//if( !Height || Height < TextSprite->height ){
+//		h = TextSprite->height;
+	//}
 	resize( w, h );
 	updatePosition();
 }
@@ -134,6 +139,6 @@ void TextWidget::Update( )
 void TextWidget::toggleVisibility( )
 {
 	Widget::toggleVisibility( );
-	if( TextSprite && TextSprite->visible != visible )
-		TextSprite->toggleVisibility( );
+	//if( TextSprite && TextSprite->visible != visible )
+	//	TextSprite->toggleVisibility( );
 }

@@ -36,7 +36,7 @@ ElasticBox::~ElasticBox( )
 }
 
 
-bool ElasticBox::InsertItem(int* x, int* y, int itemWidth, int itemHeight)
+bool ElasticBox::InsertItem( int* x, int* y, int itemWidth, int itemHeight)
 {
 	SearchResults spaceFound = MORE;
 	while ( ( spaceFound = FindSpace( x, y, itemWidth, itemHeight ) ) != OK ) {
@@ -66,7 +66,7 @@ bool ElasticBox::InsertItem(int* x, int* y, int itemWidth, int itemHeight)
 }
 
 
-ElasticBox::SearchResults ElasticBox::FindSpace(int* x, int* y, int itemWidth, int itemHeight)
+ElasticBox::SearchResults ElasticBox::FindSpace( int* x, int* y, int itemWidth, int itemHeight)
 {
 	SearchResults spaceFound = OK;
 
@@ -91,7 +91,7 @@ ElasticBox::SearchResults ElasticBox::FindSpace(int* x, int* y, int itemWidth, i
 		int i;
 		for ( i = 0; i < BOX_CHILDREN; i++ ){
 			if ( children[i] != NULL &&
-				( spaceFound = children[i]->FindSpace(x, y, itemWidth, itemHeight) ) == OK )
+				( spaceFound = children[i]->FindSpace( x, y, itemWidth, itemHeight ) ) == OK )
 				break;
 		}
 		if ( spaceFound == OK ){
@@ -124,7 +124,7 @@ void ElasticBox::AdjustChildren()
 }
 
 
-void ElasticBox::Resize(int x, int y, int width, int height)
+void ElasticBox::Resize( int x, int y, int width, int height )
 {
 	this->X = x;
 	this->Y = y;

@@ -110,7 +110,7 @@ struct rect2f
 
 struct Texture
 {
-	GLuint* tex;
+	GLuint tex;
 	int w;
 	int h;
 };
@@ -124,11 +124,11 @@ struct TextureS
 	int offsety;
 	int rows;
 	int cols;
-	int atlasX;
-	int atlasY;
+	int atlasX; // Absolute position x in atlas
+	int atlasY; // Absolute position y in atlas
 	std::string id;
 	std::string image;
-	rect2f atlas;
+	rect2f atlas; // Relative position in atlas; atlas size
 	Texture* texture;
 
 	TextureS( ){}
@@ -159,16 +159,16 @@ struct TextureInfo
 	int sheight; // height of one section
 	float twidth; // section width in atlas coordinates
 	float theight; // section height in atlas coordinates
-	GLuint* atlas;
+	GLuint atlas; // atlas id
 	char* id;
 	rect2f pos;
 	TextureInfo () {
-		atlas = NULL;
+		atlas = 0;
 	}
 	void fromTextureS( TextureS* t ){
-		fromTextureS(t, NULL);
+		fromTextureS(t, 0);
 	}
-	void fromTextureS( TextureS* t, GLuint* a ){
+	void fromTextureS( TextureS* t, GLuint a ){
 		rows = ( t->rows < 1 ? 1 : t->rows );
 		cols = ( t->cols < 1 ? 1 : t->cols );
 		swidth = t->width / cols;
@@ -177,6 +177,11 @@ struct TextureInfo
 		pos = t->atlas;
 		twidth = pos.width / static_cast<float>(cols);
 		theight = pos.height / static_cast<float>(rows);
+	}
+	inline coord2farr getSubTexture( int pic ){
+		int row = pic / cols;
+		int col = pic - row * cols;
+		return getSubTexture( col, row );
 	}
 	coord2farr getSubTexture(int col, int row){
 		coord2farr rect;
@@ -218,13 +223,13 @@ struct VertexV2FT2FC4UI
 
 struct VBOStructureHandle
 {
-	TextureInfo* texture;
+	int texture;
 	int shaders;
 	int start;
 	int end;
 	VBOStructureHandle* next;
-	VBOStructureHandle(TextureInfo* a, int shd, int s){
-		texture = a;
+	VBOStructureHandle(int tex, int shd, int s){
+		texture = tex;
 		shaders = shd;
 		start = s;
 		end = 0;
@@ -235,7 +240,7 @@ struct VBOStructureHandle
 
 struct Sprite
 {
-	int picture;
+	//int picture;
 	float width;
 	float height;
 	float posx;
@@ -243,6 +248,7 @@ struct Sprite
 	bool visible;
 	bool centered;
 	bool fixed;
+	int texid;
 	TextureInfo* tex;
 	vertex3farr vertices;
 	coord2farr coordinates;
@@ -251,18 +257,15 @@ struct Sprite
 
 	Sprite(){
 		tex = NULL;
+		texid = 0;
 		posx = posy = width = height = 0;
 		visible = true;
 		fixed = centered = false;
 	}
 
 	void setPicture( int pic ){
-		int row = 0;
-		int col = 0;
-		if( tex ){
-			row = pic / tex->cols;
-			col = pic - row * tex->cols;
-			coordinates = tex->getSubTexture(col, row);
+		if( texid && tex ){
+			coordinates = tex->getSubTexture(pic);
 		}else{
 			coordinates.lb.x = coordinates.lt.x = 0;
 			coordinates.lb.y = coordinates.rb.y = 0;

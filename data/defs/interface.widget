@@ -1,5 +1,6 @@
 {
 	{
+		-- id = "widget_time_493245",
 		name = "time",
 		type = "Widget",
 		wtype = 2,
@@ -18,6 +19,7 @@
 		font = "LiberationSerif-Regular",
 	},
 	{
+		id = "widget_fps_428624",
 		name = "fps",
 		type = "Widget",
 		wtype = 2,

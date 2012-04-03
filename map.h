@@ -16,7 +16,7 @@ struct TileInfo
 	unsigned int picture;
 	float passability;
 	std::string id;
-	TextureInfo* texture;
+	int texture;
 };
 
 struct MapTile

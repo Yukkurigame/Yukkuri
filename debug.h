@@ -8,6 +8,8 @@
 #define YUKKURIDEBUG_H_
 
 #define DEBUG
+#define DEBUG_DRAW_RECTANGLES 1
+//#define DEBUG_DRAW_ATLAS_RECTANGLES
 
 #define DEBUGLEVEL 9
 

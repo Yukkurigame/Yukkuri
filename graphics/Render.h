@@ -34,20 +34,25 @@ public:
 	bool LoadTextures( );
 
 	void AddTexture( std::string name );
-	TextureInfo* GetTextureById( std::string id );
+	void AddTexture( std::string id, Texture* tex, int width, int height,
+							int cols, int rows, int ax, int ay );
+	bool BuildAtlasAbsoluteMap(float width, float height);
+
+	int GetTextureNumberById( std::string id );
+
+	bool DrawToGLTexture( GLuint* ahandle, int width, int height, std::vector< TextureS* >* textures );
 
 	// Sprites
 	inline Sprite* CreateGLSprite( float x, float y, float z, int width, int height ){
-		return CreateGLSprite( x, y, z, width, height, -1, 0);
+		return CreateGLSprite( x, y, z, width, height, 0, 0);
 	}
 	Sprite* CreateGLSprite( float x, float y, float z, int width, int height, int texture_id,
-							int picture, short centered = 0 );
-	Sprite* CreateGLSprite( float x, float y, float z, int width, int height, TextureInfo* tex,
 							int picture, short centered = 0 );
 	void FreeGLSprite( Sprite* sprite );
 
 
-	bool CreateAtlas( );
+	bool CreateAtlas( GLuint * atlas, int* width, int* height );
+	inline int getAtlasMax( ){ return maxAtlasSize; }
 
 	void MoveGlScene( int x, int y, int z );
 	void DrawGLScene();
@@ -90,15 +95,15 @@ private:
 	int minAtlasSize;
 	int maxAtlasSize;
 	int atlasWidth, atlasHeight;
-	GLuint* atlasHandle;
+	GLuint atlasHandle;
 
-	bool BuildAtlasMap( );
-	GLuint BuildAtlas( );
+	bool BuildAtlasMap( int* width, int* height );
+	bool BuildAtlas( GLuint* ahandle, int width, int height );
 
 	s3f vpoint;
 
 
-	void TestDrawAtlas(int x, int y);
+	void TestDrawAtlas(int x, int y, GLuint atlas);
 };
 
 

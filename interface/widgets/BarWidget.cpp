@@ -67,7 +67,7 @@ void BarWidget::createBar( std::string name, int picture, int height, color4u cl
 	BarSprite = RenderManager::Instance()->CreateGLSprite( PosX + BarX, PosY + BarY, getZ(), BarWidth, height );
 	if( name != "" )
 		TopSprite = RenderManager::Instance()->CreateGLSprite( PosX, PosY, getZ() + 0.1f,
-						Width, Height, RenderManager::Instance()->GetTextureById(name), picture );
+						Width, Height, RenderManager::Instance()->GetTextureNumberById(name), picture );
 	if( BarSprite ){
 		BarSprite->clr.set( clr.r, clr.g, clr.b, clr.a );
 	}

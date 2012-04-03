@@ -32,7 +32,7 @@ bool Animation::init(  std::string subconfig, std::string config)
 	cfg->getValue( "picture", subconfig, config, picture );
 	cfg->getValue( "animation", subconfig, config, animation );
 	sprite = RenderManager::Instance()->CreateGLSprite( 0, 0, 0, width, height,
-							RenderManager::Instance()->GetTextureById( image ), picture);
+							RenderManager::Instance()->GetTextureNumberById( image ), picture);
 	sprite->centered = true;
 	sprite->setPicture( picture );
 	count = 0;

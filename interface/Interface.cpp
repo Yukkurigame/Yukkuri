@@ -52,7 +52,7 @@ Widget* UI::LoadWidget( std::string name )
 	//}
 
 	int type;
-	conf->getValue("wtype", name, "widget", type );
+	conf->getValue( "wtype", name, "widget", type );
 
 	switch(type){
 		case BLANK:

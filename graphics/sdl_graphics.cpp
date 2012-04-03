@@ -23,9 +23,9 @@ extern "C" {
 #endif
 
 
-GLuint* SDLGraphics::CreateGlTexture( SDL_Surface* surface )
+GLuint SDLGraphics::CreateGlTexture( SDL_Surface* surface )
 {
-	GLuint* image;
+	GLuint image;
 	GLint  nOfColors;
 	GLenum texture_format = 0;
 
@@ -54,12 +54,10 @@ GLuint* SDLGraphics::CreateGlTexture( SDL_Surface* surface )
 	//}
 
 	// Have OpenGL generate a texture object handle for us
-	image = new GLuint();
-
-	glGenTextures( 1, image );
+	glGenTextures( 1, &image );
 
 	// Bind the texture object
-	glBindTexture( GL_TEXTURE_2D, *image );
+	glBindTexture( GL_TEXTURE_2D, image );
 
 	// Set the texture's stretching properties
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );

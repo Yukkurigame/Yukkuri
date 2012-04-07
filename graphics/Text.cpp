@@ -103,6 +103,6 @@ void Text::addSprite( int x, int y, Char* c )
 		position.x + static_cast<float>(x), position.y - static_cast<float>(y), position.z,
 		font->cellWidth, font->cellHeight, font->texture, c->pic );
 	s->fixed = fixed;
-	s->clr.r = x * font->cellWidth;
+	//s->clr.r = x * font->cellWidth;
 	sprites.push_back(s);
 }

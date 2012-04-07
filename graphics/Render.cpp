@@ -104,7 +104,7 @@ bool RenderManager::LoadTextures( )
 void RenderManager::AddTexture( string name ){
 	LuaConfig* lc = new LuaConfig;
 	string config = "sprite";
-	TextureS* t = new TextureS();
+	TextureProxy* t = new TextureProxy();
 
 	lc->getValue("id", name, config, t->id);
 	lc->getValue("image", name, config, t->image);
@@ -123,7 +123,7 @@ void RenderManager::AddTexture( string name ){
 }
 
 void RenderManager::AddTexture( string id, Texture* tex, int width, int height, int cols, int rows, int ax, int ay ){
-	TextureS* t = new TextureS();
+	TextureProxy* t = new TextureProxy();
 	t->id = id;
 	t->width = width;
 	t->height = height;
@@ -152,7 +152,7 @@ int RenderManager::GetTextureNumberById( std::string id )
  * textures - array of textures coordinates to draw;
  * returns boolean
  */
-bool RenderManager::DrawToGLTexture( GLuint* ahandle, int width, int height, std::vector< TextureS* >* textures )
+bool RenderManager::DrawToGLTexture( GLuint* ahandle, int width, int height, std::vector< TextureProxy* >* textures )
 {
 	// Рисуем в атлас, как в текстуру, используя FBO.
 	// Настройка текстуры.
@@ -205,7 +205,7 @@ bool RenderManager::DrawToGLTexture( GLuint* ahandle, int width, int height, std
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glEnable(GL_TEXTURE_2D);
 	for ( unsigned int i = 0; i < textures->size(); i++ ){
-		TextureS* t = textures->at(i);
+		TextureProxy* t = textures->at(i);
 		glBindTexture(GL_TEXTURE_2D, t->texture->tex);
 		glBegin(GL_QUADS);
 		{
@@ -338,7 +338,7 @@ bool RenderManager::CreateAtlas( GLuint* ahandle, int* width, int* height )
 	int tcount = internalTextures.size();
 	textures = (TextureInfo*)realloc(textures, sizeof(TextureInfo) * ( tcount + texturesCount ) );
 	for( int i = 0; i < tcount; ++i ){
-		textures[texturesCount].fromTextureS(internalTextures[i], *ahandle);
+		textures[texturesCount].fromTextureProxy(internalTextures[i], *ahandle);
 		textures[texturesCount].id = new char[internalTextures[i]->id.size() + 1];
 		strcpy(textures[texturesCount].id, internalTextures[i]->id.c_str());
 		texturesCount++;
@@ -401,7 +401,7 @@ void RenderManager::DrawGLScene()
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 
-	TestDrawAtlas(-2500, -1000, 266);
+	TestDrawAtlas(-2500, -1000, 10);
 
 	glLoadIdentity();
 	SDL_GL_SwapBuffers();
@@ -573,7 +573,7 @@ bool RenderManager::BuildAtlasMap( int* width, int* height )
 {
 	ElasticBox box = ElasticBox(minAtlasSize, maxAtlasSize);
 
-	for( std::vector < TextureS* >:: iterator it = internalTextures.begin(),
+	for( std::vector < TextureProxy* >:: iterator it = internalTextures.begin(),
 			vend = internalTextures.end(); it != vend; ++it ){
 		if ( ! box.InsertItem(
 				&((*it)->atlasX), &((*it)->atlasY),

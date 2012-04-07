@@ -106,32 +106,20 @@ bool font_data::load( const char * fname, unsigned int height ) {
 	//Encoding
 	FT_Select_Charmap(face, FT_ENCODING_UNICODE);
 
-	FT_BBox bbox = face->bbox;
-	cellWidth = (bbox.xMax - bbox.xMin) >> 6;
-	cellHeight = (bbox.yMax - bbox.yMin) >> 6;
-	std::vector <TextureS* > charTextures;
-
-	int voffset = lastLine;
-	int hoffset = 0;
-	int rows = 0;
-	int w, h;
-	w = h = RenderManager::Instance()->getAtlasMax();
-	w = (w / cellWidth) * cellWidth; // make width multiple
-
-	unsigned int lastChar = 0;
+	//unsigned int lastChar = 0;
 	//This is where we actually create each of the fonts display lists.
 	for( unsigned int i=0; i<CHARSIZE; ++i ){
 		chars[i] = new Char();
 		makeChar( face, i, chars[i] );
 		chars[i]->pic = i;
-		if( hoffset >= ( w - cellWidth ) ){
+		/*if( hoffset >= ( w - cellWidth ) ){
 			voffset += cellHeight;
 			lastChar = i;
 			rows++;
 		}
 		hoffset = cellWidth * ( i - lastChar);
 		//Create new texture coordinates
-		TextureS* t = new TextureS();
+		TextureProxy* t = new TextureProxy();
 		t->texture = glTexture(chars[i], cellWidth, cellHeight);
 		t->offsetx = t->offsety = 0;
 		t->width = chars[i]->horiAdvance;
@@ -139,24 +127,40 @@ bool font_data::load( const char * fname, unsigned int height ) {
 		t->atlasX = hoffset; //  + (chars[i]->metrics.horiBearingX >> 6);
 		t->atlasY = voffset + ((bbox.yMax - chars[i]->metrics.horiBearingY) >> 6);
 		charTextures.push_back(t);
+		*/
 	}
 
+	// Calculate texture params
+	FT_BBox bbox = face->bbox;
+	cellWidth = (bbox.xMax - bbox.xMin) >> 6;
+	cellHeight = (bbox.yMax - bbox.yMin) >> 6;
+	baselineY = bbox.yMax >> 6;
+
+	//std::vector <TextureProxy* > charTextures;
+	//int voffset = lastLine;
+	//int hoffset = 0;
+	int w, h;
+	w = h = RenderManager::Instance()->getAtlasMax();
+	int sw = (w / cellWidth) * cellWidth; // make width multiple
+	int cols = w / cellWidth;
+	int rows = 1 + CHARSIZE / cols;
+	int sh = rows * cellHeight;
+
 	// Draw new line into atlas;
-	Texture* tex = new Texture;
+	Texture* tex = print( cols, rows );
 	char name[30];
 	snprintf( name, 29, "%20s%3d", (fname + 12), height );
-	tex->tex = 0;
-	tex->h = voffset;
-	tex->w = w;
+	//tex->tex = 0;
+	//tex->h = voffset;
+	//tex->w = w;
 	// Draw all chars to one texture
-	RenderManager::Instance()->DrawToGLTexture( &(tex->tex), tex->w, tex->h, &charTextures );
-	clear_vector(&charTextures);
+	//RenderManager::Instance()->DrawToGLTexture( &(tex->tex), tex->w, tex->h, &charTextures );
+	//clear_vector(&charTextures);
 	// Add texture to render manager
-	RenderManager::Instance()->AddTexture( name, tex, tex->w, cellHeight * rows,
-							tex->w / cellWidth, rows, 0, lastLine );
+	RenderManager::Instance()->AddTexture( name, tex, sw, sh, cols, rows, 0, lastLine );
 	// Build texture atlas
 	RenderManager::Instance()->CreateAtlas( &atlasHandle, &w, &h );
-	lastLine += voffset;
+	lastLine += rows * cellHeight;
 	delete tex;
 
 	// Get texture id for font
@@ -224,19 +228,17 @@ Char* font_data::getChar( unsigned int c )
 
 Texture* font_data::glTexture( Char* ch, int sw, int sh )
 {
+	Texture* tex;
 	GLuint texture;
 	int width, height, swidth, sheight;
-	int lineheight;
-	Texture* tex;
 
 	if( ch == NULL )
 		return NULL;
 
-	width = swidth = height = sheight = lineheight = 0;
+	width = swidth = height = sheight = 0;
 
-	lineheight = sw;
 	swidth = sh;
-	sheight = lineheight + lineheight/4;
+	sheight = sw + sw/4;
 
 	width = next_p2( swidth );
 	height = next_p2( sheight );
@@ -292,4 +294,91 @@ Texture* font_data::glTexture( Char* ch, int sw, int sh )
 	tex->h = height;
 
 	return tex;
+}
+
+
+Texture* font_data::print( int cols, int rows )
+{
+	Texture* texture;
+	int width, height, swidth, sheight;
+	GLuint tex = 0;
+
+	swidth = cols * cellWidth;
+	sheight = rows * cellHeight;
+
+	width = next_p2( swidth );
+	height = next_p2( sheight );
+
+	//Allocate memory for the texture data.
+	GLubyte* expanded_data = new GLubyte[ 2 * width * height ];
+
+	{
+		int line = 0;
+		int voffset = 0;
+		int charoffset = 0;
+		for( int j=0; j < height; j++ ){
+			Char* tmpc = NULL;
+			int col = 0;
+			int hoffset = 0;
+			int chartop = 0;
+			int charleft = 0;
+			if( j >= cellHeight + voffset ){ //line up
+				line++;
+				voffset += cellHeight;
+				charoffset += cols;
+			}
+			for( int i=0; i < width; i++ ){
+				expanded_data[ 2 * ( i + j * width ) ] = 255; //Alpha
+				if( col >= cols || line >= rows || charoffset + col >= CHARSIZE ){
+					expanded_data[ 2 * ( i + j * width ) + 1 ] = 0;
+				}else{
+					if( !tmpc || i >= hoffset + cellWidth ){ //symbol up;
+						if( tmpc ){
+							if( ++col >= cols || charoffset + col >= CHARSIZE ){
+								expanded_data[ 2 * ( i + j * width ) + 1 ] = 0;
+								continue;
+							}
+							hoffset += cellWidth;
+						}
+						tmpc = chars[ charoffset + col ];
+						chartop = baselineY - (tmpc->metrics.horiBearingY  >> 6);
+						charleft = tmpc->metrics.horiBearingX >> 6;
+					}
+					expanded_data[ 2 * ( i + j * width ) + 1 ] =
+						( 	i - charleft - hoffset >= tmpc->bm.width ||
+							i - charleft - hoffset < 0 ||
+							j - chartop - voffset < 0 ||
+							j - chartop - voffset >= tmpc->bm.rows
+							) ?
+							0 : tmpc->bm.buffer[ i - charleft - hoffset + tmpc->bm.width * ( j - voffset - chartop ) ];
+				}
+			}
+		}
+	}
+
+	glGenTextures( 1, &tex );
+
+	//Now we just setup some texture paramaters.
+	glBindTexture( GL_TEXTURE_2D, tex );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+
+	//Here we actually create the texture itself, notice
+	//that we are using GL_LUMINANCE_ALPHA to indicate that
+	//we are using 2 channel data.
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height,
+		0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, expanded_data );
+
+	//With the texture created, we don't need to expanded data anymore
+
+	delete [] expanded_data;
+
+	texture = new Texture();
+
+	texture->tex = tex;
+	texture->w = width;
+	texture->h = height;
+
+	return texture;
+
 }

@@ -116,7 +116,7 @@ struct Texture
 };
 
 
-struct TextureS
+struct TextureProxy
 {
 	int width;
 	int height;
@@ -131,20 +131,10 @@ struct TextureS
 	rect2f atlas; // Relative position in atlas; atlas size
 	Texture* texture;
 
-	TextureS( ){}
+	TextureProxy( ) : width(), height(), offsetx(), offsety(),
+			rows(), cols(), atlasX(), atlasY(), id(), image(), atlas() {}
 
-	TextureS( std::string i, std::string n, std::string img, int w, int h, int ox, int oy, int r, int c ){
-		id = i;
-		image = img;
-		width = w;
-		height = h;
-		offsetx = ox;
-		offsety = oy;
-		rows = r;
-		cols = c;
-	}
-
-	bool operator < ( TextureS t ) {
+	bool operator < ( TextureProxy t ) {
 		return t.width * t.height < height * width;
 	}
 
@@ -165,10 +155,10 @@ struct TextureInfo
 	TextureInfo () {
 		atlas = 0;
 	}
-	void fromTextureS( TextureS* t ){
-		fromTextureS(t, 0);
+	void fromTextureProxy( TextureProxy* t ){
+		fromTextureProxy(t, 0);
 	}
-	void fromTextureS( TextureS* t, GLuint a ){
+	void fromTextureProxy( TextureProxy* t, GLuint a ){
 		rows = ( t->rows < 1 ? 1 : t->rows );
 		cols = ( t->cols < 1 ? 1 : t->cols );
 		swidth = t->width / cols;

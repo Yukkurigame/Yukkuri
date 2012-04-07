@@ -37,6 +37,7 @@ struct font_data {
 	int fontHeight;			// Font height.
 	int cellHeight;
 	int cellWidth;
+	int baselineY; 			// Offset from chell top to baseline
 	int texture;
 	Char* chars[CHARSIZE];
 
@@ -54,9 +55,8 @@ struct font_data {
 	//Calculate text size.
 	void size( int* w, int* h, const char* str );
 
-
-	//Print text string to sprite
-	void print( Sprite* spr, int* sw, int* sh, const char* text );
+	//Print all characters to texture
+	Texture* print( int cols, int rows );
 };
 
 

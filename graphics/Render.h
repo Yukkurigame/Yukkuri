@@ -40,7 +40,7 @@ public:
 
 	int GetTextureNumberById( std::string id );
 
-	bool DrawToGLTexture( GLuint* ahandle, int width, int height, std::vector< TextureS* >* textures );
+	bool DrawToGLTexture( GLuint* ahandle, int width, int height, std::vector< TextureProxy* >* textures );
 
 	// Sprites
 	inline Sprite* CreateGLSprite( float x, float y, float z, int width, int height ){
@@ -68,7 +68,7 @@ private:
 
 	int texturesCount;
 	TextureInfo* textures;
-	std::vector < TextureS* > internalTextures;
+	std::vector < TextureProxy* > internalTextures;
 
 
 	std::map < std::string, Texture* > texturesCache;

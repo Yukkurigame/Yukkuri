@@ -45,7 +45,7 @@ void RenderManager::openglSetup( int wwidth, int wheight )
 
 	glTranslatef(0.0f, 0.0f, 6.0f);
 
-	glClearColor( 0, 0, 0, -1 ); //0.25, 0.43, 0.0, -1.0 );
+	glClearColor( 1, 1, 1, -1 ); //0.25, 0.43, 0.0, -1.0 );
 
 	glClearDepth( 10.0f );
 
@@ -71,7 +71,7 @@ void RenderManager::openglSetup( int wwidth, int wheight )
 
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxAtlasSize);
 
-	//glGenBuffers(1, &VBOHandle);
+	glGenBuffers(1, &VBOHandle);
 }
 
 
@@ -311,6 +311,14 @@ void RenderManager::FreeGLSprite( Sprite* sprite )
 		delete sprite;
 }
 
+void RenderManager::FreeGLSprites( std::vector< Sprite* >* sprites )
+{
+	for( std::vector< Sprite* >:: iterator it = sprites->begin(), vend = sprites->end(); it != vend; ++it ){
+		FreeGLSprite(*it);
+	}
+	sprites->clear();
+}
+
 
 bool RenderManager::CreateAtlas( GLuint* ahandle, int* width, int* height )
 {
@@ -362,25 +370,32 @@ void RenderManager::MoveGlScene( int x, int y, int z )
 void RenderManager::DrawGLScene()
 {
 	VBOStructureHandle* temp = NULL;
-	int count;
+	int count; // = PrepareVBO( );
 	VBOStructureHandle* vbostructure = PrepareVBO(&count);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnable(GL_TEXTURE_2D);
-	//glBindBuffer(GL_ARRAY_BUFFER, VBOHandle);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOHandle);
 
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(VertexV2FT2FC4UI) * count, verticles, GL_STREAM_DRAW);
+	// VBO + GL_STREAM_DRAW == +10 fps
+	glBufferData(GL_ARRAY_BUFFER, sizeof(VertexV2FT2FC4UI) * count, verticles, GL_STREAM_DRAW);
 
 	// Определяем указатели.
-	glVertexPointer(3, GL_FLOAT, sizeof(VertexV2FT2FC4UI), &(verticles[0].verticles));
-	glTexCoordPointer(2, GL_FLOAT, sizeof(VertexV2FT2FC4UI), &(verticles[0].coordinates));
-	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(VertexV2FT2FC4UI), &(verticles[0].color));
+	//glVertexPointer(3, GL_FLOAT, sizeof(VertexV2FT2FC4UI), &(verticles[0].verticles));
+	//glTexCoordPointer(2, GL_FLOAT, sizeof(VertexV2FT2FC4UI), &(verticles[0].coordinates));
+	//glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(VertexV2FT2FC4UI), &(verticles[0].color));
+	glVertexPointer(3, GL_FLOAT, sizeof(VertexV2FT2FC4UI), 0);
+	glTexCoordPointer(2, GL_FLOAT, sizeof(VertexV2FT2FC4UI), (void*)0 + sizeof(s3f));
+	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(VertexV2FT2FC4UI), (void*)0 + sizeof(s3f) + sizeof(s2f));
 
+	//for( int i=0; i < VBOHandlesCount; i++ ){
 	while(vbostructure != NULL){
-		glBindTexture(GL_TEXTURE_2D, ( vbostructure->texture != 0 ? textures[vbostructure->texture].atlas : 0 ));
+		//glBindTexture(GL_TEXTURE_2D, textures[VBOHandles[i].texture].atlas);
+		glBindTexture(GL_TEXTURE_2D, textures[vbostructure->texture].atlas);
 		//StartShader(vbostructure->shaders);
-		glDrawArrays(GL_QUADS, vbostructure->start, vbostructure->end - vbostructure->start);
+		//glDrawArrays(GL_QUADS, VBOHandles[i].start, VBOHandles[i].count);
+		glDrawArrays(GL_QUADS, vbostructure->start, vbostructure->count);
 		//StopShader(vbostructure->shaders);
 
 		//Clean vbos
@@ -395,13 +410,13 @@ void RenderManager::DrawGLScene()
 		glDrawArrays(GL_LINE_LOOP, i, 4);
 #endif
 
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisable(GL_TEXTURE_2D);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 
-	TestDrawAtlas(-2500, -1000, 10);
+	//TestDrawAtlas(-2500, -1000, 10);
 
 	glLoadIdentity();
 	SDL_GL_SwapBuffers();
@@ -422,8 +437,14 @@ RenderManager::RenderManager( ){
 	textures = NULL;
 	verticlesSize = 1; // for success multiplication
 	minAtlasSize = 64;
-	texturesCount = 0;
 	GLSprites.clear();
+	// Set first texture info to 0
+	textures = (TextureInfo*)malloc( sizeof(TextureInfo) );
+	//memset( textures, '0', sizeof(TextureInfo) );
+	texturesCount = 1;
+	const char texid[1] = {'0'};
+	textures[0].id = (char *)malloc( sizeof(char) );
+	strcpy(textures[0].id, texid);
 }
 
 
@@ -532,37 +553,50 @@ inline bool compareSprites( Sprite* s1, Sprite* s2 )
 	return ( s1->vertices.rt.z < s2->vertices.rt.z );
 }
 
-VBOStructureHandle* RenderManager::PrepareVBO(int* c)
+VBOStructureHandle* RenderManager::PrepareVBO( int* c )
 {
 	sort(GLSprites.begin(), GLSprites.end(), compareSprites);
 	int count = 0;
 	Sprite* s;
+	//VBOHandlesCount = 0;
 	VBOStructureHandle* v = NULL;
 	VBOStructureHandle* first = NULL;
-	memset(verticles, '0', verticlesSize);
+	//int lastText = -1;
+	memset( verticles, '0', sizeof( VertexV2FT2FC4UI ) * verticlesSize );
 	for( std::vector< Sprite* >::iterator it = GLSprites.begin(), end = GLSprites.end(); it != end; ++it ){
 		s = *(it);
 		if( s == NULL || !s->visible )
 			continue;
+		/*if( s->texid != lastText ){
+			if( VBOHandlesCount + 1 > VBOHandlesSize ){
+				VBOHandlesSize = (VBOHandlesCount + 1) * 2;
+				VBOHandles = (VBOStructureHandle*)realloc( VBOHandles, sizeof(VBOStructureHandle) * VBOHandlesSize );
+			}
+			VBOStructureHandle* sh = &VBOHandles[VBOHandlesCount];
+			sh->texture = lastText = s->texid;
+			sh->start = count;
+			if( VBOHandlesCount )
+				VBOHandles[VBOHandlesCount - 1].count = count - VBOHandles[VBOHandlesCount - 1].start;
+			VBOHandlesCount++;
+		}*/
 		if( !v ){
 			first = v = new VBOStructureHandle(s->texid, 0, count);
 		}else if( s->texid != v->texture ){
 			v->next = new VBOStructureHandle(s->texid, 0, count);
-			v->end = count;
+			v->count = count - v->start;
 			v = v->next;
 		}
 
-		//TODO: fixed in sprites not used
-		s3f offset;
-		if( s->fixed )
-			offset = vpoint;
-		verticles[count++] = VertexV2FT2FC4UI(s->vertices.lb - offset, s->coordinates.lt, &s->clr);
-		verticles[count++] = VertexV2FT2FC4UI(s->vertices.rb - offset, s->coordinates.rt, &s->clr);
-		verticles[count++] = VertexV2FT2FC4UI(s->vertices.rt - offset, s->coordinates.rb, &s->clr);
-		verticles[count++] = VertexV2FT2FC4UI(s->vertices.lt - offset, s->coordinates.lb, &s->clr);
+		vertex3farr offset = s->fixedOffset( &vpoint );
+		verticles[count++].set( &offset.lb, &s->coordinates.lt, &s->clr ); // = VertexV2FT2FC4UI( offset.lb, s->coordinates.lt, &s->clr);
+		verticles[count++].set( &offset.rb, &s->coordinates.rt, &s->clr ); // = VertexV2FT2FC4UI( offset.rb, s->coordinates.rt, &s->clr);
+		verticles[count++].set( &offset.rt, &s->coordinates.rb, &s->clr ); // = VertexV2FT2FC4UI( offset.rt, s->coordinates.rb, &s->clr);
+		verticles[count++].set( &offset.lt, &s->coordinates.lb, &s->clr ); //= VertexV2FT2FC4UI( offset.lt, s->coordinates.lb, &s->clr);
 	}
+	//if( VBOHandlesCount )
+	//	VBOHandles[VBOHandlesCount - 1].count = count - VBOHandles[VBOHandlesCount - 1].start;
 	if( v != NULL)
-		v->end = count;
+		v->count = count - v->start;
 	(*c) = count;
 	return first;
 }

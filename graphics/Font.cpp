@@ -15,8 +15,9 @@ using namespace Debug;
 
 #include <vector>
 
-static GLuint atlasHandle = 0;
+static FT_Library library;
 
+static GLuint atlasHandle = 0;
 static int lastLine = 0;
 
 inline int next_p2( int a )
@@ -29,9 +30,10 @@ inline int next_p2( int a )
 ///Create a display list coresponding to the give character.
 void makeChar( FT_Face face, unsigned int ch, Char* letter )
 {
+	FT_UInt index = FT_Get_Char_Index( face, ch );
 
 	//Load the Glyph for our character.
-	if( FT_Load_Glyph( face, FT_Get_Char_Index( face, ch ), FT_LOAD_DEFAULT ) ){
+	if( FT_Load_Glyph( face, index, FT_LOAD_DEFAULT ) ){
 		debug( GRAPHICS, "FT_Load_Glyph failed\n" );
 		return;
 	}
@@ -52,12 +54,12 @@ void makeChar( FT_Face face, unsigned int ch, Char* letter )
 
 	letter->gl = glyph;
 	letter->bm = bitmap;
-	letter->top = bitmap_glyph->top;
-	letter->horiAdvance = face->glyph->metrics.horiAdvance >> 6;
+	letter->horiAdvance = face->glyph->advance.x >> 6;
 	letter->vertAdvance = face->glyph->metrics.vertAdvance >> 6;
 	letter->metrics = face->glyph->metrics;
 	letter->height = bitmap.rows;
-	letter->chr = ch;
+	letter->index = index;
+
 }
 
 void font_data::clean() {
@@ -79,15 +81,10 @@ bool font_data::load( const char * fname, unsigned int height ) {
 	this->fontHeight = height;
 
 	//Create and initilize a freetype font library.
-	FT_Library library;
 	if( FT_Init_FreeType( &library ) ){
 		debug( GRAPHICS, "FT_Init_FreeType failed in " +  (std::string)fname + "\n" );
 		return false;
 	}
-
-	//The object in which Freetype holds information on a given
-	//font is called a "face".
-	FT_Face face;
 
 	//This is where we load in the font information from the file.
 	//Of all the places where the code might die, this is the most likely,
@@ -106,28 +103,11 @@ bool font_data::load( const char * fname, unsigned int height ) {
 	//Encoding
 	FT_Select_Charmap(face, FT_ENCODING_UNICODE);
 
-	//unsigned int lastChar = 0;
 	//This is where we actually create each of the fonts display lists.
 	for( unsigned int i=0; i<CHARSIZE; ++i ){
 		chars[i] = new Char();
 		makeChar( face, i, chars[i] );
 		chars[i]->pic = i;
-		/*if( hoffset >= ( w - cellWidth ) ){
-			voffset += cellHeight;
-			lastChar = i;
-			rows++;
-		}
-		hoffset = cellWidth * ( i - lastChar);
-		//Create new texture coordinates
-		TextureProxy* t = new TextureProxy();
-		t->texture = glTexture(chars[i], cellWidth, cellHeight);
-		t->offsetx = t->offsety = 0;
-		t->width = chars[i]->horiAdvance;
-		t->height = chars[i]->vertAdvance;
-		t->atlasX = hoffset; //  + (chars[i]->metrics.horiBearingX >> 6);
-		t->atlasY = voffset + ((bbox.yMax - chars[i]->metrics.horiBearingY) >> 6);
-		charTextures.push_back(t);
-		*/
 	}
 
 	// Calculate texture params
@@ -136,13 +116,11 @@ bool font_data::load( const char * fname, unsigned int height ) {
 	cellHeight = (bbox.yMax - bbox.yMin) >> 6;
 	baselineY = bbox.yMax >> 6;
 
-	//std::vector <TextureProxy* > charTextures;
-	//int voffset = lastLine;
-	//int hoffset = 0;
 	int w, h;
 	w = h = RenderManager::Instance()->getAtlasMax();
 	int sw = (w / cellWidth) * cellWidth; // make width multiple
 	int cols = w / cellWidth;
+	if( cols < 1 ) cols = 1;
 	int rows = 1 + CHARSIZE / cols;
 	int sh = rows * cellHeight;
 
@@ -150,12 +128,6 @@ bool font_data::load( const char * fname, unsigned int height ) {
 	Texture* tex = print( cols, rows );
 	char name[30];
 	snprintf( name, 29, "%20s%3d", (fname + 12), height );
-	//tex->tex = 0;
-	//tex->h = voffset;
-	//tex->w = w;
-	// Draw all chars to one texture
-	//RenderManager::Instance()->DrawToGLTexture( &(tex->tex), tex->w, tex->h, &charTextures );
-	//clear_vector(&charTextures);
 	// Add texture to render manager
 	RenderManager::Instance()->AddTexture( name, tex, sw, sh, cols, rows, 0, lastLine );
 	// Build texture atlas
@@ -166,12 +138,8 @@ bool font_data::load( const char * fname, unsigned int height ) {
 	// Get texture id for font
 	texture = RenderManager::Instance()->GetTextureNumberById( name );
 
-	//We don't need the face information now that the display
-	//lists have been created, so we free the assosiated resources.
-	FT_Done_Face( face );
-
 	//Ditto for the library.
-	FT_Done_FreeType( library );
+	//FT_Done_FreeType( library );
 
 	return true;
 }
@@ -224,6 +192,18 @@ Char* font_data::getChar( unsigned int c )
 	if( c < 0 || c > CHARSIZE )
 		return NULL;
 	return chars[ c ];
+}
+
+int font_data::getKerning( FT_UInt pervious, FT_UInt index )
+{
+	FT_Vector delta;
+	delta.x = 0;
+
+	if( FT_HAS_KERNING(face) && pervious && index ){
+		FT_Get_Kerning( face, pervious, index, FT_KERNING_DEFAULT, &delta );
+	}
+
+	return delta.x >> 6;
 }
 
 Texture* font_data::glTexture( Char* ch, int sw, int sh )

@@ -9,7 +9,7 @@ LIBS= $(shell sdl-config --libs) -lpng -lSDL_image -lGL -lfreetype -llua
 
 
 DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1
-CFLAGS= -O0 -g  -Wall $(DEFINES)
+CFLAGS= -O0 -g -Wall $(DEFINES)
 
 
 UNITS =  unitmanager.cpp unit.cpp Animated.cpp Plant.cpp Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp

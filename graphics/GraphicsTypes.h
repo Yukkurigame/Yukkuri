@@ -208,6 +208,14 @@ struct VertexV2FT2FC4UI
 		color.b = c->b;
 		color.a = c->a;
 	}
+	void set( s3f* p, s2f* t, color4u* c ){
+		verticles = *p;
+		coordinates = *t;
+		color.r = c->r;
+		color.g = c->g;
+		color.b = c->b;
+		color.a = c->a;
+	}
 };
 
 
@@ -216,13 +224,13 @@ struct VBOStructureHandle
 	int texture;
 	int shaders;
 	int start;
-	int end;
+	int count;
 	VBOStructureHandle* next;
 	VBOStructureHandle(int tex, int shd, int s){
 		texture = tex;
 		shaders = shd;
 		start = s;
-		end = 0;
+		count = 1;
 		next = NULL;
 	}
 };
@@ -275,6 +283,17 @@ struct Sprite
 		}
 	}
 
+	void move( float dx, float dy, float dz ){
+		// move x
+		vertices.lb.x = (vertices.lt.x += dx);
+		vertices.rb.x = (vertices.rt.x += dx);
+		// move y
+		vertices.lb.y = (vertices.rb.y += dy);
+		vertices.lt.y =	(vertices.rt.y += dy);
+		// move z
+		vertices.lb.z = vertices.lt.z = vertices.rt.z = (vertices.rb.z += dz);
+	}
+
 	void setPosition( float x, float y ){
 		float width = vertices.rb.x - vertices.lb.x;
 		float height = vertices.rt.y - vertices.lb.y; // FIXME: lb is rb?
@@ -298,6 +317,18 @@ struct Sprite
 	void setPosition( float x, float y, float z ){
 		setPosition( x, y );
 		vertices.lb.z = vertices.lt.z = vertices.rt.z = vertices.rb.z = z;
+	}
+
+	vertex3farr fixedOffset( s3f* offset ){
+		vertex3farr v = vertices;
+		if(fixed){
+			v.lb.x = (v.lt.x -= offset->x);
+			v.rb.x = (v.rt.x -= offset->x);
+			v.lb.y = (v.rb.y -= offset->y);
+			v.lt.y = (v.rt.y -= offset->y);
+			v.lb.z = v.lt.z = v.rt.z = (v.rb.z -= offset->z);
+		}
+		return v;
 	}
 
 	void toggleVisibility( ){

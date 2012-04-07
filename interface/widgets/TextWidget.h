@@ -21,7 +21,6 @@ public:
 
 	void updatePosition( );
 
-	void setFont( std::string name, int size ){ FontName = name; FontSize = size; }
 	void setFontColor( int r, int g, int b );
 	void setText( std::string text );
 	void setTextPosition( float x, float y );

@@ -11,6 +11,8 @@
 #include "debug.h"
 #include <map>
 
+#define ITER_SPRITES for( std::vector< Sprite* >:: iterator it = sprites.begin(), vend = sprites.end(); it != vend; ++it )
+
 static std::map < std::string, std::map< int, font_data* > > LoadedFonts;
 
 bool LoadTTFont( std::string dir, std::string name, int size )
@@ -48,6 +50,13 @@ font_data* GetFont( std::string name, int size  )
 Text::Text( )
 {
 	font = NULL;
+	lineHeight = 1;
+	Visible = true;
+}
+
+Text::~Text( )
+{
+	clear();
 }
 
 
@@ -58,9 +67,15 @@ void Text::setFont( std::string name, int size )
 
 void Text::setPosition( float x, float y, float z )
 {
+	float dx = x - position.x;
+	float dy = y - position.y;
+	float dz = z - position.z;
 	position.x = x;
 	position.y = y;
 	position.z = z;
+	ITER_SPRITES{
+		(*it)->move( dx, dy, dz );
+	}
 }
 
 void Text::setText(const char* str)
@@ -72,6 +87,8 @@ void Text::setText(const char* str)
 	if( !font )
 		return;
 
+	clear();
+
 	textlen = strlen( str );
 
 	char* text = (char*)malloc( sizeof(char)*textlen + 1 );
@@ -80,21 +97,59 @@ void Text::setText(const char* str)
 	char* token;
 	nlines = 0;
 	token = strtok( text, "\n" );
-	lineheight = font->cellHeight + font->cellHeight / 4;
+	lineheight = font->cellHeight * lineHeight;
 	while( token != 0 ){
 		int tmpwidth = 0;
 		int tmpheight = lineheight * nlines;
 		char* line = token;
+		FT_UInt prev = 0;
 		for( unsigned int g = 0, e = strlen( line ); g < e; ++g ){
 			Char* tmpc = font->getChar(static_cast<unsigned int>(line[g]));
-			addSprite(tmpwidth, tmpheight, tmpc);
-			tmpwidth += tmpc->horiAdvance;
+			int kerning = font->getKerning(prev, tmpc->index);
+			addSprite(tmpwidth + kerning, tmpheight, tmpc);
+			tmpwidth += kerning + tmpc->horiAdvance;
+			prev = tmpc->index;
 		}
 		++nlines;
+		Width += tmpwidth;
+		Height += tmpheight;
 		token = strtok(NULL, "\n");
 	}
 	free(text);
 }
+
+void Text::setColor( int r, int g, int b )
+{
+	color.set( r, g, b );
+	ITER_SPRITES{
+		(*it)->clr.set( r, g, b, 255 );
+	}
+}
+
+
+
+void Text::setVisible( bool v )
+{
+	Visible = v;
+	ITER_SPRITES{
+		(*it)->visible = v;
+	}
+}
+void Text::setFixed( bool f )
+{
+	Fixed = f;
+	ITER_SPRITES{
+		(*it)->fixed = f;
+	}
+}
+
+void Text::clear( )
+{
+	Width = Height = 0;
+	RenderManager::Instance()->FreeGLSprites( &sprites );
+}
+
+
 
 
 void Text::addSprite( int x, int y, Char* c )
@@ -102,7 +157,9 @@ void Text::addSprite( int x, int y, Char* c )
 	Sprite* s = RenderManager::Instance()->CreateGLSprite(
 		position.x + static_cast<float>(x), position.y - static_cast<float>(y), position.z,
 		font->cellWidth, font->cellHeight, font->texture, c->pic );
-	s->fixed = fixed;
-	//s->clr.r = x * font->cellWidth;
+	s->fixed = Fixed;
+	s->visible = Visible;
+	s->clr.set( &color );
 	sprites.push_back(s);
 }
+

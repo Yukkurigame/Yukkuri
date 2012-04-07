@@ -22,13 +22,12 @@ struct Char{
 	FT_Glyph_Metrics metrics;
 	signed long horiAdvance;
 	signed long vertAdvance;
-	int top;
 	int height;
 	char id[40];
-	unsigned int chr;
+	FT_UInt index;
 	int pic;
 	Char( ) {
-		horiAdvance = vertAdvance = 0; top = height = 0;
+		horiAdvance = vertAdvance = 0;
 		pic = 0;
 	}
 };
@@ -40,6 +39,7 @@ struct font_data {
 	int baselineY; 			// Offset from chell top to baseline
 	int texture;
 	Char* chars[CHARSIZE];
+	FT_Face face;
 
 	//The init function will create a font of
 	//of the height h from the file fname.
@@ -49,6 +49,8 @@ struct font_data {
 	void clean();
 
 	Char* getChar( unsigned int );
+
+	int getKerning( FT_UInt pervious, FT_UInt index );
 
 	Texture* glTexture( Char *, int sw, int sh );
 

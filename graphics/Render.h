@@ -49,6 +49,7 @@ public:
 	Sprite* CreateGLSprite( float x, float y, float z, int width, int height, int texture_id,
 							int picture, short centered = 0 );
 	void FreeGLSprite( Sprite* sprite );
+	void FreeGLSprites( std::vector< Sprite* >* sprites );
 
 
 	bool CreateAtlas( GLuint * atlas, int* width, int* height );
@@ -86,10 +87,13 @@ private:
 
 	void ExtendVerticles( );
 
-	//GLuint VBOHandle;
+	GLuint VBOHandle;
 
 	// Returns count of breakings
 	VBOStructureHandle* PrepareVBO( int* count );
+	//int VBOHandlesCount;
+	//int VBOHandlesSize;
+	//VBOStructureHandle* VBOHandles;
 
 
 	int minAtlasSize;

@@ -2,6 +2,7 @@
 #define DYNAMIC_UNIT_H
 
 #include "Animated.h"
+#include "map.h"
 #include <map>
 #include <vector>
 
@@ -35,7 +36,7 @@ protected:
 	const static int m_animdistance = 20;
 
 private:
-	int* anim;
+	int currentTile;
 };
 
 #endif //DYNAMIC_UNIT_H

@@ -58,7 +58,6 @@ public:
 
 	virtual void toggleVisibility( );
 
-	virtual void setFont( std::string, int ) {};
 	virtual void setFontColor( int r, int g, int b ) {};
 	virtual void setText( std::string ) {};
 	virtual void setTextPosition( float, float ) {};

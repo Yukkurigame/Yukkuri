@@ -40,6 +40,7 @@ bool Widget::load( std::string config )
 {
 	LuaConfig* cfg = new LuaConfig;
 	cfg->getValue( "id", config, "widget", baseID );
+	cfg->getValue( "name", config, "widget", Name );
 	cfg->getValue( "x", config, "widget", OffsetX );
 	cfg->getValue( "y", config, "widget", OffsetY );
 	cfg->getValue( "width", config, "widget", Width );

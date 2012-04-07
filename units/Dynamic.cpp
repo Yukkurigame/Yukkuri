@@ -21,6 +21,7 @@ DynamicUnit::DynamicUnit()
 
 	//FIXME: get it from config
 	FoodTypes.push_back( "plant" );
+	currentTile = -1;
 }
 
 bool DynamicUnit::Create( int id )
@@ -63,7 +64,7 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 		float speed = fabs( Parameters["speed"] * Parameters["fed"] ) * zone * ( dt / 100000.0f ) / l;
 		float dx = speed * x;// / l;
 		float dy = speed * y ;// / l;
-		MapTile* currentTile = map.GetTile( X , Y );
+		/*//MapTile* currentTile = map.GetTile( X , Y );
 		if( currentTile && !currentTile->Type->passability ){
 			//FIXME: Bad
 			int x, y, px, py;
@@ -90,21 +91,22 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 					}
 				}
 			}
-			nextTile = map.GetTile( px + x, py + y );
-			if( nextTile ){
-				dx = ( static_cast<float>(nextTile->RealX) - X ) / 4.0f;
-				dy = ( static_cast<float>(nextTile->RealY) - Y ) / 4.0f;
+			currentTile = map.GetTile( px + x, py + y );
+			if( currentTile ){
+				dx = ( static_cast<float>(currentTile->RealX) - X ) / 4.0f;
+				dy = ( static_cast<float>(currentTile->RealY) - Y ) / 4.0f;
 				if( dx && dx < 0.01 && dx > -0.01 )
 					dx = 0.3f * ( dx < 0 ? -1 : 1 );
 				if( dy && dy < 0.01 && dy > -0.01 )
 					dy = 0.3f * ( dy < 0 ? -1 : 1 );
 			}
 		}else{
-			MapTile* nextTile = map.GetTile( X + dx * x, Y + dy * y );
-			if( nextTile ) zone = nextTile->Type->passability;
+			currentTile = map.GetTile( X + dx * x, Y + dy * y );
+			if( currentTile )
+				zone = currentTile->Type->passability;
 			if( !zone )
 				zone = -0.5;
-		}
+		}*/
 		dx *= zone;
 		dy *= zone;
 		float distance = sqrt( dx * dx + dy * dy );

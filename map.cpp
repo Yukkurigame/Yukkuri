@@ -101,10 +101,10 @@ MapTile::MapTile( signed int x, signed int y ) {
 	map.fromMapCoordinates( &RealX, &RealY );
 
 	sprite = NULL;
-	//sprite = RenderManager::Instance()->CreateGLSprite( RealX - ( conf.mapTileSize >> 1 ),
-	//						RealY - ( conf.mapTileSize >> 2 ), 0,
-	//						conf.mapTileSize, conf.mapTileSize,
-	//						Type->texture, Type->picture );
+	sprite = RenderManager::Instance()->CreateGLSprite( RealX - ( conf.mapTileSize >> 1 ),
+							RealY - ( conf.mapTileSize >> 2 ), 0,
+							conf.mapTileSize, conf.mapTileSize,
+							Type->texture, Type->picture );
 
 	//FIXME: я не уверен, что это правильно, но выглядит нормально. Может внезапно вылезти боком.
 	//Image.x = RealX - ( conf.mapTileSize >> 1 );

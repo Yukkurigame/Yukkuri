@@ -12,7 +12,7 @@ extern MainConfig conf;
 void Spawner::Spawn( )
 {
 	float x, y;
-	/*if( UnitManager::units.GetUnitsSize(ENTITY) < conf.maxSpawn ){
+	if( UnitManager::units.GetUnitsSize(ENTITY) < conf.maxSpawn ){
 		x = y = 0;
 		getPosition( &x, &y );
 		DynamicUnit* u = dynamic_cast<DynamicUnit*>( UnitManager::units.CreateUnit( ENTITY, x, y ) );

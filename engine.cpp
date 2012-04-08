@@ -336,7 +336,7 @@ float CEngine::GetFPS()
 
 char* CEngine::GetFPSText()
 {
-	snprintf( FPStext, 10, "FPS: %0.1f", GetFPS() );
+	snprintf( FPStext, 11, "FPS: %0.1f", GetFPS() );
 	return FPStext;
 }
 

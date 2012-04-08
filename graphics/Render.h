@@ -52,7 +52,7 @@ public:
 	void FreeGLSprites( std::vector< Sprite* >* sprites );
 
 
-	bool CreateAtlas( GLuint * atlas, int* width, int* height );
+	bool CreateAtlas( GLuint * atlas, int* width, int* height, short map = 1 );
 	inline int getAtlasMax( ){ return maxAtlasSize; }
 
 	void MoveGlScene( int x, int y, int z );

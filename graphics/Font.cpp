@@ -17,7 +17,6 @@ using namespace Debug;
 
 static FT_Library library;
 
-static GLuint atlasHandle = 0;
 static int lastLine = 0;
 
 inline int next_p2( int a )
@@ -131,7 +130,7 @@ bool font_data::load( const char * fname, unsigned int height ) {
 	// Add texture to render manager
 	RenderManager::Instance()->AddTexture( name, tex, sw, sh, cols, rows, 0, lastLine );
 	// Build texture atlas
-	RenderManager::Instance()->CreateAtlas( &atlasHandle, &w, &h );
+	RenderManager::Instance()->CreateAtlas( &atlasHandle, &w, &h, 0 );
 	lastLine += rows * cellHeight;
 	delete tex;
 

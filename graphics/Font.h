@@ -40,6 +40,7 @@ struct font_data {
 	int texture;
 	Char* chars[CHARSIZE];
 	FT_Face face;
+	GLuint atlasHandle;
 
 	//The init function will create a font of
 	//of the height h from the file fname.

@@ -1,6 +1,6 @@
 {
 	{
-		-- id = "widget_time_493245",
+		id = "widget_time_493245",
 		name = "time",
 		type = "Widget",
 		wtype = 2,

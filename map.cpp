@@ -37,19 +37,19 @@ namespace Region
 			return;
 		}
 		LuaConfig* cfg = new LuaConfig;
-		std::vector< std::map< std::string, int > > Tiles;
+		std::vector< std::map< std::string, std::string > > Tiles;
 		cfg->getValue( "tiles", name, "region", Tiles );
-		for( std::vector< std::map< std::string, int > >::iterator it = Tiles.begin(), end = Tiles.end();
+		for( std::vector< std::map< std::string, std::string > >::iterator it = Tiles.begin(), end = Tiles.end();
 			it != end; ++it ){
 			if( it->count( "tile" ) > 0 ){
 				int x, y;
 				std::string type;
 				x = y = 0;
-				type = (*it)["type"];
+				type = (*it)["tile"];
 				if( it->count( "x" ) > 0 )
-					x = (*it)["x"];
+					x = atoi( (*it)["x"].c_str() );
 				if( it->count( "y" ) > 0 )
-					y = (*it)["y"];
+					y = atoi( (*it)["y"].c_str() );
 				RegionDump[x][y] = &tiles[type];
 			}
 		}

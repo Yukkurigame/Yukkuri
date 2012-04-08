@@ -320,24 +320,23 @@ void RenderManager::FreeGLSprites( std::vector< Sprite* >* sprites )
 }
 
 
-bool RenderManager::CreateAtlas( GLuint* ahandle, int* width, int* height )
+
+inline bool compareTextureProxies( TextureProxy* t1, TextureProxy* t2 )
+{
+	return t2->width * t2->height - t1->width * t1->height;
+}
+
+bool RenderManager::CreateAtlas( GLuint* ahandle, int* width, int* height, short map )
 {
 	if( internalTextures.size() < 1 ){
 		debug( GRAPHICS, "Textures is missing" );
 		return false;
 	}
 	//FIXME: sorting probably not works.
-	if( internalTextures.size() > 1 ){
-		sort( internalTextures.begin(), internalTextures.end() );
-		if( !BuildAtlasMap( width, height ) ){
-			debug( GRAPHICS, "Cannot build atlas map.\n" );
-			return false;
-		}
-	}else{
-		if( !BuildAtlasAbsoluteMap( maxAtlasSize, maxAtlasSize ) ){
-			debug( GRAPHICS, "Cannot build atlas absolute map.\n" );
-			return false;
-		}
+	sort( internalTextures.begin(), internalTextures.end(), compareTextureProxies );
+	if( !BuildAtlasMap( width, height ) ){
+		debug( GRAPHICS, "Cannot build atlas map.\n" );
+		return false;
 	}
 	if ( !BuildAtlas( ahandle, *width, *height ) ){
 		debug( GRAPHICS, "Cannot draw atlas.\n" );

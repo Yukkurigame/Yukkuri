@@ -4,13 +4,19 @@ import os.path
 from PyQt4 import QtCore, QtGui
 from config import config
 
+from time import sleep
+
 class YImageViewWidget(QtGui.QGraphicsView):
 
     def __init__(self, parent=None):
         self._scene = QtGui.QGraphicsScene(self)
         QtGui.QGraphicsView.__init__(self, self._scene, parent)
         self.area = QtCore.QRectF(0, 0, 0, 0)
-        self.areapen = QtGui.QPen(QtGui.QColor(255, 0, 0))
+        color = QtGui.QColor(255, 0, 0)
+        # QPen freezes sometimes with immediate creation. Bug in pyqt?
+        # FIXME: write my own PyQt
+        sleep( 0.01 )
+        self.areapen = QtGui.QPen(color)
         self.areaItem = None
         self._mousePressed = False
         self.vLines = []

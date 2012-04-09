@@ -3,11 +3,17 @@ import re
 
 from PyQt4 import QtCore, QtGui
 
+abstract_classes = ['YAbstractTab', 'YAbstractImageTab']
+
 export_classes = ['YSimpleInputWidget', 'YSpinBoxInputWidget',
                 'YDoubleSpinBoxInputWidget', 'YColorInputWidget',
                 'YFileInputWidget', 'YComboBoxWidget', 'YImageChooser',
                 'YImageViewWidget', 'YTableWidget', 'YAnimationPreviewWidget',
-                'YScrollBarInputWidget']
+                'YScrollBarInputWidget', 'YFontComboBoxWidget',
+                'YGeneralConfigDialog',
+                'YSpritesTab', 'YEntityTab', 'YWidgetsTab', 'YTilesTab',
+                'YMapTab']
+
 extern_classes = ['YReadOnlySimpleInputWidget', 'YReadOnlySpinBoxInputWidget']
 
 
@@ -128,10 +134,21 @@ def widget_factory(name):
 
     return _YAbstractWidget
 
-for name in export_classes:
+
+def load_exports(name):
     globals()[name] = widget_factory(name)
-for name in extern_classes:
+
+
+def load_extern(name):
     globals()[name] = getattr(__import__('widgets.classes.%s' % name,
                                 fromlist=[name,]), name)
 
-__all__ = export_classes + extern_classes
+
+for name in abstract_classes:
+    load_extern(name)
+for name in export_classes:
+    load_exports(name)
+for name in extern_classes:
+    load_extern(name)
+
+__all__ = abstract_classes + export_classes + extern_classes

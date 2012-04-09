@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>821</width>
-    <height>755</height>
+    <width>578</width>
+    <height>362</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -71,767 +71,35 @@
          <item>
           <widget class="QTabWidget" name="MainTabs">
            <property name="currentIndex">
-            <number>4</number>
+            <number>0</number>
            </property>
-           <widget class="QWidget" name="SpriteTab">
+           <widget class="YSpritesTab" name="SpriteTab">
             <attribute name="title">
              <string>Sprites</string>
             </attribute>
-            <layout class="QGridLayout" name="gridLayout_3">
-             <item row="0" column="0">
-              <widget class="QGroupBox" name="SpritesMainBox">
-               <property name="minimumSize">
-                <size>
-                 <width>310</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>310</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="title">
-                <string>Main</string>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_16">
-                <item>
-                 <widget class="YReadOnlySimpleInputWidget" name="ID_6" native="true">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="YSimpleInputWidget" name="Name_4" native="true">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="YComboBoxWidget" name="Type_3" native="true">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="YFileInputWidget" name="Image_5" native="true"/>
-                </item>
-                <item>
-                 <widget class="YSpinBoxInputWidget" name="Width_2" native="true"/>
-                </item>
-                <item>
-                 <widget class="YSpinBoxInputWidget" name="Height_2" native="true"/>
-                </item>
-                <item>
-                 <widget class="YSpinBoxInputWidget" name="OffsetX" native="true"/>
-                </item>
-                <item>
-                 <widget class="YSpinBoxInputWidget" name="OffsetY" native="true"/>
-                </item>
-                <item>
-                 <widget class="YSpinBoxInputWidget" name="Rows" native="true"/>
-                </item>
-                <item>
-                 <widget class="YSpinBoxInputWidget" name="Columns" native="true"/>
-                </item>
-                <item>
-                 <spacer name="verticalSpacer_5">
-                  <property name="orientation">
-                   <enum>Qt::Vertical</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>20</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <spacer name="verticalSpacer_4">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="0" column="1">
-              <widget class="QGroupBox" name="groupBox_9">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="title">
-                <string>Preview</string>
-               </property>
-               <layout class="QHBoxLayout" name="horizontalLayout_7">
-                <item>
-                 <widget class="YImageViewWidget" name="SpriteImageViewer" native="true">
-                  <property name="styleSheet">
-                   <string notr="true">background: transparent;</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-            </layout>
            </widget>
-           <widget class="QWidget" name="EntityTab">
+           <widget class="YEntityTab" name="EntityTab">
             <attribute name="title">
              <string>Entity</string>
             </attribute>
-            <layout class="QHBoxLayout" name="horizontalLayout_4">
-             <item>
-              <layout class="QVBoxLayout" name="verticalLayout_10">
-               <item>
-                <widget class="QGroupBox" name="EntityMainBox">
-                 <property name="minimumSize">
-                  <size>
-                   <width>300</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>300</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="title">
-                  <string>Main</string>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_7">
-                  <item>
-                   <widget class="YReadOnlySimpleInputWidget" name="ID" native="true">
-                    <property name="enabled">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="YSimpleInputWidget" name="Name" native="true">
-                    <property name="enabled">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="YComboBoxWidget" name="Type" native="true">
-                    <property name="enabled">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="YImageChooser" name="Image_3" native="true"/>
-                  </item>
-                  <item>
-                   <widget class="YComboBoxWidget" name="Picture" native="true">
-                    <property name="enabled">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="YSpinBoxInputWidget" name="Height" native="true"/>
-                  </item>
-                  <item>
-                   <widget class="YSpinBoxInputWidget" name="Width" native="true"/>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item>
-                <widget class="QGroupBox" name="EntityEntityBox">
-                 <property name="maximumSize">
-                  <size>
-                   <width>300</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="title">
-                  <string>Entity</string>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_12">
-                  <item>
-                   <widget class="YDoubleSpinBoxInputWidget" name="Damage" native="true"/>
-                  </item>
-                  <item>
-                   <widget class="YDoubleSpinBoxInputWidget" name="Speed" native="true"/>
-                  </item>
-                  <item>
-                   <widget class="YColorInputWidget" name="Bloodcolor" native="true"/>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item>
-                <widget class="QGroupBox" name="EntityFeedBox">
-                 <property name="maximumSize">
-                  <size>
-                   <width>300</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="title">
-                  <string>Feed</string>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_11">
-                  <item>
-                   <widget class="YDoubleSpinBoxInputWidget" name="Nutritive" native="true"/>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item>
-                <widget class="QGroupBox" name="EntityMiscBox">
-                 <property name="maximumSize">
-                  <size>
-                   <width>300</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="title">
-                  <string>Misc</string>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_13">
-                  <item>
-                   <widget class="YDoubleSpinBoxInputWidget" name="Hp" native="true"/>
-                  </item>
-                  <item>
-                   <widget class="YDoubleSpinBoxInputWidget" name="Meeting" native="true"/>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item>
-                <spacer name="verticalSpacer">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QVBoxLayout" name="verticalLayout_14">
-               <item>
-                <widget class="QGroupBox" name="EntityAnimationBox">
-                 <property name="title">
-                  <string>Animation</string>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_9">
-                  <item>
-                   <widget class="YTableWidget" name="Animation" native="true"/>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item>
-                <widget class="QGroupBox" name="EntityAnimaptionPreview">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="title">
-                  <string>Animation preview</string>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_2">
-                  <item row="0" column="0">
-                   <widget class="YAnimationPreviewWidget" name="EntityAnimationSettings" native="true"/>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item>
-                <spacer name="verticalSpacer_2">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
-             </item>
-            </layout>
            </widget>
-           <widget class="QWidget" name="WidgetsTab">
+           <widget class="YWidgetsTab" name="WidgetsTab">
             <attribute name="title">
              <string>Widgets</string>
             </attribute>
            </widget>
-           <widget class="QWidget" name="MapTilesTab">
+           <widget class="YTilesTab" name="MapTilesTab">
             <attribute name="title">
              <string>Tiles</string>
             </attribute>
-            <layout class="QFormLayout" name="formLayout_2">
-             <property name="fieldGrowthPolicy">
-              <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-             </property>
-             <item row="0" column="0">
-              <widget class="QGroupBox" name="TilesMainBox">
-               <property name="maximumSize">
-                <size>
-                 <width>300</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="title">
-                <string>Main</string>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_15">
-                <item>
-                 <widget class="YReadOnlySimpleInputWidget" name="ID_4" native="true">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="YSimpleInputWidget" name="Name_2" native="true"/>
-                </item>
-                <item>
-                 <widget class="YComboBoxWidget" name="Type_4" native="true">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="YImageChooser" name="Image" native="true"/>
-                </item>
-                <item>
-                 <widget class="YComboBoxWidget" name="Picture_2" native="true">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QWidget" name="Passability" native="true">
-                  <layout class="QHBoxLayout" name="height_3">
-                   <property name="margin">
-                    <number>0</number>
-                   </property>
-                   <item>
-                    <widget class="QLabel" name="label_29">
-                     <property name="text">
-                      <string>Passability:</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <spacer name="horizontalSpacer_28">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item>
-                    <widget class="QDoubleSpinBox" name="TilesOffestYSpin_2">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="minimumSize">
-                      <size>
-                       <width>120</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                     </property>
-                     <property name="accelerated">
-                      <bool>false</bool>
-                     </property>
-                     <property name="maximum">
-                      <double>1.000000000000000</double>
-                     </property>
-                     <property name="singleStep">
-                      <double>0.100000000000000</double>
-                     </property>
-                     <property name="value">
-                      <double>1.000000000000000</double>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QWidget" name="Multipler_23" native="true">
-                     <property name="maximumSize">
-                      <size>
-                       <width>16777215</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                     <layout class="QHBoxLayout" name="horizontalLayout_71">
-                      <property name="margin">
-                       <number>0</number>
-                      </property>
-                      <item>
-                       <widget class="QLabel" name="label_124">
-                        <property name="text">
-                         <string>X</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QSpinBox" name="spinBox_98">
-                        <property name="maximumSize">
-                         <size>
-                          <width>48</width>
-                          <height>16777215</height>
-                         </size>
-                        </property>
-                        <property name="minimum">
-                         <number>1</number>
-                        </property>
-                        <property name="maximum">
-                         <number>999</number>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QGroupBox" name="groupBox_8">
-               <property name="title">
-                <string>Preview</string>
-               </property>
-               <layout class="QHBoxLayout" name="horizontalLayout_6">
-                <item>
-                 <widget class="YImageViewWidget" name="TileImageViewer" native="true">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>64</width>
-                    <height>64</height>
-                   </size>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">background: transparent;</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-            </layout>
            </widget>
-           <widget class="QWidget" name="MapTab">
+           <widget class="YMapTab" name="MapTab">
             <property name="autoFillBackground">
              <bool>false</bool>
             </property>
             <attribute name="title">
              <string>Map</string>
             </attribute>
-            <layout class="QHBoxLayout" name="horizontalLayout">
-             <item>
-              <widget class="QToolBox" name="MapElements">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>280</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>280</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="layoutDirection">
-                <enum>Qt::LeftToRight</enum>
-               </property>
-               <property name="autoFillBackground">
-                <bool>false</bool>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">#MapElements::tab:selected { font: bold; height: 26px;} /* selected tab */
-#MapElements::tab:!selected { height: 26px;} /* non-selected tab */
-#MapElements{
-border: 0px transparent;
-}</string>
-               </property>
-               <property name="frameShape">
-                <enum>QFrame::NoFrame</enum>
-               </property>
-               <property name="currentIndex">
-                <number>0</number>
-               </property>
-               <widget class="QWidget" name="MapTilesPage">
-                <property name="geometry">
-                 <rect>
-                  <x>0</x>
-                  <y>0</y>
-                  <width>280</width>
-                  <height>517</height>
-                 </rect>
-                </property>
-                <attribute name="label">
-                 <string>Tiles</string>
-                </attribute>
-                <layout class="QGridLayout" name="gridLayout"/>
-               </widget>
-               <widget class="QWidget" name="MapObjectsPage">
-                <property name="geometry">
-                 <rect>
-                  <x>0</x>
-                  <y>0</y>
-                  <width>96</width>
-                  <height>26</height>
-                 </rect>
-                </property>
-                <attribute name="label">
-                 <string>Objects</string>
-                </attribute>
-               </widget>
-              </widget>
-             </item>
-             <item>
-              <widget class="QWidget" name="verticalWidget" native="true">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_2">
-                <item>
-                 <widget class="QGroupBox" name="MapAdditionalBox">
-                  <property name="title">
-                   <string>Additional</string>
-                  </property>
-                  <property name="checkable">
-                   <bool>false</bool>
-                  </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_3">
-                   <item>
-                    <widget class="QPushButton" name="MapErase">
-                     <property name="text">
-                      <string>Erase</string>
-                     </property>
-                     <property name="checkable">
-                      <bool>true</bool>
-                     </property>
-                     <property name="checked">
-                      <bool>false</bool>
-                     </property>
-                     <property name="autoDefault">
-                      <bool>false</bool>
-                     </property>
-                     <property name="default">
-                      <bool>false</bool>
-                     </property>
-                     <property name="flat">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QGroupBox" name="MapOptionsBox">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>100</width>
-                    <height>480</height>
-                   </size>
-                  </property>
-                  <property name="layoutDirection">
-                   <enum>Qt::LeftToRight</enum>
-                  </property>
-                  <property name="autoFillBackground">
-                   <bool>false</bool>
-                  </property>
-                  <property name="title">
-                   <string>Options</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                  </property>
-                  <property name="flat">
-                   <bool>false</bool>
-                  </property>
-                  <property name="checkable">
-                   <bool>false</bool>
-                  </property>
-                  <layout class="QVBoxLayout" name="verticalLayout">
-                   <item>
-                    <widget class="YReadOnlySimpleInputWidget" name="ID_5" native="true">
-                     <property name="enabled">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="YSimpleInputWidget" name="Name_3" native="true">
-                     <property name="enabled">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="YComboBoxWidget" name="Type_5" native="true">
-                     <property name="enabled">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QWidget" name="BrushSize" native="true">
-                     <property name="enabled">
-                      <bool>false</bool>
-                     </property>
-                     <layout class="QHBoxLayout" name="width_4">
-                      <property name="margin">
-                       <number>0</number>
-                      </property>
-                      <item>
-                       <widget class="QLabel" name="label_31">
-                        <property name="text">
-                         <string>Brush size:</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QScrollBar" name="horizontalScrollBar">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="minimum">
-                         <number>1</number>
-                        </property>
-                        <property name="orientation">
-                         <enum>Qt::Horizontal</enum>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QSpinBox" name="spinBox_2">
-                        <property name="maximumSize">
-                         <size>
-                          <width>30</width>
-                          <height>16777215</height>
-                         </size>
-                        </property>
-                        <property name="alignment">
-                         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                        </property>
-                        <property name="buttonSymbols">
-                         <enum>QAbstractSpinBox::NoButtons</enum>
-                        </property>
-                        <property name="minimum">
-                         <number>1</number>
-                        </property>
-                        <property name="maximum">
-                         <number>99</number>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
-                    </widget>
-                   </item>
-                   <item>
-                    <spacer name="verticalSpacer_3">
-                     <property name="orientation">
-                      <enum>Qt::Vertical</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>20</width>
-                       <height>416</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_15">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeType">
-                <enum>QSizePolicy::Preferred</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>0</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
            </widget>
           </widget>
          </item>
@@ -898,7 +166,7 @@ border: 0px transparent;
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>821</width>
+     <width>578</width>
      <height>19</height>
     </rect>
    </property>
@@ -925,104 +193,34 @@ border: 0px transparent;
  </widget>
  <customwidgets>
   <customwidget>
-   <class>YSimpleInputWidget</class>
+   <class>YWidgetsTab</class>
    <extends>QWidget</extends>
    <header>widgets</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>YReadOnlySimpleInputWidget</class>
+   <class>YEntityTab</class>
    <extends>QWidget</extends>
    <header>widgets</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>YSpinBoxInputWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets</header>
-   <container>1</container>
-   <slots>
-    <signal>valueChanged(int)</signal>
-    <slot>setValue(int)</slot>
-   </slots>
-  </customwidget>
-  <customwidget>
-   <class>YDoubleSpinBoxInputWidget</class>
+   <class>YTilesTab</class>
    <extends>QWidget</extends>
    <header>widgets</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>YColorInputWidget</class>
+   <class>YMapTab</class>
    <extends>QWidget</extends>
    <header>widgets</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>YFileInputWidget</class>
+   <class>YSpritesTab</class>
    <extends>QWidget</extends>
    <header>widgets</header>
    <container>1</container>
-   <slots>
-    <signal>valueChanged(QString)</signal>
-    <slot>slot1()</slot>
-   </slots>
-  </customwidget>
-  <customwidget>
-   <class>YComboBoxWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets</header>
-   <container>1</container>
-   <slots>
-    <signal>currentIndexChanged(int)</signal>
-   </slots>
-  </customwidget>
-  <customwidget>
-   <class>YImageChooser</class>
-   <extends>QWidget</extends>
-   <header>widgets</header>
-   <container>1</container>
-   <slots>
-    <signal>valueChanged(QString)</signal>
-   </slots>
-  </customwidget>
-  <customwidget>
-   <class>YImageViewWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets</header>
-   <container>1</container>
-   <slots>
-    <signal>widthChanged(int)</signal>
-    <signal>heightChanged(int)</signal>
-    <signal>xChanged(int)</signal>
-    <signal>yChanged(int)</signal>
-    <slot>setImage(QString)</slot>
-    <slot>setAreaWidth(int)</slot>
-    <slot>setAreaHeight(int)</slot>
-    <slot>setX(int)</slot>
-    <slot>setY(int)</slot>
-    <slot>setRows(int)</slot>
-    <slot>setColumns(int)</slot>
-   </slots>
-  </customwidget>
-  <customwidget>
-   <class>YTableWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets</header>
-   <container>1</container>
-   <slots>
-    <signal>changed()</signal>
-   </slots>
-  </customwidget>
-  <customwidget>
-   <class>YAnimationPreviewWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets</header>
-   <container>1</container>
-   <slots>
-    <slot>updateData()</slot>
-    <slot>updateTypes()</slot>
-   </slots>
   </customwidget>
  </customwidgets>
  <tabstops>
@@ -1032,226 +230,18 @@ border: 0px transparent;
  <resources/>
  <connections>
   <connection>
-   <sender>horizontalScrollBar</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>spinBox_2</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>665</x>
-     <y>260</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>756</x>
-     <y>262</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_2</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>horizontalScrollBar</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>756</x>
-     <y>262</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>665</x>
-     <y>260</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Image_5</sender>
-   <signal>valueChanged(QString)</signal>
-   <receiver>SpriteImageViewer</receiver>
-   <slot>setImage(QString)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>564</x>
-     <y>142</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>608</x>
-     <y>94</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>SpriteImageViewer</sender>
-   <signal>widthChanged(int)</signal>
-   <receiver>Width_2</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>608</x>
-     <y>94</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>564</x>
-     <y>158</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>SpriteImageViewer</sender>
-   <signal>heightChanged(int)</signal>
-   <receiver>Height_2</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>608</x>
-     <y>94</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>564</x>
-     <y>174</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Width_2</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>SpriteImageViewer</receiver>
-   <slot>setAreaWidth(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>564</x>
-     <y>158</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>608</x>
-     <y>94</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Height_2</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>SpriteImageViewer</receiver>
-   <slot>setAreaHeight(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>564</x>
-     <y>174</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>608</x>
-     <y>94</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>OffsetY</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>SpriteImageViewer</receiver>
-   <slot>setY(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>564</x>
-     <y>206</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>608</x>
-     <y>94</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>OffsetX</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>SpriteImageViewer</receiver>
-   <slot>setX(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>564</x>
-     <y>190</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>608</x>
-     <y>94</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Rows</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>SpriteImageViewer</receiver>
-   <slot>setRows(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>564</x>
-     <y>222</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>608</x>
-     <y>94</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Columns</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>SpriteImageViewer</receiver>
-   <slot>setColumns(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>564</x>
-     <y>238</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>608</x>
-     <y>94</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>SpriteImageViewer</sender>
-   <signal>xChanged(int)</signal>
-   <receiver>OffsetX</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>608</x>
-     <y>94</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>564</x>
-     <y>190</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>SpriteImageViewer</sender>
-   <signal>yChanged(int)</signal>
-   <receiver>OffsetY</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>608</x>
-     <y>94</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>564</x>
-     <y>206</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>OpenFolderDBox</sender>
    <signal>clicked(QAbstractButton*)</signal>
    <receiver>Editor</receiver>
    <slot>openFolder()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>770</x>
-     <y>677</y>
+     <x>548</x>
+     <y>467</y>
     </hint>
     <hint type="destinationlabel">
-     <x>760</x>
-     <y>663</y>
+     <x>598</x>
+     <y>544</y>
     </hint>
    </hints>
   </connection>
@@ -1263,7 +253,7 @@ border: 0px transparent;
    <hints>
     <hint type="sourcelabel">
      <x>65</x>
-     <y>339</y>
+     <y>233</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -1279,11 +269,11 @@ border: 0px transparent;
    <hints>
     <hint type="sourcelabel">
      <x>37</x>
-     <y>626</y>
+     <y>416</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
-     <y>630</y>
+     <y>544</y>
     </hint>
    </hints>
   </connection>
@@ -1294,12 +284,12 @@ border: 0px transparent;
    <slot>saveFile()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>644</x>
-     <y>715</y>
+     <x>588</x>
+     <y>505</y>
     </hint>
     <hint type="destinationlabel">
-     <x>645</x>
-     <y>734</y>
+     <x>598</x>
+     <y>544</y>
     </hint>
    </hints>
   </connection>
@@ -1359,7 +349,7 @@ border: 0px transparent;
    <hints>
     <hint type="sourcelabel">
      <x>41</x>
-     <y>441</y>
+     <y>335</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1375,59 +365,11 @@ border: 0px transparent;
    <hints>
     <hint type="sourcelabel">
      <x>410</x>
-     <y>713</y>
+     <y>503</y>
     </hint>
     <hint type="destinationlabel">
      <x>410</x>
      <y>377</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Picture_2</sender>
-   <signal>currentIndexChanged(int)</signal>
-   <receiver>Editor</receiver>
-   <slot>loadTileImage()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>277</x>
-     <y>158</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>533</x>
-     <y>19</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Animation</sender>
-   <signal>changed(PyQt_PyObject)</signal>
-   <receiver>EntityAnimationSettings</receiver>
-   <slot>updateData(PyQt_PyObject)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>646</x>
-     <y>104</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>643</x>
-     <y>199</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Image_3</sender>
-   <signal>valueChanged(QString)</signal>
-   <receiver>EntityAnimationSettings</receiver>
-   <slot>updateTypes()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>402</x>
-     <y>149</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>596</x>
-     <y>159</y>
     </hint>
    </hints>
   </connection>

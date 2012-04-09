@@ -16,5 +16,8 @@ class YComboBoxWidget(object):
     def addItem(self, text):
         self.__getBox().addItem(text)
 
+    def itemText(self, index):
+        return self.__getBox().itemText(index)
+
     def clear(self):
         self.__getBox().clear()

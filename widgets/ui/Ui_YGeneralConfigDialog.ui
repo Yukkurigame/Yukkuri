@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GeneralConfig</class>
- <widget class="QDialog" name="GeneralConfig">
+ <class>YGeneralConfigDialog</class>
+ <widget class="QDialog" name="YGeneralConfigDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -147,7 +147,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>GeneralConfig</receiver>
+   <receiver>YGeneralConfigDialog</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -163,7 +163,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>GeneralConfig</receiver>
+   <receiver>YGeneralConfigDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">

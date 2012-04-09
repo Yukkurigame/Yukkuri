@@ -280,6 +280,8 @@ class MapWindow(QtGui.QMainWindow):
         self.ReloadObjects()
         self.mapRegion.clear()
         self.__widget.ClearSprites()
+        if not region:
+            return
         self.__regionName = region['name']
         if not self.__Tiles:
             return

@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>YSpritesTab</class>
+ <widget class="QWidget" name="YSpritesTab">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>508</width>
+    <height>214</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QGroupBox" name="SpritesMainBox">
+     <property name="minimumSize">
+      <size>
+       <width>310</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>310</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>Main</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_16">
+      <item>
+       <widget class="YReadOnlySimpleInputWidget" name="ID" native="true">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="YSimpleInputWidget" name="Name" native="true">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="YComboBoxWidget" name="Type" native="true">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="YFileInputWidget" name="Image" native="true"/>
+      </item>
+      <item>
+       <widget class="YSpinBoxInputWidget" name="Width" native="true"/>
+      </item>
+      <item>
+       <widget class="YSpinBoxInputWidget" name="Height" native="true"/>
+      </item>
+      <item>
+       <widget class="YSpinBoxInputWidget" name="OffsetX" native="true"/>
+      </item>
+      <item>
+       <widget class="YSpinBoxInputWidget" name="OffsetY" native="true"/>
+      </item>
+      <item>
+       <widget class="YSpinBoxInputWidget" name="Rows" native="true"/>
+      </item>
+      <item>
+       <widget class="YSpinBoxInputWidget" name="Columns" native="true"/>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>0</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="title">
+      <string>Preview</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_7">
+      <item>
+       <widget class="YImageViewWidget" name="SpriteImageViewer" native="true">
+        <property name="styleSheet">
+         <string notr="true">background: transparent;</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>YSimpleInputWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>YReadOnlySimpleInputWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>YSpinBoxInputWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets</header>
+   <container>1</container>
+   <slots>
+    <signal>valueChanged(int)</signal>
+    <slot>setValue(int)</slot>
+   </slots>
+  </customwidget>
+  <customwidget>
+   <class>YFileInputWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets</header>
+   <container>1</container>
+   <slots>
+    <signal>valueChanged(QString)</signal>
+    <slot>slot1()</slot>
+   </slots>
+  </customwidget>
+  <customwidget>
+   <class>YComboBoxWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets</header>
+   <container>1</container>
+   <slots>
+    <signal>currentIndexChanged(int)</signal>
+   </slots>
+  </customwidget>
+  <customwidget>
+   <class>YImageViewWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets</header>
+   <container>1</container>
+   <slots>
+    <signal>widthChanged(int)</signal>
+    <signal>heightChanged(int)</signal>
+    <signal>xChanged(int)</signal>
+    <signal>yChanged(int)</signal>
+    <slot>setImage(QString)</slot>
+    <slot>setAreaWidth(int)</slot>
+    <slot>setAreaHeight(int)</slot>
+    <slot>setX(int)</slot>
+    <slot>setY(int)</slot>
+    <slot>setRows(int)</slot>
+    <slot>setColumns(int)</slot>
+   </slots>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>Columns</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SpriteImageViewer</receiver>
+   <slot>setColumns(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>163</x>
+     <y>182</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>411</x>
+     <y>113</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Height</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SpriteImageViewer</receiver>
+   <slot>setAreaHeight(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>163</x>
+     <y>118</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>411</x>
+     <y>113</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SpriteImageViewer</sender>
+   <signal>heightChanged(int)</signal>
+   <receiver>Height</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>411</x>
+     <y>113</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>163</x>
+     <y>118</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SpriteImageViewer</sender>
+   <signal>widthChanged(int)</signal>
+   <receiver>Width</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>411</x>
+     <y>113</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>163</x>
+     <y>102</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SpriteImageViewer</sender>
+   <signal>xChanged(int)</signal>
+   <receiver>OffsetX</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>411</x>
+     <y>113</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>163</x>
+     <y>134</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Image</sender>
+   <signal>valueChanged(QString)</signal>
+   <receiver>SpriteImageViewer</receiver>
+   <slot>setImage(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>163</x>
+     <y>86</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>411</x>
+     <y>113</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SpriteImageViewer</sender>
+   <signal>yChanged(int)</signal>
+   <receiver>OffsetY</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>411</x>
+     <y>113</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>163</x>
+     <y>150</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>OffsetX</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SpriteImageViewer</receiver>
+   <slot>setX(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>163</x>
+     <y>134</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>411</x>
+     <y>113</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>OffsetY</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SpriteImageViewer</receiver>
+   <slot>setY(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>163</x>
+     <y>150</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>411</x>
+     <y>113</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Rows</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SpriteImageViewer</receiver>
+   <slot>setRows(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>163</x>
+     <y>166</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>411</x>
+     <y>113</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Width</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SpriteImageViewer</receiver>
+   <slot>setAreaWidth(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>163</x>
+     <y>102</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>411</x>
+     <y>113</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

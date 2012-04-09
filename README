@@ -1,0 +1,6 @@
+
+Yukkuri resource editor
+
+
+Use `make` command in this directory to create qt bindings for interface. 
+You must have pyuic4 installed.

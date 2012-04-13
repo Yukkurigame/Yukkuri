@@ -2,13 +2,13 @@
 
 from PyQt4 import QtCore, QtGui
 
-from widgets import YAbstractImageTab
+from widgets import YAbstractTab
 
 from sprites import manager as sprites
 
 
 
-class YTilesTab(YAbstractImageTab):
+class YTilesTab(YAbstractTab):
 
     BOXES = {
         'Tile': ['TilesMainBox',],
@@ -16,28 +16,31 @@ class YTilesTab(YAbstractImageTab):
     EXTENSION = 'tiles'
 
     def __init__(self, parent=None):
-        YAbstractImageTab.__init__(self, parent)
+        YAbstractTab.__init__(self, parent)
         self.ui.TileImageViewer.setScrollPolicy(
             QtCore.Qt.ScrollBarAlwaysOff, QtCore.Qt.ScrollBarAlwaysOff)
 
 
     @QtCore.pyqtSlot()
     def loadTileImage(self):
+        #FIXME: This event emits two times: one on image changed and
+        #       one on picture data set
+        from widgets import YPictureComboBoxWidget
         self.ui.TileImageViewer.clear()
-        if not self.image or self.picture is None:
+        sender = self.sender()
+        print sender
+        if not isinstance(sender, YPictureComboBoxWidget):
             return
-        image = sprites.createPixmap(self.image.get('id'), self.picture)
+        imagename = self.ui.Image.getValue()
+        picture = sender.getValue()
+        print imagename, picture
+        if not imagename or picture in ('', None):
+            return
+        image = sprites.createPixmap(imagename, picture)
         if not image:
             return
         self.ui.TileImageViewer.setPixmap(image)
 
-
-    @QtCore.pyqtSlot('QListWidgetItem*')
-    def reloadContent(self, item=None):
-        YAbstractImageTab.reloadContent(self, item)
-        self.loadTileImage()
-
-
     def clearFields(self):
         self.loadTileImage()
-        YAbstractImageTab.clearFields(self)
+        YAbstractTab.clearFields(self)

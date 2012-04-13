@@ -26,6 +26,6 @@ class YSpritesTab(YAbstractTab):
 
 
     def saveFile(self):
-        elname = YAbstractTab.save(self)
+        elname = YAbstractTab.saveFile(self)
         sprites.unloadImages()
         return elname

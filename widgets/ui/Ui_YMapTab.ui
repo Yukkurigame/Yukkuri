@@ -78,8 +78,8 @@ border: 0px transparent;
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>280</width>
-        <height>508</height>
+        <width>96</width>
+        <height>26</height>
        </rect>
       </property>
       <attribute name="label">
@@ -320,5 +320,24 @@ border: 0px transparent;
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>Type</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>YMapTab</receiver>
+   <slot>blockFields()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>334</x>
+     <y>149</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>550</x>
+     <y>127</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <slot>blockFields()</slot>
+ </slots>
 </ui>

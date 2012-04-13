@@ -5,9 +5,10 @@ import re
 
 from PyQt4 import QtCore, QtGui
 
+from random import randint
+
 from files import lua, fileManager
 from config import config
-
 from framework import RefillFields, GetWidget, GetField
 
 
@@ -39,6 +40,9 @@ class YAbstractTab(object):
     def setBase(self, parent):
         self.parent = parent
 
+    def getExtension(self):
+        return self.EXTENSION
+
     def getElementType(self, element={}):
         try:
             eltype = element.get('type') or \
@@ -47,10 +51,20 @@ class YAbstractTab(object):
             eltype = self.BOXES.keys()[0]
         return eltype.lower()
 
+    def getFieldElementType(self, element={}):
+        eltype = self.getElementType(element)
+        feltype = self.ui.Type.getValue().lower()
+        if eltype != feltype:
+            eltype = feltype
+        return eltype
+
     def getBoxesByElement(self, eltype=None):
-        if not eltype or eltype not in self.BOXES.keys():
-            eltype = self.getElementType()
-        boxes = self._BOXES[eltype.lower()]
+        if not eltype or eltype not in [l.lower() for l in self.BOXES.keys()]:
+            eltype = self.getFieldElementType()
+        try:
+            boxes = self._BOXES[eltype.lower()]
+        except KeyError:
+            boxes = self._BOXES[self._BOXES.keys()[-1]]
         return map(lambda x: getattr(self.ui, x), boxes)
 
     def clearFields(self):
@@ -58,8 +72,9 @@ class YAbstractTab(object):
             RefillFields(el, {})
 
     def blockFields(self):
+        eltype = self.getFieldElementType()
         map(lambda el: el.setDisabled(True), self._Forms)
-        map(lambda el: el.setDisabled(False), self.getBoxesByElement(self.getElementType()))
+        map(lambda el: el.setDisabled(False), self.getBoxesByElement(eltype))
 
     def reloadFiles(self):
         files = fileManager.getFilesList(config.general.get('configs_path'), self.EXTENSION.lower())
@@ -110,7 +125,6 @@ class YAbstractTab(object):
             return
         if not item:
             return
-        self.blockFields()
         self.clearFields()
         item = str(item.text()).lower()
         data = self._loadedConfig
@@ -143,6 +157,16 @@ class YAbstractTab(object):
         except IndexError:
             return {}
 
+    def appendConfig(self, config):
+        if type(config) is not dict or \
+            config.get('name', None) is None:
+            return
+        if not self._loadedConfig:
+            self._loadedConfig = [config,]
+        else:
+            self._loadedConfig.append(config)
+
+
     def saveFile(self):
         if not self._loadedFile:
             return
@@ -150,8 +174,8 @@ class YAbstractTab(object):
         if not data:
             return
         globalname = self._loadedElement
-        eltype = self.getElementType()
-        saved = self.getSaved()
+        eltype = self.getFieldElementType()
+        saved = self.getSaved(eltype)
         if not saved:
             return
         elname = re.sub('\s+', '_', (saved.get('name') or ''
@@ -173,8 +197,7 @@ class YAbstractTab(object):
             config.general.get('configs_path'), self._loadedFile), data)
         return elname
 
-    def getSaved(self):
-        eltype = self.getElementType()
+    def getSaved(self, eltype):
         boxes = self.getBoxesByElement(eltype)
         if not boxes:
             print "No boxes to save for %s" % eltype

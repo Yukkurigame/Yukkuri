@@ -23,5 +23,5 @@ class YMapTab(YAbstractTab):
         YAbstractTab.reloadContent(self, item)
         self.__Map.LoadRegion(self.getCurrentElement())
 
-    def getSaved(self):
+    def getSaved(self, eltype):
         return self.__Map.dump()

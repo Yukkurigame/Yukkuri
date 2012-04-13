@@ -18,6 +18,8 @@ class YFileInputWidget(QObject):
     def openFile(self):
         fullpath = str(QtGui.QFileDialog.getOpenFileName(self,
                     'Choose file', fileManager.getLast()))
+        if not fullpath:
+            return
         path, name = os.path.split(fullpath)
         fileManager.setLast(path)
         if self.basepath:

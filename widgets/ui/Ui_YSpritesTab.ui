@@ -128,6 +128,15 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>YComboBoxWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets</header>
+   <container>1</container>
+   <slots>
+    <signal>currentIndexChanged(int)</signal>
+   </slots>
+  </customwidget>
+  <customwidget>
    <class>YSpinBoxInputWidget</class>
    <extends>QWidget</extends>
    <header>widgets</header>
@@ -145,15 +154,6 @@
    <slots>
     <signal>valueChanged(QString)</signal>
     <slot>slot1()</slot>
-   </slots>
-  </customwidget>
-  <customwidget>
-   <class>YComboBoxWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets</header>
-   <container>1</container>
-   <slots>
-    <signal>currentIndexChanged(int)</signal>
    </slots>
   </customwidget>
   <customwidget>
@@ -354,5 +354,24 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>Type</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>YSpritesTab</receiver>
+   <slot>blockFields()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>291</x>
+     <y>73</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>326</x>
+     <y>4</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <slot>blockFields()</slot>
+ </slots>
 </ui>

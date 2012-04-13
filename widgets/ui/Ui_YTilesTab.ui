@@ -47,7 +47,7 @@
        <widget class="YImageChooser" name="Image" native="true"/>
       </item>
       <item>
-       <widget class="YComboBoxWidget" name="Picture" native="true">
+       <widget class="YPictureComboBoxWidget" name="Picture" native="true">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -204,15 +204,7 @@
    <container>1</container>
    <slots>
     <signal>currentIndexChanged(int)</signal>
-   </slots>
-  </customwidget>
-  <customwidget>
-   <class>YImageChooser</class>
-   <extends>QWidget</extends>
-   <header>widgets</header>
-   <container>1</container>
-   <slots>
-    <signal>valueChanged(QString)</signal>
+    <slot>loadPictures(QString)</slot>
    </slots>
   </customwidget>
   <customwidget>
@@ -234,6 +226,24 @@
     <slot>setColumns(int)</slot>
    </slots>
   </customwidget>
+  <customwidget>
+   <class>YImageChooser</class>
+   <extends>QWidget</extends>
+   <header>widgets</header>
+   <container>1</container>
+   <slots>
+    <signal>valueChanged(QString)</signal>
+   </slots>
+  </customwidget>
+  <customwidget>
+   <class>YPictureComboBoxWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets</header>
+   <container>1</container>
+   <slots>
+    <slot>loadPictures(QString)</slot>
+   </slots>
+  </customwidget>
  </customwidgets>
  <resources/>
  <connections>
@@ -253,8 +263,41 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>Image</sender>
+   <signal>valueChanged(QString)</signal>
+   <receiver>Picture</receiver>
+   <slot>loadPictures(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>241</x>
+     <y>86</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>252</x>
+     <y>104</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Type</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>YTilesTab</receiver>
+   <slot>blockFields()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>275</x>
+     <y>71</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>311</x>
+     <y>6</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadTileImage()</slot>
+  <slot>blockFields()</slot>
  </slots>
 </ui>

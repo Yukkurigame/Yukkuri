@@ -3,7 +3,7 @@ import re
 
 from PyQt4 import QtCore, QtGui
 
-abstract_classes = ['YAbstractTab', 'YAbstractImageTab']
+abstract_classes = ['YAbstractTab']
 
 export_classes = ['YSimpleInputWidget', 'YSpinBoxInputWidget',
                 'YDoubleSpinBoxInputWidget', 'YColorInputWidget',
@@ -14,7 +14,8 @@ export_classes = ['YSimpleInputWidget', 'YSpinBoxInputWidget',
                 'YSpritesTab', 'YEntityTab', 'YWidgetsTab', 'YTilesTab',
                 'YMapTab']
 
-extern_classes = ['YReadOnlySimpleInputWidget', 'YReadOnlySpinBoxInputWidget']
+extern_classes = ['YReadOnlySimpleInputWidget', 'YReadOnlySpinBoxInputWidget',
+                  'YPictureComboBoxWidget', 'YDefinedListWidget']
 
 
 def widget_factory(name):
@@ -87,13 +88,17 @@ def widget_factory(name):
             return ret
 
         def setValue(self, *data):
+            try:
+                return super(_YAbstractWidget, self).setValue(*data)
+            except AttributeError:
+                pass
             lines = filter(lambda x: type(x) in [QtGui.QLineEdit,
                             QtGui.QSpinBox, QtGui.QDoubleSpinBox,
                             QtGui.QCheckBox, QtGui.QComboBox],
                             self.children())
             if len(lines):
                 values = []
-                if type(data) != list and type(data) != tuple:
+                if type(data) not in (list, tuple):
                     data = [data,]
                 for i in range(0, len(lines)):
                     ltype = type(lines[i])

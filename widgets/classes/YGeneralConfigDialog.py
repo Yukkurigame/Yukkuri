@@ -6,6 +6,8 @@ from PyQt4 import QtCore, QtGui
 
 from config import config
 from files import lua
+from framework import RefillFields
+
 
 class YGeneralConfigDialog(QtGui.QDialog):
 

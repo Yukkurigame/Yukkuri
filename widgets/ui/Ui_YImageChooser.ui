@@ -44,7 +44,7 @@
     </spacer>
    </item>
    <item>
-    <widget class="QLineEdit" name="EntityImgField">
+    <widget class="QLineEdit" name="ImageField">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
        <horstretch>0</horstretch>

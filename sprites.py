@@ -2,7 +2,7 @@
 import os
 from PyQt4.QtGui import QPixmap
 from config import config
-from files import *
+from files import fileManager, lua
 
 __all__ = ['manager', ]
 

@@ -12,7 +12,7 @@ class YImageChooser(object):
         self.cdialog = YTreeDialog(self)
         self.connect(self.ui.ImageChooseButton, QtCore.SIGNAL('clicked()'),
                     self.chooseImage)
-        self.loaded = None
+        self.ui.ImageField.mousePressEvent = self.chooseImage
 
     def loadSprites(self):
         data = sprites.getImages()
@@ -25,11 +25,9 @@ class YImageChooser(object):
                 items[t] = []
             items[t].append(item)
         self.cdialog.insertTree(items)
-        self.loaded = True
 
-    def chooseImage(self):
-        if not self.loaded:
-            self.loadSprites()
+    def chooseImage(self, event=None):
+        self.loadSprites()
         val = self.cdialog.getItem()
         if val:
             self.setValue(val)

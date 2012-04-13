@@ -59,7 +59,7 @@
          <widget class="YImageChooser" name="Image" native="true"/>
         </item>
         <item>
-         <widget class="YComboBoxWidget" name="Picture" native="true">
+         <widget class="YPictureComboBoxWidget" name="Picture" native="true">
           <property name="enabled">
            <bool>true</bool>
           </property>
@@ -225,25 +225,20 @@
    </slots>
   </customwidget>
   <customwidget>
-   <class>YDoubleSpinBoxInputWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>YColorInputWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>YComboBoxWidget</class>
    <extends>QWidget</extends>
    <header>widgets</header>
    <container>1</container>
    <slots>
     <signal>currentIndexChanged(int)</signal>
+    <slot>loadPictures(QString)</slot>
    </slots>
+  </customwidget>
+  <customwidget>
+   <class>YColorInputWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>YImageChooser</class>
@@ -253,6 +248,21 @@
    <slots>
     <signal>valueChanged(QString)</signal>
    </slots>
+  </customwidget>
+  <customwidget>
+   <class>YPictureComboBoxWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets</header>
+   <container>1</container>
+   <slots>
+    <slot>loadPictures(QString)</slot>
+   </slots>
+  </customwidget>
+  <customwidget>
+   <class>YDoubleSpinBoxInputWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>YTableWidget</class>
@@ -310,5 +320,40 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>Image</sender>
+   <signal>valueChanged(QString)</signal>
+   <receiver>Picture</receiver>
+   <slot>loadPictures(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>131</x>
+     <y>88</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>134</x>
+     <y>99</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Type</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>YEntityTab</receiver>
+   <slot>blockFields()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>239</x>
+     <y>72</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>279</x>
+     <y>8</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <slot>blockFields()</slot>
+ </slots>
 </ui>

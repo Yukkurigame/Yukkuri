@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>608</width>
-    <height>495</height>
+    <width>658</width>
+    <height>433</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -56,13 +56,6 @@
          </widget>
         </item>
         <item>
-         <widget class="YComboBoxWidget" name="WType" native="true">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="YComboBoxWidget" name="Align" native="true">
           <property name="enabled">
            <bool>true</bool>
@@ -80,7 +73,7 @@
          <widget class="YImageChooser" name="Image" native="true"/>
         </item>
         <item>
-         <widget class="YComboBoxWidget" name="Picture" native="true">
+         <widget class="YPictureComboBoxWidget" name="Picture" native="true">
           <property name="enabled">
            <bool>true</bool>
           </property>
@@ -133,7 +126,7 @@
          <widget class="YSpinBoxInputWidget" name="TextY" native="true"/>
         </item>
         <item>
-         <widget class="YSpinBoxInputWidget" name="TextAlign" native="true"/>
+         <widget class="YComboBoxWidget" name="TextAlign" native="true"/>
         </item>
         <item>
          <widget class="YFileInputWidget" name="Font" native="true"/>
@@ -163,20 +156,101 @@
     </layout>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2"/>
-   </item>
-   <item>
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>271</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QGroupBox" name="WidgetBarBox">
+       <property name="minimumSize">
+        <size>
+         <width>330</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>330</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="title">
+        <string>Bar</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_19">
+        <item>
+         <widget class="YImageChooser" name="TopImage" native="true"/>
+        </item>
+        <item>
+         <widget class="YPictureComboBoxWidget" name="TopPicture" native="true">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="YSpinBoxInputWidget" name="BarX" native="true"/>
+        </item>
+        <item>
+         <widget class="YSpinBoxInputWidget" name="BarY" native="true"/>
+        </item>
+        <item>
+         <widget class="YSpinBoxInputWidget" name="BarWidth" native="true"/>
+        </item>
+        <item>
+         <widget class="YSpinBoxInputWidget" name="BarHeight" native="true"/>
+        </item>
+        <item>
+         <widget class="YColorInputWidget" name="BarColor" native="true"/>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="WidgetChildrenBox">
+       <property name="title">
+        <string>Children</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="YDefinedListWidget" name="Children">
+          <property name="contextMenuPolicy">
+           <enum>Qt::CustomContextMenu</enum>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Sunken</enum>
+          </property>
+          <property name="editTriggers">
+           <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
+          </property>
+          <property name="dragDropMode">
+           <enum>QAbstractItemView::InternalMove</enum>
+          </property>
+          <property name="defaultDropAction">
+           <enum>Qt::MoveAction</enum>
+          </property>
+          <property name="movement">
+           <enum>QListView::Free</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
@@ -204,12 +278,6 @@
    </slots>
   </customwidget>
   <customwidget>
-   <class>YColorInputWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>YFileInputWidget</class>
    <extends>QWidget</extends>
    <header>widgets</header>
@@ -226,7 +294,14 @@
    <container>1</container>
    <slots>
     <signal>currentIndexChanged(int)</signal>
+    <slot>loadPictures(QString)</slot>
    </slots>
+  </customwidget>
+  <customwidget>
+   <class>YColorInputWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>YImageChooser</class>
@@ -237,7 +312,73 @@
     <signal>valueChanged(QString)</signal>
    </slots>
   </customwidget>
+  <customwidget>
+   <class>YDefinedListWidget</class>
+   <extends>QListWidget</extends>
+   <header>widgets</header>
+  </customwidget>
+  <customwidget>
+   <class>YPictureComboBoxWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets</header>
+   <container>1</container>
+   <slots>
+    <slot>loadPictures(QString)</slot>
+   </slots>
+  </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>TopImage</sender>
+   <signal>valueChanged(QString)</signal>
+   <receiver>TopPicture</receiver>
+   <slot>loadPictures(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>355</x>
+     <y>41</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>358</x>
+     <y>54</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Image</sender>
+   <signal>valueChanged(QString)</signal>
+   <receiver>Picture</receiver>
+   <slot>loadPictures(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>133</x>
+     <y>124</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>134</x>
+     <y>140</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Type</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>YWidgetsTab</receiver>
+   <slot>blockFields()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>230</x>
+     <y>74</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>301</x>
+     <y>4</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>blockFields()</slot>
+ </slots>
 </ui>

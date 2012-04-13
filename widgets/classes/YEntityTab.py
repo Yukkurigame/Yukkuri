@@ -2,12 +2,12 @@
 
 from PyQt4 import QtCore, QtGui
 
-from widgets import YAbstractImageTab
+from widgets import YAbstractTab
 
 from framework import GetField, GetWidget
 
 
-class YEntityTab(YAbstractImageTab):
+class YEntityTab(YAbstractTab):
 
     BOXES = {
         'Entity':   ['EntityMainBox', 'EntityEntityBox', 'EntityMiscBox',
@@ -19,7 +19,7 @@ class YEntityTab(YAbstractImageTab):
 
 
     def __init__(self, parent=None):
-        YAbstractImageTab.__init__(self, parent)
+        YAbstractTab.__init__(self, parent)
         self.ui.Animation.setHorizontalHeaderLabels(
             ['Animation name', 'Start', 'End'])
         self.ui.Animation.loadDataDict({
@@ -36,6 +36,13 @@ class YEntityTab(YAbstractImageTab):
         self.ui.EntityAnimationSettings._imageName = lambda: \
             GetField(GetWidget(self.ui.EntityMainBox, 'image'))
 
+    @QtCore.pyqtSlot('QListWidgetItem*')
+    def reloadContent(self, item=None):
+        YAbstractTab.reloadContent(self, item)
+        element = self.getCurrentElement()
+        if type(element) is dict:
+            self.loadAnimation(element.get('animation'))
+
     def setPerviewWidth(self):
         field = self.main.sender()
         width = field.value()
@@ -49,10 +56,3 @@ class YEntityTab(YAbstractImageTab):
 
     def loadAnimation(self, data):
         self.ui.Animation.loadDataDict(data or {})
-
-    @QtCore.pyqtSlot('QListWidgetItem*')
-    def reloadContent(self, item=None):
-        YAbstractImageTab.reloadContent(self, item)
-        element = self.getCurrentElement()
-        if type(element) is dict:
-            self.loadAnimation(element.get('animation'))

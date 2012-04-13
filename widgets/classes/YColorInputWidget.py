@@ -19,3 +19,16 @@ class YColorInputWidget(object):
         if not color.isValid():
             return
         self.setValue(color.getRgb()[:3])
+
+    def setValue(self, *data):
+        lines = filter(lambda x: type(x) is QtGui.QSpinBox, self.children())
+        data = data[-1]
+        for i in range(0, len(lines)):
+            field = 0
+            if i < len(data):
+                field = data[i]
+            try:
+                lines[i].setValue(int(field))
+            except:
+                pass
+

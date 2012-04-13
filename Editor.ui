@@ -236,8 +236,8 @@
    <slot>openFolder()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>548</x>
-     <y>467</y>
+     <x>567</x>
+     <y>300</y>
     </hint>
     <hint type="destinationlabel">
      <x>598</x>
@@ -252,8 +252,8 @@
    <slot>createConfigFile()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>65</x>
-     <y>233</y>
+     <x>94</x>
+     <y>152</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -268,8 +268,8 @@
    <slot>createConfigRecord()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>37</x>
-     <y>416</y>
+     <x>66</x>
+     <y>249</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -284,8 +284,8 @@
    <slot>saveFile()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>588</x>
-     <y>505</y>
+     <x>567</x>
+     <y>332</y>
     </hint>
     <hint type="destinationlabel">
      <x>598</x>
@@ -332,8 +332,8 @@
    <slot>reloadElements(QListWidgetItem*)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>55</x>
-     <y>165</y>
+     <x>84</x>
+     <y>122</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -348,8 +348,8 @@
    <slot>reloadContent(QListWidgetItem*)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>41</x>
-     <y>335</y>
+     <x>70</x>
+     <y>219</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -364,8 +364,8 @@
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>410</x>
-     <y>503</y>
+     <x>420</x>
+     <y>332</y>
     </hint>
     <hint type="destinationlabel">
      <x>410</x>
@@ -382,6 +382,5 @@
   <slot>reloadFiles(int)</slot>
   <slot>reloadElements(QListWidgetItem*)</slot>
   <slot>reloadContent(QListWidgetItem*)</slot>
-  <slot>loadTileImage()</slot>
  </slots>
 </ui>

@@ -10,6 +10,8 @@ class SLPP:
         self.depth = 0
         self.space = re.compile('\s', re.M)
         self.alnum = re.compile('\w', re.M)
+        self.newline = '\n'
+        self.tab = '\t'
 
     def decode(self, text):
         if not text or type(text) is not str:
@@ -32,8 +34,8 @@ class SLPP:
 
     def __encode(self, obj):
         s = ''
-        tab = '\t'
-        newline = '\n'
+        tab = self.tab
+        newline = self.newline
         tp = type(obj)
         if tp is str:
             s += '"%s"' % obj
@@ -42,10 +44,15 @@ class SLPP:
         elif tp is bool:
             s += str(obj).lower()
         elif tp in [list, tuple, dict]:
-            s += "%s{%s" % (tab * self.depth, newline)
             self.depth += 1
-            dp = tab * self.depth
-            if tp is dict:
+            if len(obj) == 0 or ( tp is not dict and len(filter( 
+                    lambda x:  type(x) in (int,  float,  long) \
+                    or (type(x) is str and len(x) < 10),  obj
+                )) == len(obj) ):
+                newline = tab = ''
+            dp = tab * self.depth            
+            s += "%s{%s" % (tab * (self.depth - 2), newline)
+            if tp is dict:                
                 s += (',%s' % newline).join(
                     [self.__encode(v) if type(k) is int \
                         else dp + '%s = %s' % (k, self.__encode(v)) \
@@ -53,7 +60,7 @@ class SLPP:
                     ])
             else:
                 s += (',%s' % newline).join(
-                    [self.__encode(el) for el in obj])
+                    [dp + self.__encode(el) for el in obj])
             self.depth -= 1
             s += "%s%s}" % (newline, tab * self.depth)
         return s
@@ -79,27 +86,33 @@ class SLPP:
             return
         if self.ch == '{':
             return self.object()
-        if self.ch == '"':
-            return self.string()
+        if self.ch == "[":
+            self.next_chr()
+        if self.ch in ['"',  "'",  '[']:
+            return self.string(self.ch)
         if self.ch.isdigit() or self.ch == '-':
             return self.number()
         return self.word()
 
-    def string(self):
+    def string(self,  end=None):
         s = ''
-        if self.ch == '"':
+        start = self.ch
+        if end == '[':
+            end = ']'
+        if start in ['"',  "'",  '[']:
             while self.next_chr():
-                if self.ch == '"':
+                if self.ch == end:
                     self.next_chr()
-                    return str(s)
-                else:
-                    s += self.ch
+                    if start != "[" or self.ch == ']':
+                        return s
+                s += self.ch
         print "Unexpected end of string while parsing Lua string"
 
     def object(self):
         o = {}
         k = ''
         idx = 0
+        numeric_keys = False
         self.depth += 1
         self.next_chr()
         self.white()
@@ -119,19 +132,21 @@ class SLPP:
                     self.next_chr()
                     if k:
                        o[idx] = k
-                    if len([ key for key in o if type(key) is str ]) == 0:
+                    if not numeric_keys and len([ key for key in o if type(key) in (str,  float,  bool,  tuple)]) == 0:
                         ar = []
-                        for key in o: ar.insert(key, o[key])
+                        for key in o: 
+                           ar.insert(key, o[key])
                         o = ar
                     return o #or here
                 else:
-                    if self.ch == '"':
-                        k = self.string()
-                    elif self.ch == ',':
+                    if self.ch == ',':
                         self.next_chr()
                         continue
                     else:
                         k = self.value()
+                        if self.ch == ']':
+                            numeric_keys = True
+                            self.next_chr()
                     self.white()
                     if self.ch == '=':
                         self.next_chr()
@@ -159,6 +174,8 @@ class SLPP:
                     return True
                 elif re.match('^false$', s, re.I):
                     return False
+                elif s == 'nil':
+                    return None
                 return str(s)
 
     def number(self):

@@ -44,7 +44,7 @@ class WidgetsManager:
         data = []
         for filename in files:
             luadata = os.path.join(path, filename)
-            data.extend(lua.load(luadata))
+            data.extend(lua.load(luadata) or [])
         self.widgets = data
         for widget in data:
             if 'id' in widget:

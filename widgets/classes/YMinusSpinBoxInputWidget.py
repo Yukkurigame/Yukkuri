@@ -2,7 +2,7 @@
 
 from PyQt4 import QtCore, QtGui
 
-class YSpinBoxInputWidget(object):
+class YMinusSpinBoxInputWidget(object):
 
     def __init__(self, parent=None):
         self.connect(self.ui.MultiplerSpinBox, QtCore.SIGNAL('valueChanged(int)'),

@@ -6,9 +6,10 @@ from PyQt4 import QtCore, QtGui
 abstract_classes = ['YAbstractTab']
 
 export_classes = ['YSimpleInputWidget', 'YSpinBoxInputWidget',
-                'YDoubleSpinBoxInputWidget', 'YColorInputWidget',
-                'YFileInputWidget', 'YComboBoxWidget', 'YImageChooser',
-                'YImageViewWidget', 'YTableWidget', 'YAnimationPreviewWidget',
+                'YMinusSpinBoxInputWidget', 'YDoubleSpinBoxInputWidget',
+                'YColorInputWidget', 'YFileInputWidget',
+                'YComboBoxWidget', 'YImageChooser', 'YImageViewWidget',
+                'YTableWidget', 'YAnimationPreviewWidget',
                 'YScrollBarInputWidget', 'YFontComboBoxWidget',
                 'YGeneralConfigDialog',
                 'YSpritesTab', 'YEntityTab', 'YWidgetsTab', 'YTilesTab',
@@ -73,9 +74,9 @@ def widget_factory(name):
                     elif re.match("^\d+$", t):
                         t = int(t)
                 elif ltype == QtGui.QSpinBox:
-                    t = line.value()
+                    t = int(line.value())
                 elif ltype == QtGui.QDoubleSpinBox:
-                    t = line.value()
+                    t = float(line.value())
                 elif ltype == QtGui.QCheckBox:
                     t = bool(line.isChecked())
                 elif ltype == QtGui.QComboBox:

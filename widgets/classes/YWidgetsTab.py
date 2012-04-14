@@ -29,11 +29,13 @@ class YWidgetsTab(YAbstractTab):
         align = GetWidget(self.ui.WidgetMainBox, 'Align')
         valign = GetWidget(self.ui.WidgetMainBox, 'VAlign')
         talign = GetWidget(self.ui.WidgetTextBox, 'TextAlign')
+        tvalign = GetWidget(self.ui.WidgetTextBox, 'TextVAlign')
         for variant in ['Left', 'Center', 'Right']:
             align.addItem(variant)
             talign.addItem(variant)
         for variant in ['Top', 'Middle', 'Bottom']:
             valign.addItem(variant)
+            tvalign.addItem(variant)
 
     def saveFile(self):
         elname = YAbstractTab.saveFile(self)

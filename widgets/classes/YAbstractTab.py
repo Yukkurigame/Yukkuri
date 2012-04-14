@@ -210,7 +210,7 @@ class YAbstractTab(object):
                 except Exception, e:
                     print str(e)
                     field = GetField(child)
-                if field:
+                if field is not None:
                     name = re.sub('_\d+$', '', str(child.objectName()).lower())
                     saved[name] = field
         return saved

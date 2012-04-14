@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>658</width>
+    <width>668</width>
     <height>433</height>
    </rect>
   </property>
@@ -20,13 +20,13 @@
       <widget class="QGroupBox" name="WidgetMainBox">
        <property name="minimumSize">
         <size>
-         <width>300</width>
+         <width>310</width>
          <height>0</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>300</width>
+         <width>310</width>
          <height>16777215</height>
         </size>
        </property>
@@ -86,10 +86,10 @@
          <widget class="YSpinBoxInputWidget" name="Width" native="true"/>
         </item>
         <item>
-         <widget class="YSpinBoxInputWidget" name="X" native="true"/>
+         <widget class="YMinusSpinBoxInputWidget" name="X" native="true"/>
         </item>
         <item>
-         <widget class="YSpinBoxInputWidget" name="Y" native="true"/>
+         <widget class="YMinusSpinBoxInputWidget" name="Y" native="true"/>
         </item>
        </layout>
       </widget>
@@ -98,13 +98,13 @@
       <widget class="QGroupBox" name="WidgetTextBox">
        <property name="minimumSize">
         <size>
-         <width>300</width>
+         <width>310</width>
          <height>0</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>300</width>
+         <width>310</width>
          <height>16777215</height>
         </size>
        </property>
@@ -120,13 +120,20 @@
          </widget>
         </item>
         <item>
-         <widget class="YSpinBoxInputWidget" name="TextX" native="true"/>
+         <widget class="YMinusSpinBoxInputWidget" name="TextX" native="true"/>
         </item>
         <item>
-         <widget class="YSpinBoxInputWidget" name="TextY" native="true"/>
+         <widget class="YMinusSpinBoxInputWidget" name="TextY" native="true"/>
         </item>
         <item>
          <widget class="YComboBoxWidget" name="TextAlign" native="true"/>
+        </item>
+        <item>
+         <widget class="YComboBoxWidget" name="TextVAlign" native="true">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="YFileInputWidget" name="Font" native="true"/>
@@ -186,10 +193,16 @@
          </widget>
         </item>
         <item>
-         <widget class="YSpinBoxInputWidget" name="BarX" native="true"/>
+         <widget class="YMinusSpinBoxInputWidget" name="BarX" native="true"/>
         </item>
         <item>
-         <widget class="YSpinBoxInputWidget" name="BarY" native="true"/>
+         <widget class="YMinusSpinBoxInputWidget" name="BarY" native="true"/>
+        </item>
+        <item>
+         <widget class="YMinusSpinBoxInputWidget" name="BarCoverX" native="true"/>
+        </item>
+        <item>
+         <widget class="YMinusSpinBoxInputWidget" name="BarCoverY" native="true"/>
         </item>
         <item>
          <widget class="YSpinBoxInputWidget" name="BarWidth" native="true"/>
@@ -325,6 +338,12 @@
    <slots>
     <slot>loadPictures(QString)</slot>
    </slots>
+  </customwidget>
+  <customwidget>
+   <class>YMinusSpinBoxInputWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

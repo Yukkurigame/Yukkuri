@@ -14,6 +14,8 @@
 		rows = 1,
 		name = "widget_time",
 		image = "./misc.png",
+		offsetx = 0,
+		offsety = 0,
 		height = 69,
 		width = 262,
 		type = "Sprite",

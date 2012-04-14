@@ -31,6 +31,7 @@ bool BarWidget::load( std::string id )
 {
 	if( !TextWidget::load( id ) )
 		return false;
+
 	std::string imgname;
 	int picture;
 	int barheight;
@@ -46,12 +47,16 @@ bool BarWidget::load( std::string id )
 	cfg->getValue( "bary", id, BarY );
 	cfg->getValue( "topimage", id, imgname );
 	cfg->getValue( "toppicture", id, picture );
+	cfg->getValue( "barcoverx", id, TopX );
+	cfg->getValue( "barcovery", id, TopY );
 	cfg->getValue( "barcolor", id, vcolor );
-	if( vcolor.size( ) > 2 ){
-		color.set( vcolor[0], vcolor[1], vcolor[2] );
-	}else{
-		color.set(0);
+
+	for( unsigned int i=0; i < 3; ++i ){
+		if( i >= vcolor.size() )
+			vcolor.push_back(0);
 	}
+	color.set( vcolor[0], vcolor[1], vcolor[2] );
+
 	if( BarWidth <= 0 )
 		BarWidth = Width;
 	createBar( imgname, picture, barheight, color );
@@ -64,14 +69,18 @@ bool BarWidget::load( std::string id )
 
 void BarWidget::createBar( std::string name, int picture, int height, color4u clr )
 {
+	Height -= height + BarY;
 	BarSprite = RenderManager::Instance()->CreateGLSprite( PosX + BarX, PosY + BarY, getZ(), BarWidth, height );
-	if( name != "" )
-		TopSprite = RenderManager::Instance()->CreateGLSprite( PosX, PosY, getZ() + 0.1f,
+	BarSprite->fixed = true;
+	if( name != "" ){
+		TopSprite = RenderManager::Instance()->CreateGLSprite( PosX + TopX, PosY + TopY, getZ() + 0.1f,
 						Width, Height, RenderManager::Instance()->GetTextureNumberById(name), picture );
+		TopSprite->fixed = true;
+	}
 	if( BarSprite ){
 		BarSprite->clr.set( clr.r, clr.g, clr.b, clr.a );
 	}
-	setTextPosition( getTextX(), getTextY() - Height );
+	//setTextPosition( getTextX(), getTextY() - Height );
 	setBarValue(1);
 	setBarSize(1);
 }
@@ -115,7 +124,7 @@ void BarWidget::updatePosition( )
 	if( BarSprite )
 		BarSprite->setPosition( PosX + BarX, PosY + BarY, getZ() );
 	if( TopSprite )
-		TopSprite->setPosition( PosX, PosY, getZ() + 0.01f );
+		TopSprite->setPosition( PosX + BarX + TopX, PosY + BarY + TopY, getZ() + 0.01f );
 }
 
 bool BarWidget::bindBarMaxValue( float* val )

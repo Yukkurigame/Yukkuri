@@ -35,7 +35,7 @@ protected:
 	Sprite* TopSprite;
 
 private:
-	float BarX, BarY;
+	float BarX, BarY, TopX, TopY;
 	float BarValue;
 	float BarMaxValue; // in units
 	float BarWidth; // in pixels

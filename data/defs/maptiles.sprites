@@ -1,5 +1,5 @@
 {
-		{
+	{
 		rows = 3,
 		name = "ground",
 		image = "./iso-64x64-outside.png",
@@ -9,7 +9,7 @@
 		id = "sprite_ground_600587",
 		columns = 8
 	},
-		{
+	{
 		rows = 2,
 		name = "hill",
 		image = "./iso-64x64-outside.png",
@@ -20,7 +20,7 @@
 		id = "sprite_hill_115386",
 		columns = 9
 	},
-		{
+	{
 		rows = 3,
 		name = "rocks",
 		image = "./iso-64x64-outside.png",
@@ -31,7 +31,7 @@
 		id = "sprite_rocks_489186",
 		columns = 10
 	},
-		{
+	{
 		rows = 3,
 		name = "water",
 		image = "./iso-64x64-outside.png",
@@ -42,7 +42,7 @@
 		id = "sprite_water_902906",
 		columns = 10
 	},
-		{
+	{
 		rows = 1,
 		name = "grass",
 		image = "./iso-64x64-outside.png",
@@ -53,7 +53,7 @@
 		id = "sprite_grass_334865",
 		columns = 9
 	},
-		{
+	{
 		rows = 1,
 		name = "shrubs",
 		image = "./iso-64x64-outside.png",
@@ -64,5 +64,5 @@
 		type = "Sprite",
 		id = "sprite_shrubs_847420",
 		columns = 4
-	}
+	},
 }

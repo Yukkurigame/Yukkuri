@@ -5,11 +5,7 @@
 		predator = true,
 		height = 69,
 		imagecols = 1,
-		bloodcolor = 		{
-215,
-180,
-70
-		},
+		bloodcolor = {215,180,70},
 		imagerows = 1,
 		speed = 80.0,
 		id = "entity_Flan_700488",
@@ -17,51 +13,18 @@
 		meeting = 0.89,
 		damage = 3.0,
 		width = 84,
-		animation = 		{
-			rightup = 			{
-0,
-0
-			},
-			right = 			{
-0,
-0
-			},
-			raping = 			{
-0,
-0
-			},
-			up = 			{
-0,
-0
-			},
-			raped = 			{
-0,
-0
-			},
-			down = 			{
-0,
-0
-			},
-			leftdown = 			{
-0,
-0
-			},
-			growth = 			{
-0,
-0
-			},
-			rightdown = 			{
-0,
-0
-			},
-			leftup = 			{
-0,
-0
-			},
-			left = 			{
-0,
-0
-			}
+		animation = 	{
+			rightup = {0,0},
+			right = {0,0},
+			raping = {0,0},
+			up = {0,0},
+			raped = {0,0},
+			down = {0,0},
+			leftdown = {0,0},
+			growth = {0,0},
+			rightdown = {0,0},
+			leftup = {0,0},
+			left = {0,0}
 		},
 		type = "Entity",
 		image = "sprite_Flan_137737"

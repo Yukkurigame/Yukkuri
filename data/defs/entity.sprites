@@ -3,6 +3,8 @@
 		rows = 11,
 		name = "Reimu",
 		image = "./reimu.png",
+		offsetx = 0,
+		offsety = 0,
 		height = 770,
 		width = 320,
 		type = "Sprite",

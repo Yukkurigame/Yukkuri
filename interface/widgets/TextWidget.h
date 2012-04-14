@@ -37,7 +37,7 @@ protected:
 private:
 	Text TextSprite;
 	float TextX, TextY;
-	int TextAlign;
+	int TextAlign, TextVAlign;
 	std::string TextContent;
 	std::string FontName;
 	int FontSize;

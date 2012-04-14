@@ -33,6 +33,7 @@ bool TextWidget::load( std::string id )
 	std::string font;
 	std::string text;
 	std::string talign;
+	std::string tvalign;
 	int fontsize = 12;
 	std::vector<int> vcolor;
 	LuaConfig* cfg = new LuaConfig;
@@ -41,6 +42,7 @@ bool TextWidget::load( std::string id )
 	cfg->getValue( "textx", id, TextX );
 	cfg->getValue( "texty", id, TextY );
 	cfg->getValue( "textalign", id, talign );
+	cfg->getValue( "textvalign", id, tvalign );
 	cfg->getValue( "font", id, font );
 	cfg->getValue( "fontsize", id, fontsize );
 	cfg->getValue( "fontcolor", id, vcolor );
@@ -53,14 +55,23 @@ bool TextWidget::load( std::string id )
 		TextAlign = RIGHT;
 	else
 		TextAlign = LEFT;
+	if( tvalign == "Middle" )
+		TextVAlign = MIDDLE;
+	else if( tvalign == "Bottom" )
+		TextVAlign = BOTTOM;
+	else
+		TextVAlign = TOP;
 
 	TextSprite.setPosition( TextX, TextX, getZ() );
 	TextSprite.setFont( font, fontsize );
 	TextSprite.setFixed( true );
 	setText( "" );
 
-	if( vcolor.size( ) > 2 )
-		setFontColor(vcolor[0], vcolor[1], vcolor[2]);
+	for( unsigned int i=0; i < 3; ++i ){
+		if( i >= vcolor.size() )
+			vcolor.push_back(0);
+	}
+	setFontColor( vcolor[0], vcolor[1], vcolor[2] );
 
 	if( !Widget::load( id ) )
 		return false;
@@ -91,7 +102,18 @@ void TextWidget::updatePosition( )
 			posx = PosX + TextX;
 			break;
 	}
-	posy = PosY - TextY;
+	switch(TextVAlign){
+			case CENTER:
+				posy = PosY - height * 0.5f + this->Height * 0.5f + TextY;
+				break;
+			case BOTTOM:
+				posy = PosY + TextY;
+				break;
+			case TOP:
+			default:
+				posy = PosY + this->Height - height + TextY;
+				break;
+		}
 	TextSprite.setPosition( posx, posy, getZ( ) + 0.1f );
 }
 

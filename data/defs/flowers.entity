@@ -1,14 +1,16 @@
 {
 	{
-		height = 60,
-		type = "Plant",
+		picture = "0",
 		hp = 20.0,
-		image = "flowers.png",
+		height = 60,
 		imagecols = 4,
 		imagerows = 1,
-		meeting = 100.0,
-		name = "Flower",
 		nutritive = 4.0,
-		width = 60
+		name = "Flower",
+		meeting = 99.99,
+		id = "",
+		width = 60,
+		type = "Plant",
+		image = "flowers.png"
 	}
 }

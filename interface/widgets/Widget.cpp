@@ -78,11 +78,11 @@ bool Widget::load( std::string id )
 		int picture;
 		cfg->getValue( "image", baseID, imgname );
 		cfg->getValue( "picture", baseID, picture );
-		background = RenderManager::Instance()->CreateGLSprite( PosX, PosY, getZ(), Width, Height,
+		if( imgname != "" ){
+			background = RenderManager::Instance()->CreateGLSprite( PosX, PosY, getZ(), Width, Height,
 				RenderManager::Instance()->GetTextureNumberById( imgname ), picture );
-		if( imgname == "" )
-			background->clr.a = 0;
-		background->fixed = true;
+			background->fixed = true;
+		}
 	}
 
 	delete cfg;

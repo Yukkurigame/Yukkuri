@@ -1,5 +1,6 @@
 require("data/scripts/widgets")
 
+
 GUI = {}
 GUI.__index = GUI
 
@@ -8,12 +9,23 @@ function GUI.create()
 	setmetatable(g, GUI)
 	g.widgets = {}
 	g.thread = NewThread(GUI.update)
-	g.visible = false	
+	g.visible = false
 	return g
 end
 
-function GUI:addWidget(name)
-	w = Widget.create(name)
+function GUI:addWidgetByName(name)
+	for k, v in pairs( configs.configs_id ) do
+		if v.name == name then id = k end
+	end
+	if id == nil then
+		Debug( 6, "Widget with name " .. name .. " not found." )
+		return
+	end
+	self:addWidget(id)
+end
+
+function GUI:addWidget(id)
+	w = Widget.create(id)
 	if not w then return end
 	self:RegisterWidget(w)
 end

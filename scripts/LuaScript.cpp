@@ -43,6 +43,9 @@ void LuaScript::RegisterApi( )
 	lua_register( Lst, "RemoveThread", &scriptApi::RemoveThread );
 
 	lua_register( Lst, "SetCameraTarget", &scriptApi::SetCameraTarget );
+
+	lua_register( Lst, "LoadMapRegion", &scriptApi::LoadMapRegion );
+
 }
 
 bool LuaScript::OpenFile( std::string name )

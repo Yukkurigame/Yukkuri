@@ -60,6 +60,7 @@ public:
 	Map();
 	bool LoadTiles( );
 	bool Init( );
+	bool Load( std::string region );
 
 	void toMapCoordinates( int* x, int* y);
 	void fromMapCoordinates( int* x, int* y);

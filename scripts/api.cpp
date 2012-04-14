@@ -11,6 +11,7 @@
 #include "unitmanager.h"
 #include "LuaThread.h"
 #include "Camera.h"
+#include "map.h"
 #include <string>
 #include <cstring>
 #include <dirent.h>
@@ -291,3 +292,16 @@ int scriptApi::SetCameraTarget( lua_State* L )
 	YCamera::CameraControl.SetTarget( u );
 	return 0;
 }
+
+
+int scriptApi::LoadMapRegion(lua_State *L)
+{
+	std::string name;
+	extern Map map;
+	luaL_argcheck( L, lua_isstring( L, 1 ), 1, "Parameter not given." );
+	name = lua_tostring( L, 1 );
+	map.Load( name );
+	return 0;
+}
+
+

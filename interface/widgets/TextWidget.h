@@ -17,7 +17,7 @@ public:
 	TextWidget( );
 	~TextWidget( );
 
-	bool load( std::string config );
+	bool load( std::string id );
 
 	void updatePosition( );
 
@@ -30,6 +30,9 @@ public:
 	void Update();
 
 	void toggleVisibility( );
+
+protected:
+	std::string BaseText;
 
 private:
 	Text TextSprite;

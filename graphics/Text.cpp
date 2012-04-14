@@ -20,7 +20,7 @@ bool LoadTTFont( std::string dir, std::string name, int size )
 	font_data* font;
 	std::string filename;
 
-	filename = dir + name + ".ttf";
+	filename = dir + name;
 
 	font = new font_data();
 	//FIXME: it's cruved;
@@ -52,6 +52,7 @@ Text::Text( )
 	font = NULL;
 	lineHeight = 1;
 	Visible = true;
+	Width = Height = 0;
 }
 
 Text::~Text( )
@@ -115,6 +116,7 @@ void Text::setText(const char* str)
 		Height += tmpheight;
 		token = strtok(NULL, "\n");
 	}
+	Height += lineheight;
 	free(text);
 }
 

@@ -128,9 +128,8 @@
 		--- A null widget.
 		--- Nothig. Only position.
 		id = "widget_new_999",
-		name = "null", --- Editor only
+		name = "null",
 		type = "Widget",
-		wtype = 0,
 		--- Widget's align, 1 by default.
 		--- Choices are: left: 1, center: 2, right: 3
 		align = 1,
@@ -151,7 +150,6 @@
 		id = "widget_newbg_999",
 		name = "blank",
 		type = "Widget",
-		wtype = 1,
 		x = 1,
 		y = 1,
 		width = 1,
@@ -166,8 +164,7 @@
 		--- Widget with textline and background. If background not defined, it's transparent.
 		id = "widget_newtext_999",
 		name = "text",
-		type = "Widget",
-		wtype = 2,
+		type = "TextWidget",
 		x = 1,
 		y = 1,
 		width = 1,
@@ -192,8 +189,7 @@
 		--- Bar widget with text string. If background not defined, it's transparent.
 		id = "widget_newbar_999",
 		name = "bar",
-		type = "Widget",
-		wtype = 3,
+		type = "BarWidget",
 		x = 1,
 		y = 1,
 		width = 1,

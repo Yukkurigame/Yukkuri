@@ -5,15 +5,15 @@
 		height = 80,
 		imagecols = 1,
 		bloodcolor = 		{
-0,
-0,
-0
+50,
+50,
+50
 		},
 		imagerows = 1,
 		speed = 80.0,
 		id = "entity_Marisa_5172",
 		name = "Marisa",
-		meeting = 39.99,
+		meeting = 40.0,
 		damage = 3.0,
 		width = 90,
 		animation = 		{

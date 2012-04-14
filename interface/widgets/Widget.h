@@ -15,7 +15,7 @@
 enum wType { NONE = 0, BLANK, TEXT, BAR};
 
 enum wAlign { LEFT = 1, CENTER, RIGHT };
-enum wVAlign { TOP = 1, BOTTOM = 3 };
+enum wVAlign { TOP = 1, MIDDLE, BOTTOM };
 
 
 class Widget
@@ -24,7 +24,7 @@ public:
 	Widget();
 	virtual ~Widget();
 
-	virtual bool load( std::string config );
+	virtual bool load( std::string id );
 
 	void setType( wType t ){ Type = t; }
 	wType getType( ){ return Type; }
@@ -52,6 +52,7 @@ public:
 	void addChild( Widget* child );
 
 	bool bindValue( float* val );
+	bool bindValue( std::string* val );
 
 	//FIXME: to many virtual funcs
 	virtual void Update() {};
@@ -66,7 +67,6 @@ public:
 	virtual void setBarSize( float size ) {};
 	virtual void setBarValue( int val ) {};
 
-
 protected:
 	bool visible;
 	Sprite* background;
@@ -79,10 +79,12 @@ protected:
 	float OffsetY;
 
 	float* Binded;
+	std::string* SBinded;
+
+	std::string baseID;
 
 private:
 	unsigned int ID;
-	std::string baseID;
 	std::string Name;
 	wType Type;
 	int Align;

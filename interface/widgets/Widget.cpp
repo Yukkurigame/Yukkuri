@@ -36,28 +36,48 @@ Widget::~Widget()
 	Children.clear();
 }
 
-bool Widget::load( std::string config )
+bool Widget::load( std::string id )
 {
 	LuaConfig* cfg = new LuaConfig;
-	cfg->getValue( "id", config, "widget", baseID );
-	cfg->getValue( "name", config, "widget", Name );
-	cfg->getValue( "x", config, "widget", OffsetX );
-	cfg->getValue( "y", config, "widget", OffsetY );
-	cfg->getValue( "width", config, "widget", Width );
-	cfg->getValue( "height", config, "widget", Height );
-	cfg->getValue( "align", config, "widget", Align );
-	cfg->getValue( "valign", config, "widget", VAlign );
-	updatePosition( );
+	std::string align;
+	std::string valign;
+
+	baseID = id;
+
+	if( ! cfg->getValue( "name", baseID, Name ))
+		return false;
+	cfg->getValue( "x", baseID, OffsetX );
+	cfg->getValue( "y", baseID, OffsetY );
+	cfg->getValue( "width", baseID, Width );
+	cfg->getValue( "height", baseID, Height );
+	cfg->getValue( "align", baseID, align );
+	cfg->getValue( "valign", baseID, valign );
+
+	if( align == "Center" )
+		Align = CENTER;
+	else if( align == "Right" )
+		Align = RIGHT;
+	else
+		Align = LEFT;
+
+	if( valign == "Middle" )
+		VAlign = MIDDLE;
+	else if( valign == "Bottom" )
+		VAlign = BOTTOM;
+	else
+		VAlign = TOP;
 
 	int z = 0;
-	cfg->getValue("depth", config, "widget", z );
+	cfg->getValue("depth", baseID, z );
 	setZ( z );
+
+	updatePosition( );
 
 	if( Type != NONE ){
 		std::string imgname;
 		int picture;
-		cfg->getValue( "image", config, "widget", imgname );
-		cfg->getValue( "picture", config, "widget", picture );
+		cfg->getValue( "image", baseID, imgname );
+		cfg->getValue( "picture", baseID, picture );
 		background = RenderManager::Instance()->CreateGLSprite( PosX, PosY, getZ(), Width, Height,
 				RenderManager::Instance()->GetTextureNumberById( imgname ), picture );
 		if( imgname == "" )
@@ -111,14 +131,14 @@ void Widget::updatePosition( )
 	}
 	switch(VAlign){
 		case CENTER:
-			posy = starty - height * 0.5f + this->Height * 0.5f - OffsetY;
+			posy = starty - height * 0.5f - this->Height * 0.5f - OffsetY;
 			break;
 		case BOTTOM:
-			posy = starty - height + this->Height - OffsetY;
+			posy = starty - height - OffsetY;
 			break;
 		case TOP:
 		default:
-			posy = starty - OffsetY - this->Height;
+			posy = starty - this->Height - OffsetY;
 			break;
 	}
 	PosX = posx;
@@ -163,6 +183,7 @@ bool Widget::bindValue( float* val )
 		Binded = val;
 		return true;
 	}
+	Binded = NULL;
 	return false;
 }
 

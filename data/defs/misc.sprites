@@ -1,0 +1,32 @@
+{
+	{
+		rows = 1,
+		name = "widget_stats",
+		image = "./misc.png",
+		offsetx = 265,
+		height = 304,
+		width = 199,
+		type = "Sprite",
+		id = "sprite_widget_stats_909956",
+		columns = 1
+	},
+	{
+		rows = 1,
+		name = "widget_time",
+		image = "./misc.png",
+		height = 69,
+		width = 262,
+		type = "Sprite",
+		id = "sprite_widget_time_768888",
+		columns = 1
+	},
+	{
+		name = "bar_cover",
+		image = "./misc.png",
+		offsety = 72,
+		height = 19,
+		width = 146,
+		type = "Sprite",
+		id = "sprite_bar_cover_693493"
+	}
+}

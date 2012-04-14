@@ -1,590 +1,590 @@
 {
-	{
-		passability = 1.0,
-		image = "ground.png",
-		type = "Tiles",
-		name = 1
-	},
-	{
-		type = "Tiles",
-		image = "ground.png",
-		offsetx = 64,
-		name = 2,
-		passability = 1.0
-	},
-	{
-		passability = 1.0,
-		image = "iso-64x64-outside.png",
-		type = "Tiles",
-		name = 3
-	},
-	{
-		picture = "0",
-		name = "ground_0",
-		image = "sprite_ground_600587",
-		offsetx = 64,
-		passability = 1.0,
-		type = "Tiles",
-		id = "tiles_ground_0_666443"
-	},
-	{
-		picture = "1",
-		name = "ground_1",
-		image = "sprite_ground_600587",
-		offsetx = 128,
-		passability = 1.0,
-		type = "Tiles",
-		id = "tiles_ground_1_880550"
-	},
-	{
-		picture = "2",
-		name = "ground_2",
-		image = "sprite_ground_600587",
-		offsetx = 192,
-		passability = 1.0,
-		type = "Tiles",
-		id = "tiles_ground_2_191426"
-	},
-	{
-		picture = "3",
-		name = "ground_3",
-		image = "sprite_ground_600587",
-		offsetx = 256,
-		passability = 1.0,
-		type = "Tiles",
-		id = "tiles_ground_3_29960"
-	},
-	{
-		picture = "5",
-		name = "ground_5",
-		image = "sprite_ground_600587",
-		offsetx = 384,
-		passability = 1.0,
-		type = "Tiles",
-		id = "tiles_ground_5_409798"
-	},
-	{
-		picture = "6",
-		name = "ground_6",
-		image = "sprite_ground_600587",
-		offsety = 64,
-		passability = 1.0,
-		type = "Tiles",
-		id = "tiles_ground_6_193504"
-	},
-	{
-		picture = "8",
-		name = "ground_8",
-		image = "sprite_ground_600587",
-		offsetx = 128,
-		offsety = 64,
-		passability = 1.0,
-		type = "Tiles",
-		id = "tiles_ground_8_716489"
-	},
-	{
-		picture = "9",
-		name = "ground_9",
-		image = "sprite_ground_600587",
-		offsetx = 192,
-		offsety = 64,
-		passability = 1.0,
-		type = "Tiles",
-		id = "tiles_ground_9_545657"
-	},
-	{
-		picture = "10",
-		name = "ground_10",
-		image = "sprite_ground_600587",
-		offsetx = 256,
-		offsety = 64,
-		passability = 1.0,
-		type = "Tiles",
-		id = "tiles_ground_10_677147"
-	},
-	{
-		picture = "11",
-		name = "ground_11",
-		image = "sprite_ground_600587",
-		offsetx = 320,
-		passability = 1.0,
-		type = "Tiles",
-		id = "tiles_ground_4_918652"
-	},
-	{
-		picture = "12",
-		name = "ground_12",
-		image = "sprite_ground_600587",
-		offsetx = 320,
-		offsety = 64,
-		passability = 1.0,
-		type = "Tiles",
-		id = "tiles_ground_12_79108"
-	},
-	{
-		picture = "13",
-		name = "ground_13",
-		image = "sprite_ground_600587",
-		offsetx = 384,
-		offsety = 64,
-		passability = 1.0,
-		type = "Tiles",
-		id = "tiles_ground_13_4256"
-	},
-	{
-		picture = "14",
-		name = "ground_14",
-		image = "sprite_ground_600587",
-		offsetx = 448,
-		offsety = 64,
-		passability = 1.0,
-		type = "Tiles",
-		id = "tiles_ground_14_138147"
-	},
-	{
-		picture = "15",
-		name = "ground_15",
-		image = "sprite_ground_600587",
-		offsety = 128,
-		passability = 1.0,
-		type = "Tiles",
-		id = "tiles_ground_15_141136"
-	},
-	{
-		picture = "16",
-		name = "ground_16",
-		image = "sprite_ground_600587",
-		offsetx = 64,
-		offsety = 128,
-		passability = 1.0,
-		type = "Tiles",
-		id = "tiles_ground_16_809147"
-	},
-	{
-		picture = "17",
-		name = "ground_17",
-		image = "sprite_ground_600587",
-		offsetx = 128,
-		offsety = 128,
-		passability = 1.0,
-		type = "Tiles",
-		id = "tiles_ground_17_959654"
-	},
-	{
-		picture = "18",
-		name = "ground_18",
-		image = "sprite_ground_600587",
-		offsetx = 192,
-		offsety = 128,
-		passability = 1.0,
-		type = "Tiles",
-		id = "tiles_ground_18_418016"
-	},
-	{
-		picture = "19",
-		name = "ground_19",
-		image = "sprite_ground_600587",
-		offsety = 192,
-		passability = 1.0,
-		type = "Tiles",
-		id = "tiles_ground_19_690738"
-	},
-	{
-		picture = "0",
-		name = "hill_0",
-		image = "sprite_hill_115386",
-		offsetx = 64,
-		offsety = 192,
-		type = "Tiles",
-		id = "tiles_hill_0_405642"
-	},
-	{
-		picture = "1",
-		name = "hill_1",
-		image = "sprite_hill_115386",
-		offsetx = 128,
-		offsety = 192,
-		type = "Tiles",
-		id = "tiles_hill_1_107825"
-	},
-	{
-		picture = "2",
-		name = "hill_2",
-		image = "sprite_hill_115386",
-		offsetx = 192,
-		offsety = 192,
-		type = "Tiles",
-		id = "tiles_hill_2_297499"
-	},
-	{
-		picture = "3",
-		name = "hill_3",
-		image = "sprite_hill_115386",
-		offsetx = 256,
-		offsety = 192,
-		type = "Tiles",
-		id = "tiles_hill_3_250627"
-	},
-	{
-		picture = "4",
-		name = "hill_4",
-		image = "sprite_hill_115386",
-		offsetx = 320,
-		offsety = 192,
-		type = "Tiles",
-		id = "tiles_hill_4_368299"
-	},
-	{
-		picture = "5",
-		name = "hill_5",
-		image = "sprite_hill_115386",
-		offsetx = 384,
-		offsety = 192,
-		type = "Tiles",
-		id = "tiles_hill_5_752852"
-	},
-	{
-		picture = "6",
-		name = "hill_6",
-		image = "sprite_hill_115386",
-		offsetx = 448,
-		offsety = 192,
-		type = "Tiles",
-		id = "tiles_hill_6_115507"
-	},
-	{
-		picture = "7",
-		name = "hill_7",
-		image = "sprite_hill_115386",
-		offsetx = 512,
-		offsety = 192,
-		type = "Tiles",
-		id = "tiles_hill_7_431545"
-	},
-	{
-		picture = "8",
-		name = "hill_8",
-		image = "sprite_hill_115386",
-		offsety = 256,
-		type = "Tiles",
-		id = "tiles_hill_8_130898"
-	},
-	{
-		picture = "9",
-		name = "hill_9",
-		image = "sprite_hill_115386",
-		offsetx = 64,
-		offsety = 256,
-		type = "Tiles",
-		id = "tiles_hill_9_888505"
-	},
-	{
-		picture = "10",
-		name = "hill_10",
-		image = "sprite_hill_115386",
-		offsetx = 128,
-		offsety = 256,
-		type = "Tiles",
-		id = "tiles_hill_10_756400"
-	},
-	{
-		picture = "11",
-		name = "hill_11",
-		image = "sprite_hill_115386",
-		offsetx = 192,
-		offsety = 256,
-		type = "Tiles",
-		id = "tiles_hill_11_263194"
-	},
-	{
-		picture = "12",
-		name = "hill_12",
-		backing = true,
-		image = "sprite_hill_115386",
-		offsety = 320,
-		type = "Tiles",
-		id = "tiles_hill_12_974117"
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 64,
-		name = 36,
-		offsety = 320
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 128,
-		name = 37,
-		offsety = 320
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 192,
-		name = 38,
-		offsety = 320
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 256,
-		name = 39,
-		offsety = 320
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 320,
-		name = 40,
-		offsety = 320
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 384,
-		name = 41,
-		offsety = 320
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 448,
-		name = 42,
-		offsety = 320
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 512,
-		name = 43,
-		offsety = 320
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 576,
-		name = 44,
-		offsety = 320
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 64,
-		name = 45,
-		offsety = 448
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 128,
-		name = 46,
-		offsety = 448
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 192,
-		name = 47,
-		offsety = 448
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 256,
-		name = 48,
-		offsety = 448
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 320,
-		name = 49,
-		offsety = 448
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 384,
-		name = 50,
-		offsety = 448
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 448,
-		name = 51,
-		offsety = 448
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 512,
-		name = 52,
-		offsety = 448
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 576,
-		name = 53,
-		offsety = 448
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		name = 54,
-		offsety = 512
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 64,
-		name = 55,
-		offsety = 512
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 128,
-		name = 56,
-		offsety = 512
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 192,
-		name = 57,
-		offsety = 512
-	},
-	{
-		image = "iso-64x64-outside.png",
-		offsetx = 256,
-		name = 58,
-		offsety = 512
-	},
-	{
-		image = "iso-64x64-outside.png",
-		offsetx = 320,
-		name = 59,
-		offsety = 512
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 384,
-		name = 60,
-		offsety = 512
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 448,
-		name = 61,
-		offsety = 512
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 512,
-		name = 62,
-		offsety = 512
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 576,
-		name = 63,
-		offsety = 512
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		name = 64,
-		offsety = 576
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 64,
-		name = 65,
-		offsety = 576
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 128,
-		name = 66,
-		offsety = 576
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 192,
-		name = 67,
-		offsety = 576
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 256,
-		name = 68,
-		offsety = 576
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 320,
-		name = 69,
-		offsety = 576
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 384,
-		name = 70,
-		offsety = 576
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 448,
-		name = 71,
-		offsety = 576
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 512,
-		name = 72,
-		offsety = 576
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 576,
-		name = 73,
-		offsety = 576
-	},
-	{
-		image = "iso-64x64-outside.png",
-		name = 74,
-		offsety = 640
-	},
-	{
-		name = 75,
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 64,
-		offsety = 640,
-		passability = 0.333333333333
-	},
-	{
-		backing = true,
-		image = "iso-64x64-outside.png",
-		offsetx = 128,
-		name = 76,
-		offsety = 640
-	}
+    {
+        passability = 1.0,
+        image = "ground.png",
+        type = "Tile",
+        name = 1
+    },
+    {
+        type = "Tile",
+        image = "ground.png",
+        offsetx = 64,
+        name = 2,
+        passability = 1.0
+    },
+    {
+        passability = 1.0,
+        image = "iso-64x64-outside.png",
+        type = "Tile",
+        name = 3
+    },
+    {
+        picture = "0",
+        name = "ground_0",
+        image = "sprite_ground_600587",
+        offsetx = 64,
+        passability = 1.0,
+        type = "Tile",
+        id = "tiles_ground_0_666443"
+    },
+    {
+        picture = "1",
+        name = "ground_1",
+        image = "sprite_ground_600587",
+        offsetx = 128,
+        passability = 1.0,
+        type = "Tile",
+        id = "tiles_ground_1_880550"
+    },
+    {
+        picture = "2",
+        name = "ground_2",
+        image = "sprite_ground_600587",
+        offsetx = 192,
+        passability = 1.0,
+        type = "Tile",
+        id = "tiles_ground_2_191426"
+    },
+    {
+        picture = "3",
+        name = "ground_3",
+        image = "sprite_ground_600587",
+        offsetx = 256,
+        passability = 1.0,
+        type = "Tile",
+        id = "tiles_ground_3_29960"
+    },
+    {
+        picture = "5",
+        name = "ground_5",
+        image = "sprite_ground_600587",
+        offsetx = 384,
+        passability = 1.0,
+        type = "Tile",
+        id = "tiles_ground_5_409798"
+    },
+    {
+        picture = "6",
+        name = "ground_6",
+        image = "sprite_ground_600587",
+        offsety = 64,
+        passability = 1.0,
+        type = "Tile",
+        id = "tiles_ground_6_193504"
+    },
+    {
+        picture = "8",
+        name = "ground_8",
+        image = "sprite_ground_600587",
+        offsetx = 128,
+        offsety = 64,
+        passability = 1.0,
+        type = "Tile",
+        id = "tiles_ground_8_716489"
+    },
+    {
+        picture = "9",
+        name = "ground_9",
+        image = "sprite_ground_600587",
+        offsetx = 192,
+        offsety = 64,
+        passability = 1.0,
+        type = "Tile",
+        id = "tiles_ground_9_545657"
+    },
+    {
+        picture = "10",
+        name = "ground_10",
+        image = "sprite_ground_600587",
+        offsetx = 256,
+        offsety = 64,
+        passability = 1.0,
+        type = "Tile",
+        id = "tiles_ground_10_677147"
+    },
+    {
+        picture = "11",
+        name = "ground_11",
+        image = "sprite_ground_600587",
+        offsetx = 320,
+        passability = 1.0,
+        type = "Tile",
+        id = "tiles_ground_4_918652"
+    },
+    {
+        picture = "12",
+        name = "ground_12",
+        image = "sprite_ground_600587",
+        offsetx = 320,
+        offsety = 64,
+        passability = 1.0,
+        type = "Tile",
+        id = "tiles_ground_12_79108"
+    },
+    {
+        picture = "13",
+        name = "ground_13",
+        image = "sprite_ground_600587",
+        offsetx = 384,
+        offsety = 64,
+        passability = 1.0,
+        type = "Tile",
+        id = "tiles_ground_13_4256"
+    },
+    {
+        picture = "14",
+        name = "ground_14",
+        image = "sprite_ground_600587",
+        offsetx = 448,
+        offsety = 64,
+        passability = 1.0,
+        type = "Tile",
+        id = "tiles_ground_14_138147"
+    },
+    {
+        picture = "15",
+        name = "ground_15",
+        image = "sprite_ground_600587",
+        offsety = 128,
+        passability = 1.0,
+        type = "Tile",
+        id = "tiles_ground_15_141136"
+    },
+    {
+        picture = "16",
+        name = "ground_16",
+        image = "sprite_ground_600587",
+        offsetx = 64,
+        offsety = 128,
+        passability = 1.0,
+        type = "Tile",
+        id = "tiles_ground_16_809147"
+    },
+    {
+        picture = "17",
+        name = "ground_17",
+        image = "sprite_ground_600587",
+        offsetx = 128,
+        offsety = 128,
+        passability = 1.0,
+        type = "Tile",
+        id = "tiles_ground_17_959654"
+    },
+    {
+        picture = "18",
+        name = "ground_18",
+        image = "sprite_ground_600587",
+        offsetx = 192,
+        offsety = 128,
+        passability = 1.0,
+        type = "Tile",
+        id = "tiles_ground_18_418016"
+    },
+    {
+        picture = "19",
+        name = "ground_19",
+        image = "sprite_ground_600587",
+        offsety = 192,
+        passability = 1.0,
+        type = "Tile",
+        id = "tiles_ground_19_690738"
+    },
+    {
+        picture = "0",
+        name = "hill_0",
+        image = "sprite_hill_115386",
+        offsetx = 64,
+        offsety = 192,
+        type = "Tile",
+        id = "tiles_hill_0_405642"
+    },
+    {
+        picture = "1",
+        name = "hill_1",
+        image = "sprite_hill_115386",
+        offsetx = 128,
+        offsety = 192,
+        type = "Tile",
+        id = "tiles_hill_1_107825"
+    },
+    {
+        picture = "2",
+        name = "hill_2",
+        image = "sprite_hill_115386",
+        offsetx = 192,
+        offsety = 192,
+        type = "Tile",
+        id = "tiles_hill_2_297499"
+    },
+    {
+        picture = "3",
+        name = "hill_3",
+        image = "sprite_hill_115386",
+        offsetx = 256,
+        offsety = 192,
+        type = "Tile",
+        id = "tiles_hill_3_250627"
+    },
+    {
+        picture = "4",
+        name = "hill_4",
+        image = "sprite_hill_115386",
+        offsetx = 320,
+        offsety = 192,
+        type = "Tile",
+        id = "tiles_hill_4_368299"
+    },
+    {
+        picture = "5",
+        name = "hill_5",
+        image = "sprite_hill_115386",
+        offsetx = 384,
+        offsety = 192,
+        type = "Tile",
+        id = "tiles_hill_5_752852"
+    },
+    {
+        picture = "6",
+        name = "hill_6",
+        image = "sprite_hill_115386",
+        offsetx = 448,
+        offsety = 192,
+        type = "Tile",
+        id = "tiles_hill_6_115507"
+    },
+    {
+        picture = "7",
+        name = "hill_7",
+        image = "sprite_hill_115386",
+        offsetx = 512,
+        offsety = 192,
+        type = "Tile",
+        id = "tiles_hill_7_431545"
+    },
+    {
+        picture = "8",
+        name = "hill_8",
+        image = "sprite_hill_115386",
+        offsety = 256,
+        type = "Tile",
+        id = "tiles_hill_8_130898"
+    },
+    {
+        picture = "9",
+        name = "hill_9",
+        image = "sprite_hill_115386",
+        offsetx = 64,
+        offsety = 256,
+        type = "Tile",
+        id = "tiles_hill_9_888505"
+    },
+    {
+        picture = "10",
+        name = "hill_10",
+        image = "sprite_hill_115386",
+        offsetx = 128,
+        offsety = 256,
+        type = "Tile",
+        id = "tiles_hill_10_756400"
+    },
+    {
+        picture = "11",
+        name = "hill_11",
+        image = "sprite_hill_115386",
+        offsetx = 192,
+        offsety = 256,
+        type = "Tile",
+        id = "tiles_hill_11_263194"
+    },
+    {
+        picture = "12",
+        name = "hill_12",
+        backing = true,
+        image = "sprite_hill_115386",
+        offsety = 320,
+        type = "Tile",
+        id = "tiles_hill_12_974117"
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 64,
+        name = 36,
+        offsety = 320
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 128,
+        name = 37,
+        offsety = 320
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 192,
+        name = 38,
+        offsety = 320
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 256,
+        name = 39,
+        offsety = 320
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 320,
+        name = 40,
+        offsety = 320
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 384,
+        name = 41,
+        offsety = 320
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 448,
+        name = 42,
+        offsety = 320
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 512,
+        name = 43,
+        offsety = 320
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 576,
+        name = 44,
+        offsety = 320
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 64,
+        name = 45,
+        offsety = 448
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 128,
+        name = 46,
+        offsety = 448
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 192,
+        name = 47,
+        offsety = 448
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 256,
+        name = 48,
+        offsety = 448
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 320,
+        name = 49,
+        offsety = 448
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 384,
+        name = 50,
+        offsety = 448
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 448,
+        name = 51,
+        offsety = 448
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 512,
+        name = 52,
+        offsety = 448
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 576,
+        name = 53,
+        offsety = 448
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        name = 54,
+        offsety = 512
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 64,
+        name = 55,
+        offsety = 512
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 128,
+        name = 56,
+        offsety = 512
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 192,
+        name = 57,
+        offsety = 512
+    },
+    {
+        image = "iso-64x64-outside.png",
+        offsetx = 256,
+        name = 58,
+        offsety = 512
+    },
+    {
+        image = "iso-64x64-outside.png",
+        offsetx = 320,
+        name = 59,
+        offsety = 512
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 384,
+        name = 60,
+        offsety = 512
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 448,
+        name = 61,
+        offsety = 512
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 512,
+        name = 62,
+        offsety = 512
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 576,
+        name = 63,
+        offsety = 512
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        name = 64,
+        offsety = 576
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 64,
+        name = 65,
+        offsety = 576
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 128,
+        name = 66,
+        offsety = 576
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 192,
+        name = 67,
+        offsety = 576
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 256,
+        name = 68,
+        offsety = 576
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 320,
+        name = 69,
+        offsety = 576
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 384,
+        name = 70,
+        offsety = 576
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 448,
+        name = 71,
+        offsety = 576
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 512,
+        name = 72,
+        offsety = 576
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 576,
+        name = 73,
+        offsety = 576
+    },
+    {
+        image = "iso-64x64-outside.png",
+        name = 74,
+        offsety = 640
+    },
+    {
+        name = 75,
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 64,
+        offsety = 640,
+        passability = 0.333333333333
+    },
+    {
+        backing = true,
+        image = "iso-64x64-outside.png",
+        offsetx = 128,
+        name = 76,
+        offsety = 640
+    },
 }

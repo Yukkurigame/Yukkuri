@@ -134,7 +134,7 @@ bool Map::LoadTiles( )
 	LuaConfig* cfg = new LuaConfig;
 	//FIXME: И тут, внезапно, в функцию врываются костыли.
 	std::vector <  std::map < std::string, std::string > > Subconfigs;
-	if( !cfg->getSubconfigs( "tiles", Subconfigs ) || ! Subconfigs.size() ){
+	if( !cfg->getSubconfigs( "tile", Subconfigs ) || ! Subconfigs.size() ){
 		debug( CONFIG, "Tiles configs opening error or no tiles found.\n");
 		return false;
 	}else{
@@ -164,15 +164,23 @@ bool Map::LoadTiles( )
 	return true;
 }
 
+
 bool Map::Init( )
+{
+	Defines.Init();
+	return true;
+}
+
+
+bool Map::Load(std::string region)
 {
 	posX = YCamera::CameraControl.GetX();
 	posY = YCamera::CameraControl.GetY();
-	Region::Load("region_test2_881880");
-	Defines.Init();
-	CreateTilesRectangle( 3, 16, 21, 14 );
+	Region::Load( region );
+	//CreateTilesRectangle( 3, 16, 21, 14 );
 	return true;
 }
+
 
 void Map::toMapCoordinates( int* mx, int* my )
 {
@@ -356,6 +364,7 @@ void Map::Clean( )
 		}
 	}
 }
+
 
 void Map::onDraw( )
 {

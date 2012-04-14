@@ -16,7 +16,7 @@ public:
 	BarWidget( );
 	~BarWidget( );
 
-	bool load( std::string config );
+	bool load( std::string id );
 
 	void createBar( std::string name, int picture, int height, color4u clr );
 	void setBarValue( float val );

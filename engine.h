@@ -29,12 +29,6 @@ private:
 	/** Frame rate counter. **/
 	int FPSCounter;
 
-	/** Stores the last calculated frame rate. **/
-	float CurrentFPS;
-
-	/** FPS Text **/
-	char FPStext[10];
-
 #ifdef JOYSTICKENABLE
 	/** SDL joystick **/
 	SDL_Joystick* joystick;
@@ -47,6 +41,9 @@ protected:
 	void SetSize();
 
 	void HandleInput();
+
+	/** Stores the last calculated frame rate. **/
+	float CurrentFPS;
 
 public:
 	CEngine();
@@ -121,7 +118,6 @@ public:
 	const char*	 GetTitle();
 
 	// Screen Core
-	char* GetFPSText();
 	float GetFPS();
 	int getScreenW();
 	int getScreenH();

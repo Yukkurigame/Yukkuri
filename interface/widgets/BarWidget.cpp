@@ -27,9 +27,9 @@ BarWidget::~BarWidget( )
 	RenderManager::Instance()->FreeGLSprite( TopSprite );
 }
 
-bool BarWidget::load( std::string config )
+bool BarWidget::load( std::string id )
 {
-	if( !TextWidget::load( config ) )
+	if( !TextWidget::load( id ) )
 		return false;
 	std::string imgname;
 	int picture;
@@ -40,13 +40,13 @@ bool BarWidget::load( std::string config )
 
 	//Order: topimgx, topimgy, barheight, r, g, b
 	//Ya, it's cruve, but it's simple
-	cfg->getValue( "barheight", config, "widget", barheight );
-	cfg->getValue( "barwidth", config, "widget", BarWidth );
-	cfg->getValue( "barx", config, "widget", BarX );
-	cfg->getValue( "bary", config, "widget", BarY );
-	cfg->getValue( "topimage", config, "widget", imgname );
-	cfg->getValue( "toppicture", config, "widget", picture );
-	cfg->getValue( "barcolor", config, "widget", vcolor );
+	cfg->getValue( "barheight", id, barheight );
+	cfg->getValue( "barwidth", id, BarWidth );
+	cfg->getValue( "barx", id, BarX );
+	cfg->getValue( "bary", id, BarY );
+	cfg->getValue( "topimage", id, imgname );
+	cfg->getValue( "toppicture", id, picture );
+	cfg->getValue( "barcolor", id, vcolor );
 	if( vcolor.size( ) > 2 ){
 		color.set( vcolor[0], vcolor[1], vcolor[2] );
 	}else{

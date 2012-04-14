@@ -6,15 +6,15 @@
 		height = 69,
 		imagecols = 1,
 		bloodcolor = 		{
-0,
-0,
-0
+215,
+180,
+70
 		},
 		imagerows = 1,
 		speed = 80.0,
 		id = "entity_Flan_700488",
 		name = "Flan",
-		type = "Entity",
+		meeting = 0.89,
 		damage = 3.0,
 		width = 84,
 		animation = 		{
@@ -63,7 +63,7 @@
 0
 			}
 		},
-		meeting = 0.89,
+		type = "Entity",
 		image = "sprite_Flan_137737"
 	}
 }

@@ -6,6 +6,7 @@ Configs.__index = Configs
 function Configs.new()
 	c = {}
 	c.configs = {}
+	c.configs_id = {}
 	setmetatable(c, Configs)
 	return c
 end
@@ -41,6 +42,10 @@ function Configs:load( filename )
 				break
 			end
 			self.configs[ctype][id] = j
+			if self.configs_id[id] ~= nil then
+				Debug(4, "Config with id " .. id .. " already exists. Collision occured.\n")
+			end
+			self.configs_id[id] = j
 		until true
 	end
 	return true
@@ -84,10 +89,25 @@ function Configs:get( value, subconfig, config )
 	return ret
 end
 
+function Configs:getById( value, id )
+	ret = self.configs_id[id]
+	if ret == nil then
+		Debug(4, "Config with id " .. id .. " does not exists.")
+	else
+		ret = ret[value]
+	end
+	return ret
+end
+
 function Configs:getSubconfigs( config )
 	t = {}
-	for i,j in pairs(self.configs[string.lower(config)]) do
-		table.insert(t, j)
+	cname = string.lower(config)
+	if self.configs[cname] == nil then
+		Debug(4, "Config " .. cname .. " does not exist")
+	else
+		for i,j in pairs(self.configs[cname]) do
+			table.insert(t, j)
+		end
 	end
 	return t
 end

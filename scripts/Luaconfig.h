@@ -30,12 +30,23 @@ public:
 
 	bool getSubconfigsLength( std::string config, int& len );
 
+	// Get value by subconfig-config
 	template<typename T>
 	bool getValue( std::string field, std::string subconfig, std::string config, T& ret)
 	{
 		const int prmsz = 3;
 		const char* prm[prmsz] = { field.c_str(), subconfig.c_str(), config.c_str() };
 		bool res = execFunction("configs:get", prm, prmsz, ret);
+		return res;
+	}
+
+	// Get value by id
+	template<typename T>
+	bool getValue( std::string field, std::string id, T& ret)
+	{
+		const int prmsz = 2;
+		const char* prm[prmsz] = { field.c_str(), id.c_str()};
+		bool res = execFunction("configs:getById", prm, prmsz, ret);
 		return res;
 	}
 

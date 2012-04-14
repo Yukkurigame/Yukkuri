@@ -45,6 +45,9 @@ bool Yukkuri::AdditionalInit()
 
 	debug( MAIN, "Additional Init\n" );
 
+	map.LoadTiles( );
+	map.Init( );
+
 	if( !ls->OpenFile( "start" ) ){
 		debug( SCRIPT, "Starting lua failed.\n" );
 		return false;
@@ -54,12 +57,13 @@ bool Yukkuri::AdditionalInit()
 
 	Bindings::bnd.LoadKeys();
 
-	map.LoadTiles( );
-	map.Init( );
-
 	daytime.loadInterface();
 
 	units = &UnitManager::units;
+
+	Widget* w = UI::yui.GetWidget("fps");
+	if( w )
+		w->bindValue( &CurrentFPS );
 
 	return true;
 }
@@ -87,8 +91,6 @@ void Yukkuri::Render( )
 	map.onDraw( );
 
 	daytime.onDraw( );
-
-	UI::yui.GetWidget("fps")->setText( GetFPSText() );
 
 	//Draw to screen
 	RenderManager::Instance()->DrawGLScene( );

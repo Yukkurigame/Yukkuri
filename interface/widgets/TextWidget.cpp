@@ -28,50 +28,63 @@ TextWidget::~TextWidget( )
 }
 
 
-bool TextWidget::load( std::string config )
+bool TextWidget::load( std::string id )
 {
-	if( !Widget::load( config ) )
-		return false;
-
 	std::string font;
 	std::string text;
+	std::string talign;
 	int fontsize = 12;
 	std::vector<int> vcolor;
 	LuaConfig* cfg = new LuaConfig;
 
-	cfg->getValue( "text", config, "widget", text );
-	cfg->getValue( "textx", config, "widget", TextX );
-	cfg->getValue( "texty", config, "widget", TextY );
-	cfg->getValue( "textalign", config, "widget", TextAlign );
-	cfg->getValue( "font", config, "widget", font );
-	cfg->getValue( "fontsize", config, "widget", fontsize );
-	cfg->getValue( "fontcolor", config, "widget", vcolor );
+	cfg->getValue( "text", id, BaseText );
+	cfg->getValue( "textx", id, TextX );
+	cfg->getValue( "texty", id, TextY );
+	cfg->getValue( "textalign", id, talign );
+	cfg->getValue( "font", id, font );
+	cfg->getValue( "fontsize", id, fontsize );
+	cfg->getValue( "fontcolor", id, vcolor );
+
+	delete cfg;
+
+	if( talign == "Center" )
+		TextAlign = CENTER;
+	else if( talign == "Right" )
+		TextAlign = RIGHT;
+	else
+		TextAlign = LEFT;
 
 	TextSprite.setPosition( TextX, TextX, getZ() );
 	TextSprite.setFont( font, fontsize );
 	TextSprite.setFixed( true );
-	setText( text );
+	setText( "" );
 
 	if( vcolor.size( ) > 2 )
 		setFontColor(vcolor[0], vcolor[1], vcolor[2]);
 
-	delete cfg;
+	if( !Widget::load( id ) )
+		return false;
 
 	return true;
 }
 
 void TextWidget::updatePosition( )
 {
-	float posx, posy, swidth, width;
-	Widget::updatePosition( );
-	posx = posy = swidth = width = 0;
+	float posx, posy, height, width;
 	width = TextSprite.width();
+	height = TextSprite.height();
+	if( width + TextX > Width )
+		this->Width = width + TextX;
+	if( height + TextY > Height )
+		this->Height = height + TextY;
+	Widget::updatePosition( );
+	posx = posy = 0;
 	switch(TextAlign){
 		case CENTER:
-			posx = PosX + this->Width * 0.5 - ( swidth + width ) * 0.5 + TextX;
+			posx = PosX + this->Width * 0.5 - width * 0.5 + TextX;
 			break;
 		case RIGHT:
-			posx = PosX + this->Width - ( swidth + width ) + TextX;
+			posx = PosX + this->Width - width + TextX;
 			break;
 		case LEFT:
 		default:
@@ -79,7 +92,7 @@ void TextWidget::updatePosition( )
 			break;
 	}
 	posy = PosY - TextY;
-	TextSprite.setPosition( posx + swidth, posy, getZ( ) + 0.1f );
+	TextSprite.setPosition( posx, posy, getZ( ) + 0.1f );
 }
 
 void TextWidget::setFontColor( int r, int g, int b )
@@ -93,7 +106,7 @@ void TextWidget::setText( std::string text )
 	if( TextContent == text )
 		return;
 	TextContent = text;
-	TextSprite.setText( text.c_str() );
+	TextSprite.setText( (BaseText + text).c_str() );
 	w = Width;
 	h = Height;
 	if( !Width || Width < TextSprite.width() )

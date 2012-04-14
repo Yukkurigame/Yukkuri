@@ -334,12 +334,6 @@ float CEngine::GetFPS()
 	return CurrentFPS;
 }
 
-char* CEngine::GetFPSText()
-{
-	snprintf( FPStext, 11, "FPS: %0.1f", GetFPS() );
-	return FPStext;
-}
-
 int CEngine::getScreenW()
 {
 	return conf.windowWidth;

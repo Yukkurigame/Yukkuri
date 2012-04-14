@@ -7,6 +7,7 @@ gui:addWidget("widget_time_493245")
 
 CreateUnit(1)
 SetCameraTarget(1)
+LoadMapRegion('region_test2_881880')
 
 local plevel = gui:GetWidgetByName("plevel")
 local pdays = gui:GetWidgetByName("pdays")

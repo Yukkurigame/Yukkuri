@@ -29,8 +29,10 @@ function Widget:load(name)
 	if name == nil then return end
 	self.name = name
 	self.id = LoadWidget(name)
-	if self.id > 0 then return true end	
-	return false	
+	if self.id then
+		if self.id > 0 then return true end
+	end
+	return false
 end
 
 function Widget:bind(UnitId, parameter)

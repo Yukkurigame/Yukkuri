@@ -6,9 +6,9 @@
 		height = 69,
 		imagecols = 1,
 		bloodcolor = 		{
-0,
-0,
-0
+175,
+170,
+125
 		},
 		imagerows = 1,
 		speed = 80.0,

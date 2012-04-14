@@ -1,13 +1,13 @@
 {
 	{
 		picture = "0",
-		image = "sprite_Reimu_743643",
+		hp = 10.0,
 		height = 70,
 		imagecols = 4,
 		bloodcolor = 		{
-0,
-0,
-0
+170,
+55,
+55
 		},
 		imagerows = 12,
 		speed = 80.0,
@@ -51,6 +51,6 @@
 			}
 		},
 		type = "Entity",
-		hp = 10.0
+		image = "sprite_Reimu_743643"
 	}
 }

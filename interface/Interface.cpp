@@ -14,7 +14,6 @@
 
 UI UI::yui; // :3
 
-
 static unsigned int LastWidgetId = 1;
 
 
@@ -30,19 +29,19 @@ void UI::LoadAllWidgets( )
 {
 	std::vector< std::string > v;
 	LuaConfig* lc = new LuaConfig;
-	lc->getSubconfigsList("widget", v);
+	lc->getSubconfigsList( "widget", v );
 	for(std::vector < std::string >::iterator it = v.begin(); it != v.end(); ++it ){
 		LoadWidget( (*it) );
 	}
 	delete lc;
 }
 
-Widget* UI::LoadWidget( std::string name )
+Widget* UI::LoadWidget( std::string id )
 {
 	Widget* w;
 	LuaConfig* conf = new LuaConfig;
 
-	debug( Debug::INTERFACE, "Loading widget " + name + "\n" );
+	debug( Debug::INTERFACE, "Loading widget " + id + "\n" );
 
 	//Prevent loop inheritance.
 	//w = GetWidget( name );
@@ -51,29 +50,25 @@ Widget* UI::LoadWidget( std::string name )
 		//return w;
 	//}
 
-	int type;
-	conf->getValue( "wtype", name, "widget", type );
+	std::string type;
+	conf->getValue( "type", id, type );
 
-	switch(type){
-		case BLANK:
-			w = new Widget( );
-			w->setType( BLANK );
-			break;
-		case TEXT:
-			w = new TextWidget( );
-			w->setType( TEXT );
-			break;
-		case BAR:
-			w = new BarWidget( );
-			w->setType( BAR );
-			break;
-		default:
-			w = new Widget( );
-			w->setType( NONE );
-			break;
+	if( type == "Widget" ){
+		w = new Widget( );
+		w->setType( BLANK );
+	}else if( type == "TextWidget" ){
+		w = new TextWidget( );
+		w->setType( TEXT );
+	}else if( type == "BarWidget" ){
+		w = new BarWidget( );
+		w->setType( BAR );
+	}else{
+		debug( Debug::INTERFACE, "Widget with id " + id + " have bad type " + type + ".\n" );
+		w = new Widget( );
+		w->setType( NONE );
 	}
 
-	if( !w->load( name ) ){
+	if( !w->load( id ) ){
 		delete w;
 		return NULL;
 	}
@@ -84,7 +79,7 @@ Widget* UI::LoadWidget( std::string name )
 	widgets.push_back(w);
 
 	std::vector < std::string > childs;
-	conf->getValue("children", name, "widget", childs);
+	conf->getValue("children", id, childs);
 	for(std::vector < std::string >::iterator it = childs.begin(); it != childs.end(); ++it ){
 		Widget* cld = LoadWidget( (*it) );
 		if(cld){

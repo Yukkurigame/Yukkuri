@@ -5,15 +5,15 @@
 		height = 74,
 		imagecols = 1,
 		bloodcolor = 		{
-0,
-0,
-0
+250,
+220,
+100
 		},
 		imagerows = 1,
 		speed = 80.0,
 		id = "entity_Alice_785025",
 		name = "Alice",
-		type = "Entity",
+		meeting = 10.0,
 		damage = 3.0,
 		width = 80,
 		animation = 		{
@@ -62,7 +62,7 @@
 0
 			}
 		},
-		meeting = 10.0,
+		type = "Entity",
 		image = "sprite_Alice_646735"
 	}
 }

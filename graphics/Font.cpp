@@ -125,8 +125,9 @@ bool font_data::load( const char * fname, unsigned int height ) {
 
 	// Draw new line into atlas;
 	Texture* tex = print( cols, rows );
-	char name[30];
-	snprintf( name, 29, "%20s%3d", (fname + 12), height );
+	int namelen = strlen( face->family_name ) + strlen( face->style_name ) + 7;
+	char name[namelen];
+	snprintf( name, namelen - 1, "%s %s %3d", face->family_name, face->style_name, height );
 	// Add texture to render manager
 	RenderManager::Instance()->AddTexture( name, tex, sw, sh, cols, rows, 0, lastLine );
 	// Build texture atlas

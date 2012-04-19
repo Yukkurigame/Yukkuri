@@ -206,7 +206,8 @@ void Bindings::process( int num, short down )
 			BindedFunctions[num].cref(down);
 			break;
 		case LUAFUNC:
-			LS->ExecChunkFromReg( BindedFunctions[num].luaref );
+			if( down )
+				LS->ExecChunkFromReg( BindedFunctions[num].luaref );
 			break;
 		case NOTAFUNC:
 			break;

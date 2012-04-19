@@ -1,5 +1,5 @@
 /*
- * Luaconfig.h
+ * LuaConfig.h
  *
  *  Created on: 04.06.2010
  */

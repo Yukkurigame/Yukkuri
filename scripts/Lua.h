@@ -148,10 +148,10 @@ public:
 
 protected:
 	static lua_State* Lst;
+	int execFunction( std::string );
 
 private:
 	static int count;
-	int execFunction( std::string );
 
 };
 

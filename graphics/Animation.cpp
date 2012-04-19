@@ -6,7 +6,7 @@
  */
 #include "Animation.h"
 #include "Render.h"
-#include "Luaconfig.h"
+#include "LuaConfig.h"
 
 #include <vector>
 

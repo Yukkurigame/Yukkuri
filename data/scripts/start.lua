@@ -1,6 +1,8 @@
 
 gui = require("data/scripts/gui").create()
 
+SetBindings('bindings_game')
+
 gui:addWidget("widget_fps_428624")
 gui:addWidget("widget_time_493245")
 gui:addWidgetByName("stats")

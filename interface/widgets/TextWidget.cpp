@@ -7,7 +7,7 @@
 
 #include "widgets/TextWidget.h"
 #include "Render.h"
-#include "Luaconfig.h"
+#include "LuaConfig.h"
 
 
 TextWidget::TextWidget( )

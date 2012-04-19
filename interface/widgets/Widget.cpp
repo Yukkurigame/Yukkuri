@@ -7,7 +7,7 @@
 #include "widgets/Widget.h"
 
 #include "Render.h"
-#include "Luaconfig.h"
+#include "LuaConfig.h"
 #include "config.h"
 
 #include "debug.h"

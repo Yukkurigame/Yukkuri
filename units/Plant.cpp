@@ -4,7 +4,7 @@
  *  Created on: 18.07.2010
  */
 #include "Plant.h"
-#include "Luaconfig.h"
+#include "LuaConfig.h"
 
 Plant::Plant( )
 {

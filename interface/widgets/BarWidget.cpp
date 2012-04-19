@@ -7,7 +7,7 @@
 
 #include "widgets/BarWidget.h"
 #include "Render.h"
-#include "Luaconfig.h"
+#include "LuaConfig.h"
 
 
 BarWidget::BarWidget()

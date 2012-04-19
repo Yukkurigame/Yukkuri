@@ -2,7 +2,7 @@
 #include "config.h"
 #include "Camera.h"
 #include "Render.h"
-#include "Luaconfig.h"
+#include "LuaConfig.h"
 #include "safestring.h"
 #include <math.h>
 #include <iterator>

@@ -7,7 +7,7 @@
 #include "Interface.h"
 #include "widgets/TextWidget.h"
 #include "widgets/BarWidget.h"
-#include "Luaconfig.h"
+#include "LuaConfig.h"
 
 #include "debug.h"
 

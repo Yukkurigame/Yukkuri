@@ -1,10 +1,10 @@
 /*
- * Luaconfig.cpp
+ * LuaConfig.cpp
  *
  *  Created on: 04.06.2010
  */
 
-#include "Luaconfig.h"
+#include "LuaConfig.h"
 #include "config.h"
 
 

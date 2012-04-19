@@ -3,7 +3,7 @@
 #include "unitmanager.h" //FUUUUUUUUUUUUU~
 #include <cmath>
 
-#include "Luaconfig.h"
+#include "LuaConfig.h"
 
 
 Unit::Unit()

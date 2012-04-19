@@ -104,14 +104,14 @@ bool CEngine::Init()
 		int jnum = SDL_NumJoysticks();
 		char d[2]; //100 joystics, lol
 		snprintf( d, 2, "%d", jnum );
-		debug( MAIN, (std::string)(d) + " joysticks were found:\n" );
+		debug( INPUT, (std::string)(d) + " joysticks were found:\n" );
 		for( int i=0; i < jnum; i++ )
-			debug( MAIN, static_cast<std::string>(SDL_JoystickName(i)) + "\n" );
+			debug( INPUT, static_cast<std::string>(SDL_JoystickName(i)) + "\n" );
 		SDL_JoystickEventState(SDL_ENABLE);
 		joystick = SDL_JoystickOpen(0);
 	}
 #else
-	debug( MAIN, "Joystick not enabled.\n" );
+	debug( INPUT, "Joystick not enabled.\n" );
 #endif
 
 	if(	!AdditionalInit() ){

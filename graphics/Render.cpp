@@ -9,7 +9,7 @@
 #include "gl_extensions.h"
 #include "sdl_graphics.h"
 #include "ElasticBox.h"
-#include "Luaconfig.h"
+#include "LuaConfig.h"
 
 #include <algorithm>
 

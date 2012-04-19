@@ -4,18 +4,19 @@
  *  Created on: 07.07.2010
  */
 
+#include "debug.h"
+
 #include "SDL/SDL_keysym.h"
 
 #include "Bindings.h"
-#include "yukkuri.h"
-#include "Luaconfig.h"
-#include "unitmanager.h"
-#include "Player.h"
-#include "sdl_graphics.h"
+#include "LuaScript.h"
+#include "LuaScriptConfig.h"
+#include <cstring>
+
 
 Bindings Bindings::bnd;
 
-//И здесь FUFUFU
+LuaScript* LS = new LuaScript;
 
 
 Bindings::Bindings( )
@@ -184,112 +185,78 @@ Bindings::Bindings( )
 	BindKey( SDLK_LAST + 17, "joy11" );
 	BindKey( SDLK_LAST + 18, "joy12" );
 	BindKey( SDLK_LAST + 19, "joy13" );
+
+	memset( &BindedFunctions[0], 0, sizeof(Bindings) );
 }
 
-void Bindings::BindKey( int key, string name )
+void Bindings::BindKey( int key, std::string name )
 {
-	Keys[key] = name;
+	Keys[name] = key;
 }
 
-void Bindings::unBindKey( int key )
+void Bindings::unBindKey( std::string name )
 {
-	Keys.erase(key);
+	Keys.erase( name );
 }
 
 void Bindings::process( int num, short down )
 {
-	if( Bindkeys[Keys[num]] == "up" ){
-		Binds::movePlayerUp(down);
-	}else if( Bindkeys[Keys[num]] == "down" ){
-		Binds::movePlayerDown(down);
-	}else if( Bindkeys[Keys[num]] == "left" ){
-		Binds::movePlayerLeft(down);
-	}else if( Bindkeys[Keys[num]] == "right" ){
-		Binds::movePlayerRight(down);
-	}else if( Bindkeys[Keys[num]] == "toggleinterface" && down ){
-		Binds::playerToggleInterface();
-	}else if( Bindkeys[Keys[num]] == "attack" && down ){
-		Binds::playerAttackUnit();
-	}else if( Bindkeys[Keys[num]] == "eat" && down ){
-		Binds::playerEat( );
-	}else if( Bindkeys[Keys[num]] == "exit" && down ){
-		Binds::exit( engine );
-	}else if( Bindkeys[Keys[num]] == "screenshot" && down ){
-		Binds::screenshot( );
+	switch(BindedFunctions[num].type){
+		case CFUNC:
+			BindedFunctions[num].cref(down);
+			break;
+		case LUAFUNC:
+			LS->ExecChunkFromReg( BindedFunctions[num].luaref );
+			break;
+		case NOTAFUNC:
+			break;
 	}
 }
 
-void Bindings::LoadKeys( )
+
+void Bindings::BindCFunction( int key, std::string funcname )
 {
-	string subconfig = "bindings_game";
-	string config = "bindings";
-	LuaConfig* cfg = new LuaConfig;
-	cfg->getValue( "keys", subconfig, config, Bindkeys );
+	if( key < 0 || key > MAXKEYS )
+		return;
+	BindedFunctions[key].type = (func_t)Binds::getFunction( funcname, &BindedFunctions[key].cref );
+}
+
+
+void Bindings::BindLuaFunction( int key, LuaRegRef func )
+{
+	if( key < 0 || key > MAXKEYS )
+		return;
+	BindedFunctions[key].type = LUAFUNC;
+	BindedFunctions[key].luaref = func;
+}
+
+
+void Bindings::LoadKeys( std::string subconfig )
+{
+	Debug::debug( Debug::INPUT, "Loading bindings set " + subconfig + ".\n" );
+	std::map <std::string, std::string> Bindkeys;
+	std::map <std::string, LuaRegRef> Bindfuncs;
+	std::string config = "bindings";
+	LuaScriptConfig* cfg = new LuaScriptConfig;
+	cfg->getValue( "keys", subconfig, config, Bindkeys, Bindfuncs );
+	for( std::map <std::string, std::string>:: iterator it = Bindkeys.begin(), vend = Bindkeys.end();
+			it != vend; ++it ){
+		std::map< std::string, int >::iterator fkey = Keys.find( it->first );
+		if( fkey != Keys.end() )
+			BindCFunction( fkey->second, it->second );
+		else
+			Debug::debug( Debug::INPUT, "Bad key name " + it->first + ".\n" );
+	}
+	for( std::map <std::string, LuaRegRef>:: iterator it = Bindfuncs.begin(), vend = Bindfuncs.end();
+			it != vend; ++it ){
+		std::map< std::string, int >::iterator fkey = Keys.find( it->first );
+		Debug::debug( Debug::INPUT, it->first + ".\n");
+		if( fkey != Keys.end() )
+			BindLuaFunction( fkey->second, it->second );
+		else
+			Debug::debug( Debug::INPUT, "Bad key name " + it->first + ".\n" );
+	}
 	delete cfg;
 }
 
-void Binds::movePlayerUp( short down )
-{
-	Unit* player;
-	player = UnitManager::units.GetPlayer();
-	if( player )
-		player->moveUnit( 0, down );
-}
 
-void Binds::movePlayerDown( short down )
-{
-	Unit* player;
-	player = UnitManager::units.GetPlayer();
-	if( player )
-		player->moveUnit( 0, down * -1 );
-}
-
-void Binds::movePlayerLeft( short down )
-{
-	Unit* player;
-	player = UnitManager::units.GetPlayer();
-	if( player )
-		player->moveUnit( 1, down * -1 );
-}
-
-void Binds::movePlayerRight( short down )
-{
-	Unit* player;
-	player = UnitManager::units.GetPlayer();
-	if( player )
-		player->moveUnit( 1, down );
-}
-
-void Binds::playerAttackUnit( )
-{
-	Player* player;
-	player = dynamic_cast<Player*>(UnitManager::units.GetPlayer());
-	if( player )
-		player->attack( );
-}
-
-void Binds::playerToggleInterface( )
-{
-	Player* player;
-	player = dynamic_cast<Player*>(UnitManager::units.GetPlayer());
-	if( player )
-		player->toggleInterface();
-}
-
-void Binds::playerEat( )
-{
-	Player* player;
-	player = dynamic_cast<Player*>(UnitManager::units.GetPlayer());
-	if( player )
-		player->eat( );
-}
-
-void Binds::screenshot( )
-{
-	Screenshot::Save( );
-}
-
-void Binds::exit( const void* e )
-{
-	((Yukkuri*)e)->Quit();
-}

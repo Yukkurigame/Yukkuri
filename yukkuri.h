@@ -5,7 +5,6 @@
 #include "unitmanager.h"
 #include "daytime.h"
 #include "Spawner.h"
-#include "LuaScript.h"
 
 
 class Yukkuri: public CEngine
@@ -27,7 +26,6 @@ public:
 	void End();
 
 private:
-	LuaScript* ls;
 	UnitManager* units;
 	DayTime daytime;
 	Spawner spawner;

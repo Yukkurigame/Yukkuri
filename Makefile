@@ -6,16 +6,17 @@ DEFS= $(shell sdl-config --cflags)
 PROGNAME= Yukkuri
 INCLUDES=  -I. -Iscripts -Iunits -Igraphics -Iinterface -I/usr/include/freetype2
 LIBS= $(shell sdl-config --libs) -lpng -lSDL_image -lGL -lfreetype -llua
+OBJDIR= obj/
 
 
 DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1
 CFLAGS= -O0 -g -Wall $(DEFINES)
 
 
-UNITS =  unitmanager.cpp unit.cpp Animated.cpp Plant.cpp Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp
+UNITS =  unitmanager.cpp Unit.cpp Animated.cpp Plant.cpp Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp
 GRAPHICS = Font.cpp Text.cpp ElasticBox.cpp sdl_graphics.cpp gl_extensions.cpp Animation.cpp Render.cpp \
 			pngfuncs.c
-SCRIPTS = Lua.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp api.cpp
+SCRIPTS = Lua.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp api.cpp proto.cpp
 INTERFACE = Interface.cpp Widget.cpp TextWidget.cpp BarWidget.cpp
 
 SRCS =   main.cpp yukkuri.cpp config.cpp engine.cpp Bindings.cpp BindFunctions.cpp Spawner.cpp \
@@ -27,9 +28,15 @@ SRCS =   main.cpp yukkuri.cpp config.cpp engine.cpp Bindings.cpp BindFunctions.c
          Camera.cpp daytime.cpp
 
 OBJ = $(SRCS:.cpp=.o)
-OBJS = $(OBJ:.c=.o)
+OBJS = $(addprefix $(OBJDIR), $(OBJ:.c=.o))
 
-.cpp.o:
+#.cpp.o:
+#FIXME: only gnu make?
+$(OBJDIR)%.o: %.cpp
+	$(rm) $@
+	$(CC) $(CFLAGS) -c $^ -o $@
+
+$(OBJDIR)%.o: %.c
 	$(rm) $@
 	$(CC) $(CFLAGS) -c $^ -o $@
 
@@ -40,8 +47,11 @@ OBJS = $(OBJ:.c=.o)
 
 all: $(PROGNAME)
 
-$(PROGNAME) : $(OBJS)
+$(PROGNAME) : | $(OBJDIR) $(OBJS)
 	$(CC) $(CFLAGS)  -o $(PROGNAME) $(OBJS) $(LIBS)
+
+$(OBJDIR):
+	mkdir $(OBJDIR)
 
 clean:
 	$(rm) $(OBJS) $(PROGNAME)

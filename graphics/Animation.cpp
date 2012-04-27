@@ -13,6 +13,8 @@
 Animation::Animation( )
 {
 	sprite = NULL;
+	size = 1;
+	width = height = picture = count = 0;
 }
 
 Animation::~Animation( )

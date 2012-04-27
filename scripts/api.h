@@ -20,11 +20,11 @@ namespace scriptApi
 
 	int CreateWidget( lua_State* L );
 	int LoadWidget( lua_State* L );
+	int ToggleWidget( lua_State* L );
+	int GetWidgetName( lua_State* L );
 	int BindWidget( lua_State* L );
 	int BindWidgetMaxBar( lua_State* L );
 	int WidgetChildren( lua_State* L );
-	int GetWidgetName( lua_State* L );
-
 	int WidgetSetBarSize( lua_State* L );
 
 	int CreateUnit( lua_State* L );

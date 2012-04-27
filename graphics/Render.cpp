@@ -259,6 +259,7 @@ bool RenderManager::DrawToGLTexture( GLuint* ahandle, int width, int height, std
 }
 
 
+
 /* This function creating sprite structure with texture.
  * x, y, z - right top coordinates;
  * texX, texY - right top coordinates of texture rectangle;
@@ -288,6 +289,31 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 	sprite->resize( width, height );
 	sprite->setPosition( x, y, z );
 	sprite->setPicture(picture);
+
+	GLSprites.push_back( sprite );
+
+	int vcount = GLSprites.size() - verticlesSize;
+	if( vcount > 0 )
+		ExtendVerticles( );
+
+	return sprite;
+}
+
+// Create new sprite form exists
+Sprite* RenderManager::CreateGLSprite( Sprite* osprite )
+{
+	if( osprite == NULL )
+		return NULL;
+
+	Sprite* sprite = new Sprite();
+	sprite->texid = osprite->texid;
+	sprite->tex = osprite->tex;
+
+
+	sprite->centered = osprite->centered;
+	sprite->resize( osprite->width, osprite->height );
+	sprite->setPosition( osprite->posx, osprite->posy, osprite->vertices.lb.z );
+	sprite->setPicture( osprite->picture);
 
 	GLSprites.push_back( sprite );
 

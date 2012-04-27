@@ -247,6 +247,7 @@ struct Sprite
 	bool centered;
 	bool fixed;
 	int texid;
+	int picture;
 	TextureInfo* tex;
 	vertex3farr vertices;
 	coord2farr coordinates;
@@ -255,13 +256,14 @@ struct Sprite
 
 	Sprite(){
 		tex = NULL;
-		texid = 0;
+		picture = texid = 0;
 		posx = posy = width = height = 0;
 		visible = true;
 		fixed = centered = false;
 	}
 
 	void setPicture( int pic ){
+		picture = pic;
 		if( texid && tex ){
 			coordinates = tex->getSubTexture(pic);
 		}else{

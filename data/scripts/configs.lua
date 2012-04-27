@@ -1,4 +1,5 @@
 require("data/scripts/adddebug")
+require("data/scripts/bindings")
 ---
 Configs = {}
 Configs.__index = Configs

@@ -57,6 +57,7 @@ public:
 	//FIXME: to many virtual funcs
 	virtual void Update() {};
 
+	bool getVisible( ) { return visible; };
 	virtual void toggleVisibility( );
 
 	virtual void setFontColor( int r, int g, int b ) {};

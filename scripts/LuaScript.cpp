@@ -39,6 +39,7 @@ void LuaScript::RegisterApi( )
 	lua_register( Lst, "CreateWidget", &scriptApi::CreateWidget );
 	lua_register( Lst, "LoadWidget", &scriptApi::LoadWidget );
 	lua_register( Lst, "BindWidget", &scriptApi::BindWidget );
+	lua_register( Lst, "ToggleWidget", &scriptApi::ToggleWidget );
 	lua_register( Lst, "BindWidgetMaxBar", &scriptApi::BindWidgetMaxBar );
 	lua_register( Lst, "WidgetChildren", &scriptApi::WidgetChildren );
 	lua_register( Lst, "GetWidgetName", &scriptApi::GetWidgetName );

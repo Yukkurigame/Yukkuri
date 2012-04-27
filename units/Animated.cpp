@@ -30,6 +30,6 @@ void AnimatedUnit::setTimeLimit( int time )
 
 void AnimatedUnit::takeAction( )
 {
-	//if( !getUnitImage()->clr->isMax() )
-	//	getUnitImage()->clr->set(255);
+	if( !Image.getSprite()->clr.isMax() )
+		Image.getSprite()->clr.set(255);
 }

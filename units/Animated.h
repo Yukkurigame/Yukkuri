@@ -7,7 +7,7 @@
 #ifndef ANIMATED_H_
 #define ANIMATED_H_
 
-#include "unit.h"
+#include "Unit.h"
 
 class AnimatedUnit: public Unit
 {

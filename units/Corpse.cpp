@@ -21,11 +21,21 @@ bool Corpse::Create( int id )
 {
 	if( !Plant::Create( id ) )
 		return false;
-	/*if( getUnitImageCols() > 1 || getUnitImageRows() > 1 ){
-		blood = RenderManager::Instance( )->CreateGLSprite( getUnitImageName( ) );
-		blood->fixed = false;
-	}*/
+	TextureInfo* t = Image.getSprite()->tex;
+	if( t->rows > 1 || t->cols > 1 ){
+		blood = RenderManager::Instance( )->CreateGLSprite( Image.getSprite() );
+		blood->setPicture( Image.getPicture() + 1 );
+	}
 	return true;
+}
+
+void Corpse::setUnitPos( float x, float y )
+{
+	Plant::setUnitPos( x, y );
+	if( blood ){
+		blood->setPosition( getUnitX() - Image.getWidth() / 4, getUnitY(), Z - 0.1 );
+		blood->resize( Image.getWidth() * getUnitSize(), Image.getHeight() * getUnitSize() );
+	}
 }
 
 void Corpse::update( const int& dt )

@@ -113,6 +113,31 @@ int scriptApi::LoadWidget( lua_State* L )
 	return 1;
 }
 
+int scriptApi::ToggleWidget( lua_State* L )
+{
+	Widget* w;
+	bool visibility;
+	bool result;
+
+	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Widget id not given." );
+
+	w = UI::yui.GetWidget( static_cast<int>(lua_tointeger( L, 1 )) );
+	visibility = w->getVisible();
+
+	if( lua_isboolean( L, 2 ) )
+		result = lua_toboolean( L, 2 );
+	else
+		result = !visibility;
+
+	if( visibility != result )
+		w->toggleVisibility();
+
+	lua_pop( L, lua_gettop( L ) );
+	lua_pushboolean( L, result );
+
+	return 1;
+}
+
 int scriptApi::BindWidget( lua_State* L )
 {
 	Widget* w;

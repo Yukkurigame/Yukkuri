@@ -1,7 +1,7 @@
 require("data/scripts/widgets")
 
 
-GUI = {}
+local GUI = {}
 GUI.__index = GUI
 
 function GUI.create()
@@ -27,23 +27,33 @@ end
 function GUI:addWidget(id)
 	w = Widget.create(id)
 	if not w then return end
-	self:RegisterWidget(w)
+	self:registerWidget(w)
 end
 
-function GUI:RegisterWidget(w)
+function GUI:registerWidget(w)
 	if not w then return end
 	table.insert(self.widgets, w.id, w)
 	local t = w:children()
 	if not t then return end
 	for k, v in pairs(t) do
-		self:RegisterWidget(Widget.createFromExits(v))
+		self:registerWidget(Widget.createFromExits(v))
 	end
 end
 
-function GUI:GetWidgetByName(name)
+function GUI:getWidgetByName(name)
 	for k,v in pairs(self.widgets) do
 		if v.name == name then return v end
 	end
+end
+
+function GUI:getWidgetById(id)
+	for k,v in pairs(self.widgets) do
+		if v.cid == id then return v end
+	end
+end
+
+function GUI:getWidget(id)
+	return self.widgets[id]
 end
 
 function GUI:show()

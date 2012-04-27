@@ -27,7 +27,7 @@ public:
 
 	bool setUnitName( std::string type );
 	void setUnitType( enum unitType type );
-	void setUnitPos( float x, float y );
+	virtual void setUnitPos( float x, float y );
 	inline void setUnitX( float x ) { setUnitPos(x, Y); }
 	inline void setUnitY( float y ) { setUnitPos(X, y); }
 	void setUnitSize( float size );

@@ -5,6 +5,7 @@
  */
 #include "Lua.h"
 #include <cstring>
+#include <cstdlib>
 
 #include "debug.h"
 using namespace Debug;
@@ -104,6 +105,16 @@ template<> bool LuaMain::getValue( lua_State* L, int index, double& ret)
 	return false;
 }
 
+template<> bool LuaMain::getValue( lua_State* L, int index, unsigned int& ret)
+{
+	ret = 0;
+	if( lua_isnumber(L, index) ){
+		ret = static_cast<int>(lua_tonumber(L, index));
+		return true;
+	}
+	return false;
+}
+
 template<> bool LuaMain::getValue( lua_State* L, int index, int& ret)
 {
 	ret = 0;
@@ -121,6 +132,18 @@ template<> bool LuaMain::getValue( lua_State* L, int index, std::string& ret)
 		ret = lua_tostring(L, index);
 		return true;
 	}
+	return false;
+}
+
+template<> bool LuaMain::getValue( lua_State* L, int index, char*& ret)
+{
+	if( lua_isstring(L, index) ){
+		const char* lstring = lua_tostring(L, index);
+		ret = (char* )malloc( sizeof(char) * strlen(lstring) );
+		strcpy( ret, lstring );
+		return true;
+	}
+	ret = '\0';
 	return false;
 }
 

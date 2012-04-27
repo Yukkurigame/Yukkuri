@@ -1,38 +1,38 @@
 #ifndef YCAMERA_H
 #define YCAMERA_H
 
-#include "unit.h"
+#include "Unit.h"
 
 enum {
-    TARGET_MODE_NORMAL = 0,
-    TARGET_MODE_CENTER
+	TARGET_MODE_NORMAL = 0,
+	TARGET_MODE_CENTER
 };
 
 class YCamera {
-    public:
-        YCamera();
+	public:
+		YCamera();
 
-        static YCamera CameraControl;
+		static YCamera CameraControl;
 
-        void Update();
+		void Update();
 
-        float GetX( );
-        float GetY( );
-        void Move( float X, float Y );
-        void ChangeMode( int mode );
-        void SetTarget( Unit* u );
-        void SetTarget( float* X, float* Y );
-        void DeleteTarget( );
+		float GetX( );
+		float GetY( );
+		void Move( float X, float Y );
+		void ChangeMode( int mode );
+		void SetTarget( Unit* u );
+		void SetTarget( float* X, float* Y );
+		void DeleteTarget( );
 
-    private:
-        int TargetMode;
-        float posX;
-        float posY;
-        float offsetX;
-        float offsetY;
-        float* TargetX;
-        float* TargetY;
-        Unit* Target;
+	private:
+		int TargetMode;
+		float posX;
+		float posY;
+		float offsetX;
+		float offsetY;
+		float* TargetX;
+		float* TargetY;
+		Unit* Target;
 };
 
 #endif //YCAMERA_H

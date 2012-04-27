@@ -17,6 +17,8 @@ public:
 
 	bool Create( int id );
 
+	void setUnitPos( float x, float y );
+
 	void update( const int& dt );
 
 	void setBloodColor( int c ) { if( blood ) blood->clr.set( c ); }

@@ -146,6 +146,14 @@ public:
 		return true;
 	}
 
+	template<typename T>
+	void getValueByName( lua_State* L, const char* name, T& ret )
+	{
+		lua_getfield( L, -1, name );			// stack: table, [name]
+		getValue( L, -1, ret );
+		lua_pop(L, 1);                      // stack: table
+	}
+
 protected:
 	static lua_State* Lst;
 	int execFunction( std::string );

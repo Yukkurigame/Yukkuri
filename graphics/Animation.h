@@ -24,7 +24,9 @@ public:
 	void setAnimation( std::string );
 	void setPicture( int pic );
 	void setFrame( int frame );
-	void setDefault();
+	void setDefault( );
+
+	inline int getPicture( ) { return picture; }
 
 	void setPosition( float x, float y );
 	void setPosition( float x, float y, float z );
@@ -32,8 +34,11 @@ public:
 	void setSize( float size );
 	inline float getSize( ) { return size; }
 
+	inline int getWidth( ) { return width; }
+	inline int getHeight( ) { return height; }
+
 	inline Sprite* getSprite(){ return sprite; }
-	inline int getCount() { return count; }
+	inline int getCount( ) { return count; }
 
 private:
 	int width;

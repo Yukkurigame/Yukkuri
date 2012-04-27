@@ -48,6 +48,7 @@ public:
 	}
 	Sprite* CreateGLSprite( float x, float y, float z, int width, int height, int texture_id,
 							int picture, short centered = 0 );
+	Sprite* CreateGLSprite( Sprite* osprite );
 	void FreeGLSprite( Sprite* sprite );
 	void FreeGLSprites( std::vector< Sprite* >* sprites );
 

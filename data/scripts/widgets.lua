@@ -2,13 +2,13 @@
 Widget = {}
 Widget.__index = Widget
 
-function Widget.create(name)
+function Widget.create(id)
 	local w = {}
 	setmetatable(w, Widget)
-	if w:load(name) then
+	if w:load(id) then
 		return w
 	end
-	Debug(2, "Widget " .. name .. " creation failed")
+	Debug(2, "Widget " .. id .. " creation failed")
 	return nil
 end
 
@@ -25,10 +25,11 @@ function Widget.createFromExits(id)
 	return nil
 end
 
-function Widget:load(name)
-	if name == nil then return end
-	self.name = name
-	self.id = LoadWidget(name)
+function Widget:load(id)
+	if id == nil then return end
+	self.cid = id
+	self.id = LoadWidget(id)
+	self.name = GetWidgetName(self.id)
 	if self.id then
 		if self.id > 0 then return true end
 	end
@@ -50,4 +51,16 @@ end
 function Widget:children( )
 	t = WidgetChildren(self.id)
 	return t
+end
+
+function Widget:show()
+	ToggleWidget(self.id, true)
+end
+
+function Widget:hide()
+	ToggleWidget(self.id, false)
+end
+
+function Widget:toggle()
+	ToggleWidget(self.id)
 end

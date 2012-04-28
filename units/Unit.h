@@ -4,9 +4,10 @@
 #include <string>
 
 #include "Animation.h"
+#include "Prototypes.h"
 
 
-enum unitType { STATIC = 0, PLAYER, ENTITY, PLANT, CORPSE, OBJECT};
+enum unitType { STATIC = 0, PLAYER, ENTITY, PLANT, CORPSE, OBJECT };
 
 class Unit
 {
@@ -55,6 +56,7 @@ protected:
 	float X, Y, Z;
 	std::map < std::string, float > Parameters;
 	Animation Image;
+	ActionManager Prototype;
 	std::string UnitName;
 	enum unitType UnitType;
 	std::string Type;

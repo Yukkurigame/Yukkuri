@@ -7,6 +7,7 @@
 
 #include "proto.h"
 #include "debug.h"
+#include "config.h"
 #include "assert.h"
 #include "hacks.h"
 
@@ -16,6 +17,10 @@ int ProtoManager::Count = 0;
 
 std::vector<Proto> Prototypes;
 
+ProtoManager::ProtoManager()
+{
+
+}
 
 ProtoManager::~ProtoManager()
 {
@@ -25,6 +30,7 @@ ProtoManager::~ProtoManager()
 int ProtoManager::LoadPrototype( std::string name )
 {
 	Proto p;
+	extern MainConfig conf;
 	LuaStackChecker sc( Lst, __FILE__, __LINE__);
 
 	p.name = name;
@@ -40,11 +46,8 @@ int ProtoManager::LoadPrototype( std::string name )
 	lua_setfield( Lst, -2, "__index" );	// Стек: env meta
 	lua_setmetatable( Lst, -2 );		// Стек: env
 
-	char* buffer;
-	int buffer_size;
 
-	if( luaL_loadbuffer( Lst, (const char*)buffer, buffer_size, name.c_str()) )
-	{
+	if( luaL_loadfile( Lst, (conf.protoPath + name).c_str()) ){
 		// Стек: env err
 		Debug::debug( Debug::CONFIG, "While trying to load proto '" + name + "': " + lua_tostring( Lst, -1 ) + ".\n");
 		lua_pop( Lst, 2 );	// Стек:

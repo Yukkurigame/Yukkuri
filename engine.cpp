@@ -15,6 +15,8 @@ using namespace Debug;
 
 extern MainConfig conf;
 
+long sdl_time;
+
 /** Default constructor. **/
 CEngine::CEngine( )
 {
@@ -138,7 +140,7 @@ void CEngine::Start()
 	// Main loop.
 	while( !EndLoop ){
 
-		Tick = SDL_GetTicks();
+		sdl_time = Tick = SDL_GetTicks();
 		if(Tick - FPSTickCounter >= 250){
 			float seconds = (Tick - FPSTickCounter) / 1000.0f;
 			CurrentFPS = FPSCounter / seconds;

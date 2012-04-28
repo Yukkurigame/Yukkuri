@@ -30,6 +30,7 @@ struct MainConfig
 	std::string fontsPath;
 	std::string scriptsPath;
 	std::string configsPath;
+	std::string protoPath;
 
 	MainConfig();
 

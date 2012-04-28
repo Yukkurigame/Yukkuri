@@ -34,6 +34,7 @@ bool MainConfig::load( )
 	lc->getValue( "fonts_path" , id, config, fontsPath );
 	lc->getValue( "scripts_path" , id, config, scriptsPath );
 	lc->getValue( "configs_path" , id, config, configsPath );
+	lc->getValue( "proto_path" , id, config, protoPath );
 
 	lc->getValue( "widgets_z" , id, config, widgetsPosZ );
 

@@ -3,7 +3,8 @@
 #include "unitmanager.h" //FUUUUUUUUUUUUU~
 #include <cmath>
 
-#include "LuaConfig.h"
+#include "scripts/LuaConfig.h"
+#include "scripts/proto.h"
 
 
 Unit::Unit()
@@ -34,6 +35,18 @@ bool Unit::Create( int id )
 	if( !Image.init( UnitName, Type ) )
 		return false;
 
+	//FIXME: ololo
+	std::string protoname;
+	LuaConfig* cfg = new LuaConfig;
+	cfg->getValue( "proto", UnitName, Type, protoname );
+	if( protoname != "" ){
+		ProtoManager* pm = new ProtoManager;
+		Prototype.setProto( pm->GetProtoByName( protoname ) );
+		delete pm;
+	}
+
+	delete cfg;
+
 	return true;
 }
 
@@ -47,6 +60,17 @@ void Unit::update( const int& )
 	if( dist( UnitManager::units.GetPlayer( ) ) > 2000 ){
 		this->Delete();
 	}
+
+
+	if( !Prototype.loaded )
+		return;
+	while( !Prototype.nextFrame() ){
+		const Frame& frame = Prototype.action->frames[Prototype.frame];
+
+		switch(frame.command){
+		}
+	}
+
 }
 
 void Unit::setUnitType( enum unitType type )

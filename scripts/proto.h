@@ -8,20 +8,10 @@
 #ifndef PROTO_H_
 #define PROTO_H_
 
-#include "LuaScript.h"
-#include "Actions.h"
+#include "scripts/LuaScript.h"
+#include "units/Prototypes.h"
 #include "types.h"
 
-struct Proto
-{
-	int id;
-	std::string name;
-	std::string parent;
-
-	std::map< std::string, Action > Actions;
-
-	Proto() : id(-1) {};
-};
 
 class ProtoManager : public LuaScript
 {

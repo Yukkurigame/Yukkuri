@@ -251,7 +251,6 @@ void Bindings::LoadKeys( std::string subconfig )
 	for( std::map <std::string, LuaRegRef>:: iterator it = Bindfuncs.begin(), vend = Bindfuncs.end();
 			it != vend; ++it ){
 		std::map< std::string, int >::iterator fkey = Keys.find( it->first );
-		Debug::debug( Debug::INPUT, it->first + ".\n");
 		if( fkey != Keys.end() )
 			BindLuaFunction( fkey->second, it->second );
 		else

@@ -31,6 +31,7 @@ class Bindings
 {
 public:
 	Bindings();
+	~Bindings();
 
 	static Bindings bnd;
 
@@ -39,14 +40,21 @@ public:
 	void BindKey( int key, std::string name );
 	void unBindKey( std::string name );
 
-	void BindCFunction( int key, std::string funcname );
+	void BindCFunction( int key, UINT funcname );
 	void BindLuaFunction( int key, LuaRegRef func );
 
 	void LoadKeys( std::string );
 
+	inline std::string KeyName( UINT i ){
+		if( i >= MAXKEYS )
+			return "";
+		return KeyNames[i];
+	}
+
 private:
-	std::map< std::string, int > Keys;
+	//std::map< std::string, UINT > Keys;
 	BindFunction BindedFunctions[ MAXKEYS ];
+	std::string KeyNames[ MAXKEYS ];
 };
 
 

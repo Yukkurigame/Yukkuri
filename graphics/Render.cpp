@@ -15,6 +15,7 @@
 
 #include "debug.h"
 #include "hacks.h"
+#include "safestring.h"
 
 using std::string;
 using namespace Debug;
@@ -72,6 +73,7 @@ void RenderManager::openglSetup( int wwidth, int wheight )
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxAtlasSize);
 
 	glGenBuffers(1, &VBOHandle);
+
 }
 
 
@@ -84,9 +86,7 @@ bool RenderManager::LoadTextures( )
 
 	lc->getSubconfigsLength(config, textures_count);
 
-	char dbg[20];
-	snprintf( dbg, 20, "%d textures found.\n", textures_count );
-	debug( GRAPHICS, dbg );
+	debug( GRAPHICS, citoa(textures_count) + " textures found.\n" );
 
 	if( !textures_count )
 		return false;
@@ -355,7 +355,7 @@ inline bool compareTextureProxies( TextureProxy* t1, TextureProxy* t2 )
 bool RenderManager::CreateAtlas( GLuint* ahandle, int* width, int* height, short map )
 {
 	if( internalTextures.size() < 1 ){
-		debug( GRAPHICS, "Textures is missing" );
+		debug( GRAPHICS, "Textures is missing.\n" );
 		return false;
 	}
 	//FIXME: sorting probably not works.
@@ -460,8 +460,10 @@ void RenderManager::CleanGLScene()
 
 RenderManager::RenderManager( ){
 	textures = NULL;
+	verticles = NULL;
 	verticlesSize = 1; // for success multiplication
 	minAtlasSize = 64;
+	atlasHandle = 0;
 	GLSprites.clear();
 	// Set first texture info to 0
 	textures = (TextureInfo*)malloc( sizeof(TextureInfo) );
@@ -476,8 +478,10 @@ RenderManager::RenderManager( ){
 RenderManager::~RenderManager( )
 {
 	clear_vector( &internalTextures );
-	free(textures);
-	free(verticles);
+	if( textures )
+		free(textures);
+	if( verticles )
+		free(verticles);
 	ClearGLTexturesCache();
 }
 
@@ -587,7 +591,7 @@ VBOStructureHandle* RenderManager::PrepareVBO( int* c )
 	VBOStructureHandle* v = NULL;
 	VBOStructureHandle* first = NULL;
 	//int lastText = -1;
-	memset( verticles, '0', sizeof( VertexV2FT2FC4UI ) * verticlesSize );
+	//memset( verticles, '0', sizeof( VertexV2FT2FC4UI ) * verticlesSize );
 	for( std::vector< Sprite* >::iterator it = GLSprites.begin(), end = GLSprites.end(); it != end; ++it ){
 		s = *(it);
 		if( s == NULL || !s->visible )

@@ -6,6 +6,7 @@
  */
 
 #include "BindFunctions.h"
+
 #include "yukkuri.h"
 #include "unitmanager.h"
 #include "Player.h"
@@ -13,32 +14,27 @@
 
 #include "debug.h"
 
-#define FUNCTIONSCOUNT 9
-
-static const std::string func_names[FUNCTIONSCOUNT] = {
-	"up", "down", "left", "right", "toggleinterface",
-	"attack", "eat", "exit", "screenshot"
-};
-
-static const BindCFunction func_refs[FUNCTIONSCOUNT] = {
-	&Binds::movePlayerUp, &Binds::movePlayerDown, &Binds::movePlayerLeft,
-	&Binds::movePlayerRight, &Binds::playerToggleInterface, &Binds::playerAttackUnit,
-	&Binds::playerEat, &Binds::exit, &Binds::screenshot
+static const BindCFunction func_refs[Binds::bndLast] = {
+	&Binds::dummy, &Binds::movePlayerUp, &Binds::movePlayerDown,
+	&Binds::movePlayerLeft, &Binds::movePlayerRight,
+	&Binds::playerAttackUnit, &Binds::playerEat, &Binds::exit,
+	&Binds::screenshot
 };
 
 
-int Binds::getFunction( std::string name, BindCFunction* f )
+int Binds::getFunction( enum func_numbers name, BindCFunction* f )
 {
-	for( int i = 0; i < FUNCTIONSCOUNT; ++i){
-		if( func_names[i] == name ){
-			*f = func_refs[i];
-			return 1;
-		}
+	if( name == bndNone )
+		Debug::debug( Debug::INPUT, "Bind void function.\n" );
+	if( name < bndLast ){
+		*f = func_refs[name];
+		return 1;
 	}
-	Debug::debug( Debug::INPUT, "Bind function not found: " + name + ".\n" );
+	Debug::debug( Debug::INPUT, "Bind function not found: " + std::string(getFunctionName(name)) + ".\n" );
 
 	return 0;
 }
+
 
 void Binds::movePlayerUp( short down )
 {
@@ -78,14 +74,6 @@ void Binds::playerAttackUnit( short down )
 	player = dynamic_cast<Player*>(UnitManager::units.GetPlayer());
 	if( player )
 		player->attack( );
-}
-
-void Binds::playerToggleInterface( short down )
-{
-	Player* player;
-	player = dynamic_cast<Player*>(UnitManager::units.GetPlayer());
-	if( player )
-		player->toggleInterface();
 }
 
 void Binds::playerEat( short down )

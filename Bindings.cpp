@@ -12,11 +12,13 @@
 #include "LuaScript.h"
 #include "LuaScriptConfig.h"
 #include <cstring>
+#include <cstdlib>
 
+#include "hacks.h"
 
 Bindings Bindings::bnd;
 
-LuaScript* LS = new LuaScript;
+LuaScript* LS = new LuaScript();
 
 
 Bindings::Bindings( )
@@ -186,17 +188,29 @@ Bindings::Bindings( )
 	BindKey( SDLK_LAST + 18, "joy12" );
 	BindKey( SDLK_LAST + 19, "joy13" );
 
-	memset( &BindedFunctions[0], 0, sizeof(Bindings) );
+	//memset( &BindedFunctions[0], 0, sizeof(Bindings) );
+}
+
+Bindings::~Bindings( )
+{
+
 }
 
 void Bindings::BindKey( int key, std::string name )
 {
-	Keys[name] = key;
+	if( key > MAXKEYS )
+		return;
+	KeyNames[key] = name;
+	//Keys[key] = key;
 }
 
 void Bindings::unBindKey( std::string name )
 {
-	Keys.erase( name );
+	//std::map< std::string, UINT >::iterator fkey = Keys.find( name );
+	//if( fkey != Keys.end() ){
+	//	KeyNames[fkey->second] = "";
+	//	Keys.erase( fkey );
+	//}
 }
 
 void Bindings::process( int num, short down )
@@ -215,11 +229,11 @@ void Bindings::process( int num, short down )
 }
 
 
-void Bindings::BindCFunction( int key, std::string funcname )
+void Bindings::BindCFunction( int key, UINT funcnumber )
 {
 	if( key < 0 || key > MAXKEYS )
 		return;
-	BindedFunctions[key].type = (func_t)Binds::getFunction( funcname, &BindedFunctions[key].cref );
+	BindedFunctions[key].type = (func_t)Binds::getFunction( (Binds::func_numbers)funcnumber, &BindedFunctions[key].cref );
 }
 
 
@@ -235,26 +249,23 @@ void Bindings::BindLuaFunction( int key, LuaRegRef func )
 void Bindings::LoadKeys( std::string subconfig )
 {
 	Debug::debug( Debug::INPUT, "Loading bindings set " + subconfig + ".\n" );
-	std::map <std::string, std::string> Bindkeys;
-	std::map <std::string, LuaRegRef> Bindfuncs;
+	std::map < UINT, UINT > Bindkeys;
+	std::map < UINT, LuaRegRef > Bindfuncs;
 	std::string config = "bindings";
 	LuaScriptConfig* cfg = new LuaScriptConfig;
 	cfg->getValue( "keys", subconfig, config, Bindkeys, Bindfuncs );
-	for( std::map <std::string, std::string>:: iterator it = Bindkeys.begin(), vend = Bindkeys.end();
-			it != vend; ++it ){
-		std::map< std::string, int >::iterator fkey = Keys.find( it->first );
-		if( fkey != Keys.end() )
-			BindCFunction( fkey->second, it->second );
+
+	FOREACHIT( Bindkeys ){
+		if( it->first < MAXKEYS )
+			BindCFunction( it->first, it->second );
 		else
-			Debug::debug( Debug::INPUT, "Bad key name " + it->first + ".\n" );
+			Debug::debug( Debug::INPUT, "Bad key name.\n" );
 	}
-	for( std::map <std::string, LuaRegRef>:: iterator it = Bindfuncs.begin(), vend = Bindfuncs.end();
-			it != vend; ++it ){
-		std::map< std::string, int >::iterator fkey = Keys.find( it->first );
-		if( fkey != Keys.end() )
-			BindLuaFunction( fkey->second, it->second );
+	FOREACHIT( Bindfuncs ){
+		if( it->first < MAXKEYS )
+			BindLuaFunction( it->first, it->second );
 		else
-			Debug::debug( Debug::INPUT, "Bad key name " + it->first + ".\n" );
+			Debug::debug( Debug::INPUT, "Bad key name.\n" );
 	}
 	delete cfg;
 }

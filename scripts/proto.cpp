@@ -10,6 +10,7 @@
 #include "config.h"
 #include "assert.h"
 #include "hacks.h"
+#include "safestring.h"
 
 #include <cstdlib>
 
@@ -176,24 +177,25 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 
 								getValueByName( L, "text", a.frames[j].txt_param );
 							}else{
-								char* dbg;
-								sprintf( dbg, "frame %d - %s: Frame loading canceled (not a table).\n", (int)j, lua_typename(L, lua_type(L, -1)) );
 								Debug::debug( Debug::CONFIG,
-										"In proto '" + proto->name + "', action '" + a.name + "' " + dbg );
+									"In proto '" + proto->name + "', action '" + a.name + "' " +
+									"frame " + citoa(j) + " - " + lua_typename(L, lua_type(L, -1)) +
+									": Frame loading canceled (not a table).\n");
 								a.framesCount = 0;
-								free(dbg);
 							}
 							//lua_pop(L, 1);	// Стек: env actions key actions[key] frames key
 						}
 					}else{
-						Debug::debug( Debug::CONFIG, "There are no frames in action '" + a.name + "' of proto '" + proto->name + "'. Skipping.\n");
+						Debug::debug( Debug::CONFIG, "There are no frames in action '" +
+								a.name + "' of proto '" + proto->name + "'. Skipping.\n");
 						a.framesCount = 0;
 					}
 
 					// Стек: env actions key actions[key] frames
 
 				}else{ // if (lua_istable(L, -1))	frames
-					Debug::debug( Debug::CONFIG, "Action '" + a.name + "' in proto '" + proto->name + "' have no frames table. Skipping.\n");
+					Debug::debug( Debug::CONFIG, "Action '" + a.name + "' in proto '" +
+							proto->name + "' have no frames table. Skipping.\n");
 					a.framesCount = 0;
 				}
 
@@ -204,10 +206,8 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 				// Стек: env animations key animations[key] frames
 				lua_pop(L, 1);	// Стек: env actions key actions[key]
 			}else{
-				char* dbg;
-				sprintf( dbg, "actions[%d]", (int)i );
-				Debug::debug( Debug::CONFIG, "In proto '" + proto->name + "' " + dbg + " is " + lua_typename(L, lua_type(L, -1)) );
-				free(dbg);
+				Debug::debug( Debug::CONFIG, "In proto '" + proto->name + "' actions[" +
+						citoa(i) + "] is " + lua_typename(L, lua_type(L, -1)) );
 			}
 
 		} // for

@@ -1,6 +1,8 @@
 
 #include "Unit.h"
 #include "unitmanager.h" //FUUUUUUUUUUUUU~
+
+#include "safestring.h"
 #include <cmath>
 
 #include "scripts/LuaConfig.h"
@@ -64,10 +66,41 @@ void Unit::update( const int& )
 
 	if( !Prototype.loaded )
 		return;
+
+	int param;
+	const char* txt_param;
+
 	while( !Prototype.nextFrame() ){
 		const Frame& frame = Prototype.action->frames[Prototype.frame];
 
+		if( frame.is_param_function){
+
+			LuaScript* ls = new LuaScript;
+
+			int ret_val = ls->ExecChunkFromReg( frame.param );
+			if( ret_val == -1 )	{
+				Debug::debug( Debug::CONFIG,
+					"An error occurred while executing a local function. obj id  " +
+					citoa(UnitId) + ", proto_name '" + Prototype.proto.name + "', action '" +
+					Prototype.action->name  + "', frame " + citoa(Prototype.frame) +
+					": " + ls->getString( -1 ) + ".\n" );
+			}
+
+			const int top = ls->top();
+			const int p1 = top - ret_val + 1;
+			const int p2 = top - ret_val + 2;
+
+			param     = (ret_val > 0 ) ? ls->getNumber( p1 ) : 0;
+			txt_param = ((ret_val > 1 ) ? ls->getString( p2 ) : "").c_str();
+
+		}else{
+			param = frame.param;
+			txt_param = frame.txt_param;
+		}
+
 		switch(frame.command){
+			case acNone:
+				break;
 		}
 	}
 

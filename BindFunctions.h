@@ -8,25 +8,38 @@
 #ifndef BINDFUNCTIONS_H_
 #define BINDFUNCTIONS_H_
 
-#include <map>
 #include <string>
 
 typedef void (*BindCFunction)( short );
 
 namespace Binds
 {
+	enum func_numbers {
+		bndNone=0, bndUp, bndDown, bndLeft, bndRight, bndAttack, bndEat, bndExit, bndScreenshot,
+		bndLast
+	};
+
+	static const char* func_names[bndLast] = {
+		"none", "up", "down", "left", "right", "attack", "eat", "exit", "screenshot",
+	};
+
+	inline void dummy( short down ) { };
+
 	void movePlayerUp( short down );
 	void movePlayerDown( short down );
 	void movePlayerLeft( short down );
 	void movePlayerRight( short down );
 	void playerAttackUnit( short down );
-	void playerToggleInterface( short down );
 	void playerEat( short down  );
 	void screenshot( short down );
 	void exit( short down );
 
-	int getFunction( std::string name, BindCFunction* f );
-
+	int getFunction( enum func_numbers name, BindCFunction* f );
+	inline const char* getFunctionName( enum func_numbers name ){
+		if( name < bndLast )
+			return func_names[name];
+		return "";
+	}
 
 };
 

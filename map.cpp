@@ -126,7 +126,6 @@ Map::Map( )
 
 bool Map::LoadTiles( )
 {
-	char dbg[25];
 	if(TilesLoaded){
 		debug( MAP, "Tiles already loaded." );
 		return false;
@@ -139,8 +138,7 @@ bool Map::LoadTiles( )
 		return false;
 	}else{
 		TileTypesCount = Subconfigs.size();
-		snprintf( dbg, 25, "Tiles found: %lu\n", Subconfigs.size() );
-		debug( MAP, dbg );
+		debug( MAP, "Tiles found: " + citoa(TileTypesCount) + ".\n" );
 	}
 	for( unsigned int i = 0; i < TileTypesCount; ++i ){
 		if( Subconfigs[i].count("id") < 1 ){

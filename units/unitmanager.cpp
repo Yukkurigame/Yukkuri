@@ -106,7 +106,7 @@ Unit* UnitManager::closer( Unit* u, std::string type, float limit )
 	return ret;
 }
 
-Unit* UnitManager::closer( Unit* u, std::vector< string >* types, float limit )
+Unit* UnitManager::closer( Unit* u, std::vector< std::string >* types, float limit )
 {
 	//FIXME: quick and dirty
 	Unit* ret = NULL;
@@ -114,7 +114,7 @@ Unit* UnitManager::closer( Unit* u, std::vector< string >* types, float limit )
 	limit *= u->getUnitSize();
 	for (int i = 0; i < (int)Units.size(); i++) {
 		if( Units[i] != u ){
-			for( std::vector< string >::iterator it = types->begin(), end = types->end(); it != end; ++it ){
+			for( std::vector< std::string >::iterator it = types->begin(), end = types->end(); it != end; ++it ){
 				if( Units[i]->getUnitType() == (*it) ){
 					float dist = u->dist(Units[i]);
 					if( dist < limit && dist < distance ){

@@ -40,6 +40,8 @@ public:
 	LuaMain( );
 	~LuaMain( );
 
+	void RegisterApi( lua_State* L );
+
 	bool OpenFile( std::string name );
 
 	//Какого хрена шаблоны перестают работать, если их вынести?
@@ -68,6 +70,14 @@ public:
 		lua_pop( Lst, 1 + szadd );
 		return res;
 	}
+
+	inline const int top(){
+		return lua_gettop( Lst );
+	}
+
+	bool getBool( int index );
+	double getNumber( int index );
+	std::string getString( int index );
 
 	template<typename T>
 	bool getValue( lua_State* L, int index, T& ret);
@@ -154,9 +164,10 @@ public:
 		lua_pop(L, 1);                      // stack: table
 	}
 
+
 protected:
-	static lua_State* Lst;
 	int execFunction( std::string );
+	static lua_State* Lst;
 
 private:
 	static int count;

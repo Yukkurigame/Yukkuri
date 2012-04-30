@@ -18,46 +18,14 @@ static RegRefCountsMap regRefCounts;
 
 LuaScript::LuaScript( )
 {
-
+	printf("");
 }
 
 bool LuaScript::Init()
 {
-	RegisterApi( );
 	return true;
 }
 
-void LuaScript::RegisterApi( )
-{
-	lua_register( Lst, "readdir", &scriptApi::ReadDirectory );
-	lua_register( Lst, "getcwd", &scriptApi::GetCWD );
-
-	lua_register( Lst, "Debug", &scriptApi::Debug );
-
-	lua_register( Lst, "SetBindings", &scriptApi::SetBindings );
-
-	lua_register( Lst, "CreateWidget", &scriptApi::CreateWidget );
-	lua_register( Lst, "LoadWidget", &scriptApi::LoadWidget );
-	lua_register( Lst, "BindWidget", &scriptApi::BindWidget );
-	lua_register( Lst, "ToggleWidget", &scriptApi::ToggleWidget );
-	lua_register( Lst, "BindWidgetMaxBar", &scriptApi::BindWidgetMaxBar );
-	lua_register( Lst, "WidgetChildren", &scriptApi::WidgetChildren );
-	lua_register( Lst, "GetWidgetName", &scriptApi::GetWidgetName );
-	lua_register( Lst, "WidgetSetBarSize", &scriptApi::WidgetSetBarSize );
-
-	lua_register( Lst, "CreateUnit", &scriptApi::CreateUnit );
-	lua_register( Lst, "DeleteUnit", &scriptApi::DeleteUnit );
-
-	lua_register( Lst, "NewThread", &scriptApi::NewThread );
-	lua_register( Lst, "ThreadWait", &scriptApi::ThreadWait );
-	lua_register( Lst, "ResumeThread", &scriptApi::ResumeThread );
-	lua_register( Lst, "RemoveThread", &scriptApi::RemoveThread );
-
-	lua_register( Lst, "SetCameraTarget", &scriptApi::SetCameraTarget );
-
-	lua_register( Lst, "LoadMapRegion", &scriptApi::LoadMapRegion );
-
-}
 
 bool LuaScript::OpenFile( std::string name )
 {
@@ -72,21 +40,21 @@ bool LuaScript::OpenFile( std::string name )
 LuaRegRef LuaScript::AddToRegistry( )
 {
 	// Стек: ... data
-	return luaL_ref(Lst, LUA_REGISTRYINDEX);	// Стек:
+	return luaL_ref( Lst, LUA_REGISTRYINDEX );	// Стек:
 }
 
 // Удаляет из реестра содержимое по ссылке
 void LuaScript::RemoveFromRegistry( LuaRegRef& r )
 {
-	lua_unref(Lst, r);
+	lua_unref( Lst, r );
 	r = LUA_NOREF;
 }
 
 // Помещает на верхушку стека значенее из реестра
 void LuaScript::GetFromRegistry( lua_State* L, LuaRegRef r )
 {
-	lua_rawgeti(Lst, LUA_REGISTRYINDEX, r);
-	lua_xmove(Lst, L, 1);
+	lua_rawgeti( Lst, LUA_REGISTRYINDEX, r );
+	lua_xmove( Lst, L, 1 );
 }
 
 
@@ -101,7 +69,7 @@ void LuaScript::RegProc( lua_State* L, LuaRegRef* procref, int n )
 	{
 		// TODO: сделать перемещение функции на самый верх стека и забирать ее оттуда
 		// Сейчас же просто забирается одно верхнее значение со стека, это может быть и не функция
-		lua_xmove(L, Lst, 1);
+		lua_xmove( L, Lst, 1 );
 		*procref = AddToRegistry();
 		ReserveProc(*procref);
 	}
@@ -125,7 +93,7 @@ void LuaScript::ReserveProc( LuaRegRef procref )
 // Если счетчик достигает 0, объект из реестра удаляется.
 void LuaScript::ReleaseProc( LuaRegRef* procref )
 {
-	LuaStackChecker sc(Lst, __FILE__, __LINE__);
+	LuaStackChecker sc( Lst, __FILE__, __LINE__ );
 
 	if( *procref == LUA_NOREF )
 		return;
@@ -136,9 +104,8 @@ void LuaScript::ReleaseProc( LuaRegRef* procref )
 
 	assert(it->second > 0);
 	if(it->second <= 0){
-		char dbg[100];
-		snprintf(dbg, 99, "LuaScript::ReleaseProc: procref %d references count is %d.\n", *procref, it->second);
-		Debug::debug( Debug::SCRIPT, dbg );
+		Debug::debug( Debug::SCRIPT, "LuaScript::ReleaseProc: procref " +
+				citoa(*procref) + " references count is " + citoa(it->second) + ".\n" );
 		it->second = 1;
 	}
 

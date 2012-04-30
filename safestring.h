@@ -8,6 +8,7 @@
 #define SAFESTRING_H_
 
 #include <string>
+#include <sstream>
 
 //TODO: strcat, strcpy
 // TODO: sprintf_s и snprintf немного отличаются поведением.
@@ -18,5 +19,12 @@
 #endif
 
 
+// FIXME: slow?
+inline std::string citoa( int i )
+{
+	std::stringstream out;
+	out << i;
+	return out.str();
+}
 
 #endif /* SAFESTRING_H_ */

@@ -22,7 +22,7 @@ UNITS =  unitmanager.cpp Prototypes.cpp Unit.cpp Animated.cpp Plant.cpp Corpse.c
 		 Dynamic.cpp Entity.cpp Player.cpp
 GRAPHICS = Font.cpp Text.cpp ElasticBox.cpp sdl_graphics.cpp gl_extensions.cpp Animation.cpp \
 		   Render.cpp pngfuncs.c
-SCRIPTS = Lua.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp api.cpp proto.cpp
+SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp api.cpp proto.cpp
 WIDGETS = Widget.cpp TextWidget.cpp BarWidget.cpp
 INTERFACE = Interface.cpp $(addprefix $(WIDGETSDIR), $(WIDGETS))
 

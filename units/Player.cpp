@@ -1,7 +1,5 @@
 #include "Player.h"
-#include "Interface.h"
 #include "config.h"
-#include <cstdio>
 
 extern MainConfig conf;
 
@@ -36,13 +34,4 @@ void Player::update( const int& dt )
 	if( this->isDeleted() )
 		return;
 	DynamicUnit::moveUnit( moveX, moveY, dt );
-}
-
-void Player::toggleInterface( )
-{
-	//FIXME: static
-	Widget* w;
-	w =UI::yui.GetWidget( "pstats" );
-	if( w )
-		w->toggleVisibility( );
 }

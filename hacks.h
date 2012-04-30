@@ -20,5 +20,4 @@ static void clear_vector( Vector* V ){
 										item != (vec).end(); ++item )
 #define FOREACHIT( vec ) FOREACH( it, vec )
 
-
 #endif /* HACKS_H_ */

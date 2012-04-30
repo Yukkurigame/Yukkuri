@@ -10,8 +10,9 @@
 #include "debug.h"
 using namespace Debug;
 
-lua_State* LuaMain::Lst = NULL;
 int LuaMain::count = 0;
+lua_State* LuaMain::Lst = NULL;
+
 
 LuaStackChecker::LuaStackChecker( lua_State* L, const char* filename/* = ""*/, int line/* = 0*/ )
 : luaState_(L),
@@ -36,9 +37,11 @@ LuaMain::LuaMain()
 	if( Lst == NULL ){
 		Lst = luaL_newstate();
 		luaL_openlibs(Lst);
+
+		RegisterApi( Lst );
 	}
 
-	count++; //FIXME: Ох, какой костыль.
+	count++;
 }
 
 LuaMain::~LuaMain()
@@ -48,9 +51,11 @@ LuaMain::~LuaMain()
 	if( count == 0 ){
 		lua_close(Lst);
 		Lst = NULL;
-		debug( SCRIPT, "Lua engine closed.\n" );
+		Debug::debug( Debug::SCRIPT, "Lua engine closed.\n" );
 	}
 }
+
+
 
 bool LuaMain::OpenFile( std::string name )
 {
@@ -74,6 +79,30 @@ bool LuaMain::OpenFile( std::string name )
 }
 
 
+bool LuaMain::getBool( int index )
+{
+	if( lua_isboolean( Lst, index ) ){
+		return lua_toboolean( Lst, index ) != 0;
+	}
+	return false;
+}
+
+double LuaMain::getNumber( int index )
+{
+	if( lua_isnumber( Lst, index ) ){
+		return lua_tonumber( Lst, index );
+	}
+	return 0.0;
+}
+
+std::string LuaMain::getString( int index )
+{
+	if( lua_isstring( Lst, index) ){
+		return (std::string)lua_tostring( Lst, index );
+	}
+	return "";
+}
+
 template<> bool LuaMain::getValue( lua_State* L, int index, bool& ret)
 {
 	ret = false;
@@ -84,7 +113,7 @@ template<> bool LuaMain::getValue( lua_State* L, int index, bool& ret)
 	return false;
 }
 
-//FIXME: Но зачем
+//FIXME: ���� ����������
 template<> bool LuaMain::getValue( lua_State* L, int index, float& ret)
 {
 	ret = 0.0;

@@ -4,6 +4,8 @@
 #include "Entity.h"
 #include "Player.h"
 
+#include "hacks.h"
+
 UnitManager UnitManager::units;
 
 static unsigned int LastId = 1;
@@ -81,6 +83,19 @@ void UnitManager::DeleteUnit( Unit* u )
 	delete u;
 }
 
+void UnitManager::BatchRemove()
+{
+	if (!RemovedUnits.size())
+		return;
+
+	FOREACHIT( RemovedUnits ){
+		DeleteUnit( *(*it) );
+		Units.erase( *it );
+	}
+
+	RemovedUnits.clear();
+}
+
 int UnitManager::GetUnitsSize( enum unitType type )
 {
 	if( Size.count(type) > 0 )
@@ -132,16 +147,13 @@ Unit* UnitManager::closer( Unit* u, std::vector< std::string >* types, float lim
 void UnitManager::tick( const int& dt )
 {
 	Unit* u;
-	for( unsigned int i = 0; i < Units.size(); ){
-		u = Units[i];
-		if( u->isDeleted() ){
-			DeleteUnit( u );
-			Units.erase( Units.begin() + i );
-		}else{
-			u->update( dt );
-			++i;
-		}
+	FOREACHIT( Units ){
+		u = *it;
+		u->update( dt );
+		if( u->isDeleted() )
+			RemovedUnits.push_back( it );
 	}
+	BatchRemove();
 }
 
 void UnitManager::grow( )

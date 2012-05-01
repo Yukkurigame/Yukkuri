@@ -18,6 +18,7 @@ class UnitManager
 
 		Unit* CreateUnit( enum unitType type, float x, float y );
 		void DeleteUnit( Unit* u );
+		void BatchRemove( );
 		Unit* GetUnit( unsigned int id );
 		Unit* GetPlayer() { return player; }
 		int GetUnitsSize( enum unitType type );
@@ -37,6 +38,7 @@ class UnitManager
 		void AddUnit( Unit* pUnit );
 		void ChangeUnitsSize( enum unitType type, signed int size );
 		std::vector< Unit* > Units;
+		std::vector< std::vector< Unit* >::iterator > RemovedUnits;
 		std::map< enum unitType, int > Size;
 		Unit* player;
 };

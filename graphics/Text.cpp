@@ -9,11 +9,26 @@
 #include "Render.h"
 #include "config.h"
 #include "debug.h"
+#include "hacks.h"
 #include <map>
 
 #define ITER_SPRITES for( std::vector< Sprite* >:: iterator it = sprites.begin(), vend = sprites.end(); it != vend; ++it )
 
 static std::map < std::string, std::map< int, font_data* > > LoadedFonts;
+
+
+void CleanFonts( )
+{
+	Debug::debug( Debug::MAIN, "Cleaning fonts.\n" );
+	FOREACHIT( LoadedFonts ){
+		FOREACH( vit, it->second ){
+			vit->second->clean();
+			delete vit->second;
+		}
+		it->second.clear();
+	}
+	LoadedFonts.clear();
+}
 
 bool LoadTTFont( std::string dir, std::string name, int size )
 {
@@ -32,7 +47,6 @@ bool LoadTTFont( std::string dir, std::string name, int size )
 	}
 	return true;
 }
-
 
 font_data* GetFont( std::string name, int size  )
 {

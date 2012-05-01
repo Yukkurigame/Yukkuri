@@ -18,7 +18,6 @@ static RegRefCountsMap regRefCounts;
 
 LuaScript::LuaScript( )
 {
-	printf("");
 }
 
 bool LuaScript::Init()

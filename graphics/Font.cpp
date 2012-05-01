@@ -16,6 +16,7 @@ using namespace Debug;
 #include <vector>
 
 static FT_Library library;
+static bool ftLoaded = false;
 
 static int lastLine = 0;
 
@@ -24,6 +25,15 @@ inline int next_p2( int a )
 	int rval=2;
 	while( rval < a ) rval <<= 1;
 	return rval;
+}
+
+void ftDone(  )
+{
+	if( !ftLoaded )
+		return;
+	//Ditto for the library.
+	FT_Done_FreeType( library );
+	ftLoaded = false;
 }
 
 ///Create a display list coresponding to the give character.
@@ -80,9 +90,12 @@ bool font_data::load( const char * fname, unsigned int height ) {
 	this->fontHeight = height;
 
 	//Create and initilize a freetype font library.
-	if( FT_Init_FreeType( &library ) ){
-		debug( GRAPHICS, "FT_Init_FreeType failed in " +  (std::string)fname + "\n" );
-		return false;
+	if( !ftLoaded ){
+		if( FT_Init_FreeType( &library ) ){
+			debug( GRAPHICS, "FT_Init_FreeType failed in " +  (std::string)fname + "\n" );
+			return false;
+		}
+		ftLoaded = true;
 	}
 
 	//This is where we load in the font information from the file.
@@ -137,9 +150,6 @@ bool font_data::load( const char * fname, unsigned int height ) {
 
 	// Get texture id for font
 	texture = RenderManager::Instance()->GetTextureNumberById( name );
-
-	//Ditto for the library.
-	//FT_Done_FreeType( library );
 
 	return true;
 }

@@ -45,6 +45,8 @@ int scriptApi::ReadDirectory( lua_State* L )
 	}else{
 		lua_pushnil( L );
 	}
+	closedir( dp );
+
 
 	return 1;
 }

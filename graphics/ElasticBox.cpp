@@ -30,8 +30,12 @@ ElasticBox::ElasticBox( int minSize )
 
 ElasticBox::~ElasticBox( )
 {
-	if(children != NULL)
+	if(children != NULL){
+		for( int i=0; i < 4; ++i )
+			if( children[i] != NULL )
+				delete children[i];
 		free(children);
+	}
 	children = NULL;
 }
 

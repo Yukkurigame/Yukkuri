@@ -6,6 +6,9 @@
 
 #include "LuaThread.h"
 #include <list>
+#include <cstdlib>
+
+#include "hacks.h"
 
 #include "debug.h"
 using namespace Debug;
@@ -73,12 +76,16 @@ unsigned int threadsManager::NewThread( lua_State* L )
 
 	threads.push_back( thread );
 
+	char dbg[75];
+	sprintf( dbg, "Lua thread 0x%p created, master_thread: 0x%p, id: %d.\n", NL, L, thread->ThreadId);
+	Debug::debug( Debug::SCRIPT, dbg);
+
 	return thread->ThreadId;
 }
 
 unsigned int threadsManager::GetThread( lua_State* L )
 {
-	for( std::list<LuaThread*>::iterator it = threads.begin(), end = threads.end(); it != end; ++it ){
+	FOREACHIT( threads ){
 		if( (*it)->Thread == L )
 			return (*it)->ThreadId;
 	}
@@ -90,7 +97,7 @@ int threadsManager::ResumeThread( lua_State *L )
 	LuaThread* thread = NULL;
 	lua_State* co = lua_tothread( L, 1 );
 	luaL_argcheck( L, co, 1, "coroutine expected" );
-	for( std::list<LuaThread*>::iterator it = threads.begin(), end = threads.end(); it != end; ++it ){
+	FOREACHIT( threads ){
 		if( (*it)->Thread == L ){
 			thread = (*it);
 			break;
@@ -121,7 +128,8 @@ int threadsManager::ThreadWait( lua_State* L )
 
 	if( lua_pushthread(L) ){
 		luaL_where(L, 0);
-		debug( SCRIPT, "Main thread is not a coroutine: " + getDebugInfo( L ) + lua_tostring(L, -1) + ".\n" );
+		debug( SCRIPT, "Main thread is not a coroutine: " + getDebugInfo( L ) +
+				lua_tostring(L, -1) + ".\n" );
 		lua_pop(L, lua_gettop(L));
 		return 0;
 	}else{
@@ -143,9 +151,11 @@ int threadsManager::ThreadWait( lua_State* L )
 bool threadsManager::RemoveThread( unsigned int id )
 {
 	LuaThread* thread;
+	char dbg[50];
+
 	if( id > 0 || id <= threads.size( ) ){
 		thread = NULL;
-		for( std::list<LuaThread*>::iterator it = threads.begin(), end = threads.end(); it != end; ++it ){
+		FOREACHIT( threads ){
 			if( (*it)->ThreadId == id ){
 				thread = (*it);
 				threads.erase(it);
@@ -154,8 +164,22 @@ bool threadsManager::RemoveThread( unsigned int id )
 		}
 		if( thread ){
 			delete thread;
+			sprintf( dbg, "Lua thread %d removed.\n", id );
+			Debug::debug( Debug::SCRIPT, dbg);
 			return true;
 		}
 	}
+
+	sprintf( dbg, "Lua thread %d not found.\n", id );
+	Debug::debug( Debug::SCRIPT, dbg);
+
 	return false;
 }
+
+void threadsManager::CleanThreads()
+{
+	Debug::debug( Debug::MAIN, "Cleaning threads.\n" );
+	clear_vector( &threads );
+}
+
+

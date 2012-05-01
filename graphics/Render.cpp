@@ -88,14 +88,18 @@ bool RenderManager::LoadTextures( )
 
 	debug( GRAPHICS, citoa(textures_count) + " textures found.\n" );
 
-	if( !textures_count )
+	if( !textures_count ){
+		delete lc;
 		return false;
+	}
 
 	lc->getSubconfigsList(config, names);
 
 	for( std::vector< string >:: iterator it = names.begin(), vend = names.end(); it != vend; ++it ){
 		AddTexture(*it);
 	}
+
+	delete lc;
 	// load basic textures to main atlas
 	return CreateAtlas( &atlasHandle, &atlasWidth, &atlasHeight );
 }
@@ -252,7 +256,8 @@ bool RenderManager::DrawToGLTexture( GLuint* ahandle, int width, int height, std
 	//viewport
 	glPopAttrib();
 	//color
-	glPopAttrib();
+	// Everything said that it is unnecessary
+	//glPopAttrib();
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	return true;
@@ -467,19 +472,25 @@ RenderManager::RenderManager( ){
 	GLSprites.clear();
 	// Set first texture info to 0
 	textures = (TextureInfo*)malloc( sizeof(TextureInfo) );
-	//memset( textures, '0', sizeof(TextureInfo) );
 	texturesCount = 1;
-	const char texid[1] = {'0'};
-	textures[0].id = (char *)malloc( sizeof(char) );
-	strcpy(textures[0].id, texid);
+	//memset( textures, 0, sizeof(TextureInfo) * texturesCount );
+
+	std::string n = "0";
+	textures[0].id = new char[2];
+	strcpy(textures[0].id, n.c_str());
+	//FIXME: bad, but fixes valgrind error
+	//textures[0].id = "0";
 }
 
 
 RenderManager::~RenderManager( )
 {
 	clear_vector( &internalTextures );
-	if( textures )
+	if( textures ){
+		for( int i = 0; i < texturesCount; ++i )
+			delete[] textures[i].id;
 		free(textures);
+	}
 	if( verticles )
 		free(verticles);
 	ClearGLTexturesCache();

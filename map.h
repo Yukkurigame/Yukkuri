@@ -58,6 +58,8 @@ class Map
 {
 public:
 	Map();
+	~Map();
+
 	bool LoadTiles( );
 	bool Init( );
 	bool Load( std::string region );

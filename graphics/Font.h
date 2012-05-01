@@ -16,6 +16,8 @@
 
 #define CHARSIZE 256
 
+void ftDone();
+
 struct Char{
 	FT_Glyph gl;
 	FT_Bitmap bm;
@@ -60,6 +62,7 @@ struct font_data {
 
 	//Print all characters to texture
 	Texture* print( int cols, int rows );
+
 };
 
 

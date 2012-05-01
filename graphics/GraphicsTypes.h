@@ -152,9 +152,9 @@ struct TextureInfo
 	GLuint atlas; // atlas id
 	char* id;
 	rect2f pos;
-	TextureInfo () {
-		atlas = 0;
-	}
+	TextureInfo () : rows(0), cols(0), swidth(0), sheight(0),
+		twidth(0), theight(0), atlas(0), pos() {}
+
 	void fromTextureProxy( TextureProxy* t ){
 		fromTextureProxy(t, 0);
 	}

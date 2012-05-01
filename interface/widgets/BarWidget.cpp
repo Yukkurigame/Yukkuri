@@ -19,6 +19,7 @@ BarWidget::BarWidget()
 	BindedMaxValue = NULL;
 	BarX = 0;
 	BarY = 0;
+	BarValue = 0;
 }
 
 BarWidget::~BarWidget( )

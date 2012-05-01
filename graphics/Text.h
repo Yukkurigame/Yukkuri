@@ -12,6 +12,9 @@
 #include "Font.h"
 #include "GraphicsTypes.h"
 
+
+void CleanFonts();
+
 class Text
 {
 public:

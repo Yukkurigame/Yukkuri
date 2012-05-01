@@ -64,7 +64,7 @@ public:
 			if( lua_isfunction(L, -1) ){
 				T2Key key;
 				LuaScript::getValue( L, -2, key );
-				LuaRegRef value;
+				LuaRegRef value = LUA_NOREF;
 				RegProc( L, &value, -1); // stack: map key
 				funcret[key] = value;
 			}else{

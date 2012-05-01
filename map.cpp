@@ -4,6 +4,9 @@
 #include "Render.h"
 #include "LuaConfig.h"
 #include "safestring.h"
+
+#include "hacks.h"
+
 #include <math.h>
 #include <iterator>
 
@@ -122,6 +125,14 @@ Map::Map( )
 	Updated = false;
 	posX = 0;
 	posY = 0;
+}
+
+Map::~Map( )
+{
+	FOREACHIT( Tilesvec ){
+		DeleteTile( *it );
+	}
+	Tilesvec.clear( );
 }
 
 bool Map::LoadTiles( )

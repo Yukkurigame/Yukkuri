@@ -27,6 +27,7 @@ namespace threadsManager
 	int ThreadWait( lua_State *L );
 	int ResumeThread( lua_State *L );
 	bool RemoveThread( unsigned int id );
+	void CleanThreads( );
 
 }
 

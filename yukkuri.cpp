@@ -8,11 +8,13 @@
 #include "Render.h"
 #include "Interface.h"
 #include "Camera.h"
+#include "Text.h"
 #include "map.h"
 #include "debug.h"
 using namespace Debug;
 
 #include "LuaScript.h"
+#include "LuaThread.h"
 
 Yukkuri Engine;
 
@@ -120,6 +122,11 @@ void Yukkuri::WindowActive()
 void Yukkuri::End()
 {
 	RenderManager::Destroy();
+	CleanFonts();
+	ftDone();
+	threadsManager::CleanThreads();
+
+	Debug::debug( Debug::MAIN, "Done.\n" );
 }
 
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>370</width>
-    <height>424</height>
+    <height>440</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -74,6 +74,13 @@
       </item>
       <item>
        <widget class="YSimpleInputWidget" name="scripts_path" native="true">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="YSimpleInputWidget" name="proto_path" native="true">
         <property name="enabled">
          <bool>true</bool>
         </property>

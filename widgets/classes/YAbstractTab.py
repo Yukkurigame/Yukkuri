@@ -180,7 +180,7 @@ class YAbstractTab(object):
             return
         elname = re.sub('\s+', '_', (saved.get('name') or ''
             ).strip()) or self._loadedElement
-        if not saved.has_key('id'):
+        if not 'id' in saved or not saved['id']:
             saved['id'] = '%s_%s_%s' % (eltype.lower(), elname, randint(0, 999999))
         if not globalname:
             globalname = str(saved.get('id'))

@@ -56,6 +56,13 @@
          </widget>
         </item>
         <item>
+         <widget class="YSimpleInputWidget" name="Proto" native="true">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="YImageChooser" name="Image" native="true"/>
         </item>
         <item>
@@ -209,12 +216,6 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>YReadOnlySimpleInputWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>YSpinBoxInputWidget</class>
    <extends>QWidget</extends>
    <header>widgets</header>
@@ -223,6 +224,12 @@
     <signal>valueChanged(int)</signal>
     <slot>setValue(int)</slot>
    </slots>
+  </customwidget>
+  <customwidget>
+   <class>YReadOnlySimpleInputWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>YComboBoxWidget</class>

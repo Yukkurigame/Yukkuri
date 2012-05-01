@@ -9,9 +9,9 @@
 #define LUASCRIPTCONFIG_H_
 
 #include "LuaScript.h"
-#include "Lua.h"
+#include "LuaConfig.h"
 
-class LuaScriptConfig: public LuaScript
+class LuaScriptConfig: public LuaScript, public LuaConfig
 {
 public:
 
@@ -31,14 +31,14 @@ public:
 	{
 		LuaStackChecker sc(Lst, __FILE__, __LINE__);
 
-		int szadd = LuaMain::execFunction( function );
+		int szadd =  LuaScript::execFunction( function );
 
 		for( int i=0; i<sz; ++i ){
 			lua_pushstring( Lst, params[i] );
 		}
 		if( lua_pcall( Lst, sz + szadd, 1, 0 ) ){
 			std::string err;
-			LuaMain::getValue( Lst, -1, err );
+			LuaScript::getValue( Lst, -1, err );
 			debug( Debug::SCRIPT, "Lua function '" + function + "' execute error: " + err + "\n" );
 			lua_pop( Lst, 1 + szadd );
 			return false;
@@ -63,15 +63,15 @@ public:
 			// stack: map key value
 			if( lua_isfunction(L, -1) ){
 				T2Key key;
-				LuaMain::getValue( L, -2, key );
+				LuaScript::getValue( L, -2, key );
 				LuaRegRef value;
 				RegProc( L, &value, -1); // stack: map key
 				funcret[key] = value;
 			}else{
 				T1Key key;
-				LuaMain::getValue( L, -2, key );
+				LuaScript::getValue( L, -2, key );
 				T1Value value;
-				LuaMain::getValue( L, -1, value );
+				LuaScript::getValue( L, -1, value );
 				ret[key] = value;
 				lua_pop(L, 1); // stack: map key
 			}

@@ -182,7 +182,7 @@ bool RenderManager::DrawToGLTexture( GLuint* ahandle, int width, int height, std
 
 	GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 	if( status != GL_FRAMEBUFFER_COMPLETE_EXT ){
-		debug( GRAPHICS, "Your framebuffer is broken. Use top NV to play this Crusis" );
+		debug( GRAPHICS, "Your framebuffer is broken. Use top NV to play this Crusis.\n" );
 		return 0;
 	}
 

@@ -251,20 +251,28 @@ void Bindings::LoadKeys( std::string subconfig )
 	Debug::debug( Debug::INPUT, "Loading bindings set " + subconfig + ".\n" );
 	std::map < UINT, UINT > Bindkeys;
 	std::map < UINT, LuaRegRef > Bindfuncs;
+	std::map < UINT, UINT > BindAliases;
 	std::string config = "bindings";
 	LuaScriptConfig* cfg = new LuaScriptConfig;
 	cfg->getValue( "keys", subconfig, config, Bindkeys, Bindfuncs );
+	cfg->LuaConfig::getValue( "aliases", subconfig, config, BindAliases );
 
 	FOREACHIT( Bindkeys ){
-		if( it->first < MAXKEYS )
+		if( it->first < MAXKEYS ){
 			BindCFunction( it->first, it->second );
-		else
+			std::map < UINT, UINT >::iterator alias = BindAliases.find( it->first );
+			if( alias != BindAliases.end() )
+				BindCFunction( alias->second, it->second );
+		}else
 			Debug::debug( Debug::INPUT, "Bad key name.\n" );
 	}
 	FOREACHIT( Bindfuncs ){
-		if( it->first < MAXKEYS )
+		if( it->first < MAXKEYS ){
 			BindLuaFunction( it->first, it->second );
-		else
+			std::map < UINT, UINT >::iterator alias = BindAliases.find( it->first );
+			if( alias != BindAliases.end() )
+				BindLuaFunction( alias->second, it->second );
+		}else
 			Debug::debug( Debug::INPUT, "Bad key name.\n" );
 	}
 	delete cfg;

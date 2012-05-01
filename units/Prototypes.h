@@ -9,12 +9,15 @@
 #define ACTIONS_H_
 
 #include "types.h"
+#include "ProtoStack.h"
 #include <string>
 #include <map>
 
 enum ActionCommand
 {
-	acNone
+	acNone,
+	acPushInt, acPushFloat, acPushString,
+	acSetParam, acCopyParam, acLoadParam, acLoadParamBunch,
 };
 
 struct Frame
@@ -27,6 +30,7 @@ struct Frame
 	ActionCommand command;
 	bool is_param_function;
 
+	Frame( ) : duration(), num(), param(), command(acNone), is_param_function(false) {};
 };
 
 struct Action
@@ -47,6 +51,7 @@ struct Proto
 	Proto() : id(-1) {};
 };
 
+
 struct ActionManager
 {
 	bool loaded;
@@ -54,9 +59,10 @@ struct ActionManager
 	UINT lastTick;
 	UINT frame;
 	Proto proto;
+	ParametersStack params;
 	Action* action;
 
-	ActionManager( ) : loaded(false), frame(-1) {}
+	ActionManager( ) : loaded(false), done(false), lastTick(0), frame(0) { action = NULL; }
 	~ActionManager( ) {}
 
 	void setProto( Proto );

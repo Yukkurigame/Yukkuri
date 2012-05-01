@@ -18,13 +18,10 @@ UnitManager::UnitManager()
 
 UnitManager::~UnitManager()
 {
-	while( Units.size() > 0 )
-	{
-		if ( Units.back() != 0 ) {
-			DeleteUnit( Units.back() );
-		}
-		Units.pop_back();
+	FOREACHIT( Units ){
+		DeleteUnit( it->second );
 	}
+	Units.clear();
 }
 /**
  * Build a unit according to criteria passed to the function and call
@@ -89,8 +86,8 @@ void UnitManager::BatchRemove()
 		return;
 
 	FOREACHIT( RemovedUnits ){
-		DeleteUnit( *(*it) );
-		Units.erase( *it );
+		Units.erase( (*it)->getUnitId() );
+		DeleteUnit( *it );
 	}
 
 	RemovedUnits.clear();
@@ -106,37 +103,45 @@ int UnitManager::GetUnitsSize( enum unitType type )
 Unit* UnitManager::closer( Unit* u, std::string type, float limit )
 {
 	//FIXME: quick and dirty
+	if( u == NULL )
+		return NULL;
 	Unit* ret = NULL;
 	float distance = 9000;
 	limit *= u->getUnitSize();
-	for (int i = 0; i < (int)Units.size(); i++) {
-		if( Units[i] != u && Units[i]->getUnitType() == type ){
-			float dist = u->dist(Units[i]);
+	Unit* tmp = NULL;
+	FOREACHIT( Units ){
+		tmp = it->second;
+		if( tmp != NULL && tmp != u && tmp->getUnitType() == type ){
+			float dist = u->dist( tmp );
 			if( dist < limit && dist < distance ){
 				distance = dist;
-				ret = Units[i];
+				ret = tmp;
 			}
 		}
 	}
+
 	return ret;
 }
 
 Unit* UnitManager::closer( Unit* u, std::vector< std::string >* types, float limit )
 {
 	//FIXME: quick and dirty
+	if( u == NULL )
+		return NULL;
 	Unit* ret = NULL;
 	float distance = 9000;
 	limit *= u->getUnitSize();
-	for (int i = 0; i < (int)Units.size(); i++) {
-		if( Units[i] != u ){
-			for( std::vector< std::string >::iterator it = types->begin(), end = types->end(); it != end; ++it ){
-				if( Units[i]->getUnitType() == (*it) ){
-					float dist = u->dist(Units[i]);
+	Unit* tmp = NULL;
+	FOREACHIT( Units ){
+		tmp = it->second;
+		if( tmp != NULL && tmp != u ){
+			FOREACHP( tit, types ){
+				if( tmp->getUnitType() == (*tit) ){
+					float dist = u->dist( tmp );
 					if( dist < limit && dist < distance ){
 						distance = dist;
-						ret = Units[i];
+						ret = tmp;
 					}
-					break;
 				}
 			}
 		}
@@ -148,18 +153,18 @@ void UnitManager::tick( const int& dt )
 {
 	Unit* u;
 	FOREACHIT( Units ){
-		u = *it;
+		u = it->second;
 		u->update( dt );
 		if( u->isDeleted() )
-			RemovedUnits.push_back( it );
+			RemovedUnits.push_back( u );
 	}
 	BatchRemove();
 }
 
 void UnitManager::grow( )
 {
-	for (int i = 0; i < (int)Units.size(); i++) {
-		Units[i]->grow( );
+	FOREACHIT( Units ){
+		it->second->grow();
 	}
 }
 
@@ -167,13 +172,9 @@ void UnitManager::grow( )
 Unit* UnitManager::GetUnit( unsigned int id )
 {
 	Unit* u = NULL;
-	if( id > 0 && id <= LastId ){
-		for( std::vector< Unit* >::iterator it = Units.begin(), end = Units.end(); it != end; ++it ){
-			if( (*it)->getUnitId( ) == id ){
-				u = (*it);
-			}
-		}
-	}
+	std::map< UINT, Unit* >::iterator it = Units.find( id );
+	if( it != Units.end() )
+		u = it->second;
 	return u;
 }
 
@@ -189,7 +190,7 @@ void UnitManager::onDraw( )
 
 void UnitManager::AddUnit( Unit* unit )
 {
-	Units.push_back( unit );
+	Units[ unit->getUnitId() ] = unit;
 }
 
 void UnitManager::ChangeUnitsSize( enum unitType type, signed int size )

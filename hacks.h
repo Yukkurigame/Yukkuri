@@ -16,8 +16,10 @@ static void clear_vector( Vector* V ){
 }
 
 //TODO: decltype
-#define FOREACH( item, vec ) for( typeof((vec).begin()) item = (vec).begin(), end = (vec).end(); \
-										item != end; ++item )
+#define FOREACH( item, vec ) for( typeof((vec).begin()) item = (vec).begin(), end##item = (vec).end(); \
+										item != end##item; ++item )
 #define FOREACHIT( vec ) FOREACH( it, vec )
+#define FOREACHP( item, vec ) for( typeof((vec)->begin()) item = (vec)->begin(), end##item = (vec)->end(); \
+										item != end##item; ++item )
 
 #endif /* HACKS_H_ */

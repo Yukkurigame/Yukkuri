@@ -29,9 +29,8 @@ bool DynamicUnit::Create( int id )
 	if( !AnimatedUnit::Create( id ) )
 		return false;
 
-	LuaConfig* cfg = new LuaConfig;
+	/*LuaConfig* cfg = new LuaConfig;
 	cfg->getValue( "hp", UnitName, Type, Parameters["hp"] );
-	cfg->getValue( "damage", UnitName, Type, Parameters["damage"] );
 	cfg->getValue( "damage", UnitName, Type, Parameters["damage"] );
 	cfg->getValue( "speed", UnitName, Type, Parameters["speed"]);
 	Parameters["hpmax"] = Parameters["hp"];
@@ -39,11 +38,11 @@ bool DynamicUnit::Create( int id )
 	Parameters["exp"] = 20;
 	Parameters["expmax"] = 200;
 	Parameters["level"] = 1;
-	Parameters["days"] = 0;
+	Parameters["days"] = 0;*/
 
 	setUnitSize( 0.35f );
 
-	delete cfg;
+	//delete cfg;
 
 	return true;
 }

@@ -17,6 +17,7 @@ struct TileInfo
 	float passability;
 	std::string id;
 	int texture;
+	TileInfo() : picture(), passability(), texture() {};
 };
 
 struct MapTile

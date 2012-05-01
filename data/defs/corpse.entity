@@ -2,14 +2,15 @@
 	{
 		picture = "0",
 		name = "Corpse",
-		type = "Corpse",
+		proto = "corpse",
+		meeting = 100.0,
 		image = "sprite_Corpse_952625",
 		height = 45,
 		width = 75,
 		imagecols = 2,
+		id = "corpse_Corpse_880027",
 		imagerows = 1,
-		nutritive = 1.0,
-		meeting = 100.0,
-		id = "corpse_Corpse_880027"
+		type = "Corpse",
+		nutritive = 1.0
 	}
 }

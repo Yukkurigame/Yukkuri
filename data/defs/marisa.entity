@@ -9,6 +9,7 @@
 		speed = 80.0,
 		id = "entity_Marisa_5172",
 		name = "Marisa",
+		proto = "entity",
 		meeting = 40.0,
 		damage = 3.0,
 		width = 90,

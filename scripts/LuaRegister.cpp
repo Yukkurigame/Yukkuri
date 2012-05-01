@@ -78,6 +78,17 @@ void LuaMain::RegisterApi( lua_State* L )
 		// Actions
 		FIELD(acNone)
 
+		// Action parameters stack
+		FIELD(acPushInt)
+		FIELD(acPushFloat)
+		FIELD(acPushString)
+
+		// Unit Parameters
+		FIELD(acSetParam)
+		FIELD(acCopyParam)
+		FIELD(acLoadParam)
+		FIELD(acLoadParamBunch)
+
 	}
 	lua_setglobal(L, "constants");		// Заносим таблицу в глобальную переменную. Стек:
 

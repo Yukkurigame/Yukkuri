@@ -18,8 +18,8 @@ DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1
 CFLAGS= -O0 -g -Wall $(DEFINES)
 
 
-UNITS =  unitmanager.cpp Prototypes.cpp Unit.cpp Animated.cpp Plant.cpp Corpse.cpp \
-		 Dynamic.cpp Entity.cpp Player.cpp
+UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp Unit.cpp Animated.cpp Plant.cpp \
+		 Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp
 GRAPHICS = Font.cpp Text.cpp ElasticBox.cpp sdl_graphics.cpp gl_extensions.cpp Animation.cpp \
 		   Render.cpp pngfuncs.c
 SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp api.cpp proto.cpp

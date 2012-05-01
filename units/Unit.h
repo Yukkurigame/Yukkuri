@@ -56,7 +56,7 @@ protected:
 	float X, Y, Z;
 	std::map < std::string, float > Parameters;
 	Animation Image;
-	ActionManager Prototype;
+	ActionManager Actions;
 	std::string UnitName;
 	enum unitType UnitType;
 	std::string Type;

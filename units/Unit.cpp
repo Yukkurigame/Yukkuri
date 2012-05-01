@@ -43,7 +43,8 @@ bool Unit::Create( int id )
 	cfg->getValue( "proto", UnitName, Type, protoname );
 	if( protoname != "" ){
 		ProtoManager* pm = new ProtoManager;
-		Prototype.setProto( pm->GetProtoByName( protoname ) );
+		Actions.setProto( pm->GetProtoByName( protoname ) );
+		Actions.setAction( "init" );
 		delete pm;
 	}
 
@@ -64,14 +65,16 @@ void Unit::update( const int& )
 	}
 
 
-	if( !Prototype.loaded )
+	if( !Actions.loaded )
 		return;
 
-	int param;
-	const char* txt_param;
+	int param = 0;
+	const char* txt_param = NULL;
 
-	while( !Prototype.nextFrame() ){
-		const Frame& frame = Prototype.action->frames[Prototype.frame];
+	ParametersStack* ps = &Actions.params;
+
+	while( !Actions.nextFrame() ){
+		const Frame& frame = Actions.action->frames[Actions.frame];
 
 		if( frame.is_param_function){
 
@@ -79,10 +82,10 @@ void Unit::update( const int& )
 
 			int ret_val = ls->ExecChunkFromReg( frame.param );
 			if( ret_val == -1 )	{
-				Debug::debug( Debug::CONFIG,
+				Debug::debug( Debug::PROTO,
 					"An error occurred while executing a local function. obj id  " +
-					citoa(UnitId) + ", proto_name '" + Prototype.proto.name + "', action '" +
-					Prototype.action->name  + "', frame " + citoa(Prototype.frame) +
+					citoa(UnitId) + ", proto_name '" + Actions.proto.name + "', action '" +
+					Actions.action->name  + "', frame " + citoa(Actions.frame) +
 					": " + ls->getString( -1 ) + ".\n" );
 			}
 
@@ -101,6 +104,69 @@ void Unit::update( const int& )
 		switch(frame.command){
 			case acNone:
 				break;
+
+			// Action parameters stack
+			case acPushInt:
+				ps->Push( param );
+				break;
+			case acPushFloat:
+				//TODO: float
+				ps->Push( param );
+				Debug::debug( Debug::PROTO, "acPushFloat not implemented.\n" );
+				break;
+			case acPushString:
+				ps->Push( txt_param );
+				break;
+
+			// Unit Parameters
+			case acSetParam:
+				if( txt_param )
+					Parameters[ std::string(txt_param) ] = param;
+				else
+					Debug::debug( Debug::PROTO, "acSetParam bad parameter name.\n" );
+				break;
+			case acCopyParam:
+				if( !ps->CheckParamTypes( 1, stString ) )
+					Debug::debug( Debug::PROTO, "acCopyParam bad original parameter name.\n" );
+				else if( !txt_param )
+					Debug::debug( Debug::PROTO, "acCopyParam bad parameter name.\n" );
+				else{
+					std::string paramname = ps->PopString();
+					std::map < std::string, float >::iterator it = Parameters.find(paramname);
+					Parameters[txt_param] =
+							( it != Parameters.end() ) ? Parameters[ paramname ] : 0.0f;
+				}
+				break;
+			case acLoadParam:
+			{
+				if( !txt_param ){
+					Debug::debug( Debug::PROTO, "acLoadPraram bad parameter name.\n" );
+					break;
+				}
+				LuaConfig* cfg = new LuaConfig;
+				cfg->getValue( txt_param, UnitName, Type, Parameters[txt_param] );
+				delete cfg;
+				break;
+			}
+			case acLoadParamBunch:
+			{
+				if( param <= 0 )
+					break;
+				LuaConfig* cfg = new LuaConfig;
+				for( int i = 0; i < param; i++ ){
+					if( !ps->CheckParamTypes( 1, stString ) ){
+						Debug::debug( Debug::PROTO, "acLoadPraramBunch parameter " +
+								citoa(i+1) + " not a string.\n" );
+						continue;
+					}
+					std::string paramname = ps->PopString();
+					cfg->getValue( paramname, UnitName, Type, Parameters[paramname] );
+				}
+				delete cfg;
+				break;
+			}
+
+
 		}
 	}
 

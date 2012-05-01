@@ -36,6 +36,7 @@ int ProtoManager::LoadPrototype( std::string name )
 
 	p.name = name;
 	p.id = -1;
+	std::string path = conf.protoPath + name + ".proto";
 
 	Debug::debug( Debug::CONFIG, "Loading proto: " + name + ".\n");
 
@@ -48,9 +49,10 @@ int ProtoManager::LoadPrototype( std::string name )
 	lua_setmetatable( Lst, -2 );		// Стек: env
 
 
-	if( luaL_loadfile( Lst, (conf.protoPath + name).c_str()) ){
+	if( luaL_loadfile( Lst, path.c_str()) ){
 		// Стек: env err
-		Debug::debug( Debug::CONFIG, "While trying to load proto '" + name + "': " + lua_tostring( Lst, -1 ) + ".\n");
+		Debug::debug( Debug::CONFIG, "While trying to load proto '" + name + "' (" +
+				path + "): " + lua_tostring( Lst, -1 ) + ".\n");
 		lua_pop( Lst, 2 );	// Стек:
 		return 0;
 	}
@@ -60,7 +62,7 @@ int ProtoManager::LoadPrototype( std::string name )
 
 	if( lua_pcall( Lst, 0, 0, 0 ) ){
 		// Какая-то ошибка выполнения файла
-		Debug::debug( Debug::CONFIG, lua_tostring( Lst, -1 ) ); // Стек: env err
+		Debug::debug( Debug::CONFIG, std::string(lua_tostring( Lst, -1 )) + ".\n" ); // Стек: env err
 		Debug::debug( Debug::CONFIG, "Unable to load proto '" + name + "'.\n" );
 		lua_pop( Lst, 2 );	// Стек:
 
@@ -171,6 +173,7 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 
 									// st: ... frames key frame
 								}else{
+									a.frames[j].is_param_function = false;
 									lua_pop( L, 1 ); // st: ... frames key frame
 									getValueByName( L, "param", a.frames[j].param );
 								}

@@ -36,6 +36,11 @@ bool ActionManager::nextFrame( )
 
 	UINT now = sdl_time;
 
+	if( !lastTick ){
+		lastTick = now;
+		return false;
+	}
+
 	if( now - lastTick >= action->frames[frame].duration ){
 		lastTick = now;
 

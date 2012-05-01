@@ -37,8 +37,8 @@ class UnitManager
 		RenderManager* graph;
 		void AddUnit( Unit* pUnit );
 		void ChangeUnitsSize( enum unitType type, signed int size );
-		std::vector< Unit* > Units;
-		std::vector< std::vector< Unit* >::iterator > RemovedUnits;
+		std::map< unsigned int, Unit* > Units;
+		std::vector< Unit* > RemovedUnits;
 		std::map< enum unitType, int > Size;
 		Unit* player;
 };

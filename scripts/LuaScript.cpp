@@ -122,7 +122,7 @@ int LuaScript::ExecChunk( )
 	int level = lua_gettop( Lst ) - 1; // - args //Верх стека - аргументы - одна функция
 	if( lua_pcall( Lst, 0, LUA_MULTRET, 0 ) ){ // args
 		std::string err = lua_tostring( Lst, -1 );
-		Debug::debug( Debug::SCRIPT, "In ExecChunk(): " + err );
+		Debug::debug( Debug::SCRIPT, "In ExecChunk(): " + err + ".\n" );
 		return -1;
 	}
 	return lua_gettop( Lst ) - level; //Новый верх стека - старый = количество результатов

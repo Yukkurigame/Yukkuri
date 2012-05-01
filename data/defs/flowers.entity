@@ -5,12 +5,13 @@
 		height = 60,
 		imagecols = 4,
 		imagerows = 1,
-		nutritive = 4.0,
+		id = "plant_Flower_580779",
 		name = "Flower",
+		proto = "plant",
 		meeting = 99.99,
-		id = "",
+		nutritive = 4.0,
 		width = 60,
 		type = "Plant",
-		image = "flowers.png"
+		image = "sprite_Flowers_85415"
 	}
 }

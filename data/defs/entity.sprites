@@ -51,5 +51,17 @@
 		type = "Sprite",
 		id = "sprite_Corpse_952625",
 		columns = 2
+	},
+	{
+		rows = 1,
+		name = "Flowers",
+		image = "./flowers.png",
+		offsetx = 0,
+		offsety = 0,
+		height = 60,
+		width = 240,
+		type = "Sprite",
+		id = "sprite_Flowers_85415",
+		columns = 4
 	}
 }

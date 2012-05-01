@@ -9,6 +9,7 @@
 		speed = 80.0,
 		id = "entity_Reimu_115418",
 		name = "Reimu",
+		proto = "entity",
 		meeting = 47.0,
 		damage = 3.0,
 		width = 80,

@@ -1,16 +1,14 @@
 
-parent = "object"
+parent = "live_object"
 
 actions = {
 	{
 		name = "init",
 		frames = {
-			{ com = constants.acPushString, text = "hp" },
+			{ com = constants.acSuper, text = "init" },
 			{ com = constants.acPushString, text = "damage" },
 			{ com = constants.acPushString, text = "speed" },
-			{ com = constants.acLoadParamBunch, param = 3 },
-			{ com = constants.acPushString, text = "hp" },
-			{ com = constants.acCopyParam, text = "hpmax" },
+			{ com = constants.acLoadParamBunch, param = 2 },
 			{ com = constants.acSetParam, text = "fed", param = 100 },
 			{ com = constants.acSetParam, text = "exp", param = 20 },
 			{ com = constants.acSetParam, text = "expmax", param = 200 },

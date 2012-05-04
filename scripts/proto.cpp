@@ -16,7 +16,10 @@
 
 int ProtoManager::Count = 0;
 
-std::vector<Proto> Prototypes;
+//FIXME: This is vector but proto id is element number, so it cannot be removed after pushing.
+//TODO: make vector a c-array of prototypes
+std::vector<Proto*> Prototypes;
+
 
 ProtoManager::ProtoManager()
 {
@@ -30,12 +33,12 @@ ProtoManager::~ProtoManager()
 
 int ProtoManager::LoadPrototype( std::string name )
 {
-	Proto p;
+	Proto* p = new Proto;
 	extern MainConfig conf;
 	LuaStackChecker sc( Lst, __FILE__, __LINE__);
 
-	p.name = name;
-	p.id = -1;
+	p->name = name;
+	p->id = -1;
 	std::string path = conf.protoPath + name + ".proto";
 
 	Debug::debug( Debug::CONFIG, "Loading proto: " + name + ".\n");
@@ -68,12 +71,16 @@ int ProtoManager::LoadPrototype( std::string name )
 
 		return 0;
 	}else{
-		LoadTable( Lst, &p );
+		std::string parentname;
+		getValueByName( Lst, "parent", parentname );
+		if( parentname != "" )
+			p->parent = GetProtoByName( parentname );
+		LoadTable( Lst, p );
 	} // if lua_pcall
 
 	lua_pop( Lst, 1 );	// Стек:
 
-	p.id = Count;
+	p->id = Count;
 
 	Prototypes.push_back(p);
 
@@ -82,26 +89,24 @@ int ProtoManager::LoadPrototype( std::string name )
 
 
 
-Proto ProtoManager::GetProtoById( int id )
+Proto* ProtoManager::GetProtoById( int id )
 {
 	if( id >= 0 && id < (int)Prototypes.size() )
 		return Prototypes[id];
-	Proto p; //FUU
-	return p;
+	return NULL;
 }
 
 
-Proto ProtoManager::GetProtoByName( std::string name )
+Proto* ProtoManager::GetProtoByName( std::string name )
 {
 	FOREACHIT( Prototypes ){
-		if( it->name == name )
-			return Prototypes[it->id];
+		if( (*it)->name == name )
+			return Prototypes[(*it)->id];
 	}
 	int loaded = LoadPrototype( name );
 	if( loaded )
 		return Prototypes[loaded - 1];
-	Proto p; //FUU
-	return p;
+	return NULL;
 }
 
 
@@ -114,15 +119,11 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 {
 	LuaStackChecker sc( Lst, __FILE__, __LINE__);
 
-	std::string parentname;
+	if( !proto )
+		return;
 
-	getValueByName( L, "parent", parentname );
-
-	if( parentname != "" ){
-		Proto parent = GetProtoByName( parentname );
-		if( parent.id >= 0 )
-			proto->Actions.insert( parent.Actions.begin(), parent.Actions.end() );
-	}
+	if( proto->parent != NULL )
+			proto->Actions.insert( proto->parent->Actions.begin(), proto->parent->Actions.end() );
 
 	// Стек: env
 	lua_getfield( L, -1, "actions" );	// Стек: env actions
@@ -133,8 +134,6 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 			return;
 		}
 
-		Action a;
-
 		// Цикл по массиву действий
 		size_t i = 0;
 
@@ -144,66 +143,69 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 			if( lua_istable( L, -1 ) ){
 				// Получили таблицу прототипа анимации, читаем ее
 
-				getValueByName( L, "name", a.name );
+				std::string aname;
+
+				getValueByName( L, "name", aname );
+
+				//proto->Actions[aname] = Action(aname);
+
+				Action* a = &proto->Actions[aname];
+				a->name = aname;
 
 				lua_getfield(L, -1, "frames");	// Стек: env actions key actions[key] frames
 				if( lua_istable(L, -1) ){
-					a.framesCount = lua_objlen(L, -1);
-					if( a.framesCount > 0 ){
-						a.frames = (Frame*)malloc( sizeof(Frame) * a.framesCount );
+					a->framesCount = lua_objlen(L, -1);
+					if( a->framesCount > 0 ){
+						a->frames = (Frame*)malloc( sizeof(Frame) * a->framesCount );
 
 						size_t j = 0;
 
 						// Стек: env actions key actions[key] frames nil
 						for( lua_pushnil(L); lua_next(L, -2); lua_pop(L, 1), j++ ){
 							// Стек: env actions key actions[key] frames key frame
-							assert( j < a.framesCount );
+							assert( j < a->framesCount );
 							if( lua_istable( L, -1 ) ){
 								UINT command;
 
-								getValueByName( L, "num", a.frames[j].num );
-								getValueByName( L, "dur", a.frames[j].duration );
+								getValueByName( L, "num", a->frames[j].num );
+								getValueByName( L, "dur", a->frames[j].duration );
 								getValueByName( L, "com", command );
-								a.frames[j].command = (enum ActionCommand)command;
+								a->frames[j].command = (enum ActionCommand)command;
 
 								lua_getfield( L, -1, "param" ); // st: ... frames key frame param
 								if( lua_isfunction( L, -1 ) ){
-									RegProc( L, static_cast<LuaRegRef*>( &(a.frames[j].param) ), -1 );
-									a.frames[j].is_param_function = true;
+									RegProc( L, static_cast<LuaRegRef*>( &(a->frames[j].param) ), -1 );
+									a->frames[j].is_param_function = true;
 
 									// st: ... frames key frame
 								}else{
-									a.frames[j].is_param_function = false;
+									a->frames[j].is_param_function = false;
 									lua_pop( L, 1 ); // st: ... frames key frame
-									getValueByName( L, "param", a.frames[j].param );
+									getValueByName( L, "param", a->frames[j].param );
 								}
 
-								getValueByName( L, "text", a.frames[j].txt_param );
+								getValueByName( L, "text", a->frames[j].txt_param );
 							}else{
 								Debug::debug( Debug::CONFIG,
-									"In proto '" + proto->name + "', action '" + a.name + "' " +
+									"In proto '" + proto->name + "', action '" + a->name + "' " +
 									"frame " + citoa(j) + " - " + lua_typename(L, lua_type(L, -1)) +
 									": Frame loading canceled (not a table).\n");
-								a.framesCount = 0;
+								a->framesCount = 0;
 							}
 							//lua_pop(L, 1);	// Стек: env actions key actions[key] frames key
 						}
 					}else{
 						Debug::debug( Debug::CONFIG, "There are no frames in action '" +
-								a.name + "' of proto '" + proto->name + "'. Skipping.\n");
-						a.framesCount = 0;
+								a->name + "' of proto '" + proto->name + "'. Skipping.\n");
+						a->framesCount = 0;
 					}
 
 					// Стек: env actions key actions[key] frames
 
 				}else{ // if (lua_istable(L, -1))	frames
-					Debug::debug( Debug::CONFIG, "Action '" + a.name + "' in proto '" +
+					Debug::debug( Debug::CONFIG, "Action '" + a->name + "' in proto '" +
 							proto->name + "' have no frames table. Skipping.\n");
-					a.framesCount = 0;
-				}
-
-				if( a.framesCount > 0){
-					proto->Actions[a.name] = a;
+					a->framesCount = 0;
 				}
 
 				// Стек: env animations key animations[key] frames

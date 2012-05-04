@@ -62,8 +62,8 @@ void Unit::update( const int& )
 {
 	if( dist( UnitManager::units.GetPlayer( ) ) > 2000 ){
 		this->Delete();
+		return;
 	}
-
 
 	if( !Actions.loaded )
 		return;
@@ -76,7 +76,7 @@ void Unit::update( const int& )
 	while( !Actions.nextFrame() ){
 		const Frame& frame = Actions.action->frames[Actions.frame];
 
-		if( frame.is_param_function){
+		if( frame.is_param_function ){
 
 			LuaScript* ls = new LuaScript;
 
@@ -84,7 +84,7 @@ void Unit::update( const int& )
 			if( ret_val == -1 )	{
 				Debug::debug( Debug::PROTO,
 					"An error occurred while executing a local function. obj id  " +
-					citoa(UnitId) + ", proto_name '" + Actions.proto.name + "', action '" +
+					citoa(UnitId) + ", proto_name '" + Actions.proto->name + "', action '" +
 					Actions.action->name  + "', frame " + citoa(Actions.frame) +
 					": " + ls->getString( -1 ) + ".\n" );
 			}
@@ -103,6 +103,12 @@ void Unit::update( const int& )
 
 		switch(frame.command){
 			case acNone:
+				break;
+
+			// Functions
+			case acSuper:
+				Actions.saveState();
+				Actions.setParentAction( txt_param );
 				break;
 
 			// Action parameters stack

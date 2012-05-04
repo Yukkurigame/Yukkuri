@@ -168,7 +168,7 @@ template<> bool LuaMain::getValue( lua_State* L, int index, char*& ret)
 {
 	if( lua_isstring(L, index) ){
 		const char* lstring = lua_tostring(L, index);
-		ret = (char* )malloc( sizeof(char) * strlen(lstring) );
+		ret = (char* )malloc( sizeof(char) * ( strlen(lstring) + 1 ) );
 		strcpy( ret, lstring );
 		return true;
 	}

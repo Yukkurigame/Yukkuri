@@ -70,6 +70,8 @@ void Binds::movePlayerRight( short down )
 
 void Binds::playerAttackUnit( short down )
 {
+	if( down )
+		return;
 	Player* player;
 	player = dynamic_cast<Player*>(UnitManager::units.GetPlayer());
 	if( player )
@@ -78,6 +80,8 @@ void Binds::playerAttackUnit( short down )
 
 void Binds::playerEat( short down )
 {
+	if( down )
+		return;
 	Player* player;
 	player = dynamic_cast<Player*>(UnitManager::units.GetPlayer());
 	if( player )

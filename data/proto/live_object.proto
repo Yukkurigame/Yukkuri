@@ -1,0 +1,14 @@
+
+
+parent = "object"
+
+actions = {
+	{
+		name = "init",
+		frames = {
+			{ com = constants.acLoadParam, text = "hp" },
+			{ com = constants.acPushString, text = "hp" },
+			{ com = constants.acCopyParam, text = "hpmax" },
+		},
+	}
+}

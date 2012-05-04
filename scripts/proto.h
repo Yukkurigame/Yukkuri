@@ -22,8 +22,8 @@ public:
 
 	int LoadPrototype( std::string name );
 
-	Proto GetProtoById( int id );
-	Proto GetProtoByName( std::string name );
+	Proto* GetProtoById( int id );
+	Proto* GetProtoByName( std::string name );
 
 	void LoadTable( lua_State* L, Proto* proto );
 

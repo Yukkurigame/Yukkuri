@@ -473,7 +473,7 @@ RenderManager::RenderManager( ){
 	// Set first texture info to 0
 	textures = (TextureInfo*)malloc( sizeof(TextureInfo) );
 	texturesCount = 1;
-	//memset( textures, 0, sizeof(TextureInfo) * texturesCount );
+	memset( &textures[0], 0, sizeof(TextureInfo) );
 
 	std::string n = "0";
 	textures[0].id = new char[2];

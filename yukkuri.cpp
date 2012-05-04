@@ -16,6 +16,9 @@ using namespace Debug;
 #include "LuaScript.h"
 #include "LuaThread.h"
 
+#include "hacks.h"
+
+
 Yukkuri Engine;
 
 bool Yukkuri::Init()
@@ -121,6 +124,9 @@ void Yukkuri::WindowActive()
 
 void Yukkuri::End()
 {
+	extern std::vector<Proto*> Prototypes;
+	clear_vector( &Prototypes );
+
 	RenderManager::Destroy();
 	CleanFonts();
 	ftDone();

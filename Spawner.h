@@ -7,9 +7,6 @@
 #ifndef SPAWNER_H_
 #define SPAWNER_H_
 
-#include "unitmanager.h"
-#include "Define.h"
-
 //I think, this class is temporary.
 
 class Spawner

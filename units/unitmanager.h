@@ -6,41 +6,30 @@
 #include <string>
 
 #include "Unit.h"
-#include "Render.h"
 
-class UnitManager
+
+namespace UnitManager
 {
-	public:
-		UnitManager();
-		virtual ~UnitManager();
 
-		static UnitManager units;
+	void init();
+	void clean();
 
-		Unit* CreateUnit( enum unitType type, float x, float y );
-		void DeleteUnit( Unit* u );
-		void BatchRemove( );
-		Unit* GetUnit( unsigned int id );
-		Unit* GetPlayer() { return player; }
-		int GetUnitsSize( enum unitType type );
-		int GetUnitVecSize() { return (int)Units.size();}
+	Unit* CreateUnit( enum unitType type, float x, float y );
+	void DeleteUnit( Unit* u );
+	void BatchRemove( );
+	Unit* GetUnit( unsigned int id );
+	Unit* GetPlayer();
+	int GetUnitsSize( enum unitType type );
+	int GetUnitVecSize();
 
-		void tick( const int& );
+	void tick( const int& );
 
-		Unit* closer( Unit* u, std::string type, float limit = 100.0 );
-		Unit* closer( Unit* u, std::vector< std::string >* types, float limit = 100.0 );
-		void grow( ); //FUUUUU
-
-		void onDraw( );
+	Unit* closer( Unit* u, std::string type, float limit = 100.0 );
+	Unit* closer( Unit* u, std::vector< std::string >* types, float limit = 100.0 );
+	void grow( ); //FUUUUU
 
 
-	private:
-		RenderManager* graph;
-		void AddUnit( Unit* pUnit );
-		void ChangeUnitsSize( enum unitType type, signed int size );
-		std::map< unsigned int, Unit* > Units;
-		std::vector< Unit* > RemovedUnits;
-		std::map< enum unitType, int > Size;
-		Unit* player;
+
 };
 
 #endif // UNITMANAGER_H

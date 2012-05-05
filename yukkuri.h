@@ -2,7 +2,6 @@
 #define YUKKURI_H
 
 #include "engine.h"
-#include "unitmanager.h"
 #include "daytime.h"
 #include "Spawner.h"
 
@@ -26,7 +25,6 @@ public:
 	void End();
 
 private:
-	UnitManager* units;
 	DayTime daytime;
 	Spawner spawner;
 };

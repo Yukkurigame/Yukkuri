@@ -5,10 +5,11 @@
  *
  */
 #include "yukkuri.h"
-#include "Render.h"
-#include "Interface.h"
+#include "graphics/Text.h"
+#include "graphics/Render.h"
+#include "interface/Interface.h"
+#include "units/unitmanager.h"
 #include "Camera.h"
-#include "Text.h"
 #include "map.h"
 #include "debug.h"
 using namespace Debug;
@@ -41,8 +42,6 @@ bool Yukkuri::AdditionalInit()
 
 	debug( MAIN, "Additional Init\n" );
 
-	//Bindings::bnd.LoadKeys( "" );
-
 	map.LoadTiles( );
 	map.Init( );
 
@@ -57,8 +56,6 @@ bool Yukkuri::AdditionalInit()
 
 	daytime.loadInterface();
 
-	units = &UnitManager::units;
-
 	Widget* w = UI::yui.GetWidget("fps");
 	if( w )
 		w->bindValue( &CurrentFPS );
@@ -69,7 +66,7 @@ bool Yukkuri::AdditionalInit()
 void Yukkuri::Think( const int& ElapsedTime )
 {
 	// Do time-based calculations
-	units->tick( ElapsedTime );
+	UnitManager::tick( ElapsedTime );
 	daytime.update( ElapsedTime );
 	UI::yui.Update( );
 	spawner.Spawn( );
@@ -84,8 +81,6 @@ void Yukkuri::Render( )
 	YCamera::CameraControl.Update( );
 
 	// Display slick graphics on screen
-	units->onDraw( );
-
 	map.onDraw( );
 
 	daytime.onDraw( );
@@ -127,10 +122,13 @@ void Yukkuri::End()
 	extern std::vector<Proto*> Prototypes;
 	clear_vector( &Prototypes );
 
-	RenderManager::Destroy();
+	UnitManager::clean( );
+
+	threadsManager::CleanThreads( );
+
+	RenderManager::Destroy( );
 	CleanFonts();
 	ftDone();
-	threadsManager::CleanThreads();
 
 	Debug::debug( Debug::MAIN, "Done.\n" );
 }

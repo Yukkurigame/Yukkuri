@@ -11,6 +11,7 @@
 
 #include "Bindings.h"
 #include "units/Prototypes.h"
+#include "units/Unit.h"
 
 #include "debug.h"
 
@@ -74,7 +75,15 @@ void LuaMain::RegisterApi( lua_State* L )
 	// Различные именованые константы
 	lua_newtable(L);		// Стек: таблица
 	{
+		// Unit Types
+		FIELD(utStatic)
+		FIELD(utPlayer)
+		FIELD(utEntity)
+		FIELD(utPlant)
+		FIELD(utCorpse)
 
+
+		// ***********************
 		// Actions
 		FIELD(acNone)
 

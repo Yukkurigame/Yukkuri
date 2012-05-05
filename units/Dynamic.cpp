@@ -146,7 +146,7 @@ void DynamicUnit::grow( )
 void DynamicUnit::eat( )
 {
 	Unit* victim = NULL;
-	victim = UnitManager::units.closer( this, &FoodTypes );
+	victim = UnitManager::closer( this, &FoodTypes );
 	if( victim )
 		eat( victim );
 }
@@ -192,7 +192,7 @@ void DynamicUnit::eat( Unit* victim )
 void DynamicUnit::Die( )
 {
 	Corpse* corpse;
-	corpse = dynamic_cast<Corpse*>( UnitManager::units.CreateUnit( CORPSE, getUnitX(), getUnitY() ) );
+	corpse = dynamic_cast<Corpse*>( UnitManager::CreateUnit( utCorpse, getUnitX(), getUnitY() ) );
 	if( corpse ){
 		LuaConfig* cfg = new LuaConfig;
 		std::vector<int> bcolor;
@@ -265,7 +265,7 @@ void DynamicUnit::takeAction( )
 void DynamicUnit::attack( )
 {
 	Unit* victim = NULL;
-	victim = UnitManager::units.closer( this, "entity", 120.0 );
+	victim = UnitManager::closer( this, "entity", 120.0 );
 	if( victim )
 		this->attackUnit( victim );
 }

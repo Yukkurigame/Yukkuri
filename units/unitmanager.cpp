@@ -4,20 +4,43 @@
 #include "Entity.h"
 #include "Player.h"
 
+#include "debug.h"
 #include "hacks.h"
 
-UnitManager UnitManager::units;
 
 static unsigned int LastId = 1;
 
-UnitManager::UnitManager()
+
+namespace {
+	std::map< unsigned int, Unit* > Units;
+	std::vector< Unit* > RemovedUnits;
+	std::map< enum unitType, int > Size;
+	Unit* player = NULL;
+
+	void AddUnit( Unit* unit ) {
+		Units[ unit->getUnitId() ] = unit;
+	}
+
+	void ChangeUnitsSize( enum unitType type, signed int size ) {
+		if( Size.count(type) < 1 )
+			Size[type] = 0;
+		Size[type] += size;
+		if( Size[type] < 0 )
+			Size[type] = 0;
+	}
+}
+
+
+
+
+void UnitManager::init()
 {
-	graph = RenderManager::Instance();
 	player = NULL;
 }
 
-UnitManager::~UnitManager()
+void UnitManager::clean()
 {
+	Debug::debug( Debug::UNIT, "Remove units.\n" );
 	FOREACHIT( Units ){
 		DeleteUnit( it->second );
 	}
@@ -31,16 +54,16 @@ Unit* UnitManager::CreateUnit( enum unitType type, float x, float y )
 {
 	Unit* temp;
 	switch(type){
-		case PLAYER:
+		case utPlayer:
 			temp = new Player();
 			break;
-		case ENTITY:
+		case utEntity:
 			temp = new Entity();
 			break;
-		case PLANT:
+		case utPlant:
 			temp = new Plant();
 			break;
-		case CORPSE:
+		case utCorpse:
 			temp = new Corpse();
 			break;
 		default:
@@ -62,7 +85,7 @@ Unit* UnitManager::CreateUnit( enum unitType type, float x, float y )
 
 	LastId++;
 
-	if( type == PLAYER ){
+	if( type == utPlayer ){
 		DeleteUnit( player );
 		player = temp;
 	}
@@ -82,7 +105,7 @@ void UnitManager::DeleteUnit( Unit* u )
 
 void UnitManager::BatchRemove()
 {
-	if (!RemovedUnits.size())
+	if ( !RemovedUnits.size() )
 		return;
 
 	FOREACHIT( RemovedUnits ){
@@ -93,11 +116,21 @@ void UnitManager::BatchRemove()
 	RemovedUnits.clear();
 }
 
+Unit* UnitManager::GetPlayer()
+{
+	return player;
+}
+
 int UnitManager::GetUnitsSize( enum unitType type )
 {
 	if( Size.count(type) > 0 )
 		return Size[type];
 	return 0;
+}
+
+int UnitManager::GetUnitVecSize()
+{
+	return (int)Units.size();
 }
 
 Unit* UnitManager::closer( Unit* u, std::string type, float limit )
@@ -161,6 +194,7 @@ void UnitManager::tick( const int& dt )
 	BatchRemove();
 }
 
+
 void UnitManager::grow( )
 {
 	FOREACHIT( Units ){
@@ -176,28 +210,4 @@ Unit* UnitManager::GetUnit( unsigned int id )
 	if( it != Units.end() )
 		u = it->second;
 	return u;
-}
-
-void UnitManager::onDraw( )
-{
-	/*Unit* u = NULL;
-	for( std::vector< Unit* >::iterator it = Units.begin(), end = Units.end(); it != end; ++it ){
-		if( (*it) ){
-			(*it)->onDraw();
-		}
-	}*/
-}
-
-void UnitManager::AddUnit( Unit* unit )
-{
-	Units[ unit->getUnitId() ] = unit;
-}
-
-void UnitManager::ChangeUnitsSize( enum unitType type, signed int size )
-{
-	if( Size.count(type) < 1 )
-		Size[type] = 0;
-	Size[type] += size;
-	if( Size[type] < 0 )
-		Size[type] = 0;
 }

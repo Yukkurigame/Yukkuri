@@ -60,7 +60,7 @@ void Unit::Delete( )
 
 void Unit::update( const int& )
 {
-	if( dist( UnitManager::units.GetPlayer( ) ) > 2000 ){
+	if( dist( UnitManager::GetPlayer( ) ) > 2000 ){
 		this->Delete();
 		return;
 	}
@@ -182,10 +182,10 @@ void Unit::setUnitType( enum unitType type )
 {
 	UnitType = type;
 	switch( type ){
-		case PLANT:
+		case utPlant:
 			Type = "plant";
 			break;
-		case CORPSE:
+		case utCorpse:
 			Type = "corpse";
 			break;
 		default:
@@ -231,9 +231,9 @@ void Unit::increaseUnitParameter( std::string name, float value )
 
 float* Unit::getUnitpParameter( std::string name )
 {
-	if( Parameters.count(name) > 0 )
-		return &Parameters[name];
-	return NULL;
+	//if( Parameters.count(name) > 0 )
+	return &Parameters[name];
+	//return NULL;
 }
 
 float Unit::dist( Unit* target )

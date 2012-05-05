@@ -7,7 +7,7 @@
 #include "Prototypes.h"
 
 
-enum unitType { STATIC = 0, PLAYER, ENTITY, PLANT, CORPSE, OBJECT };
+enum unitType { utStatic = 0, utPlayer, utEntity, utPlant, utCorpse };
 
 class Unit
 {

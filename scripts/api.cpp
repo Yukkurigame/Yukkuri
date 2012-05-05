@@ -153,7 +153,7 @@ int scriptApi::BindWidget( lua_State* L )
 
 
 	w = UI::yui.GetWidget( static_cast<int>(lua_tointeger( L, 1 )) );
-	u = UnitManager::units.GetUnit( static_cast<int>(lua_tointeger( L, 2 )) );
+	u = UnitManager::GetUnit( static_cast<int>(lua_tointeger( L, 2 )) );
 	param = lua_tostring( L, 3 );
 	result = false;
 	if( w && u && param != "" )
@@ -178,7 +178,7 @@ int scriptApi::BindWidgetMaxBar( lua_State* L )
 
 	w = dynamic_cast<BarWidget*>( UI::yui.GetWidget( static_cast<int>(lua_tointeger( L, 1 )) ) );
 	if( w ){
-		u = UnitManager::units.GetUnit( static_cast<int>(lua_tointeger( L, 2 )) );
+		u = UnitManager::GetUnit( static_cast<int>(lua_tointeger( L, 2 )) );
 		param = lua_tostring( L, 3 );
 		if( u && param != "" )
 			result = w->bindBarMaxValue( u->getUnitpParameter( param ) );
@@ -259,7 +259,7 @@ int scriptApi::CreateUnit( lua_State* L )
 	type = static_cast<enum unitType>(lua_tointeger( L, 1 ));
 	x = static_cast<float>(lua_tonumber( L, 2 ));
 	y = static_cast<float>(lua_tonumber( L, 3 ));
-	u = UnitManager::units.CreateUnit( type, x, y );
+	u = UnitManager::CreateUnit( type, x, y );
 	if( u )
 		id = u->getUnitId( );
 	lua_pop( L, lua_gettop(L) );
@@ -276,13 +276,13 @@ int scriptApi::DeleteUnit( lua_State* L )
 	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Unit id not given." );
 
 	id = static_cast<int>(lua_tointeger( L, 1 ));
-	u = UnitManager::units.GetUnit( id );
+	u = UnitManager::GetUnit( id );
 	lua_pop( L, lua_gettop( L ) );
 	if( !id || !u ){
 		lua_pushboolean( L, false );
 		return 1;
 	}
-	UnitManager::units.DeleteUnit( u );
+	UnitManager::DeleteUnit( u );
 	lua_pushboolean( L, true );
 
 	return 1;
@@ -328,7 +328,7 @@ int scriptApi::SetCameraTarget( lua_State* L )
 	Unit* u;
 	luaL_argcheck(L, lua_isnumber(L, 1) || lua_isnoneornil(L, 1), 1, "Number or none expected.");
 	tid = static_cast<int>(lua_tointeger( L, 1 ));
-	u = UnitManager::units.GetUnit( tid );
+	u = UnitManager::GetUnit( tid );
 	YCamera::CameraControl.SetTarget( u );
 	return 0;
 }

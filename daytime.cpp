@@ -35,7 +35,7 @@ void DayTime::update( const int& dt )
 		if ( time < 2 ){
 			if( !Updated ){
 				Day++;
-				UnitManager::units.grow();
+				UnitManager::grow();
 				Updated = true;
 			}
 		}else{

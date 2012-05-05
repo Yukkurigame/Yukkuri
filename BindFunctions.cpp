@@ -39,7 +39,7 @@ int Binds::getFunction( enum func_numbers name, BindCFunction* f )
 void Binds::movePlayerUp( short down )
 {
 	Unit* player;
-	player = UnitManager::units.GetPlayer();
+	player = UnitManager::GetPlayer();
 	if( player )
 		player->moveUnit( 0, down );
 }
@@ -47,7 +47,7 @@ void Binds::movePlayerUp( short down )
 void Binds::movePlayerDown( short down )
 {
 	Unit* player;
-	player = UnitManager::units.GetPlayer();
+	player = UnitManager::GetPlayer();
 	if( player )
 		player->moveUnit( 0, down * -1 );
 }
@@ -55,7 +55,7 @@ void Binds::movePlayerDown( short down )
 void Binds::movePlayerLeft( short down )
 {
 	Unit* player;
-	player = UnitManager::units.GetPlayer();
+	player = UnitManager::GetPlayer();
 	if( player )
 		player->moveUnit( 1, down * -1 );
 }
@@ -63,7 +63,7 @@ void Binds::movePlayerLeft( short down )
 void Binds::movePlayerRight( short down )
 {
 	Unit* player;
-	player = UnitManager::units.GetPlayer();
+	player = UnitManager::GetPlayer();
 	if( player )
 		player->moveUnit( 1, down );
 }
@@ -73,7 +73,7 @@ void Binds::playerAttackUnit( short down )
 	if( down )
 		return;
 	Player* player;
-	player = dynamic_cast<Player*>(UnitManager::units.GetPlayer());
+	player = dynamic_cast<Player*>(UnitManager::GetPlayer());
 	if( player )
 		player->attack( );
 }
@@ -83,7 +83,7 @@ void Binds::playerEat( short down )
 	if( down )
 		return;
 	Player* player;
-	player = dynamic_cast<Player*>(UnitManager::units.GetPlayer());
+	player = dynamic_cast<Player*>(UnitManager::GetPlayer());
 	if( player )
 		player->eat( );
 }

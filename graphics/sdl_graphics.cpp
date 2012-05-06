@@ -161,13 +161,6 @@ void SDLGraphics::DrawSurface( SDL_Surface* surface )
 
 }
 
-bool SDLGraphics::SetScreen( SDL_Surface* s ){
-	if( s == NULL )
-		return false;
-	screen = s;
-	return true;
-}
-
 
 bool Screenshot::Save( )
 {

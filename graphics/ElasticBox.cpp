@@ -16,6 +16,7 @@ ElasticBox::ElasticBox( int minSize, int maxSize )
 {
 	this->minSize = minSize;
 	this->maxSize = maxSize;
+	X = Y = 0;
 	Width = Height = minSize;
 	children = NULL;
 }
@@ -23,6 +24,7 @@ ElasticBox::ElasticBox( int minSize, int maxSize )
 
 ElasticBox::ElasticBox( int minSize )
 {
+	X = Y = 0;
 	Width = Height = minSize;
 	children = NULL;
 }

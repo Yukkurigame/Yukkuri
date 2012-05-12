@@ -38,8 +38,22 @@ SRCS =   main.cpp yukkuri.cpp config.cpp engine.cpp Bindings.cpp BindFunctions.c
 OBJ = $(SRCS:.cpp=.o)
 OBJS = $(addprefix $(OBJDIR), $(OBJ:.c=.o))
 
+UNIQHEADERS = $(GRAPHICSDIR)GraphicsTypes.h $(SCRIPTSDIR)LuaScriptConfig.h \
+         Define.h debug.h hacks.h safestring.h types.h 
+
+HEADERS = $(OBJS:.o=.h) $(addprefix $(OBJDIR), $(UNIQHEADERS))
+ 
+ 
+GCHOLD = $(HEADERS:.h=.h.gch)
+GCH = $(shell echo $(GCHOLD) | sed -e "s/[^ ]\+\/\(main\|LuaRegister\).h.gch //g")
+
+
 #.cpp.o:
 #FIXME: only gnu make?
+$(OBJDIR)%.h.gch: %.h
+	$(rm) $@
+	$(CC) $(CFLAGS) -c $^ -o $@
+	
 $(OBJDIR)%.o: %.cpp
 	$(rm) $@
 	$(CC) $(CFLAGS) -c $^ -o $@
@@ -55,17 +69,20 @@ $(OBJDIR)%.o: %.c
 
 all: $(PROGNAME)
 
-$(PROGNAME) : | $(OBJDIR) $(OBJS)
+$(PROGNAME) : | $(OBJDIR) $(GCH) $(OBJS)
 	$(CC) $(CFLAGS)  -o $(PROGNAME) $(OBJS) $(LIBS)
 
 $(OBJDIR):
 	mkdir -p $(addprefix $(OBJDIR), $(SCRIPTSDIR) $(UNITSDIR) $(GRAPHICSDIR) \
 			 $(INTERFACEDIR) $(INTERFACEDIR)$(WIDGETSDIR))
 
-clean: cleanobjs cleandirs
+clean: cleanheaders cleanobjs cleandirs
+
+cleanheaders:
+	$(rm) $(GCH)
 
 cleanobjs:
 	$(rm) $(OBJS) $(PROGNAME)
 	
 cleandirs:
-	$(rm) -r $(OBJDIR)
+	$(rm) -rf $(OBJDIR)

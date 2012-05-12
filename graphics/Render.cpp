@@ -3,9 +3,11 @@
  *
  *  Created on: 19.03.2012
  */
-#define GL_GLEXT_PROTOTYPES
+
 #define MAX_LAYERS 10
 #define UPDATINGLAYERS 0b11111111100
+
+#include "Define.h"
 
 #include "Render.h"
 #include "gl_extensions.h"
@@ -26,8 +28,9 @@ using namespace Debug;
 RenderManager* RenderManager::graph = NULL;
 
 
-int layersflags = 0;
+namespace {
 
+int layersflags = 0;
 
 struct VBOLayer {
 	int count;
@@ -35,7 +38,9 @@ struct VBOLayer {
 };
 
 VBOLayer VBOLayers[MAX_LAYERS];
-std::vector < Sprite* > GLSpritesMap[MAX_LAYERS];
+std::vector< std::vector < Sprite* > > GLSpritesMap(MAX_LAYERS);
+
+}
 
 
 void RenderManager::openglInit( )
@@ -311,14 +316,14 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 
 
 	int level = ( z < 0 ? 0 : ( z > MAX_LAYERS ? MAX_LAYERS : (int)z ));
-	std::vector < Sprite* >* smap = &GLSpritesMap[ level ] ;
-	smap->push_back( sprite );
+	std::vector < Sprite* >& smap = GLSpritesMap[ level ] ;
+	smap.push_back( sprite );
 	// Set layer for update;
 	layersflags |= ( 1 << (int)z );
 
 	//GLSprites.push_back( sprite );
 
-	int vcount = smap->size() - verticlesSize;
+	int vcount = smap.size() - verticlesSize;
 	if( vcount > 0 )
 		ExtendVerticles( );
 
@@ -343,14 +348,14 @@ Sprite* RenderManager::CreateGLSprite( Sprite* osprite )
 
 	int z = sprite->vertices.lb.z;
 	int level = ( z < 0 ? 0 : ( z > MAX_LAYERS ? MAX_LAYERS : (int)z ));
-	std::vector < Sprite* >* smap = &GLSpritesMap[ level ] ;
-	smap->push_back( sprite );
+	std::vector < Sprite* >& smap = GLSpritesMap[ level ] ;
+	smap.push_back( sprite );
 	// Set layer for update;
 	layersflags |= ( 1 << (int)z );
 
 	//GLSprites.push_back( sprite );
 
-	int vcount = smap->size() - verticlesSize;
+	int vcount = smap.size() - verticlesSize;
 	if( vcount > 0 )
 		ExtendVerticles( );
 
@@ -359,7 +364,7 @@ Sprite* RenderManager::CreateGLSprite( Sprite* osprite )
 
 void RenderManager::FreeGLSprite( Sprite* sprite )
 {
-	std::vector< Sprite* >::iterator it;
+	std::vector< Sprite* >::iterator fit;
 	if( sprite == NULL )
 		return;
 	//it = std::find( GLSprites.begin(), GLSprites.end(), sprite );
@@ -368,11 +373,10 @@ void RenderManager::FreeGLSprite( Sprite* sprite )
 	//}else{
 		//debug( GRAPHICS, "Sprite not under control.\n" );
 	//}
-	for( int layer = 0; layer < MAX_LAYERS; ++layer ){
-		std::vector< Sprite* >* vp = &GLSpritesMap[layer];
-		it = std::find( vp->begin(), vp->end(), sprite );
-		if( it != vp->end() ){
-			vp->erase(it);
+	FOREACHIT( GLSpritesMap ){
+		fit = std::find( it->begin(), it->end(), sprite );
+		if( fit != it->end() ){
+			it->erase(fit);
 			break;
 		}
 		//else{
@@ -421,8 +425,8 @@ bool RenderManager::CreateAtlas( GLuint* ahandle, int* width, int* height, short
 		strcpy(textures[texturesCount].id, internalTextures[i]->id.c_str());
 		texturesCount++;
 	}
-	for( int layer = 0; layer < MAX_LAYERS; ++layer ){
-		FOREACHIT( GLSpritesMap[layer] )
+	FOREACH( lit, GLSpritesMap ){
+		FOREACHIT( *lit )
 			(*it)->tex = &textures[(*it)->texid];
 	}
 	//for( std::vector< Sprite* >::iterator it = GLSprites.begin(), end = GLSprites.end(); it != end; ++it )

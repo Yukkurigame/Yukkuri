@@ -226,14 +226,12 @@ struct VBOStructureHandle
 	int start;
 	int count;
 	VBOStructureHandle* next;
-	VBOStructureHandle* prev;
-	VBOStructureHandle( int tex, int shd, int s, VBOStructureHandle* p ){
+	VBOStructureHandle(int tex, int shd, int s){
 		texture = tex;
 		shaders = shd;
 		start = s;
 		count = 1;
 		next = NULL;
-		prev = p;
 	}
 };
 

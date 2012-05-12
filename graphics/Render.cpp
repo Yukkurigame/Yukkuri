@@ -4,9 +4,6 @@
  *  Created on: 19.03.2012
  */
 
-#define MAX_LAYERS 10
-#define UPDATINGLAYERS 0b11111111100
-
 #include "Define.h"
 
 #include "Render.h"
@@ -17,6 +14,8 @@
 
 #include <algorithm>
 
+#include "config.h"
+
 #include "debug.h"
 #include "hacks.h"
 #include "safestring.h"
@@ -26,21 +25,6 @@ using namespace Debug;
 
 
 RenderManager* RenderManager::graph = NULL;
-
-
-namespace {
-
-int layersflags = 0;
-
-struct VBOLayer {
-	int count;
-	VBOStructureHandle* first;
-};
-
-VBOLayer VBOLayers[MAX_LAYERS];
-std::vector< std::vector < Sprite* > > GLSpritesMap(MAX_LAYERS);
-
-}
 
 
 void RenderManager::openglInit( )
@@ -314,16 +298,9 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 	sprite->setPosition( x, y, z );
 	sprite->setPicture(picture);
 
+	GLSprites.push_back( sprite );
 
-	int level = ( z < 0 ? 0 : ( z > MAX_LAYERS ? MAX_LAYERS : (int)z ));
-	std::vector < Sprite* >& smap = GLSpritesMap[ level ] ;
-	smap.push_back( sprite );
-	// Set layer for update;
-	layersflags |= ( 1 << (int)z );
-
-	//GLSprites.push_back( sprite );
-
-	int vcount = smap.size() - verticlesSize;
+	int vcount = GLSprites.size() - verticlesSize;
 	if( vcount > 0 )
 		ExtendVerticles( );
 
@@ -346,16 +323,9 @@ Sprite* RenderManager::CreateGLSprite( Sprite* osprite )
 	sprite->setPosition( osprite->posx, osprite->posy, osprite->vertices.lb.z );
 	sprite->setPicture( osprite->picture);
 
-	int z = sprite->vertices.lb.z;
-	int level = ( z < 0 ? 0 : ( z > MAX_LAYERS ? MAX_LAYERS : (int)z ));
-	std::vector < Sprite* >& smap = GLSpritesMap[ level ] ;
-	smap.push_back( sprite );
-	// Set layer for update;
-	layersflags |= ( 1 << (int)z );
+	GLSprites.push_back( sprite );
 
-	//GLSprites.push_back( sprite );
-
-	int vcount = smap.size() - verticlesSize;
+	int vcount = GLSprites.size() - verticlesSize;
 	if( vcount > 0 )
 		ExtendVerticles( );
 
@@ -364,31 +334,20 @@ Sprite* RenderManager::CreateGLSprite( Sprite* osprite )
 
 void RenderManager::FreeGLSprite( Sprite* sprite )
 {
-	std::vector< Sprite* >::iterator fit;
-	if( sprite == NULL )
-		return;
-	//it = std::find( GLSprites.begin(), GLSprites.end(), sprite );
-	//if( it != GLSprites.end() ){
-		//GLSprites.erase(it);
-	//}else{
+	std::vector< Sprite* >::iterator it;
+	it = std::find( GLSprites.begin(), GLSprites.end(), sprite );
+	if( it != GLSprites.end() ){
+		GLSprites.erase(it);
+	}else{
 		//debug( GRAPHICS, "Sprite not under control.\n" );
-	//}
-	FOREACHIT( GLSpritesMap ){
-		fit = std::find( it->begin(), it->end(), sprite );
-		if( fit != it->end() ){
-			it->erase(fit);
-			break;
-		}
-		//else{
-		//	debug( GRAPHICS, "Sprite not under control.\n" );
-		//}
 	}
-	delete sprite;
+	if( sprite )
+		delete sprite;
 }
 
 void RenderManager::FreeGLSprites( std::vector< Sprite* >* sprites )
 {
-	FOREACHP( it, sprites ){
+	for( std::vector< Sprite* >:: iterator it = sprites->begin(), vend = sprites->end(); it != vend; ++it ){
 		FreeGLSprite(*it);
 	}
 	sprites->clear();
@@ -425,12 +384,8 @@ bool RenderManager::CreateAtlas( GLuint* ahandle, int* width, int* height, short
 		strcpy(textures[texturesCount].id, internalTextures[i]->id.c_str());
 		texturesCount++;
 	}
-	FOREACH( lit, GLSpritesMap ){
-		FOREACHIT( *lit )
-			(*it)->tex = &textures[(*it)->texid];
-	}
-	//for( std::vector< Sprite* >::iterator it = GLSprites.begin(), end = GLSprites.end(); it != end; ++it )
-	//	(*it)->tex = &textures[(*it)->texid];
+	for( std::vector< Sprite* >::iterator it = GLSprites.begin(), end = GLSprites.end(); it != end; ++it )
+		(*it)->tex = &textures[(*it)->texid];
 	clear_vector( &internalTextures );
 	return true;
 }
@@ -447,7 +402,7 @@ void RenderManager::MoveGlScene( int x, int y, int z )
 
 void RenderManager::DrawGLScene()
 {
-	//VBOStructureHandle* temp = NULL;
+	VBOStructureHandle* temp = NULL;
 	int count; // = PrepareVBO( );
 	VBOStructureHandle* vbostructure = PrepareVBO(&count);
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -468,21 +423,18 @@ void RenderManager::DrawGLScene()
 	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(VertexV2FT2FC4UI), (void*)0 + sizeof(s3f) + sizeof(s2f));
 
 	//for( int i=0; i < VBOHandlesCount; i++ ){
-	for( int layer  = 0; layer < MAX_LAYERS; ++layer ){
-		vbostructure = VBOLayers[layer].first;
-		while(vbostructure != NULL){
-			//glBindTexture(GL_TEXTURE_2D, textures[VBOHandles[i].texture].atlas);
-			glBindTexture(GL_TEXTURE_2D, textures[vbostructure->texture].atlas);
-			//StartShader(vbostructure->shaders);
-			//glDrawArrays(GL_QUADS, VBOHandles[i].start, VBOHandles[i].count);
-			glDrawArrays(GL_QUADS, vbostructure->start, vbostructure->count);
-			//StopShader(vbostructure->shaders);
+	while(vbostructure != NULL){
+		//glBindTexture(GL_TEXTURE_2D, textures[VBOHandles[i].texture].atlas);
+		glBindTexture(GL_TEXTURE_2D, textures[vbostructure->texture].atlas);
+		//StartShader(vbostructure->shaders);
+		//glDrawArrays(GL_QUADS, VBOHandles[i].start, VBOHandles[i].count);
+		glDrawArrays(GL_QUADS, vbostructure->start, vbostructure->count);
+		//StopShader(vbostructure->shaders);
 
-			//Clean vbos
-			//temp = vbostructure;
-			vbostructure = vbostructure->next;
-			//delete temp;
-		}
+		//Clean vbos
+		temp = vbostructure;
+		vbostructure = vbostructure->next;
+		delete temp;
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -520,7 +472,7 @@ RenderManager::RenderManager( ){
 	verticlesSize = 1; // for success multiplication
 	minAtlasSize = 64;
 	atlasHandle = 0;
-	//GLSprites.clear();
+	GLSprites.clear();
 	// Set first texture info to 0
 	textures = (TextureInfo*)malloc( sizeof(TextureInfo) );
 	texturesCount = 1;
@@ -529,9 +481,8 @@ RenderManager::RenderManager( ){
 	std::string n = "0";
 	textures[0].id = new char[2];
 	strcpy(textures[0].id, n.c_str());
-
-	memset( &VBOLayers[0], 0, sizeof(VBOLayer) * MAX_LAYERS );
-
+	//FIXME: bad, but fixes valgrind error
+	//textures[0].id = "0";
 }
 
 
@@ -647,72 +598,29 @@ inline bool compareSprites( Sprite* s1, Sprite* s2 )
 
 VBOStructureHandle* RenderManager::PrepareVBO( int* c )
 {
-	//sort(GLSprites.begin(), GLSprites.end(), compareSprites);
+	sort(GLSprites.begin(), GLSprites.end(), compareSprites);
 	int count = 0;
 	Sprite* s;
 	//VBOHandlesCount = 0;
 	VBOStructureHandle* v = NULL;
 	VBOStructureHandle* first = NULL;
-	VBOStructureHandle* temp = NULL;
-	int layer = 1;
-	int layernum = 0;
-	while( layer <= layersflags ){
-		VBOLayer& l = VBOLayers[layernum];
-		if( layersflags & layer ){ // Layer must be updated
-			int layercount = count;
-			std::vector < Sprite* >& spvec = GLSpritesMap[layernum];
-
-			// Sort sprites in layer
-			sort( spvec.begin(), spvec.end(), compareSprites);
-
-			// Clean old vbo layer
-			first = l.first;
-			while( first != NULL ){
-				temp = first;
-				first = temp->next;
-				delete temp;
-			}
-
-			v = NULL;
-			FOREACHIT( spvec ){
-				s = *(it);
-				if( s == NULL || !s->visible )
-					continue;
-				if( !v ){
-					l.first = v = new VBOStructureHandle(s->texid, 0, count, NULL);
-				}else if( s->texid != v->texture ){
-					v->next = new VBOStructureHandle(s->texid, 0, count, v);
-					v->count = count - v->start;
-					v = v->next;
-				}
-
-				vertex3farr offset = s->fixedOffset( &vpoint );
-				verticles[count++].set( &offset.lb, &s->coordinates.lt, &s->clr ); // = VertexV2FT2FC4UI( offset.lb, s->coordinates.lt, &s->clr);
-				verticles[count++].set( &offset.rb, &s->coordinates.rt, &s->clr ); // = VertexV2FT2FC4UI( offset.rb, s->coordinates.rt, &s->clr);
-				verticles[count++].set( &offset.rt, &s->coordinates.rb, &s->clr ); // = VertexV2FT2FC4UI( offset.rt, s->coordinates.rb, &s->clr);
-				verticles[count++].set( &offset.lt, &s->coordinates.lb, &s->clr ); //= VertexV2FT2FC4UI( offset.lt, s->coordinates.lb, &s->clr);
-			}
-			if( v != NULL)
-				v->count = count - v->start;
-			l.count = count - layercount;
-			//l.first = v;
-
-			// Remove layer form flags
-			if( UPDATINGLAYERS & layer )
-				layersflags ^= layer;
-		}else{
-			// Nothing changed. Add active verticles of layer.
-			count += l.count;
-		}
-		layernum++;
-		layer <<= 1;
-	}
 	//int lastText = -1;
 	//memset( verticles, '0', sizeof( VertexV2FT2FC4UI ) * verticlesSize );
-	/*for( std::vector< Sprite* >::iterator it = GLSprites.begin(), end = GLSprites.end(); it != end; ++it ){
+#ifdef RENDER_VISIBLE
+	extern MainConfig conf;
+	int halfheight = conf.windowHeight >> 1;
+	int halfwidth = conf.windowWidth >> 1;
+#endif
+	for( std::vector< Sprite* >::iterator it = GLSprites.begin(), end = GLSprites.end(); it != end; ++it ){
 		s = *(it);
 		if( s == NULL || !s->visible )
 			continue;
+#ifdef RENDER_VISIBLE
+		vertex3farr& pos = s->vertices;
+		if( !s->fixed && ( pos.lb.x + vpoint.x < -100 || pos.rb.x + vpoint.x > conf.windowWidth + 100 ||
+			pos.lb.y + vpoint.y < -100 || pos.lt.y + vpoint.y > conf.windowHeight + 100 ) )
+			continue;
+#endif
 		/*if( s->texid != lastText ){
 			if( VBOHandlesCount + 1 > VBOHandlesSize ){
 				VBOHandlesSize = (VBOHandlesCount + 1) * 2;
@@ -725,7 +633,7 @@ VBOStructureHandle* RenderManager::PrepareVBO( int* c )
 				VBOHandles[VBOHandlesCount - 1].count = count - VBOHandles[VBOHandlesCount - 1].start;
 			VBOHandlesCount++;
 		}*/
-		/*if( !v ){
+		if( !v ){
 			first = v = new VBOStructureHandle(s->texid, 0, count);
 		}else if( s->texid != v->texture ){
 			v->next = new VBOStructureHandle(s->texid, 0, count);
@@ -738,13 +646,13 @@ VBOStructureHandle* RenderManager::PrepareVBO( int* c )
 		verticles[count++].set( &offset.rb, &s->coordinates.rt, &s->clr ); // = VertexV2FT2FC4UI( offset.rb, s->coordinates.rt, &s->clr);
 		verticles[count++].set( &offset.rt, &s->coordinates.rb, &s->clr ); // = VertexV2FT2FC4UI( offset.rt, s->coordinates.rb, &s->clr);
 		verticles[count++].set( &offset.lt, &s->coordinates.lb, &s->clr ); //= VertexV2FT2FC4UI( offset.lt, s->coordinates.lb, &s->clr);
-	}*/
+	}
 	//if( VBOHandlesCount )
 	//	VBOHandles[VBOHandlesCount - 1].count = count - VBOHandles[VBOHandlesCount - 1].start;
-	//if( v != NULL)
-	//	v->count = count - v->start;
+	if( v != NULL)
+		v->count = count - v->start;
 	(*c) = count;
-	return NULL; //first;
+	return first;
 }
 
 

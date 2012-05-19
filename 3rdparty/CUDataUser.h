@@ -3,6 +3,8 @@
  *
  *  Created on: 17.05.2012
  *
+ * Origin: iiChantra
+ *
  */
 
 #ifndef CUDATAUSER_H_

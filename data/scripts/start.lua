@@ -15,10 +15,10 @@ LoadMapRegion('region_test2_881880')
 local plevel = gui:getWidgetByName("plevel")
 local pdays = gui:getWidgetByName("pdays")
 if plevel then
-	plevel:bind(1, "level")
+	plevel:bind(player, "level")
 end
 if pdays then
-	pdays:bind(1, "days")
+	pdays:bind(player, "days")
 end
 
 
@@ -26,16 +26,16 @@ local hpbar = gui:getWidgetByName("phpbar")
 local fedbar = gui:getWidgetByName("pfedbar")
 local expbar = gui:getWidgetByName("pexpbar")
 if hpbar then
-	hpbar:bind(1, "hp")
-	hpbar:bindBarMax(1, "hpmax")
+	hpbar:bind(player, "hp")
+	hpbar:bindBarMax(player, "hpmax")
 end
 if fedbar then
-	fedbar:bind(1, "fed")
+	fedbar:bind(player, "fed")
 	fedbar:setBarSize(100)
 end
 if expbar then
-	expbar:bind(1, "exp")
-	expbar:bindBarMax(1, "expmax")
+	expbar:bind(player, "exp")
+	expbar:bindBarMax(player, "expmax")
 end
 
 

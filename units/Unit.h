@@ -5,7 +5,7 @@
 
 #include "Animation.h"
 #include "Prototypes.h"
-#include "CUDataUser.h"
+#include "3rdparty/CUDataUser.h"
 
 class CUData;
 

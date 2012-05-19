@@ -19,15 +19,15 @@ DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1
 CFLAGS= -O0 -g -Wall $(DEFINES)
 
 
-UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp CUData.cpp CUDataUser.cpp Unit.cpp \
-		 Animated.cpp Plant.cpp Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp
+UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp Unit.cpp Animated.cpp Plant.cpp \
+		 Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp
 GRAPHICS = Font.cpp Text.cpp ElasticBox.cpp sdl_graphics.cpp gl_extensions.cpp Animation.cpp \
 		   Render.cpp pngfuncs.c
 SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp proto.cpp \
-		api/UnitManager.cpp api.cpp 
+		  api/UnitManager.cpp api.cpp 
 WIDGETS = Widget.cpp TextWidget.cpp BarWidget.cpp
 INTERFACE = Interface.cpp $(addprefix $(WIDGETSDIR), $(WIDGETS))
-3RDPARTY = CUData.cpp
+3RDPARTY = CUData.cpp CUDataUser.cpp CUDataTemplates.cpp
 
 
 SRCS =   main.cpp yukkuri.cpp config.cpp engine.cpp Bindings.cpp BindFunctions.cpp Spawner.cpp \
@@ -90,4 +90,4 @@ cleanobjs:
 	$(rm) $(OBJS) $(PROGNAME)
 	
 cleandirs:
-	$(rm) -rf $(OBJDIR)
+	$(rm) -r $(OBJDIR)

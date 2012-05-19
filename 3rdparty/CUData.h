@@ -1,26 +1,49 @@
 /*
  * CUData.h
  *
- *  Created on: 19.05.2012
+ *  Created on: 17.05.2012
  *
  * Origin: iiChantra
  *
  */
 
-#ifndef CUDATA_H_3rd
-#define CUDATA_H_3rd
+#ifndef CUDATA_H_
+#define CUDATA_H_
 
-struct lua_State;
-class CUData;
+class CUDataUser;
 
-void RegisterAllTypeMetatables(lua_State* L);
-
-
-template <typename T>
-CUData* CreateUData(lua_State* L, T& user);
-
-template <typename T>
-CUData* check_userdata(lua_State* L, int ud, bool throw_error = true );
+#include <string>
+#include "types.h"
 
 
-#endif /* CUDATA_H_3rd */
+
+class CUData
+{
+public:
+
+	CUData(CUDataUser* pUser) :
+		pUser(pUser), regRef(-1) { }
+
+	CUDataUser* getUser() const { return pUser; }
+	void clearUser();
+	void onGC();
+
+	const LuaRegRef& getRegRef() const { return regRef; }
+	void setRegRef(const LuaRegRef& ref) { regRef = ref; }
+
+
+private:
+	CUDataUser* pUser;
+
+	// Reference to userdata in lua registry. Registry is in standard lua state "lua", created on lua initialization.
+	LuaRegRef regRef;
+
+	CUData(CUData& ref);
+	CUData& operator=(CUData& ref);
+	~CUData();
+
+
+};
+
+
+#endif /* CUDATA_H_ */

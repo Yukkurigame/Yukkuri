@@ -16,6 +16,9 @@ public:
 	void startMove(){ ForceGo = true; };
 	bool isMoved(){ return ForceGo; };
 
+protected:
+	virtual CUData* createUData();
+
 private:
 	float gotoX, gotoY;
 	bool ForceGo;

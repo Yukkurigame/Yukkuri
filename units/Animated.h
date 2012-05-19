@@ -19,6 +19,9 @@ public:
 
 	virtual void takeAction( );
 
+protected:
+	virtual CUData* createUData();
+
 private:
 	int TimePassed;
 	int TimeLimit;

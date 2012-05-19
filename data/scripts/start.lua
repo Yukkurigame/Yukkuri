@@ -7,8 +7,9 @@ gui:addWidget("widget_fps_428624")
 gui:addWidget("widget_time_493245")
 gui:addWidgetByName("stats")
 
-CreateUnit(1)
-SetCameraTarget(1)
+local player = UnitManager.createUnit(constants.utPlayer)
+SetCameraTarget(player)
+
 LoadMapRegion('region_test2_881880')
 
 local plevel = gui:getWidgetByName("plevel")

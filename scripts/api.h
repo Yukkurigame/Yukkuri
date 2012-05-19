@@ -27,7 +27,6 @@ namespace scriptApi
 	int WidgetChildren( lua_State* L );
 	int WidgetSetBarSize( lua_State* L );
 
-	int CreateUnit( lua_State* L );
 	int DeleteUnit( lua_State* L );
 
 	int NewThread( lua_State* L );

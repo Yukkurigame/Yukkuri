@@ -11,6 +11,10 @@
 #include "safestring.h"
 #include "assert.h" //WHY?
 
+//FIXME: Архитектуропроблемы
+LuaScript* luaScript = new LuaScript();
+
+
 // Бездумно воровать - плохо
 typedef std::map<LuaRegRef, int> RegRefCountsMap;
 static RegRefCountsMap regRefCounts;

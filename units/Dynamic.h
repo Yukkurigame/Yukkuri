@@ -30,6 +30,8 @@ public:
 	void hit( float damage );
 
 protected:
+	virtual CUData* createUData();
+
 	std::vector< std::string > FoodTypes;
 	Unit* Attacked;
 	float TotalDistance;

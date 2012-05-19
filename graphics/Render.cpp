@@ -608,8 +608,6 @@ VBOStructureHandle* RenderManager::PrepareVBO( int* c )
 	//memset( verticles, '0', sizeof( VertexV2FT2FC4UI ) * verticlesSize );
 #ifdef RENDER_VISIBLE
 	extern MainConfig conf;
-	int halfheight = conf.windowHeight >> 1;
-	int halfwidth = conf.windowWidth >> 1;
 #endif
 	for( std::vector< Sprite* >::iterator it = GLSprites.begin(), end = GLSprites.end(); it != end; ++it ){
 		s = *(it);

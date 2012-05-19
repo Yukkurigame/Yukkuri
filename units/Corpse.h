@@ -24,6 +24,9 @@ public:
 	void setBloodColor( int c ) { if( blood ) blood->clr.set( c ); }
 	void setBloodColor( int r, int g, int b ) { if( blood ) blood->clr.set( r, g, b ); }
 
+protected:
+	virtual CUData* createUData();
+
 private:
 	Sprite* blood;
 

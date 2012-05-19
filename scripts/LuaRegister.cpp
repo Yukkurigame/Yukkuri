@@ -8,6 +8,7 @@
 #include "Lua.h"
 
 #include "api.h"
+#include "api/UnitManager.h"
 
 #include "Bindings.h"
 #include "units/Prototypes.h"
@@ -34,7 +35,6 @@ void LuaMain::RegisterApi( lua_State* L )
 	lua_register( L, "GetWidgetName", &scriptApi::GetWidgetName );
 	lua_register( L, "WidgetSetBarSize", &scriptApi::WidgetSetBarSize );
 
-	lua_register( L, "CreateUnit", &scriptApi::CreateUnit );
 	lua_register( L, "DeleteUnit", &scriptApi::DeleteUnit );
 
 	lua_register( L, "NewThread", &scriptApi::NewThread );
@@ -45,6 +45,11 @@ void LuaMain::RegisterApi( lua_State* L )
 	lua_register( L, "SetCameraTarget", &scriptApi::SetCameraTarget );
 
 	lua_register( L, "LoadMapRegion", &scriptApi::LoadMapRegion );
+
+
+
+	// Libraries
+	luaL_register( L, "UnitManager", UMApi::methods );
 
 
 
@@ -108,3 +113,7 @@ void LuaMain::RegisterApi( lua_State* L )
 
 }
 
+void LuaMain::RegisterLib( std::string name, const luaL_Reg* functions )
+{
+	luaL_register( Lst, name.c_str(), functions );
+}

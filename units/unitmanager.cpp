@@ -4,14 +4,15 @@
 #include "Entity.h"
 #include "Player.h"
 
+#include "scripts/Lua.h"
+
 #include "debug.h"
 #include "hacks.h"
 
 
-static unsigned int LastId = 1;
-
-
 namespace {
+	static unsigned int LastId = 1;
+
 	std::map< unsigned int, Unit* > Units;
 	std::vector< Unit* > RemovedUnits;
 	std::map< enum unitType, int > Size;
@@ -28,6 +29,8 @@ namespace {
 		if( Size[type] < 0 )
 			Size[type] = 0;
 	}
+
+
 }
 
 

@@ -78,23 +78,23 @@ void Unit::update( const int& )
 
 		if( frame.is_param_function ){
 
-			LuaScript* ls = new LuaScript;
+			extern LuaScript* luaScript;
 
-			int ret_val = ls->ExecChunkFromReg( frame.param );
+			int ret_val = luaScript->ExecChunkFromReg( frame.param );
 			if( ret_val == -1 )	{
 				Debug::debug( Debug::PROTO,
 					"An error occurred while executing a local function. obj id  " +
 					citoa(UnitId) + ", proto_name '" + Actions.proto->name + "', action '" +
 					Actions.action->name  + "', frame " + citoa(Actions.frame) +
-					": " + ls->getString( -1 ) + ".\n" );
+					": " + luaScript->getString( -1 ) + ".\n" );
 			}
 
-			const int top = ls->top();
+			const int top = luaScript->top();
 			const int p1 = top - ret_val + 1;
 			const int p2 = top - ret_val + 2;
 
-			param     = (ret_val > 0 ) ? ls->getNumber( p1 ) : 0;
-			txt_param = ((ret_val > 1 ) ? ls->getString( p2 ) : "").c_str();
+			param     = (ret_val > 0 ) ? luaScript->getNumber( p1 ) : 0;
+			txt_param = ((ret_val > 1 ) ? luaScript->getString( p2 ) : "").c_str();
 
 		}else{
 			param = frame.param;

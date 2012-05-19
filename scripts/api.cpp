@@ -247,26 +247,6 @@ int scriptApi::WidgetSetBarSize( lua_State* L )
 	return 0;
 }
 
-int scriptApi::CreateUnit( lua_State* L )
-{
-	enum unitType type;
-	int id;
-	float x, y;
-	Unit* u;
-	luaL_argcheck( L, lua_isnumber(L, 1), 1, "Unit type not given." );
-
-	id = 0;
-	type = static_cast<enum unitType>(lua_tointeger( L, 1 ));
-	x = static_cast<float>(lua_tonumber( L, 2 ));
-	y = static_cast<float>(lua_tonumber( L, 3 ));
-	u = UnitManager::CreateUnit( type, x, y );
-	if( u )
-		id = u->getUnitId( );
-	lua_pop( L, lua_gettop(L) );
-	lua_pushinteger( L, id );
-
-	return 1;
-}
 
 int scriptApi::DeleteUnit( lua_State* L )
 {

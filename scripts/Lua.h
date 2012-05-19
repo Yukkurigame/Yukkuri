@@ -40,7 +40,10 @@ public:
 	LuaMain( );
 	~LuaMain( );
 
+	static lua_State* getState() { return Lst; }
+
 	void RegisterApi( lua_State* L );
+	void RegisterLib( std::string name, const luaL_Reg* functions );
 
 	bool OpenFile( std::string name );
 

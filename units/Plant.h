@@ -22,6 +22,10 @@ public:
 
 	void hit( float damage );
 
+protected:
+	virtual CUData* createUData();
+
+
 private:
 
 

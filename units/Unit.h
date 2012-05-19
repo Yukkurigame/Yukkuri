@@ -5,11 +5,14 @@
 
 #include "Animation.h"
 #include "Prototypes.h"
+#include "CUDataUser.h"
+
+class CUData;
 
 
 enum unitType { utStatic = 0, utPlayer, utEntity, utPlant, utCorpse };
 
-class Unit
+class Unit : public CUDataUser
 {
 public:
 	Unit();
@@ -53,6 +56,8 @@ public:
 	virtual void hit( float ) {};
 
 protected:
+	virtual CUData* createUData();
+
 	float X, Y, Z;
 	std::map < std::string, float > Parameters;
 	Animation Image;

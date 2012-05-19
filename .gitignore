@@ -1,6 +1,7 @@
 *.o
 *~
 Yukkuri
+obj/
 .cproject
 .project
 .settings/

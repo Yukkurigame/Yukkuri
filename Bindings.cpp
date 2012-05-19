@@ -18,8 +18,6 @@
 
 Bindings Bindings::bnd;
 
-LuaScript* LS = new LuaScript();
-
 
 Bindings::Bindings( )
 {
@@ -215,13 +213,15 @@ void Bindings::unBindKey( std::string name )
 
 void Bindings::process( int num, short down )
 {
+	extern LuaScript* luaScript;
+
 	switch(BindedFunctions[num].type){
 		case CFUNC:
 			BindedFunctions[num].cref(down);
 			break;
 		case LUAFUNC:
 			if( down )
-				LS->ExecChunkFromReg( BindedFunctions[num].luaref );
+				luaScript->ExecChunkFromReg( BindedFunctions[num].luaref );
 			break;
 		case NOTAFUNC:
 			break;

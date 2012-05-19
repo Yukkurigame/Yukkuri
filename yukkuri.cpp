@@ -24,14 +24,12 @@ Yukkuri Engine;
 
 bool Yukkuri::Init()
 {
-	LuaScript* ls = new LuaScript;
+	extern LuaScript* luaScript;
 
-	if( !ls->Init( ) || !ls->OpenFile( "init" ) ){
+	if( !luaScript->Init( ) || !luaScript->OpenFile( "init" ) ){
 		debug( MAIN, "Lua loading failed.\n" );
 		return false;
 	}
-
-	delete ls;
 
 	return CEngine::Init( );
 }
@@ -39,20 +37,17 @@ bool Yukkuri::Init()
 bool Yukkuri::AdditionalInit()
 {
 	extern Map map;
+	extern LuaScript* luaScript;
 
 	debug( MAIN, "Additional Init\n" );
 
 	map.LoadTiles( );
 	map.Init( );
 
-	LuaScript* ls = new LuaScript;
-
-	if( !ls->OpenFile( "start" ) ){
+	if( !luaScript->OpenFile( "start" ) ){
 		debug( SCRIPT, "Starting lua failed.\n" );
 		return false;
 	}
-
-	delete ls;
 
 	daytime.loadInterface();
 

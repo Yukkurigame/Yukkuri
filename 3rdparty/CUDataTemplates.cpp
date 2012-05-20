@@ -16,8 +16,9 @@
 
 #include "3rdparty/CUData.h"
 #include "3rdparty/CUDataTemplates.h"
+#include "3rdparty/LuaPusher.h"
+
 #include "scripts/LuaScript.h"
-//#include "lua_pusher.hpp"
 
 
 // The block 1 declares the typelist.
@@ -54,7 +55,7 @@ CUData* CreateUData(T& user)
 
 	luaScript->GetFromRegistry( Lst, UD_META_REF(T) );	// st: ud meta
 
-	lua_setmetatable( Lst, -2 );					// st: ud
+	lua_setmetatable( Lst, -2 );						// st: ud
 
 	ud->setRegRef( luaScript->AddToRegistry() );		// st:
 
@@ -133,6 +134,7 @@ int object_present(lua_State* L)
 }
 
 #include "3rdparty/CUDataMacro.h"
+#include "3rdparty/CUDataMacroExt.h"
 
 
 

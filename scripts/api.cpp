@@ -6,7 +6,7 @@
 
 #include "api.h"
 #include "Interface.h"
-#include "widgets/BarWidget.h"
+#include "widgets/WidgetBar.h"
 #include "Bindings.h"
 #include "LuaConfig.h"
 #include "unitmanager.h"
@@ -105,7 +105,7 @@ int scriptApi::LoadWidget( lua_State* L )
 	luaL_argcheck( L, lua_isstring( L, 1 ), 1, "Widget name not given." );
 
 	wname = lua_tostring( L, 1 );
-	Widget* w = UI::yui.LoadWidget( wname );
+	Widget* w = Interface::LoadWidget( wname );
 	lua_pop( L, lua_gettop( L ) );
 	if( !w ){
 		lua_pushnil( L );
@@ -123,7 +123,7 @@ int scriptApi::ToggleWidget( lua_State* L )
 
 	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Widget id not given." );
 
-	w = UI::yui.GetWidget( static_cast<int>(lua_tointeger( L, 1 )) );
+	w = Interface::GetWidget( static_cast<int>(lua_tointeger( L, 1 )) );
 	visibility = w->getVisible();
 
 	if( lua_isboolean( L, 2 ) )
@@ -152,7 +152,7 @@ int scriptApi::BindWidget( lua_State* L )
 	luaL_argcheck( L, lua_isstring( L, 3 ), 3, "Parameter not given." );
 
 
-	w = UI::yui.GetWidget( static_cast<int>(lua_tointeger( L, 1 )) );
+	w = Interface::GetWidget( static_cast<int>(lua_tointeger( L, 1 )) );
 	u = UnitManager::GetUnit( static_cast<int>(lua_tointeger( L, 2 )) );
 	param = lua_tostring( L, 3 );
 	result = false;
@@ -165,7 +165,7 @@ int scriptApi::BindWidget( lua_State* L )
 
 int scriptApi::BindWidgetMaxBar( lua_State* L )
 {
-	BarWidget* w;
+	WidgetBar* w;
 	Unit* u;
 	std::string param;
 	bool result;
@@ -176,7 +176,7 @@ int scriptApi::BindWidgetMaxBar( lua_State* L )
 
 	result = false;
 
-	w = dynamic_cast<BarWidget*>( UI::yui.GetWidget( static_cast<int>(lua_tointeger( L, 1 )) ) );
+	w = dynamic_cast<WidgetBar*>( Interface::GetWidget( static_cast<int>(lua_tointeger( L, 1 )) ) );
 	if( w ){
 		u = UnitManager::GetUnit( static_cast<int>(lua_tointeger( L, 2 )) );
 		param = lua_tostring( L, 3 );
@@ -196,7 +196,7 @@ int scriptApi::WidgetChildren( lua_State* L )
 
 	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Widget id not given." );
 
-	w = UI::yui.GetWidget( static_cast<int>(lua_tointeger( L, 1 )) );
+	w = Interface::GetWidget( static_cast<int>(lua_tointeger( L, 1 )) );
 	lua_pop( L, lua_gettop( L ) );
 	if( w ){
 		csize = w->childrenCount( );
@@ -222,7 +222,7 @@ int scriptApi::GetWidgetName( lua_State* L )
 
 	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Widget id expected." );
 
-	w = UI::yui.GetWidget( static_cast<int>(lua_tointeger( L, 1 )) );
+	w = Interface::GetWidget( static_cast<int>(lua_tointeger( L, 1 )) );
 	lua_pop( L, lua_gettop( L ) );
 	if( w ){
 		lua_pushstring( L, w->getName().c_str() );
@@ -239,7 +239,7 @@ int scriptApi::WidgetSetBarSize( lua_State* L )
 	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Widget id not given." );
 	luaL_argcheck( L, lua_isnumber( L, 2 ), 2, "Bar maximum value expected." );
 
-	w = UI::yui.GetWidget( static_cast<int>(lua_tointeger( L, 1 )) );
+	w = Interface::GetWidget( static_cast<int>(lua_tointeger( L, 1 )) );
 	if( w )
 		w->setBarSize( static_cast<float>(lua_tonumber( L, 2 )) );
 	lua_pop( L, lua_gettop( L ) );

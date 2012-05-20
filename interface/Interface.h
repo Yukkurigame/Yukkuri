@@ -11,27 +11,18 @@
 #include "widgets/Widget.h"
 
 
-class UI
+namespace Interface
 {
-public:
-	~UI();
 
-	static UI yui;
+	void clean();
 
 	void LoadAllWidgets();
 	Widget* LoadWidget( std::string name );
 
 	Widget* GetWidget( unsigned int id );
-	Widget* GetWidget( std::string name );
+	Widget* GetWidget( std::string name, Widget* parent );
 
 	void Update( );
-
-
-private:
-
-	void DeleteWidget( std::string name );
-
-	std::vector< Widget* > widgets;
 
 };
 

@@ -5,12 +5,12 @@
  *
  */
 
-#include "widgets/BarWidget.h"
+#include "widgets/WidgetBar.h"
 #include "Render.h"
 #include "LuaConfig.h"
 
 
-BarWidget::BarWidget()
+WidgetBar::WidgetBar()
 {
 	BarSprite = NULL;
 	TopSprite = NULL;
@@ -22,15 +22,15 @@ BarWidget::BarWidget()
 	BarValue = 0;
 }
 
-BarWidget::~BarWidget( )
+WidgetBar::~WidgetBar( )
 {
 	RenderManager::Instance()->FreeGLSprite( BarSprite );
 	RenderManager::Instance()->FreeGLSprite( TopSprite );
 }
 
-bool BarWidget::load( std::string id )
+bool WidgetBar::load( std::string id )
 {
-	if( !TextWidget::load( id ) )
+	if( !WidgetText::load( id ) )
 		return false;
 
 	std::string imgname;
@@ -68,7 +68,7 @@ bool BarWidget::load( std::string id )
 	return true;
 }
 
-void BarWidget::createBar( std::string name, int picture, int height, color4u clr )
+void WidgetBar::createBar( std::string name, int picture, int height, color4u clr )
 {
 	Height -= height + BarY;
 	BarSprite = RenderManager::Instance()->CreateGLSprite( PosX + BarX, PosY + BarY, getZ(), BarWidth, height );
@@ -86,7 +86,7 @@ void BarWidget::createBar( std::string name, int picture, int height, color4u cl
 	setBarSize(1);
 }
 
-void BarWidget::setBarValue( float value )
+void WidgetBar::setBarValue( float value )
 {
 	if( value == BarValue )
 		return;
@@ -104,7 +104,7 @@ void BarWidget::setBarValue( float value )
 		BarSprite->resize( BarWidth * value / BarMaxValue, -1 );
 }
 
-void BarWidget::setBarSize( float val )
+void WidgetBar::setBarSize( float val )
 {
 	if( val > 0 )
 		BarMaxValue = val;
@@ -119,16 +119,16 @@ void BarWidget::setBarSize( float val )
 		BarSprite->resize( BarWidth * BarValue / BarMaxValue, -1 );
 }
 
-void BarWidget::updatePosition( )
+void WidgetBar::updatePosition( )
 {
-	TextWidget::updatePosition( );
+	WidgetText::updatePosition( );
 	if( BarSprite )
 		BarSprite->setPosition( PosX + BarX, PosY + BarY, getZ() );
 	if( TopSprite )
 		TopSprite->setPosition( PosX + BarX + TopX, PosY + BarY + TopY, getZ() + 0.01f );
 }
 
-bool BarWidget::bindBarMaxValue( float* val )
+bool WidgetBar::bindBarMaxValue( float* val )
 {
 	if( val ){
 		BindedMaxValue = val;
@@ -137,7 +137,7 @@ bool BarWidget::bindBarMaxValue( float* val )
 	return false;
 }
 
-void BarWidget::Update( )
+void WidgetBar::Update( )
 {
 	if( Binded != NULL ){
 		if( (*Binded) != BarValue )
@@ -149,9 +149,9 @@ void BarWidget::Update( )
 	}
 }
 
-void BarWidget::toggleVisibility( )
+void WidgetBar::toggleVisibility( )
 {
-	TextWidget::toggleVisibility( );
+	WidgetText::toggleVisibility( );
 	if( BarSprite && BarSprite->visible != visible )
 		BarSprite->toggleVisibility( );
 	if( TopSprite && TopSprite->visible != visible )

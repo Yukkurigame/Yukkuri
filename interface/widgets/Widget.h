@@ -7,9 +7,12 @@
 #ifndef WIDGETS_H_
 #define WIDGETS_H_
 
-#include "safestring.h"
 #include "GraphicsTypes.h"
 #include <vector>
+
+#include "3rdparty/CUDataUser.h"
+
+class CUData;
 
 
 enum wType { NONE = 0, BLANK, TEXT, BAR};
@@ -18,7 +21,7 @@ enum wAlign { LEFT = 1, CENTER, RIGHT };
 enum wVAlign { TOP = 1, MIDDLE, BOTTOM };
 
 
-class Widget
+class Widget : public CUDataUser
 {
 public:
 	Widget();
@@ -27,9 +30,9 @@ public:
 	virtual bool load( std::string id );
 
 	void setType( wType t ){ Type = t; }
-	wType getType( ){ return Type; }
 
-	std::string getName( ){ return Name; }
+	inline wType getType( ){ return Type; }
+	inline std::string getName( ){ return Name; }
 
 	float getX( ){ return PosX; }
 	float getY( ){ return PosY; }
@@ -42,17 +45,21 @@ public:
 	void setZ( float z ){ PosZ = z * 0.1f; }
 	float getZ( );
 
-	unsigned int getId() { return ID; }
-	void setId( unsigned int id ) {  ID = id; }
+	inline unsigned int getId() { return ID; }
+	void setId( unsigned int id ) { ID = id; }
 
 	virtual void setParent( Widget* p );
+	inline Widget* getParent( ) { return Parent; }
 
-	int childrenCount() { return static_cast<int>(Children.size( )); }
+	inline int childrenCount() { return static_cast<int>(Children.size( )); }
+
 	void getChildren( Widget* children[], int size );
+	Widget* getChildren( std::string name );
 	void addChild( Widget* child );
 
 	bool bindValue( float* val );
 	bool bindValue( std::string* val );
+
 
 	//FIXME: to many virtual funcs
 	virtual void Update() {};
@@ -68,7 +75,14 @@ public:
 	virtual void setBarSize( float size ) {};
 	virtual void setBarValue( int val ) {};
 
+	// Lua methods
+	bool toggle( lua_State* L );
+	bool bindParam( lua_State* L );
+
+
 protected:
+	virtual CUData* createUData();
+
 	bool visible;
 	Sprite* background;
 

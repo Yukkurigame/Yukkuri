@@ -42,6 +42,7 @@
 #if INCLUDE_BLOCK == 1
 
 // Includes of declarations of all types in typelist
+/* Units */
 #include "units/Unit.h"
 #include "units/Animated.h"
 #include "units/Dynamic.h"
@@ -50,8 +51,13 @@
 #include "units/Corpse.h"
 #include "units/Player.h"
 
+/* Widgets */
+#include "interface/widgets/Widget.h"
+#include "interface/widgets/WidgetText.h"
+#include "interface/widgets/WidgetBar.h"
+
 // Typelist with all types, that can be passed to lua as userdata
-typedef TYPELIST_7(Unit, AnimatedUnit, DynamicUnit, Entity, Plant, Corpse, Player) ClassesList;
+typedef TYPELIST_10( Unit, AnimatedUnit, DynamicUnit, Entity, Plant, Corpse, Player, Widget, WidgetText, WidgetBar ) ClassesList;
 
 
 
@@ -65,6 +71,10 @@ UDATA_CREATOR_FUNC_DECL(Entity);
 UDATA_CREATOR_FUNC_DECL(Plant);
 UDATA_CREATOR_FUNC_DECL(Corpse);
 UDATA_CREATOR_FUNC_DECL(Player);
+
+UDATA_CREATOR_FUNC_DECL(Widget);
+UDATA_CREATOR_FUNC_DECL(WidgetText);
+UDATA_CREATOR_FUNC_DECL(WidgetBar);
 
 
 
@@ -86,12 +96,58 @@ void RegisterAllTypeMetatables(lua_State* L)
 	RegisterTypeMetatable<Corpse>(L);
 	RegisterTypeMetatable<Player>(L);
 
+	RegisterTypeMetatable<Widget>(L);
+	RegisterTypeMetatable<WidgetText>(L);
+	RegisterTypeMetatable<WidgetBar>(L);
+
 }
 
 
 #elif INCLUDE_BLOCK == 4
 
 // 4. Declaration of methods in metatables
+
+// Declarations
+
+
+// Widgets
+#define DECL_WIDGET_METH						\
+		EXEC_METHOD_DECL(toggle)				\
+		EXEC_METHOD_DECL(bindParam)
+
+#define DECL_WIDGETTEXT_METH
+
+#define DECL_WIDGETBAR_METH						\
+		GETSETF_METHOD_DECL(BarSize)			\
+		EXEC_METHOD_DECL(bindBarMaxValue)
+
+
+DECL_WIDGET_METH
+DECL_WIDGETTEXT_METH
+DECL_WIDGETBAR_METH
+
+
+
+// Metatable records
+
+
+
+// Widgets
+#define WIDGET_METH_ENTRY(ID)					\
+		EXEC_METHOD_ENTRY(ID, toggle),			\
+		EXEC_METHOD_ENTRY(ID, bindParam)
+
+
+
+#define WIDGETTEXT_METH_ENTRY(ID)				\
+		WIDGET_METH_ENTRY(ID)
+
+
+#define WIDGETBAR_METH_ENTRY(ID)				\
+		WIDGETTEXT_METH_ENTRY(ID),				\
+		EXEC_METHOD_ENTRY(ID, bindBarMaxValue),	\
+		GETSETF_METHOD_ENTRY(ID, BarSize)
+
 
 
 // Meta methods
@@ -131,12 +187,23 @@ static const struct luaL_reg ud_meta[TL::Length<ClassesList>::value][METAMETHODS
 		STD_METHODS(6),
 		//OBJRAY_METH_ENTRY(6),
 		END
+	},
+	{
+		STD_METHODS(7),
+		WIDGET_METH_ENTRY(7),
+		END
+	},
+	{
+		STD_METHODS(8),
+		WIDGETTEXT_METH_ENTRY(8),
+		END
+	},
+	{
+		STD_METHODS(9),
+		WIDGETBAR_METH_ENTRY(9),
+		END
 	}
-	//{
-	//	STD_METHODS(7),
-	//	//OBJENV_METH_ENTRY(7),
-	//	END
-	//}
+
 };
 
 

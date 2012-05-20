@@ -5,13 +5,11 @@
  *
  */
 
-#ifndef UNITMANAGER_H_
-#define UNITMANAGER_H_
+#ifndef APIUNITMANAGER_H_
+#define APIUNITMANAGER_H_
 
 #include "Lua.h"
 
-#define LUALIBFIELD( f ) { #f, f },
-#define LUALIBEND {NULL, NULL}
 
 namespace UMApi {
 
@@ -33,4 +31,4 @@ namespace UMApi {
 }
 
 
-#endif /* UNITMANAGER_H_ */
+#endif /* APIUNITMANAGER_H_ */

@@ -7,6 +7,7 @@ PROGNAME= Yukkuri
 INCLUDES=  -I. -Iscripts -Iunits -Igraphics -Iinterface -I/usr/include/freetype2
 LIBS= $(shell sdl-config --libs) -lpng -lSDL_image -lGL -lfreetype -llua
 OBJDIR= obj/
+SCRIPTSAPIDIR = api/
 SCRIPTSDIR= scripts/
 UNITSDIR= units/
 GRAPHICSDIR= graphics/
@@ -23,11 +24,12 @@ UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp Unit.cpp Animated.cpp Pla
 		 Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp
 GRAPHICS = Font.cpp Text.cpp ElasticBox.cpp sdl_graphics.cpp gl_extensions.cpp Animation.cpp \
 		   Render.cpp pngfuncs.c
+SCRIPTSAPI = UnitManager.cpp Interface.cpp Widgets.cpp
 SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp proto.cpp \
-		  api/UnitManager.cpp api.cpp 
-WIDGETS = Widget.cpp TextWidget.cpp BarWidget.cpp
+		  api.cpp $(addprefix $(SCRIPTSAPIDIR), $(SCRIPTSAPI))
+WIDGETS = Widget.cpp WidgetText.cpp WidgetBar.cpp
 INTERFACE = Interface.cpp $(addprefix $(WIDGETSDIR), $(WIDGETS))
-3RDPARTY = CUData.cpp CUDataUser.cpp CUDataTemplates.cpp
+3RDPARTY = CUData.cpp CUDataUser.cpp CUDataTemplates.cpp LuaPusher.cpp
 
 
 SRCS =   main.cpp yukkuri.cpp config.cpp engine.cpp Bindings.cpp BindFunctions.cpp Spawner.cpp \
@@ -50,7 +52,7 @@ HEADERS = $(OBJS:.o=.h) $(addprefix $(OBJDIR), $(UNIQHEADERS))
  
  
 GCHOLD = $(HEADERS:.h=.h.gch)
-GCH = $(shell echo $(GCHOLD) | sed -e "s/[^ ]\+\/\(main\|LuaRegister\).h.gch //g")
+GCH = $(shell echo $(GCHOLD) | sed -e "s/[^ ]\+\/\(main\|LuaRegister\|api\/Widgets\).h.gch //g")
 
 
 #.cpp.o:
@@ -78,7 +80,7 @@ $(PROGNAME) : | $(OBJDIR) $(GCH) $(OBJS)
 	$(CC) $(CFLAGS)  -o $(PROGNAME) $(OBJS) $(LIBS)
 
 $(OBJDIR):
-	mkdir -p $(addprefix $(OBJDIR), $(SCRIPTSDIR) $(SCRIPTSDIR)api $(UNITSDIR) \
+	mkdir -p $(addprefix $(OBJDIR), $(SCRIPTSDIR) $(SCRIPTSDIR)$(SCRIPTSAPIDIR) $(UNITSDIR) \
 	 $(GRAPHICSDIR) $(INTERFACEDIR) $(INTERFACEDIR)$(WIDGETSDIR) $(3RDPARTYDIR))
 
 clean: cleanheaders cleanobjs cleandirs

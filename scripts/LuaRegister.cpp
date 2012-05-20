@@ -9,6 +9,7 @@
 
 #include "api.h"
 #include "api/UnitManager.h"
+#include "api/Interface.h"
 
 #include "Bindings.h"
 #include "units/Prototypes.h"
@@ -50,6 +51,7 @@ void LuaMain::RegisterApi( lua_State* L )
 
 	// Libraries
 	luaL_register( L, "UnitManager", UMApi::methods );
+	luaL_register( L, "Interface", IfaceApi::methods );
 
 
 

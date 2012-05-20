@@ -5,12 +5,12 @@
  *
  */
 
-#include "widgets/TextWidget.h"
+#include "widgets/WidgetText.h"
 #include "Render.h"
 #include "LuaConfig.h"
 
 
-TextWidget::TextWidget( )
+WidgetText::WidgetText( )
 {
 	FontName = "DejaVuSans";
 	FontSize = 12;
@@ -22,13 +22,13 @@ TextWidget::TextWidget( )
 }
 
 
-TextWidget::~TextWidget( )
+WidgetText::~WidgetText( )
 {
 
 }
 
 
-bool TextWidget::load( std::string id )
+bool WidgetText::load( std::string id )
 {
 	std::string font;
 	std::string text;
@@ -79,7 +79,7 @@ bool TextWidget::load( std::string id )
 	return true;
 }
 
-void TextWidget::updatePosition( )
+void WidgetText::updatePosition( )
 {
 	float posx, posy, height, width;
 	width = TextSprite.width();
@@ -117,12 +117,12 @@ void TextWidget::updatePosition( )
 	TextSprite.setPosition( posx, posy, getZ( ) + 0.1f );
 }
 
-void TextWidget::setFontColor( int r, int g, int b )
+void WidgetText::setFontColor( int r, int g, int b )
 {
 	TextSprite.setColor( r, g, b );
 }
 
-void TextWidget::setText( std::string text )
+void WidgetText::setText( std::string text )
 {
 	float w, h;
 	if( TextContent == text )
@@ -139,14 +139,14 @@ void TextWidget::setText( std::string text )
 	updatePosition();
 }
 
-void TextWidget::setTextPosition( float x, float y )
+void WidgetText::setTextPosition( float x, float y )
 {
 	TextX = x;
 	TextY = y;
 	updatePosition();
 }
 
-void TextWidget::Update( )
+void WidgetText::Update( )
 {
 	if( !Binded )
 		return;
@@ -158,7 +158,7 @@ void TextWidget::Update( )
 	}
 }
 
-void TextWidget::toggleVisibility( )
+void WidgetText::toggleVisibility( )
 {
 	Widget::toggleVisibility( );
 	TextSprite.setVisible(visible);

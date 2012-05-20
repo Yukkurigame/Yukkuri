@@ -10,4 +10,5 @@
 //Render only visible in window
 #define RENDER_VISIBLE
 
+
 #endif //YDEFINE_H

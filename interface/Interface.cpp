@@ -5,38 +5,50 @@
  */
 
 #include "Interface.h"
-#include "widgets/TextWidget.h"
-#include "widgets/BarWidget.h"
+#include "widgets/WidgetText.h"
+#include "widgets/WidgetBar.h"
 #include "LuaConfig.h"
 
+#include "hacks.h"
 #include "debug.h"
 
 
-UI UI::yui; // :3
-
-static unsigned int LastWidgetId = 1;
-
-
-
-UI::~UI( )
+namespace
 {
-	for(std::vector< Widget* >::iterator it = widgets.begin(); it != widgets.end(); it++){
+	std::vector< Widget* > widgets;
+	static unsigned int LastWidgetId = 1;
+
+
+	void DeleteWidget( std::string name ){
+		//FIXME: why this function is empty?
+	}
+
+}
+
+
+
+void Interface::clean( )
+{
+	Debug::debug( Debug::INTERFACE, "Remove widgets.\n" );
+
+	FOREACHIT( widgets ){
 		delete (*it);
 	}
 }
 
-void UI::LoadAllWidgets( )
+
+void Interface::LoadAllWidgets( )
 {
 	std::vector< std::string > v;
 	LuaConfig* lc = new LuaConfig;
 	lc->getSubconfigsList( "widget", v );
-	for(std::vector < std::string >::iterator it = v.begin(); it != v.end(); ++it ){
+	FOREACHIT( v ){
 		LoadWidget( (*it) );
 	}
 	delete lc;
 }
 
-Widget* UI::LoadWidget( std::string id )
+Widget* Interface::LoadWidget( std::string id )
 {
 	Widget* w;
 	LuaConfig* conf = new LuaConfig;
@@ -57,10 +69,10 @@ Widget* UI::LoadWidget( std::string id )
 		w = new Widget( );
 		w->setType( BLANK );
 	}else if( type == "TextWidget" ){
-		w = new TextWidget( );
+		w = new WidgetText( );
 		w->setType( TEXT );
 	}else if( type == "BarWidget" ){
-		w = new BarWidget( );
+		w = new WidgetBar( );
 		w->setType( BAR );
 	}else{
 		debug( Debug::INTERFACE, "Widget with id " + id + " have bad type " + type + ".\n" );
@@ -80,8 +92,8 @@ Widget* UI::LoadWidget( std::string id )
 
 	std::vector < std::string > childs;
 	conf->getValue("children", id, childs);
-	for(std::vector < std::string >::iterator it = childs.begin(); it != childs.end(); ++it ){
-		Widget* cld = LoadWidget( (*it) );
+	FOREACHIT( childs ){
+		Widget* cld = LoadWidget( *it );
 		if(cld){
 			w->addChild(cld);
 			cld->setParent(w);
@@ -93,10 +105,10 @@ Widget* UI::LoadWidget( std::string id )
 	return w;
 }
 
-Widget* UI::GetWidget( unsigned int id )
+Widget* Interface::GetWidget( unsigned int id )
 {
 	if( id > 1 && id < LastWidgetId  ){
-		for (std::vector< Widget* >::iterator it=widgets.begin() ; it != widgets.end(); it++ ){
+		FOREACHIT( widgets ){
 			if( (*it)->getId( ) == id )
 				return (*it);
 		}
@@ -104,18 +116,19 @@ Widget* UI::GetWidget( unsigned int id )
 	return NULL;
 }
 
-Widget* UI::GetWidget( std::string name )
+Widget* Interface::GetWidget( std::string name, Widget* parent )
 {
-	for (std::vector< Widget* >::iterator it=widgets.begin() ; it != widgets.end(); it++ ){
-		if( (*it)->getName() == name )
+	if( parent != NULL )
+		return parent->getChildren(name);
+	FOREACHIT( widgets ){
+		if( (*it)->getParent() != NULL && (*it)->getName() == name )
 			return (*it);
 	}
 	return NULL;
 }
 
-void UI::Update( )
+void Interface::Update( )
 {
-	for (std::vector< Widget* >::iterator it=widgets.begin() ; it != widgets.end(); it++ ){
+	FOREACHIT( widgets )
 		(*it)->Update( );
-	}
 }

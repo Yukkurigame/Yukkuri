@@ -7,6 +7,11 @@
 #ifndef LUA_H_
 #define LUA_H_
 
+
+#define LUALIBFIELD( f ) { #f, f },
+#define LUALIBEND {NULL, NULL}
+
+
 extern "C" {
 	#include "lua.h"
 	#include "lauxlib.h"

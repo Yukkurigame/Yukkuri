@@ -11,6 +11,7 @@
 #include "config.h"
 
 #include "debug.h"
+#include "hacks.h"
 
 
 Widget::Widget()
@@ -177,6 +178,17 @@ void Widget::getChildren( Widget* children[], int size )
 	}
 }
 
+
+Widget* Widget::getChildren( std::string name )
+{
+	FOREACHIT( Children ){
+		if( (*it)->getName() == name )
+			return *it;
+	}
+	return NULL;
+}
+
+
 bool Widget::bindValue( float* val )
 {
 	if( val ){
@@ -199,6 +211,4 @@ void Widget::toggleVisibility( )
 		Children[i]->toggleVisibility();
 	}
 }
-
-
 

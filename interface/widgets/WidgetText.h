@@ -11,11 +11,11 @@
 #include "interface/widgets/Widget.h"
 #include "graphics/Text.h"
 
-class TextWidget: public Widget
+class WidgetText: public Widget
 {
 public:
-	TextWidget( );
-	~TextWidget( );
+	WidgetText( );
+	~WidgetText( );
 
 	bool load( std::string id );
 
@@ -32,6 +32,8 @@ public:
 	void toggleVisibility( );
 
 protected:
+	virtual CUData* createUData();
+
 	std::string BaseText;
 
 private:

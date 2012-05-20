@@ -51,7 +51,7 @@ bool Yukkuri::AdditionalInit()
 
 	daytime.loadInterface();
 
-	Widget* w = UI::yui.GetWidget("fps");
+	Widget* w = Interface::GetWidget( "fps", NULL );
 	if( w )
 		w->bindValue( &CurrentFPS );
 
@@ -63,7 +63,7 @@ void Yukkuri::Think( const int& ElapsedTime )
 	// Do time-based calculations
 	UnitManager::tick( ElapsedTime );
 	daytime.update( ElapsedTime );
-	UI::yui.Update( );
+	Interface::Update( );
 	spawner.Spawn( );
 }
 
@@ -116,6 +116,8 @@ void Yukkuri::End()
 {
 	extern std::vector<Proto*> Prototypes;
 	clear_vector( &Prototypes );
+
+	Interface::clean( );
 
 	UnitManager::clean( );
 

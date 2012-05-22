@@ -30,10 +30,10 @@ int CUDataUser::pushUData( lua_State* L )
 
 	if( !pUdata ){
 		Debug::debug( Debug::SCRIPT, "CUDataUser::pushUData: userdata creation failed" );
-		return 0;
 	}else{
 		extern LuaScript* luaScript;
 		luaScript->GetFromRegistry( L, pUdata->getRegRef() );
 		return 1;
 	}
+	return 0;
 }

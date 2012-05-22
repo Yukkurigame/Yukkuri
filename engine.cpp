@@ -10,12 +10,15 @@
 #include "safestring.h"
 #include "debug.h"
 
+#include "3rdparty/timer/TimerManager.h"
+
 using namespace Debug;
 
 
 extern MainConfig conf;
 
-long sdl_time;
+long sdl_time = 0;
+long last_timerevent_tick = 0;
 
 /** Default constructor. **/
 CEngine::CEngine( )
@@ -146,6 +149,11 @@ void CEngine::Start()
 			CurrentFPS = FPSCounter / seconds;
 			FPSTickCounter = Tick;
 			FPSCounter = 0;
+		}
+
+		if( sdl_time - last_timerevent_tick >= TIMEREVENTTICK ){
+			Timer::ProcessTimerEvents();
+			last_timerevent_tick = sdl_time;
 		}
 
 		ElapsedTicks = Tick - LastTick;

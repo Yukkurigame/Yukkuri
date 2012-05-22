@@ -8,25 +8,32 @@
 #define LUATHREAD_H_
 
 #include "Lua.h"
+#include <list>
+#include "types.h"
 
 //FIXME: Struct maybe
 struct LuaThread
 {
 	unsigned int ThreadId;
 	lua_State* Thread;
+	LuaRegRef refKey;
 	bool Pausable;
 
 	LuaThread( );
 	LuaThread( lua_State* self );
 };
 
+typedef std::list< LuaThread* >::iterator ThreadIter;
+
 namespace threadsManager
 {
-	unsigned int NewThread( lua_State* L );
-	unsigned int GetThread( lua_State* L );
+	LuaRegRef NewThread( lua_State* L );
+	ThreadIter GetThread( lua_State* L );
+	ThreadIter End( );
+	void ProcessThread( LuaRegRef r );
 	int ThreadWait( lua_State *L );
-	int ResumeThread( lua_State *L );
-	bool RemoveThread( unsigned int id );
+	int ResumeThread( ThreadIter it, lua_State *L );
+	void RemoveThread( ThreadIter it );
 	void CleanThreads( );
 
 }

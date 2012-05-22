@@ -13,7 +13,7 @@ extern MainConfig conf;
 
 void Spawner::Spawn( )
 {
-	float x, y;
+	/*float x, y;
 	if( UnitManager::GetUnitsSize(utEntity) < conf.maxSpawn ){
 		x = y = 0;
 		getPosition( &x, &y );
@@ -23,7 +23,7 @@ void Spawner::Spawn( )
 			float level = p->getUnitParameter("level");
 			u->levelUp( rand( ) % static_cast<int>( level ? level : 1 ) + 3 );
 		}
-	}
+	}*/
 	/*if( UnitManager::GetUnitsSize(PLANT) < conf.maxEdibles ){
 		x = y = 0;
 		getPosition( &x, &y );

@@ -11,7 +11,6 @@
 #define LUALIBFIELD( f ) { #f, f },
 #define LUALIBEND {NULL, NULL}
 
-
 extern "C" {
 	#include "lua.h"
 	#include "lauxlib.h"
@@ -24,6 +23,13 @@ extern "C" {
 #include <utility>
 
 #include "debug.h"
+
+struct LuaRet {
+	int c;
+	LuaRet() : c() {};
+	LuaRet( int n ) : c( n ) { };
+};
+
 
 class LuaStackChecker
 {

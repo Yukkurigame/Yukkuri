@@ -7,19 +7,29 @@
 
 #include "Lua.h"
 
+#include "3rdparty/CUDataTemplates.h"
+
 #include "api.h"
 #include "api/UnitManager.h"
 #include "api/Interface.h"
+#include "api/ThreadManager.h"
 
 #include "Bindings.h"
 #include "units/Prototypes.h"
 #include "units/Unit.h"
+
+
 
 #include "debug.h"
 
 
 void LuaMain::RegisterApi( lua_State* L )
 {
+	// Register UData metatables
+	RegisterAllTypeMetatables( L );
+
+
+	// Register base methods
 	lua_register( L, "readdir", &scriptApi::ReadDirectory );
 	lua_register( L, "getcwd", &scriptApi::GetCWD );
 
@@ -27,21 +37,7 @@ void LuaMain::RegisterApi( lua_State* L )
 
 	lua_register( L, "SetBindings", &scriptApi::SetBindings );
 
-	lua_register( L, "CreateWidget", &scriptApi::CreateWidget );
-	lua_register( L, "LoadWidget", &scriptApi::LoadWidget );
-	lua_register( L, "BindWidget", &scriptApi::BindWidget );
-	lua_register( L, "ToggleWidget", &scriptApi::ToggleWidget );
-	lua_register( L, "BindWidgetMaxBar", &scriptApi::BindWidgetMaxBar );
-	lua_register( L, "WidgetChildren", &scriptApi::WidgetChildren );
-	lua_register( L, "GetWidgetName", &scriptApi::GetWidgetName );
-	lua_register( L, "WidgetSetBarSize", &scriptApi::WidgetSetBarSize );
-
 	lua_register( L, "DeleteUnit", &scriptApi::DeleteUnit );
-
-	lua_register( L, "NewThread", &scriptApi::NewThread );
-	lua_register( L, "ThreadWait", &scriptApi::ThreadWait );
-	lua_register( L, "ResumeThread", &scriptApi::ResumeThread );
-	lua_register( L, "RemoveThread", &scriptApi::RemoveThread );
 
 	lua_register( L, "SetCameraTarget", &scriptApi::SetCameraTarget );
 
@@ -52,7 +48,7 @@ void LuaMain::RegisterApi( lua_State* L )
 	// Libraries
 	luaL_register( L, "UnitManager", UMApi::methods );
 	luaL_register( L, "Interface", IfaceApi::methods );
-
+	luaL_register( L, "Thread", ThreadApi::methods );
 
 
 	// Регистрируем константные названия для клавиш.

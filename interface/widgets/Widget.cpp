@@ -169,15 +169,6 @@ void Widget::addChild( Widget* child )
 	Children.push_back( child );
 }
 
-/* This function needs memory allocation. */
-void Widget::getChildren( Widget* children[], int size )
-{
-	for( int i = 0, vsz = Children.size(); i < vsz; ++i ){
-		if( i >= size ) break;
-		children[i] = Children[i];
-	}
-}
-
 
 Widget* Widget::getChildren( std::string name )
 {

@@ -28,7 +28,7 @@ public:
 	int ExecChunk();
 	int ExecChunkFromReg( LuaRegRef r) ;
 
-	void StackDumpToLog( lua_State *L );
+	static void StackDumpToLog( lua_State *L );
 };
 
 #endif /* LUASCRIPT_H_ */

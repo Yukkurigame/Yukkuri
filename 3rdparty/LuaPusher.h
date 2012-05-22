@@ -13,6 +13,7 @@
 
 struct lua_State;
 
+
 #define UNUSED_ARG(x)	(void)x
 
 /// Pushes value of type T onto lua stack

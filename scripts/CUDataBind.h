@@ -111,9 +111,10 @@ void RegisterAllTypeMetatables(lua_State* L)
 
 
 // Widgets
-#define DECL_WIDGET_METH						\
-		EXEC_METHOD_DECL(toggle)				\
-		EXEC_METHOD_DECL(bindParam)
+#define DECL_WIDGET_METH								\
+		EXEC_METHOD_DECL(toggle)						\
+		EXEC_METHOD_DECL(bindParam)						\
+		EXEC_NAMED_METHOD_DECL(children, getChildren)
 
 #define DECL_WIDGETTEXT_METH
 
@@ -135,7 +136,8 @@ DECL_WIDGETBAR_METH
 // Widgets
 #define WIDGET_METH_ENTRY(ID)					\
 		EXEC_METHOD_ENTRY(ID, toggle),			\
-		EXEC_METHOD_ENTRY(ID, bindParam)
+		EXEC_METHOD_ENTRY(ID, bindParam),		\
+		EXEC_NAMED_METHOD_ENTRY(ID, children)
 
 
 

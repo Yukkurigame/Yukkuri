@@ -5,10 +5,13 @@
  */
 
 #include "LuaThread.h"
+#include "LuaScript.h"
+#include "3rdparty/timer/TimerManager.h"
 #include <list>
 #include <cstdlib>
 
 #include "hacks.h"
+#include "safestring.h"
 
 #include "debug.h"
 using namespace Debug;
@@ -32,6 +35,7 @@ LuaThread::LuaThread( )
 {
 	ThreadId = ++threadsCounter;
 	Thread = NULL;
+	refKey = LUA_NOREF;
 	Pausable = false;
 }
 
@@ -39,14 +43,16 @@ LuaThread::LuaThread( lua_State* self )
 {
 	ThreadId = ++threadsCounter;
 	Thread = self;
+	refKey = LUA_NOREF;
 	Pausable = false;
 }
 
-unsigned int threadsManager::NewThread( lua_State* L )
+LuaRegRef threadsManager::NewThread( lua_State* L )
 {
 	lua_State *NL;
 	LuaThread* thread;
 	bool pausable;
+	extern LuaScript* luaScript;
 	if( !L )
 		return 0;
 	if( lua_gettop( L ) < 1 || lua_gettop( L ) > 2 ){
@@ -56,7 +62,7 @@ unsigned int threadsManager::NewThread( lua_State* L )
 
 	pausable = false;
 	if( lua_gettop(L) == 2 ){
-		pausable = lua_toboolean(L, 2);
+		pausable = lua_toboolean(L, 2) != 0;
 		lua_pop(L, 1);
 	}
 
@@ -65,13 +71,26 @@ unsigned int threadsManager::NewThread( lua_State* L )
 		return 0;
 	}
 
-	NL = lua_newthread(L);
+	// Код из функции luaB_cocreate файла lbaselib.c
+	// Стек L: func
+	NL = lua_newthread(L);	// Стек L: func thread
+							// Стек NL:
 
-	lua_pushvalue(L, 1);
-	lua_xmove(L, NL, 1);
+	lua_pushvalue( L, 1 );	// Стек L: func thread func
+	lua_xmove( L, NL, 1 );	/* move function from L to NL */
+
+	// Конец кода из функции luaB_cocreate файла lbaselib.c
+
+	// Стек L: func thread
+	// Стек NL: func
 
 	thread = new LuaThread( NL );
 
+	lua_pushvalue( L, -1 );						// Стек L: func thread thread
+	// А если L == Lst, то переноса не будет, с вершины стека просто снимется 1 копия thread
+	lua_xmove( L, LuaScript::getState(), 1 );	// Стек L: func thread
+												// Стек lua: thread
+	thread->refKey = luaScript->AddToRegistry();	// Стек lua:
 	thread->Pausable = pausable;
 
 	threads.push_back( thread );
@@ -80,50 +99,78 @@ unsigned int threadsManager::NewThread( lua_State* L )
 	sprintf( dbg, "Lua thread 0x%p created, master_thread: 0x%p, id: %d.\n", NL, L, thread->ThreadId);
 	Debug::debug( Debug::SCRIPT, dbg);
 
-	return thread->ThreadId;
+	return thread->refKey;
 }
 
-unsigned int threadsManager::GetThread( lua_State* L )
+
+ThreadIter threadsManager::GetThread( lua_State* L )
 {
 	FOREACHIT( threads ){
-		if( (*it)->Thread == L )
-			return (*it)->ThreadId;
+		LuaThread* lt = *it;
+		if( lt->Thread == L )
+			return it;
 	}
-	return 0;
+	return threads.end();
 }
 
-int threadsManager::ResumeThread( lua_State *L )
+ThreadIter threadsManager::End( )
 {
-	LuaThread* thread = NULL;
-	lua_State* co = lua_tothread( L, 1 );
-	luaL_argcheck( L, co, 1, "coroutine expected" );
+	return threads.end();
+}
+
+
+// Вызывается при настплении события таймера, вызывает продолжение работы треда
+void threadsManager::ProcessThread( LuaRegRef r )
+{
+	LuaThread* lt = NULL;
+	ThreadIter it;
 	FOREACHIT( threads ){
-		if( (*it)->Thread == L ){
-			thread = (*it);
+		lt = *it;
+		if( lt->refKey == r )
 			break;
-		}
 	}
-	if( thread ){
-		lua_xmove( L, thread->Thread, lua_gettop( L ) - 1 );
-		int status = lua_resume( thread->Thread, lua_gettop( thread->Thread ) - 1 );
-		if( status != LUA_YIELD ){
-			if( status > 1 ){
-				std::string err = lua_tostring( thread->Thread, -1 );
-				debug( SCRIPT, "Thread resumption failed: " + err + ".\n" );
-			}
-			RemoveThread( thread->ThreadId );
+
+	if( lt ){
+		ResumeThread( it, NULL );
+	}
+}
+
+
+// Продолжает выполнение приостановленной coroutine, являющейся
+// тредом, за котором следит игра.
+// В ОТЛИЧИЕ от coroutine.resume, ничего не возвращает.
+int threadsManager::ResumeThread( ThreadIter it, lua_State* L )
+{
+	LuaThread* lt = *it;
+
+	if( L ){
+		// Стек L:		thread arg1 arg2 ... argN
+		// Cтек thread: [func]
+		// func на стеке только в первый раз
+		lua_xmove( L, lt->Thread, lua_gettop(L) - 1 );
+		// Стек L:		thread
+		// Cтек thread: [func] arg1 arg2 ... argN
+	}
+
+
+	//SCRIPT::StackDumpToLog(lt->masterState);
+	//SCRIPT::StackDumpToLog(lt->lThread);
+	lua_resume( lt->Thread, lua_gettop( lt->Thread ) - 1 );
+
+	if( lua_status( lt->Thread ) != LUA_YIELD ){
+		if( lua_status( lt->Thread ) != 0 ){		// Errors
+			std::string err = lua_tostring( lt->Thread, -1 );
+			debug( SCRIPT, "Thread resumption failed: " + err + ".\n" );
 		}
-	}else{
-		debug( SCRIPT, "Thread not registred: " + getDebugInfo( L ) + ".\n" );
+		RemoveThread( it );
 	}
 
 	return 0;
 }
+
 
 int threadsManager::ThreadWait( lua_State* L )
 {
-	unsigned int tid;
-
 	luaL_argcheck(L, lua_isnumber(L, 1), 1, "Number expected");
 
 	if( lua_pushthread(L) ){
@@ -136,11 +183,9 @@ int threadsManager::ThreadWait( lua_State* L )
 		lua_pop(L, 1);
 	}
 
-	tid = GetThread(L);
-
-	if( tid > 0 ){
-		//FIXME: timer
-		//AddThreadTimerEvent(lua_tointeger(L, 1), (*it)->refKey, (*it)->pausable);
+	ThreadIter it = GetThread(L);
+	if( it != threads.end() ){
+		Timer::AddThreadTimerEvent( lua_tointeger(L, 1), (*it)->refKey, (*it)->Pausable );
 	}
 	lua_remove(L, 1);
 
@@ -148,38 +193,23 @@ int threadsManager::ThreadWait( lua_State* L )
 }
 
 
-bool threadsManager::RemoveThread( unsigned int id )
+void threadsManager::RemoveThread( ThreadIter it )
 {
-	LuaThread* thread;
-	char dbg[50];
-
-	if( id > 0 || id <= threads.size( ) ){
-		thread = NULL;
-		FOREACHIT( threads ){
-			if( (*it)->ThreadId == id ){
-				thread = (*it);
-				threads.erase(it);
-				break;
-			}
-		}
-		if( thread ){
-			delete thread;
-			sprintf( dbg, "Lua thread %d removed.\n", id );
-			Debug::debug( Debug::SCRIPT, dbg);
-			return true;
-		}
+	LuaThread* thread = *it;
+	if( thread != NULL ){
+		extern LuaScript* luaScript;
+		Timer::DeleteTimerEvent( thread->refKey );
+		luaScript->RemoveFromRegistry( thread->refKey );
+		delete thread, thread = NULL;
+		Debug::debug( Debug::SCRIPT, "Lua thread " + citoa(thread->ThreadId) + " removed.\n");
 	}
-
-	sprintf( dbg, "Lua thread %d not found.\n", id );
-	Debug::debug( Debug::SCRIPT, dbg);
-
-	return false;
+	threads.erase(it);
 }
+
 
 void threadsManager::CleanThreads()
 {
 	Debug::debug( Debug::MAIN, "Cleaning threads.\n" );
 	clear_vector( &threads );
 }
-
 

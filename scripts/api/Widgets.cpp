@@ -12,6 +12,9 @@
 
 #include "Lua.h"
 
+#include "hacks.h"
+
+
 
 bool Widget::toggle( lua_State* L )
 {
@@ -49,6 +52,26 @@ bool Widget::bindParam( lua_State* L )
 
 	return false;
 }
+
+
+LuaRet Widget::getChildren( lua_State* L )
+{
+
+	lua_newtable( L );
+	int top = lua_gettop( L );
+	Widget* child = NULL;
+	LuaRet r(1);
+
+	FOREACHIT( this->Children ){
+		child = *it;
+		lua_pushstring( L, child->getName().c_str() );
+		lua_pushinteger( L, child->getId() );
+		lua_settable( L, top );
+	}
+	return r;
+
+}
+
 
 
 bool WidgetBar::bindBarMaxValue( lua_State* L )

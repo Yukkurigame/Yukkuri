@@ -121,7 +121,7 @@ Widget* Interface::GetWidget( std::string name, Widget* parent )
 	if( parent != NULL )
 		return parent->getChildren(name);
 	FOREACHIT( widgets ){
-		if( (*it)->getParent() != NULL && (*it)->getName() == name )
+		if( (*it)->getParent() == NULL && (*it)->getName() == name )
 			return (*it);
 	}
 	return NULL;

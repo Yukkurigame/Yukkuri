@@ -14,6 +14,7 @@
 #include "scripts/Lua.h"
 #include "assert.h"
 #include <cstring>
+#include "types.h"
 
 // int
 template <>
@@ -354,4 +355,13 @@ template<>
 bool CHINP_TESTER<std::string>(lua_State* L, int idx)
 {
 	return lua_isstring(L, idx) != 0;
+}
+
+
+
+//void
+template <>
+int pushToLua(lua_State* L, const LuaRet& r )
+{
+	return r.c;
 }

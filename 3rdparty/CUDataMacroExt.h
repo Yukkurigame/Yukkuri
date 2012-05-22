@@ -19,7 +19,7 @@
 		if( !ud->getUser( ) )											\
 			luaL_error( L, "Object destroyed" );						\
 		else															\
-			lua_pop( L, 1 ); /* Remove userdata from stack  */			\
+			lua_remove( L, 1 ); /* Remove userdata from stack  */		\
 		return pushToLua(L, static_cast<T*>(ud->getUser())->FIELD(L));	\
 	}
 
@@ -34,6 +34,30 @@
 	{ #FIELD, EXEC_METHOD(ID, FIELD) }
 //////////////////////////////////////////////////////////////////////////
 
+
+
+// Macros for declaration of execution method with specified NAME
+#define EXEC_NAMED_METHOD_DECL(NAME, FIELD)								\
+	template <typename T>												\
+	int exec_##NAME( lua_State* L ){									\
+		CUData* ud = check_userdata<T>( L, 1 );							\
+		if( !ud->getUser( ) )											\
+			luaL_error( L, "Object destroyed" );						\
+		else															\
+			lua_remove( L, 1 ); /* Remove userdata from stack  */		\
+		return pushToLua(L, static_cast<T*>(ud->getUser())->FIELD(L));	\
+	}
+
+
+// Macros for getting the pointer to getter method with specified NAME
+#define EXEC_NAMED_METHOD(ID, NAME)                         \
+	&exec_##NAME<TL::TypeAt<ClassesList, ID>::Result>
+
+
+// Macros, that puts new method entry in metatable methods array
+#define EXEC_NAMED_METHOD_ENTRY(ID, NAME)    \
+	{ #NAME, EXEC_NAMED_METHOD(ID, NAME) }
+//////////////////////////////////////////////////////////////////////////
 
 
 // Macros for declaration of getset function method

@@ -24,12 +24,12 @@ UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp Unit.cpp Animated.cpp Pla
 		 Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp
 GRAPHICS = Font.cpp Text.cpp ElasticBox.cpp sdl_graphics.cpp gl_extensions.cpp Animation.cpp \
 		   Render.cpp pngfuncs.c
-SCRIPTSAPI = UnitManager.cpp Interface.cpp Widgets.cpp
+SCRIPTSAPI = UnitManager.cpp Interface.cpp Widgets.cpp ThreadManager.cpp
 SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp proto.cpp \
 		  api.cpp $(addprefix $(SCRIPTSAPIDIR), $(SCRIPTSAPI))
 WIDGETS = Widget.cpp WidgetText.cpp WidgetBar.cpp
 INTERFACE = Interface.cpp $(addprefix $(WIDGETSDIR), $(WIDGETS))
-3RDPARTY = CUData.cpp CUDataUser.cpp CUDataTemplates.cpp LuaPusher.cpp
+3RDPARTY = CUData.cpp CUDataUser.cpp CUDataTemplates.cpp LuaPusher.cpp timer/TimerManager.cpp
 
 
 SRCS =   main.cpp yukkuri.cpp config.cpp engine.cpp Bindings.cpp BindFunctions.cpp Spawner.cpp \
@@ -46,7 +46,9 @@ OBJS = $(addprefix $(OBJDIR), $(OBJ:.c=.o))
 
 
 UNIQHEADERS = $(GRAPHICSDIR)GraphicsTypes.h $(SCRIPTSDIR)LuaScriptConfig.h \
-         $(3RDPARTYDIR)TypeList.h Define.h debug.h hacks.h safestring.h types.h 
+         	$(addprefix $(3RDPARTYDIR), TypeList.h timer/InternalTimerEvent.h \
+         	timer/InternalTimerEvent.h timer/TimerEvent.h timer/ITimerEventPerformer.h ) \
+         	Define.h debug.h hacks.h safestring.h types.h 
 
 HEADERS = $(OBJS:.o=.h) $(addprefix $(OBJDIR), $(UNIQHEADERS))
  
@@ -81,7 +83,7 @@ $(PROGNAME) : | $(OBJDIR) $(GCH) $(OBJS)
 
 $(OBJDIR):
 	mkdir -p $(addprefix $(OBJDIR), $(SCRIPTSDIR) $(SCRIPTSDIR)$(SCRIPTSAPIDIR) $(UNITSDIR) \
-	 $(GRAPHICSDIR) $(INTERFACEDIR) $(INTERFACEDIR)$(WIDGETSDIR) $(3RDPARTYDIR))
+	 $(GRAPHICSDIR) $(INTERFACEDIR) $(INTERFACEDIR)$(WIDGETSDIR) $(3RDPARTYDIR) $(3RDPARTYDIR)timer)
 
 clean: cleanheaders cleanobjs cleandirs
 

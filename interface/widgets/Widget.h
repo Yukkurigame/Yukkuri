@@ -13,6 +13,7 @@
 #include "3rdparty/CUDataUser.h"
 
 class CUData;
+struct LuaRet;
 
 
 enum wType { NONE = 0, BLANK, TEXT, BAR};
@@ -53,8 +54,8 @@ public:
 
 	inline int childrenCount() { return static_cast<int>(Children.size( )); }
 
-	void getChildren( Widget* children[], int size );
 	Widget* getChildren( std::string name );
+	LuaRet getChildren( lua_State* L );
 	void addChild( Widget* child );
 
 	bool bindValue( float* val );

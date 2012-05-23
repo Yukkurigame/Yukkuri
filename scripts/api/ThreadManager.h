@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef THREADMANAGER_H_
-#define THREADMANAGER_H_
+#ifndef APITHREADMANAGER_H_
+#define APITHREADMANAGER_H_
 
 
 #include "Lua.h"
@@ -34,4 +34,4 @@ namespace ThreadApi
 }
 
 
-#endif /* THREADMANAGER_H_ */
+#endif /* APITHREADMANAGER_H_ */

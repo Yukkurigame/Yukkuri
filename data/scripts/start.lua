@@ -7,7 +7,7 @@ SetBindings("bindings_game")
 local stats = Interface.loadWidget("widget_stats_98072")
 
 local player = UnitManager.createUnit(constants.utPlayer)
-SetCameraTarget(player)
+Camera.setTarget(player)
 
 LoadMapRegion('region_test2_881880')
 
@@ -37,11 +37,12 @@ if expbar then
 	expbar:bindBarMaxValue(player, "expmax")
 end
 
+toggle_interface()
 
 Thread.resume(Thread.newThread(function()
-	local spawner = require("data/scripts/spawner"):new()	
-	while true do 
+	local spawner = require("data/scripts/spawner"):new()
+	while true do
 		spawner:process()
-		Thread.wait(1)
+		Thread.wait(500)
 	end
 end))

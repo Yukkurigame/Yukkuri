@@ -43,6 +43,7 @@ bool Yukkuri::AdditionalInit()
 
 	map.LoadTiles( );
 	map.Init( );
+	Camera::init();
 
 	if( !luaScript->OpenFile( "start" ) ){
 		debug( SCRIPT, "Starting lua failed.\n" );
@@ -64,7 +65,6 @@ void Yukkuri::Think( const int& ElapsedTime )
 	UnitManager::tick( ElapsedTime );
 	daytime.update( ElapsedTime );
 	Interface::Update( );
-	spawner.Spawn( );
 }
 
 void Yukkuri::Render( )
@@ -73,7 +73,7 @@ void Yukkuri::Render( )
 
 	RenderManager::Instance()->CleanGLScene( );
 
-	YCamera::CameraControl.Update( );
+	Camera::Update();
 
 	// Display slick graphics on screen
 	map.onDraw( );

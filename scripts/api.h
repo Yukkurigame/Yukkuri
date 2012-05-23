@@ -20,8 +20,6 @@ namespace scriptApi
 
 	int DeleteUnit( lua_State* L );
 
-	int SetCameraTarget( lua_State* L );
-
 	int LoadMapRegion( lua_State* L );
 
 }

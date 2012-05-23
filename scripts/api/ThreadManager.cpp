@@ -8,6 +8,8 @@
 #include "scripts/api/ThreadManager.h"
 #include "scripts/LuaThread.h"
 
+#include "3rdparty/timer/TimerManager.h"
+
 
 
 int ThreadApi::newThread(lua_State* L)
@@ -69,7 +71,7 @@ int ThreadApi::wait( lua_State* L )
 
 	ThreadIter it = threadsManager::GetThread( L );
 	if( it != threadsManager::End() ){
-		//AddThreadTimerEvent( static_cast<UINT>(lua_tointeger(L, 1)), (*it)->refKey, (*it)->pausable );
+		Timer::AddThreadTimerEvent( static_cast<UINT>(lua_tointeger(L, 1)), (*it)->refKey, (*it)->Pausable );
 	}
 	lua_remove(L, 1);
 

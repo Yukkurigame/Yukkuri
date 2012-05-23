@@ -3,7 +3,6 @@
 
 #include "engine.h"
 #include "daytime.h"
-#include "Spawner.h"
 
 
 class Yukkuri: public CEngine
@@ -26,7 +25,6 @@ public:
 
 private:
 	DayTime daytime;
-	Spawner spawner;
 };
 
 #endif //YUKKURI_H

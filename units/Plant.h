@@ -14,8 +14,6 @@ class Plant: public AnimatedUnit
 public:
 	Plant();
 
-	bool Create( int id );
-
 	bool isEdible( ) { return true; }
 
 	void update( const int& );

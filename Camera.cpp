@@ -1,77 +1,95 @@
+
+
 #include "Camera.h"
 #include "config.h"
 #include "Render.h"
 #include <math.h>
-//#include <cstdlib>
+
 
 extern MainConfig conf;
 
-YCamera YCamera::CameraControl;
 
-YCamera::YCamera( )
-{
-	posX = posY = 0.0f;
-	TargetX = TargetY = NULL;
-	TargetMode = TARGET_MODE_NORMAL;
+namespace {
+	int TargetMode;
+	s2f pos;
+	s2f offset;
+	float* TargetX;
+	float* TargetY;
+	Unit* Target;
 }
 
-void YCamera::Update( )
+
+
+void Camera::init( )
 {
-	RenderManager::Instance()->MoveGlScene( -floor( posX - offsetX ) , -floor( posY - offsetY ), 0 );
+	pos.x = pos.y = 0.0f;
+	TargetX = TargetY = NULL;
+	TargetMode = ctmNormal;
+}
+
+
+void Camera::Update( )
+{
+	RenderManager::Instance()->MoveGlScene( -floor( pos.x - offset.x ) , -floor( pos.y - offset.y ), 0 );
 	if( TargetX && TargetY ){
-		if( (*TargetX) != posX || (*TargetY) != posY ){
-			Move( posX - (*TargetX), posY - (*TargetY) );
+		if( (*TargetX) != pos.x || (*TargetY) != pos.y ){
+			Move( pos.x - (*TargetX), pos.y - (*TargetY) );
 		}
 	}
 }
 
-float YCamera::GetX( )
+
+float Camera::GetX( )
 {
 	if( TargetX != NULL ){
-		if( TargetMode == TARGET_MODE_CENTER ){
+		if( TargetMode == ctmCenter ){
 			return *TargetX - ( conf.windowWidth / 2 );
 		}
 		return *TargetX;
 	}
-	return posX;
+	return pos.x;
 }
 
-float YCamera::GetY( )
+
+float Camera::GetY( )
 {
 	if( TargetY != NULL ){
-		if( TargetMode == TARGET_MODE_CENTER ){
+		if( TargetMode == ctmCenter ){
 			return *TargetY - ( conf.windowHeight / 2 );
 		}
 		return *TargetY;
 	}
-	return posY;
+	return pos.y;
 }
 
-void YCamera::Move( float x, float y )
+
+void Camera::Move( float x, float y )
 {
 	float dx, dy;
 	dx = dy = 0;
-	posX -= x;
-	posY -= y;
+	pos.x -= x;
+	pos.y -= y;
 }
 
-void YCamera::ChangeMode( int mode )
+
+void Camera::ChangeMode( enum ctMode mode )
 {
 	if( mode == TargetMode )
 		return;
 	TargetMode = mode;
 	switch( mode ){
-		case TARGET_MODE_CENTER:
-			offsetX = conf.windowWidth >> 1;
-			offsetY = conf.windowHeight >> 1;
+		case ctmCenter:
+			offset.x = conf.windowWidth >> 1;
+			offset.y = conf.windowHeight >> 1;
 			break;
-		case TARGET_MODE_NORMAL:
-			offsetX = offsetY = 0;
+		case ctmNormal:
+			offset.x = offset.y = 0;
 			break;
 	}
 }
 
-void YCamera::SetTarget( Unit* u )
+
+void Camera::SetTarget( Unit* u )
 {
 	DeleteTarget( );
 	if( !u )
@@ -80,18 +98,26 @@ void YCamera::SetTarget( Unit* u )
 	SetTarget( u->getUnitpX(), u->getUnitpY() );
 }
 
-void YCamera::SetTarget( float* x, float* y )
+
+void Camera::SetTarget( float* x, float* y )
 {
 	TargetX = x;
 	TargetY = y;
-	ChangeMode(TARGET_MODE_CENTER);
+	ChangeMode( ctmCenter );
 	Update( );
 }
 
-void YCamera::DeleteTarget( )
+
+Unit* Camera::GetTarget( )
+{
+	return Target;
+}
+
+
+void Camera::DeleteTarget( )
 {
 	Target = NULL;
 	TargetX = NULL;
 	TargetY = NULL;
-	ChangeMode(TARGET_MODE_NORMAL);
+	ChangeMode( ctmNormal );
 }

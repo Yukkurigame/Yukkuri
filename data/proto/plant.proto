@@ -1,0 +1,14 @@
+
+
+parent = "live_object"
+
+actions = {
+	{
+		name = "init",
+		frames = {
+			{ com = constants.acSuper, text = "init" },
+			{ com = constants.acPushString, text = "nutritive" },
+			{ com = constants.acLoadParamBunch, param = 1 },
+		},
+	}
+}

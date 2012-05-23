@@ -4,24 +4,11 @@
  *  Created on: 18.07.2010
  */
 #include "Plant.h"
-#include "LuaConfig.h"
+
 
 Plant::Plant( )
 {
 
-}
-
-bool Plant::Create( int id )
-{
-	if( !Unit::Create( id ) )
-		return false;
-
-	LuaConfig* cfg = new LuaConfig;
-	cfg->getValue( "nutritive", UnitName, Type, Parameters["nutritive"] );
-	cfg->getValue( "hp", UnitName, Type, Parameters["hp"] );
-	delete cfg;
-
-	return true;
 }
 
 void Plant::update( const int& dt )

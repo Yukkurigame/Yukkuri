@@ -123,15 +123,17 @@ ThreadIter threadsManager::End( )
 void threadsManager::ProcessThread( LuaRegRef r )
 {
 	LuaThread* lt = NULL;
-	ThreadIter it;
+	ThreadIter nit = threads.end();
 	FOREACHIT( threads ){
 		lt = *it;
-		if( lt->refKey == r )
+		if( lt->refKey == r ){
+			nit = it;
 			break;
+		}
 	}
 
 	if( lt ){
-		ResumeThread( it, NULL );
+		ResumeThread( nit, NULL );
 	}
 }
 
@@ -141,6 +143,9 @@ void threadsManager::ProcessThread( LuaRegRef r )
 // В ОТЛИЧИЕ от coroutine.resume, ничего не возвращает.
 int threadsManager::ResumeThread( ThreadIter it, lua_State* L )
 {
+	if( it == threads.end() )
+		return 1;
+
 	LuaThread* lt = *it;
 
 	if( L ){

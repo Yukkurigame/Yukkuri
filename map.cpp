@@ -183,8 +183,8 @@ bool Map::Init( )
 
 bool Map::Load(std::string region)
 {
-	posX = YCamera::CameraControl.GetX();
-	posY = YCamera::CameraControl.GetY();
+	posX = Camera::GetX();
+	posY = Camera::GetY();
 	Region::Load( region );
 	//CreateTilesRectangle( 3, 16, 21, 14 );
 	return true;
@@ -356,8 +356,8 @@ void Map::Clean( )
 {
 	int cx, cy, right, left, top, bottom;
 	MapTile* t = NULL;
-	cx = YCamera::CameraControl.GetX();
-	cy = YCamera::CameraControl.GetY();
+	cx = Camera::GetX();
+	cy = Camera::GetY();
 	right = cx + conf.windowWidth + conf.mapTileSize * 3;
 	left = cx - ( conf.windowWidth >> 2 );
 	top = cy + conf.windowHeight + conf.mapTileSize * 3;
@@ -378,8 +378,8 @@ void Map::Clean( )
 void Map::onDraw( )
 {
 	int cx, cy;
-	cx = static_cast<int>(YCamera::CameraControl.GetX());
-	cy = static_cast<int>(YCamera::CameraControl.GetY());
+	cx = static_cast<int>(Camera::GetX());
+	cy = static_cast<int>(Camera::GetY());
 	toMapCoordinates( &cx, &cy );
 	if( posX != cx || posY != cy ){
 		//FIXME: избыточность.

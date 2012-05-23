@@ -19,7 +19,7 @@ Corpse::~Corpse( )
 
 bool Corpse::Create( int id )
 {
-	if( !Plant::Create( id ) )
+	if( !Unit::Create( id ) )
 		return false;
 	TextureInfo* t = Image.getSprite()->tex;
 	if( t->rows > 1 || t->cols > 1 ){

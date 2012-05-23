@@ -24,7 +24,7 @@ UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp Unit.cpp Animated.cpp Pla
 		 Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp
 GRAPHICS = Font.cpp Text.cpp ElasticBox.cpp sdl_graphics.cpp gl_extensions.cpp Animation.cpp \
 		   Render.cpp pngfuncs.c
-SCRIPTSAPI = UnitManager.cpp Interface.cpp Widgets.cpp ThreadManager.cpp
+SCRIPTSAPI = UnitManager.cpp Interface.cpp Widgets.cpp ThreadManager.cpp CameraApi.cpp
 SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp proto.cpp \
 		  api.cpp $(addprefix $(SCRIPTSAPIDIR), $(SCRIPTSAPI))
 WIDGETS = Widget.cpp WidgetText.cpp WidgetBar.cpp
@@ -32,8 +32,7 @@ INTERFACE = Interface.cpp $(addprefix $(WIDGETSDIR), $(WIDGETS))
 3RDPARTY = CUData.cpp CUDataUser.cpp CUDataTemplates.cpp LuaPusher.cpp timer/TimerManager.cpp
 
 
-SRCS =   main.cpp yukkuri.cpp config.cpp engine.cpp Bindings.cpp BindFunctions.cpp Spawner.cpp \
-		 map.cpp \
+SRCS =   main.cpp yukkuri.cpp config.cpp engine.cpp Bindings.cpp BindFunctions.cpp map.cpp \
          $(addprefix $(SCRIPTSDIR), $(SCRIPTS)) \
          $(addprefix $(UNITSDIR), $(UNITS)) \
          $(addprefix $(GRAPHICSDIR), $(GRAPHICS)) \
@@ -78,20 +77,23 @@ $(OBJDIR)%.o: %.c
 
 all: $(PROGNAME)
 
-$(PROGNAME) : | $(OBJDIR) $(GCH) $(OBJS)
+$(PROGNAME) : | $(OBJDIR) $(GCH) cleanprog $(OBJS)
 	$(CC) $(CFLAGS)  -o $(PROGNAME) $(OBJS) $(LIBS)
 
 $(OBJDIR):
 	mkdir -p $(addprefix $(OBJDIR), $(SCRIPTSDIR) $(SCRIPTSDIR)$(SCRIPTSAPIDIR) $(UNITSDIR) \
 	 $(GRAPHICSDIR) $(INTERFACEDIR) $(INTERFACEDIR)$(WIDGETSDIR) $(3RDPARTYDIR) $(3RDPARTYDIR)timer)
 
-clean: cleanheaders cleanobjs cleandirs
+clean: cleanheaders cleanobjs cleanprog cleandirs
 
 cleanheaders:
 	$(rm) $(GCH)
 
 cleanobjs:
-	$(rm) $(OBJS) $(PROGNAME)
-	
+	$(rm) $(OBJS)
+
+cleanprog:
+	$(rm) $(PROGNAME)
+
 cleandirs:
 	$(rm) -r $(OBJDIR)

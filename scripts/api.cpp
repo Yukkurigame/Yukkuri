@@ -115,18 +115,6 @@ int scriptApi::DeleteUnit( lua_State* L )
 }
 
 
-int scriptApi::SetCameraTarget( lua_State* L )
-{
-	unsigned int tid;
-	Unit* u;
-	luaL_argcheck(L, lua_isnumber(L, 1) || lua_isnoneornil(L, 1), 1, "Number or none expected.");
-	tid = static_cast<int>(lua_tointeger( L, 1 ));
-	u = UnitManager::GetUnit( tid );
-	YCamera::CameraControl.SetTarget( u );
-	return 0;
-}
-
-
 int scriptApi::LoadMapRegion(lua_State *L)
 {
 	std::string name;

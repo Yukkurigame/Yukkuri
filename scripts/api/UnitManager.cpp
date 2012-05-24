@@ -41,8 +41,27 @@ int UMApi::createUnit( lua_State* L )
 
 int UMApi::deleteUnit( lua_State* L )
 {
-	Debug::debug( Debug::UNIT, "deleteUnit: not implemented.\n" );
-	return 0;
+	Unit* u = NULL;
+
+	luaL_argcheck( L, lua_isnumber( L, 1 ) || lua_isuserdata( L, 1 ), 1, "Unit expected" );
+
+	if( lua_isnumber( L, 1 ) ){
+		UINT id = static_cast<UINT>( lua_tointeger(L, 1) );
+		u = UnitManager::GetUnit( id );
+	}else
+		u = reinterpret_cast<Unit*>( lua_touserdata( L, 1 ) );
+
+	lua_pop( L, 1 );
+
+	if( u == NULL ){
+		lua_pushboolean( L, false );
+		Debug::debug( Debug::UNIT, "deleteUnit: unit not found.\n" );
+	}else{
+		UnitManager::RemoveUnit( u );
+		lua_pushboolean( L, true );
+	}
+
+	return 1;
 }
 
 

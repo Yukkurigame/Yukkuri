@@ -1,15 +1,19 @@
 #ifndef YCAMERA_H
 #define YCAMERA_H
 
-#include "Unit.h"
+#include "graphics/GraphicsTypes.h"
+
+class Unit;
+
 
 enum ctMode {
 	ctmNormal = 0,	// TARGET_MODE_NORMAL
 	ctmCenter 		// TARGET_MODE_CENTER
 };
 
+
 namespace Camera {
-	void init( );
+	void init( s3f* view );
 
 	void Update();
 	float GetX( );

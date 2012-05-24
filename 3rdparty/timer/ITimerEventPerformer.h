@@ -12,14 +12,14 @@
 
 class InternalTimerEvent;
 
-// Интерфейс для клссов, которые хотят подвписаться на события таймера.
+// Интерфейс для клссов, которые хотят подписаться на события таймера.
 class ITimerEventPerformer
 {
 public:
 	// Возникает при наступлении событии таймера.
 	virtual void OnTimer( InternalTimerEvent& ev ) = 0;
 	// Возникает при удалении TimerEvent
-	virtual void OnTimetEventDestroy( const InternalTimerEvent& ev ) = 0;
+	virtual void OnTimerEventDestroy( const InternalTimerEvent& ev ) = 0;
 };
 
 

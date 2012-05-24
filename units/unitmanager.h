@@ -15,7 +15,7 @@ namespace UnitManager
 	void clean();
 
 	Unit* CreateUnit( enum unitType type, float x, float y );
-	void DeleteUnit( Unit* u );
+	void RemoveUnit( Unit* u );
 	void BatchRemove( );
 	Unit* GetUnit( unsigned int id );
 	Unit* GetPlayer();

@@ -18,8 +18,6 @@ namespace scriptApi
 
 	int SetBindings( lua_State* L );
 
-	int DeleteUnit( lua_State* L );
-
 	int LoadMapRegion( lua_State* L );
 
 }

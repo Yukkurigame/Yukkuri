@@ -44,9 +44,13 @@ public:
 	inline void SetPeriodic()	{ flags |= 2; }
 	inline void ClearPeriodic()	{ flags &= ~2; }
 
-	inline BYTE IsPausable()	{ return flags & 4; }
-	inline void SetPausable()	{ flags |= 4; }
-	inline void ClearPausable()	{ flags &= ~4; }
+	inline BYTE IsEndless()	{ return flags & 4; }
+	inline void SetEndless()	{ flags |= 4; }
+	inline void ClearEndless()	{ flags &= ~4; }
+
+	inline BYTE IsPausable()	{ return flags & 8; }
+	inline void SetPausable()	{ flags |= 8; }
+	inline void ClearPausable()	{ flags &= ~8; }
 
 	virtual void ExecEvent();
 

@@ -1,7 +1,7 @@
 #include "map.h"
 #include "config.h"
-#include "Camera.h"
-#include "Render.h"
+#include "graphics/Camera.h"
+#include "graphics/Render.h"
 #include "LuaConfig.h"
 #include "safestring.h"
 

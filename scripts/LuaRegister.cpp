@@ -38,8 +38,6 @@ void LuaMain::RegisterApi( lua_State* L )
 
 	lua_register( L, "SetBindings", &scriptApi::SetBindings );
 
-	lua_register( L, "DeleteUnit", &scriptApi::DeleteUnit );
-
 	lua_register( L, "LoadMapRegion", &scriptApi::LoadMapRegion );
 
 

@@ -1,8 +1,8 @@
 
 
-#include "Camera.h"
+#include "graphics/Camera.h"
+#include "units/Unit.h"
 #include "config.h"
-#include "Render.h"
 #include <math.h>
 
 
@@ -10,27 +10,27 @@ extern MainConfig conf;
 
 
 namespace {
-	int TargetMode;
+	int TargetMode = ctmNormal;
 	s2f pos;
 	s2f offset;
-	float* TargetX;
-	float* TargetY;
-	Unit* Target;
+	float* TargetX = NULL;
+	float* TargetY = NULL;
+	Unit* Target = NULL;
+	s3f* MainView = NULL;
 }
 
 
 
-void Camera::init( )
+void Camera::init( s3f* view )
 {
-	pos.x = pos.y = 0.0f;
-	TargetX = TargetY = NULL;
-	TargetMode = ctmNormal;
+	MainView = view;
 }
 
 
 void Camera::Update( )
 {
-	RenderManager::Instance()->MoveGlScene( -floor( pos.x - offset.x ) , -floor( pos.y - offset.y ), 0 );
+	MainView->x = -floor( pos.x - offset.x );
+	MainView->y = -floor( pos.y - offset.y );
 	if( TargetX && TargetY ){
 		if( (*TargetX) != pos.x || (*TargetY) != pos.y ){
 			Move( pos.x - (*TargetX), pos.y - (*TargetY) );

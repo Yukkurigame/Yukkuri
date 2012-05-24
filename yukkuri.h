@@ -2,8 +2,6 @@
 #define YUKKURI_H
 
 #include "engine.h"
-#include "daytime.h"
-
 
 class Yukkuri: public CEngine
 {
@@ -23,8 +21,6 @@ public:
 
 	void End();
 
-private:
-	DayTime daytime;
 };
 
 #endif //YUKKURI_H

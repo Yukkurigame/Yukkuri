@@ -222,13 +222,13 @@ struct VertexV2FT2FC4UI
 struct VBOStructureHandle
 {
 	int texture;
-	int shaders;
 	int start;
 	int count;
+	GLuint shader;
 	VBOStructureHandle* next;
 	VBOStructureHandle(int tex, int shd, int s){
 		texture = tex;
-		shaders = shd;
+		shader = shd;
 		start = s;
 		count = 1;
 		next = NULL;
@@ -248,6 +248,7 @@ struct Sprite
 	bool fixed;
 	int texid;
 	int picture;
+	GLuint shader;
 	TextureInfo* tex;
 	vertex3farr vertices;
 	coord2farr coordinates;
@@ -260,6 +261,7 @@ struct Sprite
 		posx = posy = width = height = 0;
 		visible = true;
 		fixed = centered = false;
+		shader = 0;
 	}
 
 	void setPicture( int pic ){

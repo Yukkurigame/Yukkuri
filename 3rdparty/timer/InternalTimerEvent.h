@@ -28,7 +28,7 @@ public:
 
 
 	virtual ~InternalTimerEvent( ){
-		performer->OnTimetEventDestroy(*this);
+		performer->OnTimerEventDestroy(*this);
 	}
 };
 

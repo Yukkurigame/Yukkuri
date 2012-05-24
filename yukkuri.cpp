@@ -9,7 +9,7 @@
 #include "graphics/Render.h"
 #include "interface/Interface.h"
 #include "units/unitmanager.h"
-#include "Camera.h"
+#include "daytime.h"
 #include "map.h"
 #include "debug.h"
 using namespace Debug;
@@ -43,14 +43,15 @@ bool Yukkuri::AdditionalInit()
 
 	map.LoadTiles( );
 	map.Init( );
-	Camera::init();
+
+	DayTime::init();
 
 	if( !luaScript->OpenFile( "start" ) ){
 		debug( SCRIPT, "Starting lua failed.\n" );
 		return false;
 	}
 
-	daytime.loadInterface();
+	DayTime::loadInterface();
 
 	Widget* w = Interface::GetWidget( "fps", NULL );
 	if( w )
@@ -63,7 +64,6 @@ void Yukkuri::Think( const int& ElapsedTime )
 {
 	// Do time-based calculations
 	UnitManager::tick( ElapsedTime );
-	daytime.update( ElapsedTime );
 	Interface::Update( );
 }
 
@@ -73,12 +73,8 @@ void Yukkuri::Render( )
 
 	RenderManager::Instance()->CleanGLScene( );
 
-	Camera::Update();
-
 	// Display slick graphics on screen
 	map.onDraw( );
-
-	daytime.onDraw( );
 
 	//Draw to screen
 	RenderManager::Instance()->DrawGLScene( );
@@ -120,6 +116,8 @@ void Yukkuri::End()
 	Interface::clean( );
 
 	UnitManager::clean( );
+
+	DayTime::clean();
 
 	threadsManager::CleanThreads( );
 

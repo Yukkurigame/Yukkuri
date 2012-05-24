@@ -5,20 +5,15 @@
  */
 
 #include "api.h"
-#include "Interface.h"
-#include "widgets/WidgetBar.h"
 #include "Bindings.h"
-#include "LuaConfig.h"
 #include "unitmanager.h"
-#include "LuaThread.h"
-#include "Camera.h"
 #include "map.h"
 #include <string>
 #include <cstring>
 #include <dirent.h>
 
 #include "debug.h"
-using namespace Debug;
+
 
 
 int scriptApi::ReadDirectory( lua_State* L )
@@ -69,17 +64,18 @@ int scriptApi::GetCWD( lua_State* L )
 
 int scriptApi::Debug( lua_State* L )
 {
-	enum dbg_level level;
+	enum Debug::dbg_level level;
 	std::string str;
 	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Debug level expected." );
 	luaL_argcheck( L, lua_isstring( L, 2 ), 2, "Debug string expected." );
 
-	level = static_cast<enum dbg_level>(lua_tointeger( L, 1 ));
+	level = static_cast<enum Debug::dbg_level>(lua_tointeger( L, 1 ));
 	str = lua_tostring( L, 2 );
-	debug( level, str + "\n" );
+	Debug::debug( level, str + "\n" );
 	lua_pop( L, lua_gettop( L ) );
 	return 0;
 }
+
 
 int scriptApi::SetBindings( lua_State* L )
 {
@@ -91,27 +87,6 @@ int scriptApi::SetBindings( lua_State* L )
 	Bindings::bnd.LoadKeys( bname );
 
 	return 0;
-}
-
-
-int scriptApi::DeleteUnit( lua_State* L )
-{
-	unsigned int id;
-	Unit* u;
-
-	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Unit id not given." );
-
-	id = static_cast<int>(lua_tointeger( L, 1 ));
-	u = UnitManager::GetUnit( id );
-	lua_pop( L, lua_gettop( L ) );
-	if( !id || !u ){
-		lua_pushboolean( L, false );
-		return 1;
-	}
-	UnitManager::DeleteUnit( u );
-	lua_pushboolean( L, true );
-
-	return 1;
 }
 
 

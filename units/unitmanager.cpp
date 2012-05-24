@@ -30,6 +30,15 @@ namespace {
 			Size[type] = 0;
 	}
 
+	void DeleteUnit( Unit* u )
+	{
+		if( !u )
+			return;
+		if( u == player )
+			player = NULL;
+		ChangeUnitsSize( u->geteUnitType( ), -1 );
+		delete u;
+	}
 
 }
 
@@ -96,15 +105,16 @@ Unit* UnitManager::CreateUnit( enum unitType type, float x, float y )
 	return temp;
 }
 
-void UnitManager::DeleteUnit( Unit* u )
+
+// Mark unit to removing.
+void UnitManager::RemoveUnit( Unit* u )
 {
 	if( !u )
 		return;
-	if( u == player )
-		player = NULL;
-	ChangeUnitsSize( u->geteUnitType( ), -1 );
-	delete u;
+	u->Delete();
+	RemovedUnits.push_back( u );
 }
+
 
 void UnitManager::BatchRemove()
 {
@@ -119,10 +129,12 @@ void UnitManager::BatchRemove()
 	RemovedUnits.clear();
 }
 
+
 Unit* UnitManager::GetPlayer()
 {
 	return player;
 }
+
 
 int UnitManager::GetUnitsSize( enum unitType type )
 {
@@ -131,10 +143,12 @@ int UnitManager::GetUnitsSize( enum unitType type )
 	return 0;
 }
 
+
 int UnitManager::GetUnitVecSize()
 {
 	return (int)Units.size();
 }
+
 
 Unit* UnitManager::closer( Unit* u, std::string type, float limit )
 {
@@ -158,6 +172,7 @@ Unit* UnitManager::closer( Unit* u, std::string type, float limit )
 
 	return ret;
 }
+
 
 Unit* UnitManager::closer( Unit* u, std::vector< std::string >* types, float limit )
 {
@@ -184,6 +199,7 @@ Unit* UnitManager::closer( Unit* u, std::vector< std::string >* types, float lim
 	}
 	return ret;
 }
+
 
 void UnitManager::tick( const int& dt )
 {

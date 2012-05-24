@@ -22,8 +22,8 @@ CFLAGS= -O0 -g -Wall $(DEFINES)
 
 UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp Unit.cpp Animated.cpp Plant.cpp \
 		 Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp
-GRAPHICS = Font.cpp Text.cpp ElasticBox.cpp sdl_graphics.cpp gl_extensions.cpp Animation.cpp \
-		   Render.cpp pngfuncs.c
+GRAPHICS = Font.cpp Text.cpp ElasticBox.cpp sdl_graphics.cpp gl_extensions.cpp gl_shader.cpp \
+		   Animation.cpp Camera.cpp Render.cpp pngfuncs.c 
 SCRIPTSAPI = UnitManager.cpp Interface.cpp Widgets.cpp ThreadManager.cpp CameraApi.cpp
 SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp proto.cpp \
 		  api.cpp $(addprefix $(SCRIPTSAPIDIR), $(SCRIPTSAPI))
@@ -38,7 +38,7 @@ SRCS =   main.cpp yukkuri.cpp config.cpp engine.cpp Bindings.cpp BindFunctions.c
          $(addprefix $(GRAPHICSDIR), $(GRAPHICS)) \
          $(addprefix $(INTERFACEDIR), $(INTERFACE)) \
          $(addprefix $(3RDPARTYDIR), $(3RDPARTY)) \
-         Camera.cpp daytime.cpp
+         daytime.cpp
 
 OBJ = $(SRCS:.cpp=.o)
 OBJS = $(addprefix $(OBJDIR), $(OBJ:.c=.o))
@@ -77,7 +77,7 @@ $(OBJDIR)%.o: %.c
 
 all: $(PROGNAME)
 
-$(PROGNAME) : | $(OBJDIR) $(GCH) cleanprog $(OBJS)
+$(PROGNAME) : | $(OBJDIR) $(GCH) $(OBJS)
 	$(CC) $(CFLAGS)  -o $(PROGNAME) $(OBJS) $(LIBS)
 
 $(OBJDIR):

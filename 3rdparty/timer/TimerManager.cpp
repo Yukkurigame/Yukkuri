@@ -121,6 +121,8 @@ int Timer::AddInternalTimerEvent( ITimerEventPerformer* performer, UINT dt, UINT
 	if( periodic ){
 		te->SetPeriodic();
 		te->period = period;
+		if( max_Calls == 0 )
+			te->SetEndless();
 		te->maxCalls = max_Calls;
 	}
 	if( pausable )
@@ -272,7 +274,7 @@ void Timer::ProcessTimerEvents()
 
 		if( first->IsPeriodic() ){
 			first->calls++;
-			if( first->calls >= first->maxCalls - 1 ){
+			if( !first->IsEndless() && first->calls >= first->maxCalls - 1 ){
 				// Предпоследний вызов периодического события
 				// В следующий раз оно уже вызовется как обыкновенное и исчезнет
 				first->ClearPeriodic();

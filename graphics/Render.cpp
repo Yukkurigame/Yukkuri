@@ -7,10 +7,13 @@
 #include "Define.h"
 
 #include "Render.h"
-#include "gl_extensions.h"
-#include "sdl_graphics.h"
+#include "graphics/gl_extensions.h"
+#include "graphics/gl_shader.h"
+#include "graphics/sdl_graphics.h"
+#include "graphics/Camera.h"
 #include "ElasticBox.h"
 #include "LuaConfig.h"
+
 
 #include <algorithm>
 
@@ -354,6 +357,14 @@ void RenderManager::FreeGLSprites( std::vector< Sprite* >* sprites )
 }
 
 
+void RenderManager::AddShader( Sprite* sprite, std::string name )
+{
+	if( sprite == NULL )
+		return;
+	sprite->shader = CreateProgram( name );
+}
+
+
 
 inline bool compareTextureProxies( TextureProxy* t1, TextureProxy* t2 )
 {
@@ -391,19 +402,18 @@ bool RenderManager::CreateAtlas( GLuint* ahandle, int* width, int* height, short
 }
 
 
-void RenderManager::MoveGlScene( int x, int y, int z )
+void RenderManager::MoveGlScene( )
 {
-	vpoint.x = x;
-	vpoint.y = y;
-	vpoint.z = z;
-	glTranslatef( x, y, z );
+	glTranslatef( vpoint.x, vpoint.y, vpoint.z );
 }
-
 
 void RenderManager::DrawGLScene()
 {
+	Camera::Update();
+	MoveGlScene();
+
 	VBOStructureHandle* temp = NULL;
-	int count; // = PrepareVBO( );
+	int count;
 	VBOStructureHandle* vbostructure = PrepareVBO(&count);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -428,6 +438,7 @@ void RenderManager::DrawGLScene()
 		glBindTexture(GL_TEXTURE_2D, textures[vbostructure->texture].atlas);
 		//StartShader(vbostructure->shaders);
 		//glDrawArrays(GL_QUADS, VBOHandles[i].start, VBOHandles[i].count);
+	    glUseProgram( vbostructure->shader );
 		glDrawArrays(GL_QUADS, vbostructure->start, vbostructure->count);
 		//StopShader(vbostructure->shaders);
 
@@ -481,8 +492,8 @@ RenderManager::RenderManager( ){
 	std::string n = "0";
 	textures[0].id = new char[2];
 	strcpy(textures[0].id, n.c_str());
-	//FIXME: bad, but fixes valgrind error
-	//textures[0].id = "0";
+
+	Camera::init( &vpoint );
 }
 
 
@@ -632,9 +643,9 @@ VBOStructureHandle* RenderManager::PrepareVBO( int* c )
 			VBOHandlesCount++;
 		}*/
 		if( !v ){
-			first = v = new VBOStructureHandle(s->texid, 0, count);
-		}else if( s->texid != v->texture ){
-			v->next = new VBOStructureHandle(s->texid, 0, count);
+			first = v = new VBOStructureHandle(s->texid, s->shader, count);
+		}else if( s->texid != v->texture || s->shader != v->shader ){
+			v->next = new VBOStructureHandle(s->texid, s->shader, count);
 			v->count = count - v->start;
 			v = v->next;
 		}

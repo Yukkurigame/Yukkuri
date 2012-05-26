@@ -13,6 +13,9 @@
 
 namespace SDLGraphics {
 
+	bool SetScreen( SDL_Surface* s );
+	SDL_Surface* GetScreen();
+
 	GLuint CreateGlTexture( SDL_Surface* );
 
 	SDL_Surface* LoadImage( const char* );
@@ -20,14 +23,7 @@ namespace SDLGraphics {
 
 	void DrawSurface( SDL_Surface* surface );
 
-	static SDL_Surface* screen;
 
-	inline bool SetScreen( SDL_Surface* s ){
-		if( s == NULL )
-			return false;
-		screen = s;
-		return true;
-	}
 }
 
 namespace Screenshot

@@ -52,10 +52,6 @@ public:
 	void FreeGLSprite( Sprite* sprite );
 	void FreeGLSprites( std::vector< Sprite* >* sprites );
 
-	void AddShader( Sprite* sprite, std::string name );
-
-
-
 	bool CreateAtlas( GLuint * atlas, int* width, int* height, short map = 1 );
 	inline int getAtlasMax( ){ return maxAtlasSize; }
 

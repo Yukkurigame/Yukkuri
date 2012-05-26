@@ -1,7 +1,9 @@
 
+#include "graphics/gl_extensions.h"
 
 #include "daytime.h"
 #include "Render.h"
+#include "graphics/gl_shader.h"
 #include "Interface.h"
 #include "unitmanager.h"
 #include "config.h"
@@ -24,9 +26,7 @@ namespace{
 	float Time;
 	bool Updated;
 	Sprite* sfield;
-	UINT ldark;
-	color4u dark;
-	color4u light;
+	GLint colorLight = -1;
 	UINT night = BASE_NIGHT;
 	//TODO: Можно делать красивые штуки, как в питоновской версии, вот только нужно ли?
 	//Каждому углу свою прозрачность и свой цвет.
@@ -64,11 +64,15 @@ void DayTime::clean()
 
 void DayTime::loadInterface()
 {
-	//sfield = RenderManager::Instance()->CreateGLSprite(0, 0, 4, conf.windowWidth, conf.windowHeight );
-	sfield = RenderManager::Instance()->CreateGLSprite(0, 0, 4, 100, 100 );
-	sfield->fixed = true;
+	sfield = RenderManager::Instance()->CreateGLSprite(0, 0, 4, conf.windowWidth, conf.windowHeight );
+	sfield->setFixed();
 	sfield->clr.set( 0, 0, 0, 0 );
-	RenderManager::Instance()->AddShader( sfield, "shaders/test" );
+	// Load daytime shader and get uniform vars.
+	sfield->shader = Shaders::getProgram( "daytime" );
+	colorLight = glGetUniformLocation( sfield->shader, "colorLight" );
+	glUseProgram( sfield->shader );
+	glUniform4f( colorLight, 1.0, 1.0, 0.0, 0.0 );
+	glUseProgram( 0 );
 	text = Interface::GetWidget( "time", NULL );
 	DayTimer.Start();
 }
@@ -78,8 +82,8 @@ void DayTime::update( const UINT& dt )
 	float hours = 24.0f * dt / (conf.dayLength * 10000.0f);
 	Time = fmod( Time + hours , 24.0f );
 	if( Time > 22 || Time < 2){
-		if( dark.a != night )
-			dark.a = night;
+		if( sfield->clr.a != night )
+			sfield->clr.a = night;
 		if ( Time < 2 ){
 			if( !Updated ){
 				Day++;
@@ -95,7 +99,8 @@ void DayTime::update( const UINT& dt )
 			text->setText("Midnight");
 	}else if( Time > 18 ){
 		float p = (Time - 18) / 4.0f;
-		dark.a = static_cast<int>( night * p );
+		sfield->clr.a = static_cast<int>( night * p );
+		//sfield->clr.a = std::min( night, static_cast<UINT>( 255 * p ) );
 		if(Time > 20.0){
 			if(text)
 				text->setText("Twilight");
@@ -105,7 +110,8 @@ void DayTime::update( const UINT& dt )
 		}
 	}else if( Time < 6 ){
 		float p = 1 - (Time - 2) / 4.0f;
-		dark.a = std::min( night , static_cast<UINT>( 256 * p ) );
+		sfield->clr.a = std::min( night , static_cast<UINT>( 256 * p ) );
+		//sfield->clr.a = static_cast<int>( night * p );
 		if( Time > 4 ){
 			if(text)
 				text->setText("Dawn");
@@ -113,12 +119,9 @@ void DayTime::update( const UINT& dt )
 			if(text)
 				text->setText("Night");
 		}
-	}else if( Time > 4 && Time < 8 ){
-
 	}else{
-		if( dark.a != 0 )
-			dark.a = 0;
-		light.a = 0;
+		if( sfield->clr.a != 0 )
+			sfield->clr.a = 0;
 		if( Time < 11 ){
 			if(text)
 				text->setText("Morning");
@@ -130,10 +133,15 @@ void DayTime::update( const UINT& dt )
 				text->setText("Noon");
 		}
 	}
-	if( ldark != dark.a && sfield ){
-		sfield->clr.set( &dark );
+
+	glUseProgram( sfield->shader );
+	if( Time > 4 && Time < 8 ){
+		float p = (Time - 4.0) / 4.0;
+		glUniform4f( colorLight, p, p, 0.0, 0.25 * sin( M_PI * ( 1.0 - p )) );
+	}else{
+		glUniform4f( colorLight, 0.0, 0.0, 0.0, 0.0 );
 	}
-	ldark = dark.a;
+	glUseProgram( 0 );
 }
 
 

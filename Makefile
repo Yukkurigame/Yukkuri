@@ -22,8 +22,8 @@ CFLAGS= -O0 -g -Wall $(DEFINES)
 
 UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp Unit.cpp Animated.cpp Plant.cpp \
 		 Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp
-GRAPHICS = Font.cpp Text.cpp ElasticBox.cpp sdl_graphics.cpp gl_extensions.cpp gl_shader.cpp \
-		   Animation.cpp Camera.cpp Render.cpp pngfuncs.c 
+GRAPHICS = GraphicsTypes.cpp Font.cpp Text.cpp sdl_graphics.cpp gl_extensions.cpp gl_shader.cpp \
+		   ElasticBox.cpp Animation.cpp Camera.cpp Render.cpp pngfuncs.c 
 SCRIPTSAPI = UnitManager.cpp Interface.cpp Widgets.cpp ThreadManager.cpp CameraApi.cpp
 SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp proto.cpp \
 		  api.cpp $(addprefix $(SCRIPTSAPIDIR), $(SCRIPTSAPI))
@@ -44,7 +44,7 @@ OBJ = $(SRCS:.cpp=.o)
 OBJS = $(addprefix $(OBJDIR), $(OBJ:.c=.o))
 
 
-UNIQHEADERS = $(GRAPHICSDIR)GraphicsTypes.h $(SCRIPTSDIR)LuaScriptConfig.h \
+UNIQHEADERS = $(SCRIPTSDIR)LuaScriptConfig.h \
          	$(addprefix $(3RDPARTYDIR), TypeList.h timer/InternalTimerEvent.h \
          	timer/InternalTimerEvent.h timer/TimerEvent.h timer/ITimerEventPerformer.h ) \
          	Define.h debug.h hacks.h safestring.h types.h 
@@ -76,6 +76,8 @@ $(OBJDIR)%.o: %.c
 .PHONY: all clean
 
 all: $(PROGNAME)
+
+rebuild: cleanprog all
 
 $(PROGNAME) : | $(OBJDIR) $(GCH) $(OBJS)
 	$(CC) $(CFLAGS)  -o $(PROGNAME) $(OBJS) $(LIBS)

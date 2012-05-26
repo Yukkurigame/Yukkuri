@@ -23,6 +23,26 @@ extern "C" {
 #endif
 
 
+namespace {
+
+	SDL_Surface* screen;
+
+}
+
+
+bool SDLGraphics::SetScreen( SDL_Surface* s ){
+	if( s == NULL )
+		return false;
+	screen = s;
+	return true;
+}
+
+SDL_Surface* SDLGraphics::GetScreen() {
+	return screen;
+}
+
+
+
 GLuint SDLGraphics::CreateGlTexture( SDL_Surface* surface )
 {
 	GLuint image;
@@ -170,10 +190,17 @@ bool Screenshot::Save( )
 	GLubyte* swapline;
 	Uint32 rmask, gmask, bmask, amask;
 	SDL_Surface* output;
+	SDL_Surface* screen;
 
 	GenerateName( Filename );
 	if( Filename[0] == '\0' ){
 		debug( OS, "Can not get screenshot name. Too many screenshots in folder.\n" );
+		return false;
+	}
+
+	screen = SDLGraphics::GetScreen();
+	if( screen == NULL ){
+		debug( GRAPHICS, "Screen not exists.\n" );
 		return false;
 	}
 
@@ -183,21 +210,22 @@ bool Screenshot::Save( )
 	rmask = 0x000000ff; gmask = 0x0000ff00; bmask = 0x00ff0000; amask = 0xff000000;
 	#endif
 
-	stride = SDLGraphics::screen->w * 4;
-	pixels = (GLubyte *) malloc( stride * SDLGraphics::screen->h );
+
+	stride = screen->w * 4;
+	pixels = (GLubyte *) malloc( stride * screen->h );
 	swapline = (GLubyte *) malloc( stride );
 	glReadBuffer(GL_FRONT);
-	glReadPixels(0, 0, SDLGraphics::screen->w, SDLGraphics::screen->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+	glReadPixels(0, 0, screen->w, screen->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 	// vertical flip
-	for( int row = 0; row < SDLGraphics::screen->h/2; ++row ){
+	for( int row = 0; row < screen->h/2; ++row ){
 		memcpy( swapline, pixels + row * stride, stride );
-		memcpy( pixels + row * stride, pixels + ( SDLGraphics::screen->h - row - 1 ) * stride, stride );
-		memcpy( pixels + ( SDLGraphics::screen->h - row -1 ) * stride, swapline, stride );
+		memcpy( pixels + row * stride, pixels + ( screen->h - row - 1 ) * stride, stride );
+		memcpy( pixels + ( screen->h - row -1 ) * stride, swapline, stride );
 	}
 	free( swapline );
 
-	output = SDL_CreateRGBSurfaceFrom( pixels, SDLGraphics::screen->w, SDLGraphics::screen->h,
-										32, SDLGraphics::screen->pitch, rmask, gmask, bmask, amask );
+	output = SDL_CreateRGBSurfaceFrom( pixels, screen->w, screen->h, 32, screen->pitch,
+										rmask, gmask, bmask, amask );
 
 	if( png_save_surface(Filename, output) < 0 ){
 		free( pixels );

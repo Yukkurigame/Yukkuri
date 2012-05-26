@@ -3,6 +3,8 @@
  *
  *  Created on: 24.05.2012
  *
+ * Want a shader? Create and manage it yourself.
+ *
  */
 
 #ifndef GL_SHADER_H_
@@ -11,8 +13,9 @@
 #include <string>
 #include "graphics/GraphicsTypes.h"
 
-
-GLuint CreateProgram( std::string filename );
+namespace Shaders {
+	GLuint getProgram( std::string filename );
+}
 
 
 

@@ -72,11 +72,11 @@ void WidgetBar::createBar( std::string name, int picture, int height, color4u cl
 {
 	Height -= height + BarY;
 	BarSprite = RenderManager::Instance()->CreateGLSprite( PosX + BarX, PosY + BarY, getZ(), BarWidth, height );
-	BarSprite->fixed = true;
+	BarSprite->setFixed();
 	if( name != "" ){
 		TopSprite = RenderManager::Instance()->CreateGLSprite( PosX + TopX, PosY + TopY, getZ() + 0.1f,
 						Width, Height, RenderManager::Instance()->GetTextureNumberById(name), picture );
-		TopSprite->fixed = true;
+		TopSprite->setFixed();
 	}
 	if( BarSprite ){
 		BarSprite->clr.set( clr.r, clr.g, clr.b, clr.a );
@@ -152,9 +152,9 @@ void WidgetBar::Update( )
 void WidgetBar::toggleVisibility( )
 {
 	WidgetText::toggleVisibility( );
-	if( BarSprite && BarSprite->visible != visible )
+	if( BarSprite && BarSprite->isVisible() != visible )
 		BarSprite->toggleVisibility( );
-	if( TopSprite && TopSprite->visible != visible )
+	if( TopSprite && TopSprite->isVisible() != visible )
 		TopSprite->toggleVisibility( );
 }
 

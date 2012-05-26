@@ -4,10 +4,9 @@
  *  Created on: 19.03.2012
  */
 
-#include "Define.h"
+#include "graphics/gl_extensions.h"
 
 #include "Render.h"
-#include "graphics/gl_extensions.h"
 #include "graphics/gl_shader.h"
 #include "graphics/sdl_graphics.h"
 #include "graphics/Camera.h"
@@ -28,6 +27,121 @@ using namespace Debug;
 
 
 RenderManager* RenderManager::graph = NULL;
+
+
+namespace {
+
+	// This function creates new textu
+	bool DrawToGLTexturePrepare( GLuint* ahandle, GLuint& FBOHandle, int width, int height )
+	{
+		// Рисуем в атлас, как в текстуру, используя FBO.
+		// Настройка текстуры.
+		if( ahandle == NULL ){
+			debug( GRAPHICS, "Bad texture for atlas.\n" );
+			return false;
+		}
+		int target = GL_PROXY_TEXTURE_2D;
+		if( *ahandle == 0 ){
+			glGenTextures(1, ahandle);
+			target = GL_TEXTURE_2D;
+		}
+		glBindTexture(GL_TEXTURE_2D, *ahandle);
+		glTexImage2D( target, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+		//GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
+		//GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
+
+		glGenFramebuffersEXT(1, &FBOHandle);
+
+		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, FBOHandle);
+
+		glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, *ahandle, 0);
+
+		GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+		if( status != GL_FRAMEBUFFER_COMPLETE_EXT ){
+			debug( GRAPHICS, "Your framebuffer is broken. Use top NV to play this Crusis.\n" );
+			return 0;
+		}
+
+		glPushAttrib(GL_COLOR_BUFFER_BIT); // Сохраняем ClearColor
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+		// Изменение вьюпорта и матриц для FBO
+		glPushAttrib(GL_VIEWPORT_BIT);
+		glViewport(0, 0, width, height);
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		glOrtho(0, width, 0, height, -2.0, 2.0);
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+
+		// Clear color
+		glClear(GL_COLOR_BUFFER_BIT);
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+		return true;
+	}
+
+
+	bool DrawToGLTextureFinish( GLuint& FBOHandle )
+	{
+		// Возвращаем как было.
+		glDisable(GL_TEXTURE_2D);
+
+		glDeleteFramebuffersEXT(1, &FBOHandle);
+		glMatrixMode(GL_PROJECTION);
+		glPopMatrix();
+		glMatrixMode(GL_MODELVIEW);
+		glPopMatrix();
+		//viewport
+		glPopAttrib();
+		//color
+		// Everything said that it is unnecessary
+		//glPopAttrib();
+		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		return true;
+	}
+
+
+
+	void DrawToQuad( GLuint tex, int x, int y, int width, int height )
+	{
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture( GL_TEXTURE_2D, tex );
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		glBegin(GL_QUADS);
+		{
+			glTexCoord2f(0.0, 0.0);
+			glVertex2f(x, y);
+			glTexCoord2f(1, 0);
+			glVertex2f(x + width, y);
+			glTexCoord2f(1, 1);
+			glVertex2f(x + width, y + height);
+			glTexCoord2f(0, 1);
+			glVertex2f(x, y + height);
+		}
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisable(GL_TEXTURE_2D);
+
+#ifdef DEBUG_DRAW_RECTANGLES
+		glBegin(GL_LINE_LOOP);
+		{
+			glVertex2f(x, y);
+			glVertex2f(x + width, y);
+			glVertex2f(x + width, y + height);
+			glVertex2f(x, y + height);
+		}
+		glEnd();
+#endif
+
+	}
+
+}
 
 
 void RenderManager::openglInit( )
@@ -79,6 +193,17 @@ void RenderManager::openglSetup( int wwidth, int wheight )
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxAtlasSize);
 
 	glGenBuffers(1, &VBOHandle);
+
+
+	// Create blank texture
+	glGenTextures(1, &textures[0].atlas);
+	glBindTexture(GL_TEXTURE_2D, textures[0].atlas);
+	//GIMP says it is white
+	char color[4] = { '\377','\377', '\377', '\377' };
+	glTexImage2D( GL_TEXTURE_2D, 0, 4, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, color );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 }
 
@@ -164,55 +289,12 @@ int RenderManager::GetTextureNumberById( std::string id )
  */
 bool RenderManager::DrawToGLTexture( GLuint* ahandle, int width, int height, std::vector< TextureProxy* >* textures )
 {
-	// Рисуем в атлас, как в текстуру, используя FBO.
-	// Настройка текстуры.
-	if( ahandle == NULL ){
-		debug( GRAPHICS, "Bad texture for atlas.\n" );
-		return false;
-	}
-	int target = GL_PROXY_TEXTURE_2D;
-	if( *ahandle == 0 ){
-		glGenTextures(1, ahandle);
-		target = GL_TEXTURE_2D;
-	}
-	glBindTexture(GL_TEXTURE_2D, *ahandle);
-	glTexImage2D( target, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-	//GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
-	//GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
-
 	GLuint FBOHandle;
 
-	glGenFramebuffersEXT(1, &FBOHandle);
-
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, FBOHandle);
-
-	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, *ahandle, 0);
-
-	GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-	if( status != GL_FRAMEBUFFER_COMPLETE_EXT ){
-		debug( GRAPHICS, "Your framebuffer is broken. Use top NV to play this Crusis.\n" );
-		return 0;
-	}
-
-	glPushAttrib(GL_COLOR_BUFFER_BIT); // Сохраняем ClearColor
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
-	// Изменение вьюпорта и матриц для FBO
-	glPushAttrib(GL_VIEWPORT_BIT);
-	glViewport(0, 0, width, height);
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	glOrtho(0, width, 0, height, -2.0, 2.0);
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
+	if( !DrawToGLTexturePrepare( ahandle, FBOHandle, width, height ) )
+		return false;
 
 	// Отрисовка текстур в атлас.
-	glClear(GL_COLOR_BUFFER_BIT);
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glEnable(GL_TEXTURE_2D);
 	for ( unsigned int i = 0; i < textures->size(); i++ ){
 		TextureProxy* t = textures->at(i);
@@ -251,22 +333,7 @@ bool RenderManager::DrawToGLTexture( GLuint* ahandle, int width, int height, std
 
 	}
 
-	// Возвращаем как было.
-	glDisable(GL_TEXTURE_2D);
-
-	glDeleteFramebuffersEXT(1, &FBOHandle);
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-	//viewport
-	glPopAttrib();
-	//color
-	// Everything said that it is unnecessary
-	//glPopAttrib();
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	return true;
+	return DrawToGLTextureFinish( FBOHandle );
 }
 
 
@@ -296,7 +363,7 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 	}
 
 	if(centered)
-		sprite->centered = true;
+		sprite->setCentered();
 	sprite->resize( width, height );
 	sprite->setPosition( x, y, z );
 	sprite->setPicture(picture);
@@ -320,8 +387,7 @@ Sprite* RenderManager::CreateGLSprite( Sprite* osprite )
 	sprite->texid = osprite->texid;
 	sprite->tex = osprite->tex;
 
-
-	sprite->centered = osprite->centered;
+	sprite->flags = osprite->flags;
 	sprite->resize( osprite->width, osprite->height );
 	sprite->setPosition( osprite->posx, osprite->posy, osprite->vertices.lb.z );
 	sprite->setPicture( osprite->picture);
@@ -355,15 +421,6 @@ void RenderManager::FreeGLSprites( std::vector< Sprite* >* sprites )
 	}
 	sprites->clear();
 }
-
-
-void RenderManager::AddShader( Sprite* sprite, std::string name )
-{
-	if( sprite == NULL )
-		return;
-	sprite->shader = CreateProgram( name );
-}
-
 
 
 inline bool compareTextureProxies( TextureProxy* t1, TextureProxy* t2 )
@@ -402,9 +459,23 @@ bool RenderManager::CreateAtlas( GLuint* ahandle, int* width, int* height, short
 }
 
 
+static const std::string fixedShaders[] = {
+	"fixed", "daytime", ""
+};
+
 void RenderManager::MoveGlScene( )
 {
 	glTranslatef( vpoint.x, vpoint.y, vpoint.z );
+	int i = 0;
+	std::string fname = fixedShaders[i++];
+
+	while( fname != "" ){
+		GLuint fixed = Shaders::getProgram( fname );
+		glUseProgram( fixed );
+		glUniform3fv( glGetUniformLocation( fixed, "offset" ), 1, &vpoint.x );
+		fname = fixedShaders[i++];
+	}
+	glUseProgram( 0 );
 }
 
 void RenderManager::DrawGLScene()
@@ -415,11 +486,12 @@ void RenderManager::DrawGLScene()
 	VBOStructureHandle* temp = NULL;
 	int count;
 	VBOStructureHandle* vbostructure = PrepareVBO(&count);
+
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnable(GL_TEXTURE_2D);
-	glBindBuffer(GL_ARRAY_BUFFER, VBOHandle);
+	glBindBuffer( GL_ARRAY_BUFFER, VBOHandle );
 
 	// VBO + GL_STREAM_DRAW == +10 fps
 	glBufferData(GL_ARRAY_BUFFER, sizeof(VertexV2FT2FC4UI) * count, verticles, GL_STREAM_DRAW);
@@ -435,10 +507,11 @@ void RenderManager::DrawGLScene()
 	//for( int i=0; i < VBOHandlesCount; i++ ){
 	while(vbostructure != NULL){
 		//glBindTexture(GL_TEXTURE_2D, textures[VBOHandles[i].texture].atlas);
+		glActiveTexture( GL_TEXTURE0 );
 		glBindTexture(GL_TEXTURE_2D, textures[vbostructure->texture].atlas);
-		//StartShader(vbostructure->shaders);
+		glUseProgram( vbostructure->shader );
+
 		//glDrawArrays(GL_QUADS, VBOHandles[i].start, VBOHandles[i].count);
-	    glUseProgram( vbostructure->shader );
 		glDrawArrays(GL_QUADS, vbostructure->start, vbostructure->count);
 		//StopShader(vbostructure->shaders);
 
@@ -447,6 +520,7 @@ void RenderManager::DrawGLScene()
 		vbostructure = vbostructure->next;
 		delete temp;
 	}
+	glUseProgram( 0 );
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 #ifdef DEBUG_DRAW_RECTANGLES
@@ -455,7 +529,7 @@ void RenderManager::DrawGLScene()
 #endif
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glDisable(GL_TEXTURE_2D);
+	//glDisable(GL_TEXTURE_2D);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
@@ -494,6 +568,7 @@ RenderManager::RenderManager( ){
 	strcpy(textures[0].id, n.c_str());
 
 	Camera::init( &vpoint );
+
 }
 
 
@@ -622,11 +697,11 @@ VBOStructureHandle* RenderManager::PrepareVBO( int* c )
 #endif
 	for( std::vector< Sprite* >::iterator it = GLSprites.begin(), end = GLSprites.end(); it != end; ++it ){
 		s = *(it);
-		if( s == NULL || !s->visible )
+		if( s == NULL || !s->isVisible() )
 			continue;
 #ifdef RENDER_VISIBLE
 		vertex3farr& pos = s->vertices;
-		if( !s->fixed && ( pos.lb.x + vpoint.x < -100 || pos.rb.x + vpoint.x > conf.windowWidth + 100 ||
+		if( !s->isFixed() && ( pos.lb.x + vpoint.x < -100 || pos.rb.x + vpoint.x > conf.windowWidth + 100 ||
 			pos.lb.y + vpoint.y < -100 || pos.lt.y + vpoint.y > conf.windowHeight + 100 ) )
 			continue;
 #endif
@@ -650,11 +725,10 @@ VBOStructureHandle* RenderManager::PrepareVBO( int* c )
 			v = v->next;
 		}
 
-		vertex3farr offset = s->fixedOffset( &vpoint );
-		verticles[count++].set( &offset.lb, &s->coordinates.lt, &s->clr ); // = VertexV2FT2FC4UI( offset.lb, s->coordinates.lt, &s->clr);
-		verticles[count++].set( &offset.rb, &s->coordinates.rt, &s->clr ); // = VertexV2FT2FC4UI( offset.rb, s->coordinates.rt, &s->clr);
-		verticles[count++].set( &offset.rt, &s->coordinates.rb, &s->clr ); // = VertexV2FT2FC4UI( offset.rt, s->coordinates.rb, &s->clr);
-		verticles[count++].set( &offset.lt, &s->coordinates.lb, &s->clr ); //= VertexV2FT2FC4UI( offset.lt, s->coordinates.lb, &s->clr);
+		verticles[count++].set( &s->vertices.lb, &s->coordinates.lt, &s->clr );
+		verticles[count++].set( &s->vertices.rb, &s->coordinates.rt, &s->clr );
+		verticles[count++].set( &s->vertices.rt, &s->coordinates.rb, &s->clr );
+		verticles[count++].set( &s->vertices.lt, &s->coordinates.lb, &s->clr );
 	}
 	//if( VBOHandlesCount )
 	//	VBOHandles[VBOHandlesCount - 1].count = count - VBOHandles[VBOHandlesCount - 1].start;
@@ -711,50 +785,23 @@ bool RenderManager::BuildAtlas( GLuint* ahandle, int width, int height )
 	return DrawToGLTexture( ahandle, width, height, &internalTextures );
 }
 
+
+
+
 void RenderManager::TestDrawAtlas(int x, int y, GLuint atlas)
 {
-	int aw, ah;
-	if( !atlas ){
+	if( !atlas )
 		atlas = atlasHandle;
-		aw = atlasWidth;
-		ah = atlasHeight;
-	}else{
-		aw = ah = maxAtlasSize;
-	}
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, atlas);
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glBegin(GL_QUADS);
-	{
-		glTexCoord2f(0.0, 0.0);
-		glVertex2f(x, y);
-		glTexCoord2f(1, 0);
-		glVertex2f(x + aw, y);
-		glTexCoord2f(1, 1);
-		glVertex2f(x + aw, y + ah);
-		glTexCoord2f(0, 1);
-		glVertex2f(x, y + ah);
-	}
-	glEnd();
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glDisable(GL_TEXTURE_2D);
+
+	DrawToQuad( atlas, 0, 0, atlasWidth, atlasHeight );
 
 #ifdef DEBUG_DRAW_RECTANGLES
-	glBegin(GL_LINE_LOOP);
-	{
-		glVertex2f(x, y);
-		glVertex2f(x + aw, y);
-		glVertex2f(x + aw, y + ah);
-		glVertex2f(x, y + ah);
-	}
-	glEnd();
 	glBegin(GL_LINES);
 	for( int i=0; i< 8190; i += 86  ){
 		glVertex2f(x + i, y);
 		glVertex2f(x + i, y + 300);
 	}
 	glEnd();
-
 #endif
 
 

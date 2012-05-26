@@ -31,6 +31,7 @@ struct MainConfig
 	std::string scriptsPath;
 	std::string configsPath;
 	std::string protoPath;
+	std::string shadersPath;
 
 	MainConfig();
 

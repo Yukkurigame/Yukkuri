@@ -82,7 +82,7 @@ bool Widget::load( std::string id )
 		if( imgname != "" ){
 			background = RenderManager::Instance()->CreateGLSprite( PosX, PosY, getZ(), Width, Height,
 				RenderManager::Instance()->GetTextureNumberById( imgname ), picture );
-			background->fixed = true;
+			background->setFixed();
 		}
 	}
 
@@ -196,7 +196,7 @@ void Widget::toggleVisibility( )
 		visible = false;
 	else
 		visible = true;
-	if( this->background && this->background->visible != visible )
+	if( this->background && this->background->isVisible() != visible )
 		this->background->toggleVisibility( );
 	for( int i = 0, end = Children.size(); i < end; ++i ){
 		Children[i]->toggleVisibility();

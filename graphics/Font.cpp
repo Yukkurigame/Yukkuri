@@ -15,17 +15,56 @@ using namespace Debug;
 
 #include <vector>
 
-static FT_Library library;
-static bool ftLoaded = false;
+namespace {
 
-static int lastLine = 0;
+	FT_Library library;
+	bool ftLoaded = false;
 
-inline int next_p2( int a )
-{
-	int rval=2;
-	while( rval < a ) rval <<= 1;
-	return rval;
+	int lastLine = 0;
+
+	inline int next_p2( int a )
+	{
+		int rval=2;
+		while( rval < a ) rval <<= 1;
+		return rval;
+	}
+
+	///Create a display list coresponding to the give character.
+	void makeChar( FT_Face face, unsigned int ch, Char* letter )
+	{
+		FT_UInt index = FT_Get_Char_Index( face, ch );
+
+		//Load the Glyph for our character.
+		if( FT_Load_Glyph( face, index, FT_LOAD_DEFAULT ) ){
+			debug( GRAPHICS, "FT_Load_Glyph failed\n" );
+			return;
+		}
+
+		//Move the face's glyph into a Glyph object.
+		FT_Glyph glyph;
+		if(FT_Get_Glyph( face->glyph, &glyph )){
+			debug( GRAPHICS, "FT_Get_Glyph failed\n" );
+			return;
+		}
+
+		//Convert the glyph to a bitmap.
+		FT_Glyph_To_Bitmap( &glyph, ft_render_mode_normal, 0, 1 );
+		FT_BitmapGlyph bitmap_glyph = (FT_BitmapGlyph)glyph;
+
+		//This reference will make accessing the bitmap easier
+		FT_Bitmap& bitmap = bitmap_glyph->bitmap;
+
+		letter->gl = glyph;
+		letter->bm = bitmap;
+		letter->horiAdvance = face->glyph->advance.x >> 6;
+		letter->vertAdvance = face->glyph->metrics.vertAdvance >> 6;
+		letter->metrics = face->glyph->metrics;
+		letter->height = bitmap.rows;
+		letter->index = index;
+
+	}
 }
+
 
 void ftDone(  )
 {
@@ -36,40 +75,6 @@ void ftDone(  )
 	ftLoaded = false;
 }
 
-///Create a display list coresponding to the give character.
-void makeChar( FT_Face face, unsigned int ch, Char* letter )
-{
-	FT_UInt index = FT_Get_Char_Index( face, ch );
-
-	//Load the Glyph for our character.
-	if( FT_Load_Glyph( face, index, FT_LOAD_DEFAULT ) ){
-		debug( GRAPHICS, "FT_Load_Glyph failed\n" );
-		return;
-	}
-
-	//Move the face's glyph into a Glyph object.
-	FT_Glyph glyph;
-	if(FT_Get_Glyph( face->glyph, &glyph )){
-		debug( GRAPHICS, "FT_Get_Glyph failed\n" );
-		return;
-	}
-
-	//Convert the glyph to a bitmap.
-	FT_Glyph_To_Bitmap( &glyph, ft_render_mode_normal, 0, 1 );
-	FT_BitmapGlyph bitmap_glyph = (FT_BitmapGlyph)glyph;
-
-	//This reference will make accessing the bitmap easier
-	FT_Bitmap& bitmap = bitmap_glyph->bitmap;
-
-	letter->gl = glyph;
-	letter->bm = bitmap;
-	letter->horiAdvance = face->glyph->advance.x >> 6;
-	letter->vertAdvance = face->glyph->metrics.vertAdvance >> 6;
-	letter->metrics = face->glyph->metrics;
-	letter->height = bitmap.rows;
-	letter->index = index;
-
-}
 
 void font_data::clean() {
 	for( unsigned int i = 0; i< CHARSIZE; ++i ){
@@ -77,6 +82,7 @@ void font_data::clean() {
 		delete chars[i];
 	}
 }
+
 
 bool font_data::load( const char * fname, unsigned int height ) {
 

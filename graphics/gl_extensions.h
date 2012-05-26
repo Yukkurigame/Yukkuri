@@ -2,10 +2,15 @@
  * extenisons.h
  *
  *  Created on: 21.03.2012
+ *
+ *  This file must be included first.
+ *
  */
 
 #ifndef GL_EXTENISONS_H_
 #define GL_EXTENISONS_H_
+
+#include "Define.h"
 
 #include "SDL/SDL_opengl.h"
 

@@ -132,6 +132,9 @@ void Text::setText(const char* str)
 	}
 	Height += lineheight;
 	free(text);
+
+	setVisible( Visible );
+	setFixed( Fixed );
 }
 
 void Text::setColor( int r, int g, int b )
@@ -148,14 +151,20 @@ void Text::setVisible( bool v )
 {
 	Visible = v;
 	ITER_SPRITES{
-		(*it)->visible = v;
+		if( v )
+			(*it)->setVisible();
+		else
+			(*it)->clearVisible();
 	}
 }
 void Text::setFixed( bool f )
 {
 	Fixed = f;
 	ITER_SPRITES{
-		(*it)->fixed = f;
+		if( f )
+			(*it)->setFixed();
+		else
+			(*it)->clearFixed();
 	}
 }
 
@@ -173,8 +182,6 @@ void Text::addSprite( int x, int y, Char* c )
 	Sprite* s = RenderManager::Instance()->CreateGLSprite(
 		position.x + static_cast<float>(x), position.y - static_cast<float>(y), position.z,
 		font->cellWidth, font->cellHeight, font->texture, c->pic );
-	s->fixed = Fixed;
-	s->visible = Visible;
 	s->clr.set( &color );
 	sprites.push_back(s);
 }

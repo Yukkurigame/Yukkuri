@@ -23,8 +23,8 @@ public:
 
 	inline int width(){ return Width; }
 	inline int height(){ return Height; }
-	inline bool visible(){ return Visible; }
-	inline bool fixed(){ return Fixed; }
+	inline bool isVisible(){ return Visible; }
+	inline bool isFixed(){ return Fixed; }
 
 	void setFont( std::string name, int size );
 	void setPosition( float x, float y, float z );

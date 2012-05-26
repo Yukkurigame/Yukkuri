@@ -243,9 +243,9 @@ struct Sprite
 	float height;
 	float posx;
 	float posy;
-	bool visible;
-	bool centered;
-	bool fixed;
+	unsigned int flags; // 1 - visible
+						// 2 - centred
+						// 4 - fixed
 	int texid;
 	int picture;
 	GLuint shader;
@@ -254,13 +254,24 @@ struct Sprite
 	coord2farr coordinates;
 	color4u clr;
 
+	inline unsigned char isVisible()	{ return flags & 1; }
+	inline void setVisible()			{ flags |= 1; }
+	inline void clearVisible()			{ flags &= ~1; }
+
+	inline unsigned char isCentered()	{ return flags & 2; }
+	inline void setCentered()			{ flags |= 2; }
+	inline void clearCentered()			{ flags &= ~2; }
+
+	inline unsigned char isFixed()		{ return flags & 4; }
+		   void setFixed();				// Needs shader placing
+	inline void clearFixed()			{ flags &= ~4; shader = 0; }
+
 
 	Sprite(){
 		tex = NULL;
 		picture = texid = 0;
 		posx = posy = width = height = 0;
-		visible = true;
-		fixed = centered = false;
+		flags = 0b1; // visible only
 		shader = 0;
 	}
 
@@ -303,7 +314,7 @@ struct Sprite
 		float height = vertices.rt.y - vertices.lb.y; // FIXME: lb is rb?
 		posx = x;
 		posy = y;
-		if(centered){
+		if( isCentered() ){
 			float halfwidth = width/2;
 			float halfheight = height/2;
 			vertices.lb.x = vertices.lt.x = x - halfwidth;
@@ -323,23 +334,11 @@ struct Sprite
 		vertices.lb.z = vertices.lt.z = vertices.rt.z = vertices.rb.z = z;
 	}
 
-	vertex3farr fixedOffset( s3f* offset ){
-		vertex3farr v = vertices;
-		if(fixed){
-			v.lb.x = (v.lt.x -= offset->x);
-			v.rb.x = (v.rt.x -= offset->x);
-			v.lb.y = (v.rb.y -= offset->y);
-			v.lt.y = (v.rt.y -= offset->y);
-			v.lb.z = v.lt.z = v.rt.z = (v.rb.z -= offset->z);
-		}
-		return v;
-	}
-
 	void toggleVisibility( ){
-		if( visible )
-			visible = false;
+		if( isVisible() )
+			clearVisible();
 		else
-			visible = true;
+			setVisible();
 	}
 
 };

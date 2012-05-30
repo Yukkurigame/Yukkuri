@@ -10,8 +10,10 @@
 #include "graphics/gl_shader.h"
 #include "graphics/sdl_graphics.h"
 #include "graphics/Camera.h"
-#include "ElasticBox.h"
-#include "LuaConfig.h"
+#include "graphics/render/Atlas.h"
+#include "graphics/render/GLHelpers.h"
+
+#include "scripts/LuaConfig.h"
 
 
 #include <algorithm>
@@ -27,121 +29,6 @@ using namespace Debug;
 
 
 RenderManager* RenderManager::graph = NULL;
-
-
-namespace {
-
-	// This function creates new textu
-	bool DrawToGLTexturePrepare( GLuint* ahandle, GLuint& FBOHandle, int width, int height )
-	{
-		// Рисуем в атлас, как в текстуру, используя FBO.
-		// Настройка текстуры.
-		if( ahandle == NULL ){
-			debug( GRAPHICS, "Bad texture for atlas.\n" );
-			return false;
-		}
-		int target = GL_PROXY_TEXTURE_2D;
-		if( *ahandle == 0 ){
-			glGenTextures(1, ahandle);
-			target = GL_TEXTURE_2D;
-		}
-		glBindTexture(GL_TEXTURE_2D, *ahandle);
-		glTexImage2D( target, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-		//GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
-		//GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
-
-		glGenFramebuffersEXT(1, &FBOHandle);
-
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, FBOHandle);
-
-		glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, *ahandle, 0);
-
-		GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-		if( status != GL_FRAMEBUFFER_COMPLETE_EXT ){
-			debug( GRAPHICS, "Your framebuffer is broken. Use top NV to play this Crusis.\n" );
-			return 0;
-		}
-
-		glPushAttrib(GL_COLOR_BUFFER_BIT); // Сохраняем ClearColor
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
-		// Изменение вьюпорта и матриц для FBO
-		glPushAttrib(GL_VIEWPORT_BIT);
-		glViewport(0, 0, width, height);
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-		glLoadIdentity();
-		glOrtho(0, width, 0, height, -2.0, 2.0);
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		glLoadIdentity();
-
-		// Clear color
-		glClear(GL_COLOR_BUFFER_BIT);
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-
-		return true;
-	}
-
-
-	bool DrawToGLTextureFinish( GLuint& FBOHandle )
-	{
-		// Возвращаем как было.
-		glDisable(GL_TEXTURE_2D);
-
-		glDeleteFramebuffersEXT(1, &FBOHandle);
-		glMatrixMode(GL_PROJECTION);
-		glPopMatrix();
-		glMatrixMode(GL_MODELVIEW);
-		glPopMatrix();
-		//viewport
-		glPopAttrib();
-		//color
-		// Everything said that it is unnecessary
-		//glPopAttrib();
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		return true;
-	}
-
-
-
-	void DrawToQuad( GLuint tex, int x, int y, int width, int height )
-	{
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture( GL_TEXTURE_2D, tex );
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		glBegin(GL_QUADS);
-		{
-			glTexCoord2f(0.0, 0.0);
-			glVertex2f(x, y);
-			glTexCoord2f(1, 0);
-			glVertex2f(x + width, y);
-			glTexCoord2f(1, 1);
-			glVertex2f(x + width, y + height);
-			glTexCoord2f(0, 1);
-			glVertex2f(x, y + height);
-		}
-		glEnd();
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glDisable(GL_TEXTURE_2D);
-
-#ifdef DEBUG_DRAW_RECTANGLES
-		glBegin(GL_LINE_LOOP);
-		{
-			glVertex2f(x, y);
-			glVertex2f(x + width, y);
-			glVertex2f(x + width, y + height);
-			glVertex2f(x, y + height);
-		}
-		glEnd();
-#endif
-
-	}
-
-}
 
 
 void RenderManager::openglInit( )
@@ -190,10 +77,9 @@ void RenderManager::openglSetup( int wwidth, int wheight )
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
 
-	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxAtlasSize);
-
 	glGenBuffers(1, &VBOHandle);
 
+	TextureAtlas::init( );
 
 	// Create blank texture
 	glGenTextures(1, &textures[0].atlas);
@@ -211,13 +97,13 @@ void RenderManager::openglSetup( int wwidth, int wheight )
 bool RenderManager::LoadTextures( )
 {
 	LuaConfig* lc = new LuaConfig;
-	std::vector< string > names;
+	std::vector< std::string > names;
 	int textures_count;
-	string config = "sprite";
+	std::string config = "sprite";
 
 	lc->getSubconfigsLength(config, textures_count);
 
-	debug( GRAPHICS, citoa(textures_count) + " textures found.\n" );
+	Debug::debug( Debug::GRAPHICS, citoa(textures_count) + " textures found.\n" );
 
 	if( !textures_count ){
 		delete lc;
@@ -226,50 +112,43 @@ bool RenderManager::LoadTextures( )
 
 	lc->getSubconfigsList(config, names);
 
-	for( std::vector< string >:: iterator it = names.begin(), vend = names.end(); it != vend; ++it ){
-		AddTexture(*it);
-	}
+	FOREACHIT( names )
+		TextureAtlas::addTexture( *it );
 
 	delete lc;
 	// load basic textures to main atlas
-	return CreateAtlas( &atlasHandle, &atlasWidth, &atlasHeight );
+	return TextureAtlas::create( &atlasHandle, atlasWidth, atlasHeight );
 }
 
 
-void RenderManager::AddTexture( string name ){
-	LuaConfig* lc = new LuaConfig;
-	string config = "sprite";
-	TextureProxy* t = new TextureProxy();
-
-	lc->getValue("id", name, config, t->id);
-	lc->getValue("image", name, config, t->image);
-	lc->getValue("width", name, config, t->width);
-	lc->getValue("height", name, config, t->height);
-	lc->getValue("rows", name, config, t->rows);
-	lc->getValue("columns", name, config, t->cols);
-	lc->getValue("offsetx", name, config, t->offsetx);
-	lc->getValue("offsety", name, config, t->offsety);
-
-	t->texture = LoadGLTexture( t->image );
-
-	internalTextures.push_back(t);
-
-	delete lc;
+int RenderManager::PushTexture( TextureProxy* proxy, GLuint atlas )
+{
+	textures = (TextureInfo*)realloc(textures, sizeof(TextureInfo) * ( 1 + texturesCount ) );
+	textures[texturesCount].fromTextureProxy( proxy, atlas );
+	textures[texturesCount].id = new char[proxy->id.size() + 1];
+	strcpy(textures[texturesCount].id, proxy->id.c_str());
+	// Update sprites
+	FOREACHIT( GLSprites )
+		(*it)->tex = &textures[(*it)->texid];
+	return texturesCount++;
 }
 
-void RenderManager::AddTexture( string id, Texture* tex, int width, int height, int cols, int rows, int ax, int ay ){
-	TextureProxy* t = new TextureProxy();
-	t->id = id;
-	t->width = width;
-	t->height = height;
-	t->cols = (cols ? cols : 1);
-	t->rows = (rows ? rows : 1);
-	t->offsetx = t->offsety = 0;
-	t->atlasX = ax;
-	t->atlasY = ay;
-	t->texture = tex;
-	internalTextures.push_back(t);
+void RenderManager::PushTextures( std::vector < TextureProxy* >& tarray, GLuint atlas )
+{
+	int tcount = tarray.size();
+	textures = (TextureInfo*)realloc(textures, sizeof(TextureInfo) * ( tcount + texturesCount ) );
+	for( int i = 0; i < tcount; ++i ){
+		TextureProxy* proxy = tarray.at( i );
+		textures[texturesCount].fromTextureProxy( proxy, atlas );
+		textures[texturesCount].id = new char[proxy->id.size() + 1];
+		strcpy(textures[texturesCount].id, proxy->id.c_str());
+		texturesCount++;
+	}
+	// Update sprites
+	FOREACHIT( GLSprites )
+		(*it)->tex = &textures[(*it)->texid];
 }
+
 
 int RenderManager::GetTextureNumberById( std::string id )
 {
@@ -280,62 +159,12 @@ int RenderManager::GetTextureNumberById( std::string id )
 	return 0;
 }
 
-
-/* This function render textures array into opengl texture.
- * ahandle - pointer on opengl texture, if points to 0 new texture will be generated;
- * width, height - width and height of new texture;
- * textures - array of textures coordinates to draw;
- * returns boolean
- */
-bool RenderManager::DrawToGLTexture( GLuint* ahandle, int width, int height, std::vector< TextureProxy* >* textures )
+TextureInfo* RenderManager::GetTextureByNumber( unsigned int number )
 {
-	GLuint FBOHandle;
-
-	if( !DrawToGLTexturePrepare( ahandle, FBOHandle, width, height ) )
-		return false;
-
-	// Отрисовка текстур в атлас.
-	glEnable(GL_TEXTURE_2D);
-	for ( unsigned int i = 0; i < textures->size(); i++ ){
-		TextureProxy* t = textures->at(i);
-		glBindTexture(GL_TEXTURE_2D, t->texture->tex);
-		glBegin(GL_QUADS);
-		{
-			float x = static_cast<float>(t->offsetx) / static_cast<float>(t->texture->w);
-			float y = static_cast<float>(t->offsety) / static_cast<float>(t->texture->h);
-			float dx = static_cast<float>(t->width) / static_cast<float>(t->texture->w);
-			float dy = static_cast<float>(t->height) / static_cast<float>(t->texture->h);
-			//Bottom-left vertex
-			glTexCoord2f(x, y);
-			glVertex2f(t->atlasX, t->atlasY);
-			//Bottom-right vertex
-			glTexCoord2f(x + dx, y);
-			glVertex2f(t->atlasX + t->width, t->atlasY);
-			//Top-right vertex
-			glTexCoord2f(x + dx, y + dy);
-			glVertex2f(t->atlasX + t->width, t->atlasY + t->height);
-			//Top-left vertex
-			glTexCoord2f(x, y + dy);
-			glVertex2f(t->atlasX, t->atlasY + t->height);
-		}
-		glEnd();
-
-#ifdef DEBUG_DRAW_ATLAS_RECTANGLES
-		glDisable(GL_TEXTURE_2D);
-		glBegin(GL_LINE_LOOP);
-			glVertex2f(t->atlasX, t->atlasY);
-			glVertex2f(t->atlasX + t->width, t->atlasY);
-			glVertex2f(t->atlasX + t->width, t->atlasY + t->height);
-			glVertex2f(t->atlasX, t->atlasY + t->height);
-		glEnd();
-		glEnable(GL_TEXTURE_2D);
-#endif
-
-	}
-
-	return DrawToGLTextureFinish( FBOHandle );
+	if( number < texturesCount )
+		return &textures[number];
+	return NULL;
 }
-
 
 
 /* This function creating sprite structure with texture.
@@ -388,8 +217,8 @@ Sprite* RenderManager::CreateGLSprite( Sprite* osprite )
 	sprite->tex = osprite->tex;
 
 	sprite->flags = osprite->flags;
-	sprite->resize( osprite->width, osprite->height );
-	sprite->setPosition( osprite->posx, osprite->posy, osprite->vertices.lb.z );
+	sprite->resize( osprite->rect.width, osprite->rect.height );
+	sprite->setPosition( osprite->rect.x, osprite->rect.y, osprite->vertices.lb.z );
 	sprite->setPicture( osprite->picture);
 
 	GLSprites.push_back( sprite );
@@ -420,42 +249,6 @@ void RenderManager::FreeGLSprites( std::vector< Sprite* >* sprites )
 		FreeGLSprite(*it);
 	}
 	sprites->clear();
-}
-
-
-inline bool compareTextureProxies( TextureProxy* t1, TextureProxy* t2 )
-{
-	return t2->width * t2->height - t1->width * t1->height;
-}
-
-bool RenderManager::CreateAtlas( GLuint* ahandle, int* width, int* height, short map )
-{
-	if( internalTextures.size() < 1 ){
-		debug( GRAPHICS, "Textures is missing.\n" );
-		return false;
-	}
-	//FIXME: sorting probably not works.
-	sort( internalTextures.begin(), internalTextures.end(), compareTextureProxies );
-	if( !BuildAtlasMap( width, height ) ){
-		debug( GRAPHICS, "Cannot build atlas map.\n" );
-		return false;
-	}
-	if ( !BuildAtlas( ahandle, *width, *height ) ){
-		debug( GRAPHICS, "Cannot draw atlas.\n" );
-		return false;
-	}
-	int tcount = internalTextures.size();
-	textures = (TextureInfo*)realloc(textures, sizeof(TextureInfo) * ( tcount + texturesCount ) );
-	for( int i = 0; i < tcount; ++i ){
-		textures[texturesCount].fromTextureProxy(internalTextures[i], *ahandle);
-		textures[texturesCount].id = new char[internalTextures[i]->id.size() + 1];
-		strcpy(textures[texturesCount].id, internalTextures[i]->id.c_str());
-		texturesCount++;
-	}
-	for( std::vector< Sprite* >::iterator it = GLSprites.begin(), end = GLSprites.end(); it != end; ++it )
-		(*it)->tex = &textures[(*it)->texid];
-	clear_vector( &internalTextures );
-	return true;
 }
 
 
@@ -508,7 +301,7 @@ void RenderManager::DrawGLScene()
 	while(vbostructure != NULL){
 		//glBindTexture(GL_TEXTURE_2D, textures[VBOHandles[i].texture].atlas);
 		glActiveTexture( GL_TEXTURE0 );
-		glBindTexture(GL_TEXTURE_2D, textures[vbostructure->texture].atlas);
+		glBindTexture(GL_TEXTURE_2D, textures[vbostructure->atlas].atlas);
 		glUseProgram( vbostructure->shader );
 
 		//glDrawArrays(GL_QUADS, VBOHandles[i].start, VBOHandles[i].count);
@@ -555,7 +348,6 @@ RenderManager::RenderManager( ){
 	textures = NULL;
 	verticles = NULL;
 	verticlesSize = 1; // for success multiplication
-	minAtlasSize = 64;
 	atlasHandle = 0;
 	GLSprites.clear();
 	// Set first texture info to 0
@@ -574,7 +366,7 @@ RenderManager::RenderManager( ){
 
 RenderManager::~RenderManager( )
 {
-	clear_vector( &internalTextures );
+	TextureAtlas::clean( );
 	if( textures ){
 		for( int i = 0; i < texturesCount; ++i )
 			delete[] textures[i].id;
@@ -674,13 +466,14 @@ void RenderManager::ExtendVerticles( )
 inline bool compareSprites( Sprite* s1, Sprite* s2 )
 {
 	if( s1->vertices.rt.z == s2->vertices.rt.z ){
-		if( s1->posy == s2->posy ){
-			return ( s1->posx > s2->posx );
+		if( s1->rect.y == s2->rect.y ){
+			return ( s1->rect.x > s2->rect.x );
 		}
-		return ( s1->posy > s2->posy );
+		return ( s1->rect.y > s2->rect.y );
 	}
 	return ( s1->vertices.rt.z < s2->vertices.rt.z );
 }
+
 
 VBOStructureHandle* RenderManager::PrepareVBO( int* c )
 {
@@ -717,9 +510,11 @@ VBOStructureHandle* RenderManager::PrepareVBO( int* c )
 				VBOHandles[VBOHandlesCount - 1].count = count - VBOHandles[VBOHandlesCount - 1].start;
 			VBOHandlesCount++;
 		}*/
+
+		// TODO: atlas instead of texture
 		if( !v ){
 			first = v = new VBOStructureHandle(s->texid, s->shader, count);
-		}else if( s->texid != v->texture || s->shader != v->shader ){
+		}else if( s->texid != v->atlas || s->shader != v->shader ){
 			v->next = new VBOStructureHandle(s->texid, s->shader, count);
 			v->count = count - v->start;
 			v = v->next;
@@ -740,60 +535,12 @@ VBOStructureHandle* RenderManager::PrepareVBO( int* c )
 
 
 
-bool RenderManager::BuildAtlasMap( int* width, int* height )
-{
-	ElasticBox box = ElasticBox(minAtlasSize, maxAtlasSize);
-
-	for( std::vector < TextureProxy* >:: iterator it = internalTextures.begin(),
-			vend = internalTextures.end(); it != vend; ++it ){
-		if ( ! box.InsertItem(
-				&((*it)->atlasX), &((*it)->atlasY),
-				(*it)->width, (*it)->height ) )
-			return false;
-	}
-
-	//FIXME: class atlas
-	(*width) = box.Width;
-	(*height) = box.Height;
-
-	return BuildAtlasAbsoluteMap( box.Width, box.Height );
-}
-
-
-bool RenderManager::BuildAtlasAbsoluteMap(float width, float height){
-
-	float texelW = 1.0f;
-	float texelH = 1.0f;
-
-	texelW = texelW / width;
-	texelH = texelH / height;
-
-	// Build absolute map
-	for( unsigned int i = 0; i < internalTextures.size(); i++ ){
-		internalTextures[i]->atlas.x = static_cast<float>(internalTextures[i]->atlasX) * texelW;
-		internalTextures[i]->atlas.y = static_cast<float>(internalTextures[i]->atlasY) * texelH;
-		internalTextures[i]->atlas.width = static_cast<float>(internalTextures[i]->width) * texelW;
-		internalTextures[i]->atlas.height = static_cast<float>(internalTextures[i]->height) * texelH;
-	}
-
-	return true;
-}
-
-
-bool RenderManager::BuildAtlas( GLuint* ahandle, int width, int height )
-{
-	return DrawToGLTexture( ahandle, width, height, &internalTextures );
-}
-
-
-
-
 void RenderManager::TestDrawAtlas(int x, int y, GLuint atlas)
 {
 	if( !atlas )
 		atlas = atlasHandle;
 
-	DrawToQuad( atlas, 0, 0, atlasWidth, atlasHeight );
+	GLHelpers::DrawToQuad( atlas, 0, 0, atlasWidth, atlasHeight );
 
 #ifdef DEBUG_DRAW_RECTANGLES
 	glBegin(GL_LINES);

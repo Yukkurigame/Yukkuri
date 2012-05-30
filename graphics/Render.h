@@ -33,14 +33,13 @@ public:
 	// Textures
 	bool LoadTextures( );
 
-	void AddTexture( std::string name );
-	void AddTexture( std::string id, Texture* tex, int width, int height,
-							int cols, int rows, int ax, int ay );
-	bool BuildAtlasAbsoluteMap(float width, float height);
+	int PushTexture( TextureProxy*, GLuint atlas );
+	void PushTextures( std::vector < TextureProxy* >& tarray, GLuint atlas );
 
 	int GetTextureNumberById( std::string id );
+	TextureInfo* GetTextureByNumber( unsigned int number );
 
-	bool DrawToGLTexture( GLuint* ahandle, int width, int height, std::vector< TextureProxy* >* textures );
+	bool DrawToGLTexture( GLuint ahandle, std::vector< TextureProxy* >* textures );
 
 	// Sprites
 	inline Sprite* CreateGLSprite( float x, float y, float z, int width, int height ){
@@ -52,8 +51,8 @@ public:
 	void FreeGLSprite( Sprite* sprite );
 	void FreeGLSprites( std::vector< Sprite* >* sprites );
 
-	bool CreateAtlas( GLuint * atlas, int* width, int* height, short map = 1 );
-	inline int getAtlasMax( ){ return maxAtlasSize; }
+	bool CreateAtlas( GLuint * atlas, int* width, int* height );
+
 
 	inline void MoveGlScene( int x, int y, int z ){
 		vpoint.x = x;
@@ -62,9 +61,11 @@ public:
 		MoveGlScene();
 	}
 	void MoveGlScene( );
-	void DrawGLScene();
-	void CleanGLScene();
+	void DrawGLScene( );
+	void CleanGLScene( );
 
+
+	Texture* LoadGLTexture( std::string name );
 
 private:
 	RenderManager();
@@ -75,12 +76,11 @@ private:
 
 	int texturesCount;
 	TextureInfo* textures;
-	std::vector < TextureProxy* > internalTextures;
+
 
 
 	std::map < std::string, Texture* > texturesCache;
 	Texture* GetGLTexture( std::string name );
-	Texture* LoadGLTexture( std::string name );
 	void AddGLTexture( std::string name, Texture* tex );
 	void FreeGLTexture( Texture* );
 	void ClearGLTexturesCache( );
@@ -101,9 +101,6 @@ private:
 	//int VBOHandlesSize;
 	//VBOStructureHandle* VBOHandles;
 
-
-	int minAtlasSize;
-	int maxAtlasSize;
 	int atlasWidth, atlasHeight;
 	GLuint atlasHandle;
 

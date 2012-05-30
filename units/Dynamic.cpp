@@ -10,7 +10,7 @@
 #include <iostream>
 #include <string>
 #include <math.h>
-#include "map.h"
+#include "map/Map.h"
 
 
 
@@ -29,20 +29,7 @@ bool DynamicUnit::Create( int id )
 	if( !AnimatedUnit::Create( id ) )
 		return false;
 
-	/*LuaConfig* cfg = new LuaConfig;
-	cfg->getValue( "hp", UnitName, Type, Parameters["hp"] );
-	cfg->getValue( "damage", UnitName, Type, Parameters["damage"] );
-	cfg->getValue( "speed", UnitName, Type, Parameters["speed"]);
-	Parameters["hpmax"] = Parameters["hp"];
-	Parameters["fed"] = 100;
-	Parameters["exp"] = 20;
-	Parameters["expmax"] = 200;
-	Parameters["level"] = 1;
-	Parameters["days"] = 0;*/
-
 	setUnitSize( 0.35f );
-
-	//delete cfg;
 
 	return true;
 }
@@ -56,8 +43,6 @@ bool DynamicUnit::Create( int id )
 void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 {
 	if( x != 0 || y != 0 ){
-		//char d[30];
-		extern Map map;
 		float zone = 1.0;
 		float l = sqrt( static_cast<float>(x * x  +  y * y) );
 		float speed = fabs( Parameters["speed"] * Parameters["fed"] ) * zone * ( dt / 100000.0f ) / l;
@@ -189,7 +174,7 @@ void DynamicUnit::eat( Unit* victim )
 	}
 }
 
-void DynamicUnit::Die( )
+void DynamicUnit::die( )
 {
 	Corpse* corpse;
 	corpse = dynamic_cast<Corpse*>( UnitManager::CreateUnit( utCorpse, getUnitX(), getUnitY() ) );
@@ -209,7 +194,7 @@ void DynamicUnit::Die( )
 		this->Attacked->increaseUnitParameter( "exp", getUnitParameter( "hpmax" ) / getUnitParameter( "level" ) );
 		this->Attacked->increaseUnitParameter( "kills" );
 	}
-	this->Delete();
+	this->setDeleted();
 }
 
 void DynamicUnit::levelUp( int addlevel )
@@ -243,7 +228,7 @@ void DynamicUnit::update( const int& dt )
 {
 	AnimatedUnit::update( dt );
 	if( getUnitParameter( "hp" ) <= 0 ){
-		Die( );
+		die( );
 		return;
 	}
 	if( this->Parameters["exp"] >= this->Parameters["expmax"] )

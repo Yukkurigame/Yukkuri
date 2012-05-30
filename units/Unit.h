@@ -19,11 +19,15 @@ public:
 	virtual ~Unit();
 
 	virtual bool Create( int id );
-	void Delete( );
-	inline bool isDeleted( ) { return Deleted; }
+
+	inline unsigned char isDeleted()	{ return flags & 1; }
+	inline void setDeleted()				{ flags |= 1; }
+	inline void clearDeleted()			{ flags &= ~1; } // WHY?
+
 
 	virtual void update( const int& );
 	virtual void grow() {};
+	virtual void die( ) { setDeleted(); };
 	virtual void moveUnit( signed int x, signed int y, const int& dt ) {};
 	virtual void moveUnit( short axis, signed int val ) {};
 
@@ -48,9 +52,12 @@ public:
 	inline float getUnitY() { return (const float)Y; }
 	inline float getUnitSize() { return Image.getSize(); }
 	inline float getUnitParameter( std::string name ) { return Parameters[name]; }
-	float* getUnitpX() { return &X; }
-	float* getUnitpY() { return &Y; }
-	float* getUnitpParameter( std::string name );
+	inline float* getUnitpX() { return &X; }
+	inline float* getUnitpY() { return &Y; }
+	inline float* getUnitpParameter( std::string name ){
+		return &Parameters[name];
+	}
+
 
 	virtual bool isEdible( ) { return false; }
 	virtual void hit( float ) {};
@@ -59,6 +66,7 @@ protected:
 	virtual CUData* createUData();
 
 	float X, Y, Z;
+	int HP;
 	std::map < std::string, float > Parameters;
 	Animation Image;
 	ActionManager Actions;
@@ -68,7 +76,7 @@ protected:
 
 private:
 	unsigned int UnitId;
-	bool Deleted;
+	unsigned int flags;		// 1 - deleted
 };
 
 #endif //UNIT_H

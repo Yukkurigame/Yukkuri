@@ -13,6 +13,14 @@
 #include <cstdlib>
 
 
+struct s2i
+{
+	signed int x;
+	signed int y;
+	s2i() : x(), y() {}
+};
+
+
 struct s2f
 {
 	float x;
@@ -103,8 +111,19 @@ struct rect2f
 	float y;
 	float width;
 	float height;
-
 	rect2f () : x(), y(), width(), height() {}
+};
+
+struct rect2i
+{
+	int x;
+	int y;
+	int width;
+	int height;
+	rect2i () : x(), y(), width(), height() {}
+	inline bool operator < ( const rect2i& r ) {
+		return  r.width * r.height < width * height;
+	}
 };
 
 
@@ -116,26 +135,23 @@ struct Texture
 };
 
 
+// FIXME: PLEASE, CLEAN AND DESCRIBE THIS SHIT
+// TODO: Describe
 struct TextureProxy
 {
-	int width;
-	int height;
-	int offsetx;
-	int offsety;
 	int rows;
 	int cols;
-	int atlasX; // Absolute position x in atlas
-	int atlasY; // Absolute position y in atlas
 	std::string id;
 	std::string image;
+	s2f offset;
+	rect2i abs; // Absolute position in atlas; atlas absolute size
 	rect2f atlas; // Relative position in atlas; atlas size
 	Texture* texture;
 
-	TextureProxy( ) : width(), height(), offsetx(), offsety(),
-			rows(), cols(), atlasX(), atlasY(), id(), image(), atlas() {}
+	TextureProxy( ) : rows(), cols(), id(), image() {}
 
-	bool operator < ( TextureProxy t ) {
-		return t.width * t.height < height * width;
+	inline bool operator < ( const TextureProxy& t ) {
+		return abs < t.abs;
 	}
 
 };
@@ -161,8 +177,8 @@ struct TextureInfo
 	void fromTextureProxy( TextureProxy* t, GLuint a ){
 		rows = ( t->rows < 1 ? 1 : t->rows );
 		cols = ( t->cols < 1 ? 1 : t->cols );
-		swidth = t->width / cols;
-		sheight = t->height / rows;
+		swidth = t->abs.width / cols;
+		sheight = t->abs.height / rows;
 		atlas = a;
 		pos = t->atlas;
 		twidth = pos.width / static_cast<float>(cols);
@@ -221,13 +237,13 @@ struct VertexV2FT2FC4UI
 
 struct VBOStructureHandle
 {
-	int texture;
 	int start;
 	int count;
+	GLuint atlas;
 	GLuint shader;
 	VBOStructureHandle* next;
 	VBOStructureHandle(int tex, int shd, int s){
-		texture = tex;
+		atlas = tex;
 		shader = shd;
 		start = s;
 		count = 1;
@@ -238,17 +254,13 @@ struct VBOStructureHandle
 
 struct Sprite
 {
-	//int picture;
-	float width;
-	float height;
-	float posx;
-	float posy;
+	int texid;
+	int picture;
 	unsigned int flags; // 1 - visible
 						// 2 - centred
 						// 4 - fixed
-	int texid;
-	int picture;
 	GLuint shader;
+	rect2f rect;
 	TextureInfo* tex;
 	vertex3farr vertices;
 	coord2farr coordinates;
@@ -270,7 +282,6 @@ struct Sprite
 	Sprite(){
 		tex = NULL;
 		picture = texid = 0;
-		posx = posy = width = height = 0;
 		flags = 0b1; // visible only
 		shader = 0;
 	}
@@ -290,11 +301,11 @@ struct Sprite
 	void resize( float w, float h ){
 		if( w >= 0 ){
 			vertices.rb.x = vertices.rt.x = vertices.lb.x + w;
-			width = w;
+			rect.width = w;
 		}
 		if( h >= 0 ){
 			vertices.rt.y = vertices.lt.y = vertices.lb.y + h;
-			height = h;
+			rect.height = h;
 		}
 	}
 
@@ -312,8 +323,8 @@ struct Sprite
 	void setPosition( float x, float y ){
 		float width = vertices.rb.x - vertices.lb.x;
 		float height = vertices.rt.y - vertices.lb.y; // FIXME: lb is rb?
-		posx = x;
-		posy = y;
+		rect.x = x;
+		rect.y = y;
 		if( isCentered() ){
 			float halfwidth = width/2;
 			float halfheight = height/2;

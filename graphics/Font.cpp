@@ -6,6 +6,7 @@
 
 #include "Font.h"
 #include "Render.h"
+#include "graphics/render/Atlas.h"
 
 #include "safestring.h"
 #include "debug.h"
@@ -135,7 +136,7 @@ bool font_data::load( const char * fname, unsigned int height ) {
 	baselineY = bbox.yMax >> 6;
 
 	int w, h;
-	w = h = RenderManager::Instance()->getAtlasMax();
+	w = h = TextureAtlas::getAtlasMax();
 	int sw = (w / cellWidth) * cellWidth; // make width multiple
 	int cols = w / cellWidth;
 	if( cols < 1 ) cols = 1;
@@ -148,9 +149,9 @@ bool font_data::load( const char * fname, unsigned int height ) {
 	char name[namelen];
 	snprintf( name, namelen - 1, "%s %s %3d", face->family_name, face->style_name, height );
 	// Add texture to render manager
-	RenderManager::Instance()->AddTexture( name, tex, sw, sh, cols, rows, 0, lastLine );
+	TextureAtlas::addTexture( name, tex, sw, sh, cols, rows, 0, lastLine );
 	// Build texture atlas
-	RenderManager::Instance()->CreateAtlas( &atlasHandle, &w, &h, 0 );
+	TextureAtlas::create( &atlasHandle, w, h );
 	lastLine += rows * cellHeight;
 	delete tex;
 

@@ -2,7 +2,7 @@
 #define DYNAMIC_UNIT_H
 
 #include "Animated.h"
-#include "map.h"
+#include "map/Map.h"
 #include <map>
 #include <vector>
 
@@ -16,7 +16,7 @@ public:
 	void eat( Unit* Victim );
 
 	virtual bool Create( int id );
-	virtual void Die( );
+	virtual void die( );
 
 	virtual void levelUp( int addlevel );
 

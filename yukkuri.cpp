@@ -10,7 +10,8 @@
 #include "interface/Interface.h"
 #include "units/unitmanager.h"
 #include "daytime.h"
-#include "map.h"
+#include "map/Region.h"
+#include "map/Map.h"
 #include "debug.h"
 using namespace Debug;
 
@@ -36,13 +37,12 @@ bool Yukkuri::Init()
 
 bool Yukkuri::AdditionalInit()
 {
-	extern Map map;
 	extern LuaScript* luaScript;
 
 	debug( MAIN, "Additional Init\n" );
 
-	map.LoadTiles( );
-	map.Init( );
+	Region::init();
+	Map::init( );
 
 	DayTime::init();
 
@@ -69,12 +69,10 @@ void Yukkuri::Think( const int& ElapsedTime )
 
 void Yukkuri::Render( )
 {
-	extern Map map;
-
 	RenderManager::Instance()->CleanGLScene( );
 
 	// Display slick graphics on screen
-	map.onDraw( );
+	Map::onDraw( );
 
 	//Draw to screen
 	RenderManager::Instance()->DrawGLScene( );
@@ -112,6 +110,8 @@ void Yukkuri::End()
 {
 	extern std::vector<Proto*> Prototypes;
 	clear_vector( &Prototypes );
+
+	Map::clean( );
 
 	Interface::clean( );
 

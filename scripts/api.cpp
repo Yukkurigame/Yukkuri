@@ -6,8 +6,8 @@
 
 #include "api.h"
 #include "Bindings.h"
-#include "unitmanager.h"
-#include "map.h"
+#include "map/Region.h"
+
 #include <string>
 #include <cstring>
 #include <dirent.h>
@@ -93,10 +93,9 @@ int scriptApi::SetBindings( lua_State* L )
 int scriptApi::LoadMapRegion(lua_State *L)
 {
 	std::string name;
-	extern Map map;
 	luaL_argcheck( L, lua_isstring( L, 1 ), 1, "Parameter not given." );
 	name = lua_tostring( L, 1 );
-	map.Load( name );
+	Region::load( name );
 	return 0;
 }
 

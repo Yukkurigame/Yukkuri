@@ -14,7 +14,7 @@ Player::Player()
 void Player::Die( )
 {
 	if( conf.playerDies ){
-		DynamicUnit::Die( );
+		DynamicUnit::die( );
 	}
 }
 

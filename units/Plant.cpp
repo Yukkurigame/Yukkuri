@@ -15,7 +15,7 @@ void Plant::update( const int& dt )
 {
 	AnimatedUnit::update( dt );
 	if( Parameters["hp"] <= 0 ){
-		Delete( );
+		die( );
 	}
 }
 

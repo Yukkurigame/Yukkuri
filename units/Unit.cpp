@@ -17,7 +17,7 @@ Unit::Unit()
 	Z = 1;
 	UnitName = "";
 	Type = "";
-	Deleted = false;
+	flags = 0;
 }
 
 
@@ -53,17 +53,16 @@ bool Unit::Create( int id )
 	return true;
 }
 
-void Unit::Delete( )
-{
-	Deleted = true;
-}
-
 void Unit::update( const int& )
 {
-	if( dist( UnitManager::GetPlayer( ) ) > 2000 ){
-		this->Delete();
+	if( isDeleted() )
 		return;
+	//if( HP < 0 )
+	//	return die();
+	if( dist( UnitManager::GetPlayer( ) ) > 2000 ){
+		return setDeleted();
 	}
+
 
 	if( !Actions.loaded )
 		return;
@@ -226,14 +225,6 @@ void Unit::setUnitParameter( std::string name, float value )
 void Unit::increaseUnitParameter( std::string name, float value )
 {
 	Parameters[name] += value;
-}
-
-
-float* Unit::getUnitpParameter( std::string name )
-{
-	//if( Parameters.count(name) > 0 )
-	return &Parameters[name];
-	//return NULL;
 }
 
 float Unit::dist( Unit* target )

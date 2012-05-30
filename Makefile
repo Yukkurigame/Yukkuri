@@ -13,30 +13,34 @@ UNITSDIR= units/
 GRAPHICSDIR= graphics/
 WIDGETSDIR= widgets/
 INTERFACEDIR= interface/
+MAPDIR = map/
 3RDPARTYDIR= 3rdparty/
 
 
-DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1
+DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1 -DGL_GLEXT_PROTOTYPES=1
 CFLAGS= -O0 -g -Wall $(DEFINES)
 
 
 UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp Unit.cpp Animated.cpp Plant.cpp \
 		 Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp
+RENDER = Atlas.cpp ElasticBox.cpp GLHelpers.cpp TextureArray.cpp
 GRAPHICS = GraphicsTypes.cpp Font.cpp Text.cpp sdl_graphics.cpp gl_extensions.cpp gl_shader.cpp \
-		   ElasticBox.cpp Animation.cpp Camera.cpp Render.cpp pngfuncs.c 
+		   Animation.cpp Camera.cpp Render.cpp pngfuncs.c $(addprefix render/, $(RENDER))
 SCRIPTSAPI = UnitManager.cpp Interface.cpp Widgets.cpp ThreadManager.cpp CameraApi.cpp
 SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp proto.cpp \
 		  api.cpp $(addprefix $(SCRIPTSAPIDIR), $(SCRIPTSAPI))
 WIDGETS = Widget.cpp WidgetText.cpp WidgetBar.cpp
 INTERFACE = Interface.cpp $(addprefix $(WIDGETSDIR), $(WIDGETS))
+MAP = Tiles.cpp Region.cpp Map.cpp
 3RDPARTY = CUData.cpp CUDataUser.cpp CUDataTemplates.cpp LuaPusher.cpp timer/TimerManager.cpp
 
 
-SRCS =   main.cpp yukkuri.cpp config.cpp engine.cpp Bindings.cpp BindFunctions.cpp map.cpp \
+SRCS =   main.cpp yukkuri.cpp config.cpp engine.cpp Bindings.cpp BindFunctions.cpp \
          $(addprefix $(SCRIPTSDIR), $(SCRIPTS)) \
          $(addprefix $(UNITSDIR), $(UNITS)) \
          $(addprefix $(GRAPHICSDIR), $(GRAPHICS)) \
          $(addprefix $(INTERFACEDIR), $(INTERFACE)) \
+         $(addprefix $(MAPDIR), $(MAP)) \
          $(addprefix $(3RDPARTYDIR), $(3RDPARTY)) \
          daytime.cpp
 
@@ -84,7 +88,8 @@ $(PROGNAME) : | $(OBJDIR) $(GCH) $(OBJS)
 
 $(OBJDIR):
 	mkdir -p $(addprefix $(OBJDIR), $(SCRIPTSDIR) $(SCRIPTSDIR)$(SCRIPTSAPIDIR) $(UNITSDIR) \
-	 $(GRAPHICSDIR) $(INTERFACEDIR) $(INTERFACEDIR)$(WIDGETSDIR) $(3RDPARTYDIR) $(3RDPARTYDIR)timer)
+	 $(GRAPHICSDIR) $(GRAPHICSDIR)render/ $(INTERFACEDIR) $(INTERFACEDIR)$(WIDGETSDIR) \
+	 $(MAPDIR) $(3RDPARTYDIR) $(3RDPARTYDIR)timer)
 
 clean: cleanheaders cleanobjs cleanprog cleandirs
 

@@ -111,7 +111,7 @@ void UnitManager::RemoveUnit( Unit* u )
 {
 	if( !u )
 		return;
-	u->Delete();
+	u->setDeleted();
 	RemovedUnits.push_back( u );
 }
 
@@ -206,9 +206,10 @@ void UnitManager::tick( const int& dt )
 	Unit* u;
 	FOREACHIT( Units ){
 		u = it->second;
-		u->update( dt );
 		if( u->isDeleted() )
 			RemovedUnits.push_back( u );
+		else
+			u->update( dt );
 	}
 	BatchRemove();
 }

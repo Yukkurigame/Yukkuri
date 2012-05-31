@@ -50,13 +50,13 @@ VBOStructureHandle* TextureArray::prepareVBO( int* c, std::vector< Sprite* >& sp
 		s = *(it);
 		if( s == NULL || !s->isVisible() )
 			continue;
-		/*if( s->texid != lastText ){
+		/*if( s->atlas != lastText ){
 			if( VBOHandlesCount + 1 > VBOHandlesSize ){
 				VBOHandlesSize = (VBOHandlesCount + 1) * 2;
 				VBOHandles = (VBOStructureHandle*)realloc( VBOHandles, sizeof(VBOStructureHandle) * VBOHandlesSize );
 			}
 			VBOStructureHandle* sh = &VBOHandles[VBOHandlesCount];
-			sh->texture = lastText = s->texid;
+			sh->atlas = lastText = s->atlas;
 			sh->start = count;
 			if( VBOHandlesCount )
 				VBOHandles[VBOHandlesCount - 1].count = count - VBOHandles[VBOHandlesCount - 1].start;
@@ -65,9 +65,9 @@ VBOStructureHandle* TextureArray::prepareVBO( int* c, std::vector< Sprite* >& sp
 
 		// TODO: atlas instead of texture
 		if( !v ){
-			first = v = new VBOStructureHandle(s->texid, s->shader, count);
-		}else if( s->texid != v->atlas || s->shader != v->shader ){
-			v->next = new VBOStructureHandle(s->texid, s->shader, count);
+			first = v = new VBOStructureHandle(s->atlas, s->shader, count);
+		}else if( s->atlas != v->atlas || s->shader != v->shader ){
+			v->next = new VBOStructureHandle( s->atlas, s->shader, count );
 			v->count = count - v->start;
 			v = v->next;
 		}
@@ -99,15 +99,15 @@ VBOStructureHandle* TextureArray::prepareVBO( int* c, Sprite* sprites, unsigned 
 	int count = 0;
 	VBOStructureHandle* v = NULL;
 	VBOStructureHandle* first = NULL;
-	for( int i = 0; i < scount; ++i ){
+	for( unsigned int i = 0; i < scount; ++i ){
 		Sprite& s = sprites[i];
 		if( !s.isVisible() )
 			continue;
 		// TODO: atlas instead of texture
 		if( !v ){
-			first = v = new VBOStructureHandle( s.texid, s.shader, count );
-		}else if( s.texid != v->atlas || s.shader != v->shader ){
-			v->next = new VBOStructureHandle( s.texid, s.shader, count);
+			first = v = new VBOStructureHandle( s.atlas, s.shader, count );
+		}else if( s.atlas != v->atlas || s.shader != v->shader ){
+			v->next = new VBOStructureHandle( s.atlas, s.shader, count );
 			v->count = count - v->start;
 			v = v->next;
 		}
@@ -202,73 +202,13 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, S
 		!GLHelpers::SetUpView( width, height ) )
 		return false;
 
-	VertexV2FT2FC4UI* verticles = (VertexV2FT2FC4UI*)malloc( sizeof(VertexV2FT2FC4UI) * count * 4 );
+	VertexV2FT2FC4UI* vertices = (VertexV2FT2FC4UI*)malloc( sizeof(VertexV2FT2FC4UI) * count * 4 );
 	int vboc = 0;
-	VBOStructureHandle* temp = NULL;
-	VBOStructureHandle* vbostructure = prepareVBO( &vboc, sprites, count, verticles );
+	VBOStructureHandle* vbostructure = prepareVBO( &vboc, sprites, count, vertices );
 
-	GLuint VBOHandle = 0;
-	glGenBuffers(1, &VBOHandle);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnable(GL_TEXTURE_2D);
-	glBindBuffer( GL_ARRAY_BUFFER, VBOHandle );
+	GLHelpers::DrawVBO( vboc, vbostructure, vertices );
 
-	glBufferData( GL_ARRAY_BUFFER, sizeof(VertexV2FT2FC4UI) * count, verticles, GL_STREAM_DRAW );
-
-	glVertexPointer( 3, GL_FLOAT, sizeof(VertexV2FT2FC4UI), 0 );
-	glTexCoordPointer( 2, GL_FLOAT, sizeof(VertexV2FT2FC4UI), (void*)0 + sizeof(s3f) );
-	glColorPointer( 4, GL_UNSIGNED_BYTE, sizeof(VertexV2FT2FC4UI), (void*)0 + sizeof(s3f) + sizeof(s2f) );
-
-	while(vbostructure != NULL){
-		glActiveTexture( GL_TEXTURE0 );
-		glBindTexture( GL_TEXTURE_2D, RenderManager::Instance()->GetTextureByNumber( vbostructure->atlas)->atlas );
-		glUseProgram( vbostructure->shader );
-		glDrawArrays(GL_QUADS, vbostructure->start, vbostructure->count);
-		//Clean vbos
-		temp = vbostructure;
-		vbostructure = vbostructure->next;
-		delete temp;
-	}
-	glUseProgram( 0 );
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-#ifdef DEBUG_DRAW_RECTANGLES
-	for( int i = 0; i < count; i = i + 4 )
-		glDrawArrays(GL_LINE_LOOP, i, 4);
-#endif
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glDisable(GL_TEXTURE_2D);
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
-
-	glDeleteBuffers( 1, &VBOHandle );
-
-	// Draw textures into atlas.
-	/*glEnable(GL_TEXTURE_2D);
-	for( unsigned int i = 0; i < count; i++ ){
-		Sprite& s = sprites[i];
-		glBindTexture( GL_TEXTURE_2D, s.tex->atlas );
-		glBegin(GL_QUADS);
-		{
-			//Bottom-left vertex
-			glTexCoord2f( s.coordinates.lb.x, s.coordinates.lb.y);
-			glVertex2f( s.vertices.lb.x, s.vertices.lb.y);
-			//Bottom-right vertex
-			glTexCoord2f( s.coordinates.rb.x, s.coordinates.rb.y );
-			glVertex2f( s.vertices.rb.x, s.vertices.rb.y );
-			//Top-right vertex
-			glTexCoord2f( s.coordinates.rt.x, s.coordinates.rt.y );
-			glVertex2f( s.vertices.rt.x, s.vertices.rt.y );
-			//Top-left vertex
-			glTexCoord2f( s.coordinates.lt.x, s.coordinates.lt.y );
-			glVertex2f( s.vertices.lt.x, s.vertices.lt.y );
-		}
-		glEnd();
-	}*/
+	free( vertices );
 
 	// Reset FBO
 	GLHelpers::ClearView( );

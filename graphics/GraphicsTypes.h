@@ -256,6 +256,7 @@ struct Sprite
 {
 	int texid;
 	int picture;
+	GLuint atlas;		// Texture atlas, same as in tex probably
 	unsigned int flags; // 1 - visible
 						// 2 - centred
 						// 4 - fixed
@@ -281,7 +282,7 @@ struct Sprite
 
 	Sprite(){
 		tex = NULL;
-		picture = texid = 0;
+		picture = atlas = texid = 0;
 		flags = 0b1; // visible only
 		shader = 0;
 	}

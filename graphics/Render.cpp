@@ -12,6 +12,7 @@
 #include "graphics/Camera.h"
 #include "graphics/render/Atlas.h"
 #include "graphics/render/GLHelpers.h"
+#include "graphics/render/TextureArray.h"
 
 #include "scripts/LuaConfig.h"
 
@@ -185,10 +186,12 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 
 	if( texture_id < 0 || texture_id >= texturesCount ){
 		debug( GRAPHICS, "Bad texture id passed.\n" );
-		texture_id = 0;
 		sprite->tex = NULL;
+		sprite->atlas = 0;
+
 	}else{
 		sprite->tex = &textures[texture_id];
+		sprite->atlas = sprite->tex->atlas;
 	}
 
 	if(centered)
@@ -214,6 +217,7 @@ Sprite* RenderManager::CreateGLSprite( Sprite* osprite )
 
 	Sprite* sprite = new Sprite();
 	sprite->texid = osprite->texid;
+	sprite->atlas = osprite->atlas;
 	sprite->tex = osprite->tex;
 
 	sprite->flags = osprite->flags;
@@ -276,56 +280,11 @@ void RenderManager::DrawGLScene()
 	Camera::Update();
 	MoveGlScene();
 
-	VBOStructureHandle* temp = NULL;
-	int count;
-	VBOStructureHandle* vbostructure = PrepareVBO(&count);
+	//VBOStructureHandle* temp = NULL;
+	int count = 0;
+	VBOStructureHandle* vbostructure = TextureArray::prepareVBO( &count, GLSprites, verticles );
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnable(GL_TEXTURE_2D);
-	glBindBuffer( GL_ARRAY_BUFFER, VBOHandle );
-
-	// VBO + GL_STREAM_DRAW == +10 fps
-	glBufferData(GL_ARRAY_BUFFER, sizeof(VertexV2FT2FC4UI) * count, verticles, GL_STREAM_DRAW);
-
-	// Определяем указатели.
-	//glVertexPointer(3, GL_FLOAT, sizeof(VertexV2FT2FC4UI), &(verticles[0].verticles));
-	//glTexCoordPointer(2, GL_FLOAT, sizeof(VertexV2FT2FC4UI), &(verticles[0].coordinates));
-	//glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(VertexV2FT2FC4UI), &(verticles[0].color));
-	glVertexPointer(3, GL_FLOAT, sizeof(VertexV2FT2FC4UI), 0);
-	glTexCoordPointer(2, GL_FLOAT, sizeof(VertexV2FT2FC4UI), (void*)0 + sizeof(s3f));
-	glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(VertexV2FT2FC4UI), (void*)0 + sizeof(s3f) + sizeof(s2f));
-
-	//for( int i=0; i < VBOHandlesCount; i++ ){
-	while(vbostructure != NULL){
-		//glBindTexture(GL_TEXTURE_2D, textures[VBOHandles[i].texture].atlas);
-		glActiveTexture( GL_TEXTURE0 );
-		glBindTexture(GL_TEXTURE_2D, textures[vbostructure->atlas].atlas);
-		glUseProgram( vbostructure->shader );
-
-		//glDrawArrays(GL_QUADS, VBOHandles[i].start, VBOHandles[i].count);
-		glDrawArrays(GL_QUADS, vbostructure->start, vbostructure->count);
-		//StopShader(vbostructure->shaders);
-
-		//Clean vbos
-		temp = vbostructure;
-		vbostructure = vbostructure->next;
-		delete temp;
-	}
-	glUseProgram( 0 );
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-#ifdef DEBUG_DRAW_RECTANGLES
-	for( int i = 0; i < count; i = i + 4 )
-		glDrawArrays(GL_LINE_LOOP, i, 4);
-#endif
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//glDisable(GL_TEXTURE_2D);
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
+	GLHelpers::DrawVBO( count, vbostructure, verticles );
 
 	//TestDrawAtlas(-2500, -1000, 10);
 

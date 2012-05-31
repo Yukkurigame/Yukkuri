@@ -12,6 +12,9 @@
 #include "debug.h"
 
 
+#define BUFFER_OFFSET(i) ((char*)NULL + (i))
+
+
 /*	This function creates new opengl texture. If texture is exists it will be cleared.
  *	ahandle - pointer to texture id
  *	width, height - texture size
@@ -85,6 +88,58 @@ bool GLHelpers::ClearView( )
 }
 
 
+/*	This function draws vertex buffer object
+ * 	vboc - vertices count
+ * 	vbostructure - linked list of vbo description
+ * 	vertices - array of vertices, coordinates and color
+ */
+void GLHelpers::DrawVBO( int vboc, VBOStructureHandle* vbostructure, VertexV2FT2FC4UI* vertices )
+{
+	VBOStructureHandle* temp = NULL;
+	GLuint VBOHandle = 0;
+
+	glGenBuffers(1, &VBOHandle);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glEnable(GL_TEXTURE_2D);
+	glBindBuffer( GL_ARRAY_BUFFER, VBOHandle );
+
+	// VBO + GL_STREAM_DRAW == +10 fps
+	glBufferData( GL_ARRAY_BUFFER, sizeof(VertexV2FT2FC4UI) * vboc, vertices, GL_STREAM_DRAW );
+
+	glVertexPointer( 3, GL_FLOAT, sizeof(VertexV2FT2FC4UI), 0 );
+	glTexCoordPointer( 2, GL_FLOAT, sizeof(VertexV2FT2FC4UI), BUFFER_OFFSET(sizeof(s3f)) );
+	glColorPointer( 4, GL_UNSIGNED_BYTE, sizeof(VertexV2FT2FC4UI), BUFFER_OFFSET(sizeof(s3f) + sizeof(s2f)) );
+
+	while(vbostructure != NULL){
+		glActiveTexture( GL_TEXTURE0 );
+		glBindTexture( GL_TEXTURE_2D, vbostructure->atlas );
+		glUseProgram( vbostructure->shader );
+		glDrawArrays(GL_QUADS, vbostructure->start, vbostructure->count);
+		//Clean vbos
+		temp = vbostructure;
+		vbostructure = vbostructure->next;
+		delete temp;
+	}
+	glUseProgram( 0 );
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+#ifdef DEBUG_DRAW_RECTANGLES
+	for( int i = 0; i < count; i = i + 4 )
+		glDrawArrays(GL_LINE_LOOP, i, 4);
+#endif
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glDisable(GL_TEXTURE_2D);
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
+
+	glDeleteBuffers( 1, &VBOHandle );
+}
+
+
 /* This function creates new FBO and bind texture to it
  * ahandle - texture id. If texture is 0 it will be generated
  * FBOHandle - FBO id
@@ -145,8 +200,6 @@ bool GLHelpers::UpdateTexture( GLuint basetex, Texture* copysrc, int posx, int p
 	return GLHelpers::UnbindFBO( FBOHandle );
 }
 
-
-#define BUFFER_OFFSET(i) ((char*)NULL + (i))
 
 /* This function copy texture part to base texture using PBO.
  * basetex - opengl id of base texture.

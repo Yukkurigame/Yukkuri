@@ -144,6 +144,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 		Sprite& s = sprites[tile];
 		s.texid = t.Type->texture;
 		s.tex = RenderManager::Instance()->GetTextureByNumber( s.texid );
+		s.atlas = s.tex->atlas;
 		s.setPosition(
 				atlasPos.x + col * conf.mapTileSize + ( row % 2 ? (conf.mapTileSize >> 1) : 0 ),
 				atlasPos.y + row * conf.mapTileSize - row * ( 3 * (conf.mapTileSize >> 2) ) );

@@ -74,7 +74,7 @@ private:
 	RenderManager& operator= ( const RenderManager& );
 	static RenderManager* graph;
 
-	int texturesCount;
+	unsigned int texturesCount;
 	TextureInfo* textures;
 
 
@@ -96,7 +96,6 @@ private:
 	GLuint VBOHandle;
 
 	// Returns count of breakings
-	VBOStructureHandle* PrepareVBO( int* count );
 	//int VBOHandlesCount;
 	//int VBOHandlesSize;
 	//VBOStructureHandle* VBOHandles;

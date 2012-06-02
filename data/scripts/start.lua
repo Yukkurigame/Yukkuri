@@ -40,9 +40,9 @@ end
 toggle_interface()
 
 Thread.resume(Thread.newThread(function()
-	local spawner = require("data/scripts/spawner"):new()
-	while true do
-		spawner:process()
-		Thread.wait(500)
-	end
+	-- local spawner = require("data/scripts/spawner"):new()
+	-- while true do
+	--	spawner:process()
+	--	Thread.wait(500)
+	-- end
 end))

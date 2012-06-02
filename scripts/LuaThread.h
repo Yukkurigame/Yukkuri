@@ -11,7 +11,7 @@
 #include <list>
 #include "types.h"
 
-//FIXME: Struct maybe
+
 struct LuaThread
 {
 	unsigned int ThreadId;

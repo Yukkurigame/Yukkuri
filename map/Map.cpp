@@ -23,6 +23,8 @@ namespace {
 
 	std::vector< MapTile* > Tilesvec;
 
+	std::vector< MapChunk* > chunkVec;7
+
 }
 
 

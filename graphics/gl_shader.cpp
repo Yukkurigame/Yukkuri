@@ -15,6 +15,9 @@
 #include "debug.h"
 
 
+extern MainConfig conf;
+
+
 namespace {
 
 	char* filetobuf( const char* file )
@@ -180,7 +183,6 @@ GLuint Shaders::getProgram( std::string filename )
 	std::map< std::string, GLuint >::iterator fit = shaders.find( filename );
 	if( fit != shaders.end() )
 		return fit->second;
-	extern MainConfig conf;
 	GLuint prog = createProgram( conf.shadersPath + filename );
 	if( prog )
 		shaders[filename] = prog;

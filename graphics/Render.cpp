@@ -3,10 +3,8 @@
  *
  *  Created on: 19.03.2012
  */
-
-#include "graphics/gl_extensions.h"
-
 #include "Render.h"
+#include "graphics/gl_extensions.h"
 #include "graphics/gl_shader.h"
 #include "graphics/sdl_graphics.h"
 #include "graphics/Camera.h"
@@ -16,7 +14,6 @@
 
 #include "scripts/LuaConfig.h"
 
-
 #include <algorithm>
 
 #include "config.h"
@@ -24,9 +21,6 @@
 #include "debug.h"
 #include "hacks.h"
 #include "safestring.h"
-
-using std::string;
-using namespace Debug;
 
 
 RenderManager* RenderManager::graph = NULL;
@@ -153,7 +147,7 @@ void RenderManager::PushTextures( std::vector < TextureProxy* >& tarray, GLuint 
 
 int RenderManager::GetTextureNumberById( std::string id )
 {
-	for( int i = 0; i < texturesCount; ++i ){
+	for( unsigned int i = 0; i < texturesCount; ++i ){
 		if( id.compare(textures[i].id) == 0 )
 			return i;
 	}
@@ -185,7 +179,7 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 	sprite->texid = texture_id;
 
 	if( texture_id < 0 || texture_id >= texturesCount ){
-		debug( GRAPHICS, "Bad texture id passed.\n" );
+		Debug::debug( Debug::GRAPHICS, "Bad texture id passed.\n" );
 		sprite->tex = NULL;
 		sprite->atlas = 0;
 
@@ -327,7 +321,7 @@ RenderManager::~RenderManager( )
 {
 	TextureAtlas::clean( );
 	if( textures ){
-		for( int i = 0; i < texturesCount; ++i )
+		for( unsigned int i = 0; i < texturesCount; ++i )
 			delete[] textures[i].id;
 		free(textures);
 	}
@@ -338,7 +332,7 @@ RenderManager::~RenderManager( )
 
 
 
-Texture* RenderManager::GetGLTexture( string name )
+Texture* RenderManager::GetGLTexture( std::string name )
 {
 	std::map < std::string, Texture* >::iterator it;
 	it = texturesCache.find(name);
@@ -348,7 +342,7 @@ Texture* RenderManager::GetGLTexture( string name )
 	return NULL;
 }
 
-Texture* RenderManager::LoadGLTexture( string name )
+Texture* RenderManager::LoadGLTexture( std::string name )
 {
 	Texture* tex;
 	SDL_Surface* surface;
@@ -363,7 +357,7 @@ Texture* RenderManager::LoadGLTexture( string name )
 		surface = SDLGraphics::LoadImage( name.c_str() );
 
 		if( !surface ){
-			debug( GRAPHICS, name + " not loaded.\n" );
+			Debug::debug( Debug::GRAPHICS, name + " not loaded.\n" );
 			return NULL;
 		}
 
@@ -381,7 +375,7 @@ Texture* RenderManager::LoadGLTexture( string name )
 	return tex;
 }
 
-void RenderManager::AddGLTexture( string name, Texture* texture )
+void RenderManager::AddGLTexture( std::string name, Texture* texture )
 {
 	Texture* cached;
 	if( !texture )
@@ -404,8 +398,7 @@ void RenderManager::FreeGLTexture( Texture* tex )
 
 void RenderManager::ClearGLTexturesCache( )
 {
-	for( std::map< string, Texture* >::iterator it = texturesCache.begin(), end = texturesCache.end();
-			it != end; ++it ){
+	FOREACHIT( texturesCache ){
 		FreeGLTexture( it->second );
 		it->second = NULL;
 	}
@@ -421,76 +414,6 @@ void RenderManager::ExtendVerticles( )
 	verticles = (VertexV2FT2FC4UI*)realloc( verticles, sizeof(VertexV2FT2FC4UI) * verticlesSize * 4 );
 }
 
-
-inline bool compareSprites( Sprite* s1, Sprite* s2 )
-{
-	if( s1->vertices.rt.z == s2->vertices.rt.z ){
-		if( s1->rect.y == s2->rect.y ){
-			return ( s1->rect.x > s2->rect.x );
-		}
-		return ( s1->rect.y > s2->rect.y );
-	}
-	return ( s1->vertices.rt.z < s2->vertices.rt.z );
-}
-
-
-VBOStructureHandle* RenderManager::PrepareVBO( int* c )
-{
-	sort(GLSprites.begin(), GLSprites.end(), compareSprites);
-	int count = 0;
-	Sprite* s;
-	//VBOHandlesCount = 0;
-	VBOStructureHandle* v = NULL;
-	VBOStructureHandle* first = NULL;
-	//int lastText = -1;
-	//memset( verticles, '0', sizeof( VertexV2FT2FC4UI ) * verticlesSize );
-#ifdef RENDER_VISIBLE
-	extern MainConfig conf;
-#endif
-	for( std::vector< Sprite* >::iterator it = GLSprites.begin(), end = GLSprites.end(); it != end; ++it ){
-		s = *(it);
-		if( s == NULL || !s->isVisible() )
-			continue;
-#ifdef RENDER_VISIBLE
-		vertex3farr& pos = s->vertices;
-		if( !s->isFixed() && ( pos.lb.x + vpoint.x < -100 || pos.rb.x + vpoint.x > conf.windowWidth + 100 ||
-			pos.lb.y + vpoint.y < -100 || pos.lt.y + vpoint.y > conf.windowHeight + 100 ) )
-			continue;
-#endif
-		/*if( s->texid != lastText ){
-			if( VBOHandlesCount + 1 > VBOHandlesSize ){
-				VBOHandlesSize = (VBOHandlesCount + 1) * 2;
-				VBOHandles = (VBOStructureHandle*)realloc( VBOHandles, sizeof(VBOStructureHandle) * VBOHandlesSize );
-			}
-			VBOStructureHandle* sh = &VBOHandles[VBOHandlesCount];
-			sh->texture = lastText = s->texid;
-			sh->start = count;
-			if( VBOHandlesCount )
-				VBOHandles[VBOHandlesCount - 1].count = count - VBOHandles[VBOHandlesCount - 1].start;
-			VBOHandlesCount++;
-		}*/
-
-		// TODO: atlas instead of texture
-		if( !v ){
-			first = v = new VBOStructureHandle(s->texid, s->shader, count);
-		}else if( s->texid != v->atlas || s->shader != v->shader ){
-			v->next = new VBOStructureHandle(s->texid, s->shader, count);
-			v->count = count - v->start;
-			v = v->next;
-		}
-
-		verticles[count++].set( &s->vertices.lb, &s->coordinates.lt, &s->clr );
-		verticles[count++].set( &s->vertices.rb, &s->coordinates.rt, &s->clr );
-		verticles[count++].set( &s->vertices.rt, &s->coordinates.rb, &s->clr );
-		verticles[count++].set( &s->vertices.lt, &s->coordinates.lb, &s->clr );
-	}
-	//if( VBOHandlesCount )
-	//	VBOHandles[VBOHandlesCount - 1].count = count - VBOHandles[VBOHandlesCount - 1].start;
-	if( v != NULL)
-		v->count = count - v->start;
-	(*c) = count;
-	return first;
-}
 
 
 

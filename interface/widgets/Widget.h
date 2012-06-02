@@ -62,7 +62,7 @@ public:
 	bool bindValue( std::string* val );
 
 
-	//FIXME: to many virtual funcs
+	//FIXME: too many virtual funcs
 	virtual void Update() {};
 
 	bool getVisible( ) { return visible; };

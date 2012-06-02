@@ -135,19 +135,21 @@ int Timer::AddInternalTimerEvent( ITimerEventPerformer* performer, UINT dt, UINT
 
 
 // Удаление события таймера с заданным action
-int Timer::DeleteTimerEvent(LuaRegRef action)
+int Timer::DeleteTimerEvent( LuaRegRef action )
 {
 	// Посик ближайшего подходящего события и его удаление
 	TimerEvent* t = NULL;
-	TEvIter it;
+	TEvIter tit = timerEvents.end();
 	FOREACHIT( timerEvents ){
-		t = *it;
-		if( t->action == action )
+		if( t->action == action ){
+			t = *it;
+			tit = it;
 			break;
+		}
 	}
 
-	if( it != timerEvents.end() ){
-		timerEvents.erase(it);
+	if( tit != timerEvents.end() ){
+		timerEvents.erase( tit );
 		if( t->IsPausable() ){
 			assert(nbPausableEvents);
 			nbPausableEvents--;
@@ -171,15 +173,17 @@ bool Timer::DeleteTimerEventById(UINT id)
 {
 	// Посик ближайшего подходящего события и его удаление
 	TimerEvent* t = NULL;
-	TEvIter it;
+	TEvIter tit = timerEvents.end();
 	FOREACHIT( timerEvents ){
-		t = *it;
-		if( t->id == id )
+		if( t->id == id ){
+			t = *it;
+			tit = it;
 			break;
+		}
 	}
 
-	if( it != timerEvents.end() ){
-		timerEvents.erase(it);
+	if( tit != timerEvents.end() ){
+		timerEvents.erase( tit );
 		if( t->IsPausable() ){
 			assert(nbPausableEvents);
 			nbPausableEvents--;

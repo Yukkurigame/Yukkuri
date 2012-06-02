@@ -97,7 +97,6 @@ void MapChunkManager::init(){
 	}
 	GLHelpers::CreateTexture( &atlas, tp.abs.width, tp.abs.height );
 	texture = RenderManager::Instance()->PushTexture( &tp, atlas );
-	atlas = RenderManager::Instance()->GetTextureByNumber( texture )->atlas;
 }
 
 // You must call this for request a new free space, not only checking for
@@ -119,7 +118,7 @@ signed int MapChunkManager::getFreeSpace( s2f& pos ){
 void MapChunkManager::returnSpace( unsigned int p )
 {
 	int c = 1;
-	for( int s = 0; s < p; s++ )
+	for( unsigned int s = 0; s < p; s++ )
 		c <<= 1;
 	state |= ~c; // Set occupied space as free
 }

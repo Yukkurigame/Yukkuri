@@ -254,8 +254,8 @@ struct VBOStructureHandle
 
 struct Sprite
 {
-	int texid;
-	int picture;
+	unsigned int texid;
+	unsigned int picture;
 	GLuint atlas;		// Texture atlas, same as in tex probably
 	unsigned int flags; // 1 - visible
 						// 2 - centred

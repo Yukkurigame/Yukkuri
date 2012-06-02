@@ -23,6 +23,8 @@ extern "C" {
 #endif
 
 
+extern MainConfig conf;
+
 namespace {
 
 	SDL_Surface* screen;
@@ -94,7 +96,6 @@ GLuint SDLGraphics::CreateGlTexture( SDL_Surface* surface )
 
 SDL_Surface* SDLGraphics::LoadImage( const char* name )
 {
-	extern MainConfig conf;
 	SDL_Surface* pImg = NULL;
 	char* path = (char*)malloc( conf.imagePath.size( ) + strlen( name ) + 1 );
 	strcpy( path, conf.imagePath.c_str() );

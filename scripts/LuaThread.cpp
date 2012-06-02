@@ -16,6 +16,8 @@
 #include "debug.h"
 using namespace Debug;
 
+extern LuaScript* luaScript;
+
 
 static int threadsCounter = 0;
 
@@ -52,7 +54,6 @@ LuaRegRef threadsManager::NewThread( lua_State* L )
 	lua_State *NL;
 	LuaThread* thread;
 	bool pausable;
-	extern LuaScript* luaScript;
 	if( !L )
 		return 0;
 	if( lua_gettop( L ) < 1 || lua_gettop( L ) > 2 ){
@@ -202,11 +203,10 @@ void threadsManager::RemoveThread( ThreadIter it )
 {
 	LuaThread* thread = *it;
 	if( thread != NULL ){
-		extern LuaScript* luaScript;
 		Timer::DeleteTimerEvent( thread->refKey );
 		luaScript->RemoveFromRegistry( thread->refKey );
-		delete thread, thread = NULL;
 		Debug::debug( Debug::SCRIPT, "Lua thread " + citoa(thread->ThreadId) + " removed.\n");
+		delete thread, thread = NULL;
 	}
 	threads.erase(it);
 }

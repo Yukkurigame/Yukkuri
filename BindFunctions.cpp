@@ -14,6 +14,9 @@
 
 #include "debug.h"
 
+extern Yukkuri Engine;
+
+
 static const BindCFunction func_refs[Binds::bndLast] = {
 	&Binds::dummy, &Binds::movePlayerUp, &Binds::movePlayerDown,
 	&Binds::movePlayerLeft, &Binds::movePlayerRight,
@@ -95,7 +98,6 @@ void Binds::screenshot( short down )
 
 void Binds::exit( short down )
 {
-	extern Yukkuri Engine;
 	Engine.Quit();
 }
 

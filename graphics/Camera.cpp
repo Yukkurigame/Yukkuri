@@ -65,8 +65,8 @@ float Camera::GetY( )
 
 void Camera::Move( float x, float y )
 {
-	float dx, dy;
-	dx = dy = 0;
+	//float dx, dy;
+	//dx = dy = 0;
 	pos.x -= x;
 	pos.y -= y;
 }

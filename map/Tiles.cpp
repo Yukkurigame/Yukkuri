@@ -21,9 +21,6 @@ extern MainConfig conf;
 
 MapChunkManager ChunkManager;
 
-// Power of two
-#define CHUNK_SIZE 3
-
 
 namespace {
 
@@ -72,15 +69,18 @@ void MapChunkManager::init(){
 	// Size of one chunk
 	// 0.5 of tile for second row offset
 	chunkSize.x = (conf.mapTileSize << CHUNK_SIZE) + (conf.mapTileSize >> 1);
-	// tile y is half of x; Each odd row located between two another
-	chunkSize.y = conf.mapTileSize << (CHUNK_SIZE - 1);
+	// tile y is half of x; Each odd row located between two another.
+	// Chunk have twice more tiles in height
+	chunkSize.y = conf.mapTileSize << CHUNK_SIZE;
 	// Calculate count of chunks in the screen
-	screenCount.x = conf.windowWidth >> ( lTileSize + CHUNK_SIZE - 1 );
-	screenCount.y = conf.windowHeight >> ( lTileSize + CHUNK_SIZE - 1 );
+	screen.width = conf.windowWidth >> ( lTileSize + CHUNK_SIZE - 1 );
+	screen.height = conf.windowHeight >> ( lTileSize + CHUNK_SIZE - 1 );
+	screen.x = screen.width / 2;
+	screen.y = screen.height / 2;
 	// Tiles in atlas
-	chunkTilesCount = 1 << ( CHUNK_SIZE + CHUNK_SIZE );
+	chunkTilesCount = 1 << ( CHUNK_SIZE + CHUNK_SIZE + 1);
 	// calculate size of atlas. CHUNK_SIZE is additional places here
-	chunksCount = next_p2(screenCount.x * screenCount.y + CHUNK_SIZE);
+	chunksCount = next_p2(screen.width * screen.height + CHUNK_SIZE);
 	state = 0; // No places occupied
 
 	TextureProxy tp;
@@ -123,16 +123,21 @@ void MapChunkManager::returnSpace( unsigned int p )
 	state |= ~c; // Set occupied space as free
 }
 
+#include <stdio.h>
 
 MapChunk::MapChunk( signed int x, signed int y )
 {
 	tiles = NULL;
 	sprite = NULL;
+	pos.x = realPos.x = x;
+	pos.y = realPos.y = y;
+	Map::fromChunkCoordinates( realPos );
 	unsigned int side = 1 << CHUNK_SIZE;
 	int picture = ChunkManager.getFreeSpace( atlasPos );
 	if( picture < 0 )
 		return;
-	sprite = RenderManager::Instance()->CreateGLSprite( x, y, 0, ChunkManager.chunkSize.x, ChunkManager.chunkSize.y, ChunkManager.texture, picture );
+	sprite = RenderManager::Instance()->CreateGLSprite( realPos.x, realPos.y, 0,
+			ChunkManager.chunkSize.x, ChunkManager.chunkSize.y, ChunkManager.texture, picture );
 	tiles = (MapTile*)malloc( sizeof(MapTile) * ChunkManager.chunkTilesCount );
 	unsigned int row = 0;
 	unsigned int col = 0;

@@ -8,6 +8,7 @@
 
 #include <math.h>
 #include <iterator>
+#include <algorithm>
 
 
 extern MainConfig conf;
@@ -21,9 +22,7 @@ namespace {
 	float posX;
 	float posY;
 
-	std::vector< MapTile* > Tilesvec;
-
-	std::vector< MapChunk* > chunkVec;7
+	std::vector< MapChunk* > chunkVec;
 
 }
 
@@ -66,10 +65,22 @@ bool Map::init( )
 
 void Map::clean()
 {
-	FOREACHIT( Tilesvec ){
-		deleteTile( *it );
+	FOREACHIT( chunkVec ){
+		deleteChunk( *it );
 	}
-	Tilesvec.clear( );
+	chunkVec.clear( );
+}
+
+void Map::toChunkCoordinates( int& x, int& y)
+{
+	x >>= Defines.lTileSize + CHUNK_SIZE;
+	y >>= Defines.lTileSize + CHUNK_SIZE;
+}
+
+void Map::fromChunkCoordinates( s2i& pos )
+{
+	pos.x <<= Defines.lTileSize + CHUNK_SIZE;
+	pos.y <<= Defines.lTileSize + CHUNK_SIZE;
 }
 
 
@@ -80,6 +91,12 @@ void Map::toMapCoordinates( int* mx, int* my )
 	y = ( 2 * (*my) - (*mx) ) / 2;
 	*mx = x >> Defines.lTileSize;
 	*my = y >> Defines.lTileSize;
+}
+
+void Map::toMapCoordinates( s2i& coord )
+{
+	coord.x = ( ( 2 * coord.y + coord.x ) / 2 ) >> Defines.lTileSize;
+	coord.y = ( ( 2 * coord.y - coord.x ) / 2 ) >> Defines.lTileSize;
 }
 
 void Map::fromMapCoordinates( int* x, int* y )
@@ -94,51 +111,51 @@ void Map::fromMapCoordinates( int* x, int* y )
 }
 
 
-void Map::toMapCoordinates( s2i& coord )
-{
-	signed int x, y;
-	x = ( 2 * coord.y + coord.x ) / 2;
-	y = ( 2 * coord.y - coord.x ) / 2;
-	coord.x = x >> Defines.lTileSize;
-	coord.y = y >> Defines.lTileSize;
-}
-
 void Map::fromMapCoordinates( s2i& coord )
 {
+	signed int mx;
 	coord.x <<= Defines.lTileSize;
 	coord.y <<= Defines.lTileSize;
-	coord.x = coord.x - coord.y;
+	mx = coord.x - coord.y;
 	coord.y = coord.x / 2 + coord.y / 2;
+	coord.x = mx;
 }
 
 
 MapChunk* Map::createChunk( signed int x, signed int y )
 {
 	MapChunk* chunk;
-	std::vector< MapChunk* >::iterator tit;
-	//tit = getTilev(x, y);
-	//if( tit != Tilesvec.end() ){
-	//	if( (*tit)->pos.x == x && (*tit)->pos.y == y )
-	//		return (*tit);
-	//}
+	ChunkListIter tit;
+	tit = getChunkIt( x, y );
+	if( tit != chunkVec.end() ){
+		if( (*tit)->pos.x == x && (*tit)->pos.y == y )
+			return (*tit);
+	}
 	//x, y
 	chunk = new MapChunk( x, y );
-	//Tilesvec.insert(tit, tile);
+	chunkVec.insert( tit, chunk );
 	Updated = true;
 	return chunk;
 }
 
-void Map::deleteTile( signed int x, signed int y )
+
+void Map::deleteChunk( MapChunk* chunk )
 {
-	MapTile* tile;
-	std::vector< MapTile* >::iterator tit;
-	tit = getTilev(x, y);
-	if( (*tit)->pos.x == x && (*tit)->pos.y == y )
-		Tilesvec.erase( tit );
-	tile = getTile( x, y );
-	if( !tile )
+	if( !chunk )
 		return;
-	deleteTile( tile );
+	Updated = true;
+	delete chunk;
+}
+
+
+void Map::deleteChunk( signed int x, signed int y )
+{
+	ChunkListIter tit;
+	tit = getChunkIt(x, y);
+	if( (*tit)->pos.x == x && (*tit)->pos.y == y ){
+		deleteChunk( *tit );
+		chunkVec.erase( tit );
+	}
 }
 
 void Map::deleteTile( MapTile* tile )
@@ -159,46 +176,46 @@ MapTile* Map::getTile( float x, float y )
 
 MapTile* Map::getTile( signed int x, signed int y )
 {
-	std::vector< MapTile* >::iterator m = getTilev(x, y);
-	if( m != Tilesvec.end() )
-		return *m;
+	//std::vector< MapTile* >::iterator m = getTilev(x, y);
+	//if( m != Tilesvec.end() )
+	//	return *m;
 	return NULL;
 }
 
-std::vector< MapTile* >::iterator Map::getTilev( signed int x, signed int y )
+ChunkListIter Map::getChunkIt( signed int x, signed int y )
 {
 	int first;
 	int last;
 	int mid;
-	int size = Tilesvec.size() - 1;
-	std::vector< MapTile* >::iterator begin;
+	int size = chunkVec.size() - 1;
+	ChunkListIter begin;
 
-	if( size <= 0 || Tilesvec[size]->pos.x < x )
-		return Tilesvec.end();
+	if( size <= 0 || chunkVec[size]->pos.x < x )
+		return chunkVec.end();
 
-	begin = Tilesvec.begin();
+	begin = chunkVec.begin();
 
-	if( Tilesvec[0]->pos.x <= x ){
+	if( chunkVec[0]->pos.x <= x ){
 		//First find x
 		first = 0;
 		last = size;
 		while( first < last ){
 			mid = first + ( last - first ) / 2;
-			if( x <= Tilesvec[mid]->pos.x )
+			if( x <= chunkVec[mid]->pos.x )
 				last = mid;
 			else
 				first = mid + 1;
 		}
 
-		if( Tilesvec[last]->pos.x == x ){
+		if( chunkVec[last]->pos.x == x ){
 			//Next find y
 			first = last;
-			while( last < size && Tilesvec[last]->pos.x == x ){
+			while( last < size && chunkVec[last]->pos.x == x ){
 				last++; //All elements with such x
 			}
 			while( first < last ){
 				mid = first + ( last - first ) / 2;
-				if( y <= Tilesvec[mid]->pos.y )
+				if( y <= chunkVec[mid]->pos.y )
 					last = mid;
 				else
 					first = mid + 1;
@@ -211,43 +228,73 @@ std::vector< MapTile* >::iterator Map::getTilev( signed int x, signed int y )
 	return begin;
 }
 
+ChunkListIter Map::getChunkXIt( signed int x )
+{
+	int first;
+	int last;
+	int mid;
+	int size = chunkVec.size() - 1;
+	ChunkListIter begin;
+
+	if( size <= 0 || chunkVec[size]->pos.x < x )
+		return chunkVec.end();
+
+	begin = chunkVec.begin();
+
+	if( chunkVec[0]->pos.x <= x ){
+		//First find x
+		first = 0;
+		last = size;
+		while( first < last ){
+			mid = first + ( last - first ) / 2;
+			if( x <= chunkVec[mid]->pos.x )
+				last = mid;
+			else
+				first = mid + 1;
+		}
+
+		std::advance( begin, last );
+	}
+
+	return begin;
+}
+
 void Map::createHTilesLine( signed int startx, signed int starty, int number )
 {
 	for( int i = 0; i < number; ++i ){
-		createChunk( startx + i, starty - i );
+		createChunk( startx + i, starty );
 	}
 }
 
 void Map::deleteHTilesLine( signed int startx, signed int starty, int number )
 {
 	for( int i = 0; i < number; ++i ){
-		deleteTile( startx + i, starty - i );
+		deleteChunk( startx + i, starty );
 	}
 }
 
 void Map::createVTilesLine( signed int startx, signed int starty, int number )
 {
 	for( int i = 0; i < number; ++i ){
-		createChunk( startx - i, starty - i );
+		createChunk( startx - i, starty );
 	}
 }
 
 void Map::deleteVTilesLine( signed int startx, signed int starty, int number )
 {
 	for( int i = 0; i < number; ++i ){
-		deleteTile( startx - i, starty - i );
+		deleteChunk( startx - i, starty );
 	}
 }
 
-void Map::createTilesRectangle( signed int startx, signed int starty, int numberx, int numbery )
+void Map::createChunksRectangle( signed int startx, signed int starty, int numberx, int numbery )
 {
-	for( int i = 0; i < numberx; ++i ){
-		createHTilesLine( startx - i, starty - i, numbery );
-		createHTilesLine( startx - i + 1, starty - i, numbery );
+	for( int i = 0; i < numbery; ++i ){
+		createHTilesLine( startx, starty + i , numberx );
 	}
 }
 
-void Map::deleteTilesRectangle( signed int startx, signed int starty, int numberx, int numbery )
+void Map::deleteChunksRectangle( signed int startx, signed int starty, int numberx, int numbery )
 {
 	for( int i = 0; i < numberx; ++i ){
 		deleteVTilesLine( startx - i, starty - i, numbery );
@@ -256,22 +303,32 @@ void Map::deleteTilesRectangle( signed int startx, signed int starty, int number
 
 void Map::clear( )
 {
-	int cx, cy, right, left, top, bottom;
-	MapTile* t = NULL;
-	cx = Camera::GetX();
-	cy = Camera::GetY();
-	right = cx + conf.windowWidth + conf.mapTileSize * 3;
-	left = cx - ( conf.windowWidth >> 2 );
-	top = cy + conf.windowHeight + conf.mapTileSize * 3;
-	bottom = cy - ( conf.windowHeight >> 2 );
-	for( unsigned int i = 0; i < Tilesvec.size(); ){
-		t = Tilesvec[i];
-		if( t->Real.x > right || t->Real.x < left ||
-			t->Real.y > top || t->Real.y < bottom ){
-			deleteTile( t );
-			Tilesvec.erase( Tilesvec.begin() + i );
+	int cx, cy, ytop;
+	if( chunkVec.empty() )
+		return;
+	cx = static_cast<int>(Camera::GetX());
+	cy = static_cast<int>(Camera::GetY());
+	toChunkCoordinates( cx, cy );
+	cy--;
+	ytop = cy + ChunkManager.screen.height - 1;
+	ChunkListIter xlborder = getChunkXIt( cx );
+	if( xlborder != chunkVec.end() ){
+		std::for_each( chunkVec.begin(), xlborder, deleteChunkp );
+		chunkVec.erase( chunkVec.begin(), xlborder );
+	}
+	ChunkListIter xrborder = getChunkXIt( cx + ( ChunkManager.screen.width >> 1 ) );
+	if( xrborder != chunkVec.end() ){
+		std::for_each( xrborder, chunkVec.end(), deleteChunkp );
+		chunkVec.erase( xrborder, chunkVec.end() );
+	}
+	ChunkListIter tiley = xlborder;
+	while( tiley < chunkVec.end() ){
+		MapChunk* c = *tiley;
+		if( c->pos.y < cy || c->pos.y > ytop ){
+			deleteChunk( c );
+			tiley = chunkVec.erase( tiley );
 		}else{
-			++i;
+			tiley++;
 		}
 	}
 }
@@ -279,22 +336,6 @@ void Map::clear( )
 
 void Map::onDraw( )
 {
-	int cx, cy;
-	cx = static_cast<int>(Camera::GetX());
-	cy = static_cast<int>(Camera::GetY());
-	toMapCoordinates( &cx, &cy );
-	if( posX != cx || posY != cy ){
-		//FIXME: избыточность.
-		int halfx = ChunkManager.screenCount.x >> 1;
-		for( int x = cx - halfx; x < halfx; x += ChunkManager.chunkSize.x ){
-			createChunk( x, 0 );
-		}
-		//createTilesRectangle( cx + Defines.LOffset.X + Defines.Top.X * 3 - Defines.Right.X * 2,
-		//			cy + Defines.LOffset.Y + Defines.Top.Y * 3 - Defines.Right.Y * 2,
-		//			Defines.XCount, Defines.YCount);
-		posX = cx;
-		posY = cy;
-	}
 	if( Updated ){
 		//TODO: cleaning in thread
 		clear();
@@ -302,6 +343,16 @@ void Map::onDraw( )
 		snprintf(d, 3, "%d\n", Tilesvec.size());
 		debug(0, d);*/
 		Updated = false;
+	}
+	int cx, cy;
+	cx = static_cast<int>(Camera::GetX());
+	cy = static_cast<int>(Camera::GetY());
+	toChunkCoordinates( cx, cy );
+	if( posX != cx || posY != cy ){
+		createChunksRectangle( cx, cy - 1,
+				ChunkManager.screen.width >> 1, ChunkManager.screen.height );
+		posX = cx;
+		posY = cy;
 	}
 }
 

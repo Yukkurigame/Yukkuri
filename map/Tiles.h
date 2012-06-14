@@ -11,6 +11,10 @@
 #include "GraphicsTypes.h"
 
 
+// Power of two
+#define CHUNK_SIZE 3
+
+
 struct TileInfo
 {
 	unsigned int picture;
@@ -34,7 +38,9 @@ struct MapTile
 
 struct MapChunk
 {
-	s2f atlasPos;
+	s2f atlasPos;	// Position in atlas
+	s2i pos;		// Position in chunk coordinates
+	s2i realPos;	// Position in pixels
 	MapTile* tiles;
 	Sprite* sprite;
 	MapChunk( signed int x, signed int y );
@@ -51,6 +57,7 @@ struct MapChunkManager {
 	unsigned int chunkTilesCount;
 	GLuint atlas;
 	unsigned int texture;
+	rect2i screen;
 	void init();
 	signed int getFreeSpace( s2f& pos );
 	void returnSpace( unsigned int p );

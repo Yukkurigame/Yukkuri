@@ -4,7 +4,7 @@
 
 #include "map/Tiles.h"
 #include <vector>
-
+typedef std::vector< MapChunk* >::iterator ChunkListIter;
 
 
 enum {
@@ -43,6 +43,9 @@ namespace Map
 	bool init( );
 	void clean( );
 
+	void toChunkCoordinates( int& x, int& y);
+	void fromChunkCoordinates( s2i& pos );
+
 	void toMapCoordinates( int* x, int* y);
 	void fromMapCoordinates( int* x, int* y);
 
@@ -50,6 +53,11 @@ namespace Map
 	void fromMapCoordinates( s2i& coord );
 
 	MapChunk* createChunk( signed int x, signed int y );
+	void deleteChunk( MapChunk* chunk );
+	void deleteChunk( signed int x, signed int y );
+	inline void deleteChunkp( MapChunk* chunk ) { deleteChunk( chunk ); }
+
+
 	void deleteTile( signed int x, signed int y );
 	void deleteTile( MapTile* tile );
 	void deleteTilev( signed int x, signed int y );
@@ -60,13 +68,14 @@ namespace Map
 	void createVTilesLine( signed int startx, signed int starty, int number );
 	void deleteVTilesLine( signed int startx, signed int starty, int number );
 
-	void createTilesRectangle( signed int startx, signed int starty, int numberx, int numbery );
-	void deleteTilesRectangle( signed int startx, signed int starty, int numberx, int numbery );
+	void createChunksRectangle( signed int startx, signed int starty, int numberx, int numbery );
+	void deleteChunksRectangle( signed int startx, signed int starty, int numberx, int numbery );
 
 	MapTile* getTile( float x, float y );
 	MapTile* getTile( signed int x, signed int y );
 
-	std::vector< MapTile* >::iterator getTilev( signed int x, signed int y );
+	ChunkListIter getChunkIt( signed int x, signed int y );
+	ChunkListIter getChunkXIt( signed int x );
 
 	void clear( );
 

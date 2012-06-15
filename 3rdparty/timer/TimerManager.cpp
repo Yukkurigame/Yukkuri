@@ -201,7 +201,7 @@ void Timer::DeleteAllThreadEvents()
 	TEvIter it;
 	for(it = timerEvents.begin(); it != timerEvents.end(); ){
 		t = *it;
-		if (t->IsThreadResume()){
+		if( t->IsThreadResume() ){
 			delete t, t = NULL;
 			it = timerEvents.erase(it);
 		}else{

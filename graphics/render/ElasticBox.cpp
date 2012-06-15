@@ -139,3 +139,46 @@ void ElasticBox::Resize( int x, int y, int width, int height )
 	if (children != NULL)
 		AdjustChildren();
 }
+
+namespace {
+//FIXME: triplicate
+inline int next_p2( int a )
+{
+	int rval=2;
+	while( rval < a ) rval <<= 1;
+	return rval;
+}
+
+}
+
+ElasticRectPODBox::ElasticRectPODBox( int mSize )
+{
+	cols = rows = 1;
+	maxSize = mSize;
+}
+
+bool ElasticRectPODBox::calculate( int width, int height, int count )
+{
+	Width = next_p2( width );
+	Height = next_p2( height );
+	while( cols * rows < count ){
+		if( Width > maxSize && Height > maxSize ){
+			debug( GRAPHICS, "Textures too big to be placed in atlas.\n");
+			return false;
+		}
+		if( !( Width > maxSize ) && Height < Width ){
+			rows++;
+			if( Height < height * rows ){
+				Height <<= 1;
+				rows = Height / height;
+			}
+		}else{
+			cols++;
+			if( Width < width * cols ){
+				Width <<= 1;
+				cols = Width / width;
+			}
+		}
+	}
+	return true;
+}

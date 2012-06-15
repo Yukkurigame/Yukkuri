@@ -56,8 +56,8 @@ struct MapChunkManager {
 	s2i chunkSize;
 	unsigned int chunkTilesCount;
 	GLuint atlas;
-	unsigned int texture;
 	rect2i screen;
+	unsigned int texture;
 	void init();
 	signed int getFreeSpace( s2f& pos );
 	void returnSpace( unsigned int p );

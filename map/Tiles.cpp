@@ -10,11 +10,16 @@
 #include "map/Map.h"
 #include "graphics/render/TextureArray.h"
 #include "graphics/render/GLHelpers.h"
+#include "graphics/render/ElasticBox.h"
+#include "graphics/render/Atlas.h"
 #include "graphics/Render.h"
 
 #include "config.h"
+#include "debug.h"
 
 #include <math.h>
+
+#include <stdio.h>
 
 
 extern MainConfig conf;
@@ -71,7 +76,7 @@ void MapChunkManager::init(){
 	chunkSize.x = (conf.mapTileSize << CHUNK_SIZE) + (conf.mapTileSize >> 1);
 	// tile y is half of x; Each odd row located between two another.
 	// Chunk have twice more tiles in height
-	chunkSize.y = conf.mapTileSize << CHUNK_SIZE;
+	chunkSize.y = ( conf.mapTileSize << (CHUNK_SIZE - 1 ) ) + (conf.mapTileSize >> 1);
 	// Calculate count of chunks in the screen
 	screen.width = conf.windowWidth >> ( lTileSize + CHUNK_SIZE - 1 );
 	screen.height = conf.windowHeight >> ( lTileSize + CHUNK_SIZE - 1 );
@@ -83,19 +88,26 @@ void MapChunkManager::init(){
 	chunksCount = next_p2(screen.width * screen.height + CHUNK_SIZE);
 	state = 0; // No places occupied
 
+	ElasticRectPODBox box = ElasticRectPODBox( TextureAtlas::getAtlasMax() );
+	if( !box.calculate( chunkSize.x, chunkSize.y, chunksCount ) ){
+		Debug::debug( Debug::MAP, "Chunks count too big" );
+		return;
+	}
+	chunksCount = box.rows * box.cols;
 	TextureProxy tp;
 	{
 		tp.id = "map_atlas";
 		// Too static
-		atlasCount.x = tp.cols = next_p2(CHUNK_SIZE);
-		atlasCount.y = tp.rows = chunksCount / tp.cols;
+		atlasCount.x = tp.cols = box.cols;
+		atlasCount.y = tp.rows = box.rows;
 		tp.abs.width = tp.cols * chunkSize.x;
 		tp.abs.height = tp.rows * chunkSize.y;
 		// Texture occupies all atlas
-		tp.atlas.width = tp.atlas.height = 1.0;
+		tp.atlas.width = static_cast<float>(tp.abs.width) / static_cast<float>(box.Width);
+		tp.atlas.height = static_cast<float>(tp.abs.height) / static_cast<float>(box.Height);
 		tp.atlas.x = tp.atlas.y = 0.0;
 	}
-	GLHelpers::CreateTexture( &atlas, tp.abs.width, tp.abs.height );
+	GLHelpers::CreateTexture( &atlas, box.Width, box.Height );
 	texture = RenderManager::Instance()->PushTexture( &tp, atlas );
 }
 
@@ -109,8 +121,8 @@ signed int MapChunkManager::getFreeSpace( s2f& pos ){
 		if( p > chunksCount ) // No free space
 			return -1;
 	}
-	pos.y = p / atlasCount.x;
-	pos.x = p - pos.y * atlasCount.x;
+	TextureInfo* texinfo = RenderManager::Instance()->GetTextureByNumber( texture );
+	texinfo->getTexturePosition( pos, p );
 	state |= c; // Set free space as occupied
 	return p;
 }
@@ -150,8 +162,8 @@ MapChunk::MapChunk( signed int x, signed int y )
 		s.tex = RenderManager::Instance()->GetTextureByNumber( s.texid );
 		s.atlas = s.tex->atlas;
 		s.setPosition(
-				atlasPos.x + col * conf.mapTileSize + ( row % 2 ? (conf.mapTileSize >> 1) : 0 ),
-				atlasPos.y + row * conf.mapTileSize - row * ( 3 * (conf.mapTileSize >> 2) ) );
+				col * conf.mapTileSize + ( row % 2 ? (conf.mapTileSize >> 1) : 0 ),
+				row * conf.mapTileSize - row * ( 3 * (conf.mapTileSize >> 2) ) );
 		s.setPicture( t.Type->picture );
 		s.resize( conf.mapTileSize, conf.mapTileSize );
 		if( ++col >= side ){
@@ -164,7 +176,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 	tex.h = ChunkManager.chunkSize.y;
 	tex.tex = 0;
 	TextureArray::drawToNewGLTexture( &tex.tex, ChunkManager.chunkSize.x, ChunkManager.chunkSize.y, sprites, ChunkManager.chunkTilesCount );
-	GLHelpers::UpdateTexture( ChunkManager.atlas, &tex, atlasPos.x * ChunkManager.chunkSize.x, atlasPos.y * ChunkManager.chunkSize.y );
+	GLHelpers::UpdateTexture( ChunkManager.atlas, &tex, atlasPos.x, atlasPos.y );
 }
 
 

@@ -9,6 +9,7 @@
 #include "graphics/Render.h"
 #include "interface/Interface.h"
 #include "units/unitmanager.h"
+#include "3rdparty/timer/TimerManager.h"
 #include "daytime.h"
 #include "map/Region.h"
 #include "map/Map.h"
@@ -109,14 +110,19 @@ void Yukkuri::WindowActive()
 void Yukkuri::End()
 {
 	extern std::vector<Proto*> Prototypes;
-	clear_vector( &Prototypes );
 
-	Map::clean( );
+	//Clear timer
+	Timer::DeleteAllEvents();
 
+	// Clear interface
 	Interface::clean( );
 
+	// Clear units
 	UnitManager::clean( );
+	clear_vector( &Prototypes );
 
+	// Clear other
+	Map::clean( );
 	DayTime::clean();
 
 	threadsManager::CleanThreads( );

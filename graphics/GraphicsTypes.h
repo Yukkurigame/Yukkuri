@@ -184,6 +184,19 @@ struct TextureInfo
 		twidth = pos.width / static_cast<float>(cols);
 		theight = pos.height / static_cast<float>(rows);
 	}
+	inline void getTexturePosition( s2f& tpos, int pic ){
+		int row = pic / cols;
+		int col = pic - row * cols;
+		if( cols < 1 && rows < 1 ){
+			tpos.x = pos.x;
+			tpos.y = pos.y;
+		}else{
+			col %= cols;
+			row %= rows;
+			tpos.x = pos.x + col * swidth;
+			tpos.y = pos.y + row * sheight;
+		}
+	}
 	inline coord2farr getSubTexture( int pic ){
 		int row = pic / cols;
 		int col = pic - row * cols;

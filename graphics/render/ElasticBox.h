@@ -41,5 +41,17 @@ private:
 	void Resize(int x, int y, int width, int height);
 };
 
+// Pack similar rectangles int pod container
+struct ElasticRectPODBox
+{
+	int maxSize;
+	int Width;
+	int Height;
+	int cols;
+	int rows;
+
+	ElasticRectPODBox( int mSize );
+	bool calculate( int width, int height, int count );
+};
 
 #endif /* ELASTICBOX_H_ */

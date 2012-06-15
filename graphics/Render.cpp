@@ -66,9 +66,9 @@ void RenderManager::openglSetup( int wwidth, int wheight )
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
 
-	//glOrtho(0.0, wwidth, 0.0, wheight, -10.0, 1.0);
+	glOrtho(0.0, wwidth, 0.0, wheight, -10.0, 1.0);
 	//glOrtho(-wwidth*1.5, wwidth*1.5, -wheight*1.5, wheight*1.5, -10.0, 1.0);
-	glOrtho(-wwidth*2, wwidth*2, -wheight*2, wheight*2, -10.0, 1.0);
+	//glOrtho(-wwidth*2, wwidth*2, -wheight*2, wheight*2, -10.0, 1.0);
 
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
@@ -173,8 +173,8 @@ TextureInfo* RenderManager::GetTextureByNumber( unsigned int number )
  * centered - origin at the center of the object if not 0;
  * returns Sprite*
  */
-Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int height, int texture_id,
-						int picture, short centered )
+Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int height,
+				unsigned int texture_id, int picture, short centered )
 {
 	Sprite* sprite = new Sprite();
 	sprite->texid = texture_id;

@@ -23,7 +23,10 @@ function Configs:load( filename )
 	local filedata = file:read("*all")
 	local data = assert(loadstring('return ' .. filedata))()
 	file:close()
+	local records = 0
+	local success = 0
 	for i,j in ipairs(data) do
+		records = records + 1 
 		repeat
 			if j.type == nil then
 				Debug(4, "Config has no type.")
@@ -47,7 +50,11 @@ function Configs:load( filename )
 				Debug(4, "Config with id " .. id .. " already exists. Collision occured.\n")
 			end
 			self.configs_id[id] = j
+			success = success + 1
 		until true
+	end
+	if success ~= records then
+		Debug( 4, filename .. ": loaded " .. success .. " from " .. records .. " records." )
 	end
 	return true
 end

@@ -73,13 +73,13 @@ void Map::clean()
 
 void Map::toChunkCoordinates( int& x, int& y)
 {
-	x >>= Defines.lTileSize + CHUNK_SIZE;
+	x >>= Defines.lTileSize + CHUNK_SIZE + 1;
 	y >>= Defines.lTileSize + CHUNK_SIZE;
 }
 
 void Map::fromChunkCoordinates( s2i& pos )
 {
-	pos.x <<= Defines.lTileSize + CHUNK_SIZE;
+	pos.x <<= Defines.lTileSize + CHUNK_SIZE + 1;
 	pos.y <<= Defines.lTileSize + CHUNK_SIZE;
 }
 
@@ -306,7 +306,7 @@ void Map::clear( )
 	int cx, cy, ytop;
 	if( chunkVec.empty() )
 		return;
-	cx = static_cast<int>(Camera::GetX()) - 50;
+	cx = static_cast<int>(Camera::GetX()) - 64;
 	cy = static_cast<int>(Camera::GetY()) - 64;
 	toChunkCoordinates( cx, cy );
 	//cy--;
@@ -316,7 +316,7 @@ void Map::clear( )
 		std::for_each( chunkVec.begin(), xlborder, deleteChunkp );
 		chunkVec.erase( chunkVec.begin(), xlborder );
 	}
-	ChunkListIter xrborder = getChunkXIt( cx + 1 + ( ChunkManager.screen.width >> 1 ) );
+	ChunkListIter xrborder = getChunkXIt( cx + 2 + ( ChunkManager.screen.width >> 2 ) );
 	if( xrborder != chunkVec.end() ){
 		std::for_each( xrborder, chunkVec.end(), deleteChunkp );
 		chunkVec.erase( xrborder, chunkVec.end() );
@@ -346,12 +346,12 @@ void Map::onDraw( )
 		Updated = false;
 	}
 	int cx, cy;
-	cx = static_cast<int>(Camera::GetX()) - 50;
+	cx = static_cast<int>(Camera::GetX()) - 64;
 	cy = static_cast<int>(Camera::GetY()) - 64;
 	toChunkCoordinates( cx, cy );
 	if( posX != cx || posY != cy ){
 		createChunksRectangle( cx, cy,
-				1 + ( ChunkManager.screen.width >> 1 ), ChunkManager.screen.height );
+				2 + ( ChunkManager.screen.width >> 2 ), ChunkManager.screen.height );
 		posX = cx;
 		posY = cy;
 	}

@@ -132,7 +132,7 @@ void MapChunkManager::returnSpace( unsigned int p )
 	int c = 1;
 	for( unsigned int s = 0; s < p; s++ )
 		c <<= 1;
-	state |= ~c; // Set occupied space as free
+	state &= ~c; // Set occupied space as free
 }
 
 #include <stdio.h>
@@ -156,7 +156,11 @@ MapChunk::MapChunk( signed int x, signed int y )
 	Sprite sprites[ChunkManager.chunkTilesCount];
 	for( unsigned int tile = 0; tile  < ChunkManager.chunkTilesCount; ++tile ){
 		MapTile& t = tiles[tile];
-		t.create( x + col, y + row );
+		int tx = realPos.x + col * conf.mapTileSize + ( row % 2 ? (conf.mapTileSize >> 1) : 0 );
+		int ty = realPos.y + row * conf.mapTileSize - row * ( 3 * (conf.mapTileSize >> 2) );
+		Map::toMapCoordinates( &tx, &ty );
+		t.create( tx, ty );
+
 		Sprite& s = sprites[tile];
 		s.texid = t.Type->texture;
 		s.tex = RenderManager::Instance()->GetTextureByNumber( s.texid );

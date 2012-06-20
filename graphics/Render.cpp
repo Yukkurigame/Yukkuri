@@ -73,7 +73,7 @@ void RenderManager::openglSetup( int wwidth, int wheight )
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
 
-	glGenBuffers(1, &VBOHandle);
+	glGenBuffers( 1, &VBOHandle );
 
 	TextureAtlas::init( );
 
@@ -279,7 +279,7 @@ void RenderManager::DrawGLScene()
 	int count = 0;
 	VBOStructureHandle* vbostructure = TextureArray::prepareVBO( &count, GLSprites, verticles );
 
-	GLHelpers::DrawVBO( count, vbostructure, verticles );
+	GLHelpers::DrawVBO( VBOHandle, count, vbostructure, verticles );
 
 	//TestDrawAtlas(-2500, -1000, 10);
 
@@ -320,6 +320,8 @@ RenderManager::RenderManager( ){
 
 RenderManager::~RenderManager( )
 {
+	glDeleteBuffers( 1, &VBOHandle );
+
 	TextureAtlas::clean( );
 	if( textures ){
 		for( unsigned int i = 0; i < texturesCount; ++i )

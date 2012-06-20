@@ -195,6 +195,7 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, s
 bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, Sprite* sprites, unsigned int count )
 {
 	GLuint FBOHandle;
+	GLuint VBOHandle;
 
 	// A FBO will be used to draw textures. FBO creation and setup.
 	if( !GLHelpers::CreateTexture( ahandle, width, height ) ||
@@ -202,12 +203,13 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, S
 		!GLHelpers::SetUpView( width, height, 1 ) )
 		return false;
 
-
 	VertexV2FT2FC4UI* vertices = (VertexV2FT2FC4UI*)malloc( sizeof(VertexV2FT2FC4UI) * count * 4 );
 	int vboc = 0;
 	VBOStructureHandle* vbostructure = prepareVBO( &vboc, sprites, count, vertices );
 
-	GLHelpers::DrawVBO( vboc, vbostructure, vertices );
+	glGenBuffers(1, &VBOHandle);
+	GLHelpers::DrawVBO( VBOHandle, vboc, vbostructure, vertices );
+	glDeleteBuffers( 1, &VBOHandle );
 
 	free( vertices );
 

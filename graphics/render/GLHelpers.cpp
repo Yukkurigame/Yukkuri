@@ -96,12 +96,12 @@ bool GLHelpers::ClearView( )
  * 	vbostructure - linked list of vbo description
  * 	vertices - array of vertices, coordinates and color
  */
-void GLHelpers::DrawVBO( int vboc, VBOStructureHandle* vbostructure, VertexV2FT2FC4UI* vertices )
+void GLHelpers::DrawVBO( GLuint& VBOHandle, int vboc,
+		VBOStructureHandle* vbostructure, VertexV2FT2FC4UI* vertices )
 {
 	VBOStructureHandle* temp = NULL;
-	GLuint VBOHandle = 0;
 
-	glGenBuffers(1, &VBOHandle);
+	//glGenBuffers(1, &VBOHandle);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
@@ -115,10 +115,15 @@ void GLHelpers::DrawVBO( int vboc, VBOStructureHandle* vbostructure, VertexV2FT2
 	glTexCoordPointer( 2, GL_FLOAT, sizeof(VertexV2FT2FC4UI), BUFFER_OFFSET(sizeof(s3f)) );
 	glColorPointer( 4, GL_UNSIGNED_BYTE, sizeof(VertexV2FT2FC4UI), BUFFER_OFFSET(sizeof(s3f) + sizeof(s2f)) );
 
+	GLuint aprog = 0;
+
 	while(vbostructure != NULL){
-		glActiveTexture( GL_TEXTURE0 );
+		//glActiveTexture( GL_TEXTURE0 );
 		glBindTexture( GL_TEXTURE_2D, vbostructure->atlas );
-		glUseProgram( vbostructure->shader );
+		if( aprog != vbostructure->shader ){
+			glUseProgram( vbostructure->shader );
+			aprog = vbostructure->shader;
+		}
 		glDrawArrays(GL_QUADS, vbostructure->start, vbostructure->count);
 		//Clean vbos
 		temp = vbostructure;
@@ -139,7 +144,7 @@ void GLHelpers::DrawVBO( int vboc, VBOStructureHandle* vbostructure, VertexV2FT2
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 
-	glDeleteBuffers( 1, &VBOHandle );
+	//glDeleteBuffers( 1, &VBOHandle );
 }
 
 

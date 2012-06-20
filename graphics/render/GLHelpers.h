@@ -19,7 +19,8 @@ namespace GLHelpers
 	bool ClearView( );
 
 	// Vertex buffer object
-	void DrawVBO( int vboc, VBOStructureHandle* vbostructure, VertexV2FT2FC4UI* vertices );
+	void DrawVBO( GLuint& VBOHandle, int vboc,
+			VBOStructureHandle* vbostructure, VertexV2FT2FC4UI* vertices );
 
 	// Frame buffer object
 	bool BindTextureToFBO( GLuint ahandle, GLuint& FBOHandle );

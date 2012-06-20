@@ -75,17 +75,14 @@ void MapChunkManager::init(){
 	// 0.5 of tile for second row offset
 	chunkSize.x = (conf.mapTileSize << CHUNK_SIZE) + (conf.mapTileSize >> 1);
 	// tile y is half of x; Each odd row located between two another.
-	// Chunk have twice more tiles in height
 	chunkSize.y = ( conf.mapTileSize << (CHUNK_SIZE - 1 ) ) + (conf.mapTileSize >> 1);
 	// Calculate count of chunks in the screen
-	screen.width = conf.windowWidth >> ( lTileSize + CHUNK_SIZE - 1 );
-	screen.height = conf.windowHeight >> ( lTileSize + CHUNK_SIZE - 1 );
-	screen.x = screen.width / 2;
-	screen.y = screen.height / 2;
-	// Tiles in atlas
+	screen.x = conf.windowWidth >> ( lTileSize + CHUNK_SIZE );
+	screen.y = conf.windowHeight >> ( lTileSize + CHUNK_SIZE - 1 );
+	// Tiles in chunk: two interpenetrative girds of CHUNK_SIZE^2 tiles.
 	chunkTilesCount = 1 << ( CHUNK_SIZE + CHUNK_SIZE + 1);
 	// calculate size of atlas. CHUNK_SIZE is additional places here
-	chunksCount = next_p2(screen.width * screen.height + CHUNK_SIZE);
+	chunksCount = next_p2(screen.x * screen.y + CHUNK_SIZE);
 	state = 0; // No places occupied
 
 	ElasticRectPODBox box = ElasticRectPODBox( TextureAtlas::getAtlasMax() );
@@ -154,7 +151,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 	unsigned int row = 0;
 	unsigned int col = 0;
 	Sprite sprites[ChunkManager.chunkTilesCount];
-	for( unsigned int tile = 0; tile  < ChunkManager.chunkTilesCount; ++tile ){
+	for( int tile = ChunkManager.chunkTilesCount - 1; tile >= 0; --tile ){
 		MapTile& t = tiles[tile];
 		int tx = realPos.x + col * conf.mapTileSize + ( row % 2 ? (conf.mapTileSize >> 1) : 0 );
 		int ty = realPos.y + row * conf.mapTileSize - row * ( 3 * (conf.mapTileSize >> 2) );

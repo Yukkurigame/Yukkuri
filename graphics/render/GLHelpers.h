@@ -15,7 +15,7 @@ namespace GLHelpers
 {
 	// Core functions
 	bool CreateTexture( GLuint* ahandle, int width, int height );
-	bool SetUpView( int width, int height );
+	bool SetUpView( int width, int height, short vflip = 0 );
 	bool ClearView( );
 
 	// Vertex buffer object

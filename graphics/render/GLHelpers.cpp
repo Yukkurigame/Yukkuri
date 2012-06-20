@@ -46,7 +46,7 @@ bool GLHelpers::CreateTexture( GLuint* ahandle, int width, int height )
  * 	width, height - view size
  * 	returns true
  */
-bool GLHelpers::SetUpView( int width, int height )
+bool GLHelpers::SetUpView( int width, int height, short vflip )
 {
 	glPushAttrib(GL_COLOR_BUFFER_BIT); // ClearColor saving
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -57,7 +57,10 @@ bool GLHelpers::SetUpView( int width, int height )
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
-	glOrtho(0, width, 0, height, -2.0, 2.0);
+	if( vflip )
+		glOrtho(0, width, height, 0, -2.0, 2.0);
+	else
+		glOrtho(0, width, 0, height, -2.0, 2.0);
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
@@ -176,6 +179,7 @@ bool GLHelpers::UnbindFBO( GLuint& FBOHandle )
 	// Возвращаем как было.
 	glDisable(GL_TEXTURE_2D);
 	glDeleteFramebuffersEXT(1, &FBOHandle);
+	FBOHandle = 0;
 	return true;
 }
 

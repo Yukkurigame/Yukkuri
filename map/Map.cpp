@@ -310,13 +310,13 @@ void Map::clear( )
 	cy = static_cast<int>(Camera::GetY()) - 64;
 	toChunkCoordinates( cx, cy );
 	//cy--;
-	ytop = cy + ChunkManager.screen.height - 1;
+	ytop = cy + ChunkManager.screen.y - 1;
 	ChunkListIter xlborder = getChunkXIt( cx );
 	if( xlborder != chunkVec.end() ){
 		std::for_each( chunkVec.begin(), xlborder, deleteChunkp );
 		chunkVec.erase( chunkVec.begin(), xlborder );
 	}
-	ChunkListIter xrborder = getChunkXIt( cx + 2 + ( ChunkManager.screen.width >> 2 ) );
+	ChunkListIter xrborder = getChunkXIt( cx + ChunkManager.screen.x );
 	if( xrborder != chunkVec.end() ){
 		std::for_each( xrborder, chunkVec.end(), deleteChunkp );
 		chunkVec.erase( xrborder, chunkVec.end() );
@@ -350,8 +350,7 @@ void Map::onDraw( )
 	cy = static_cast<int>(Camera::GetY()) - 64;
 	toChunkCoordinates( cx, cy );
 	if( posX != cx || posY != cy ){
-		createChunksRectangle( cx, cy,
-				2 + ( ChunkManager.screen.width >> 2 ), ChunkManager.screen.height );
+		createChunksRectangle( cx, cy, ChunkManager.screen.x, ChunkManager.screen.y );
 		posX = cx;
 		posY = cy;
 	}

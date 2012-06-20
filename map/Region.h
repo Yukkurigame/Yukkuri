@@ -14,6 +14,7 @@
 namespace Region
 {
 	bool init( );
+	void clean( );
 	void load( std::string name );
 	TileInfo* getTile( signed int x, signed int y );
 

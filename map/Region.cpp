@@ -20,7 +20,7 @@ extern MainConfig conf;
 namespace {
 
 	std::map< signed int, std::map< signed int, TileInfo* > >  RegionDump;
-	std::map< std::string, TileInfo > tiles;
+	TileInfo* tiles;
 	bool TilesLoaded = false;
 	unsigned int TileTypesCount = 0;
 }
@@ -42,20 +42,26 @@ bool Region::init( )
 		TileTypesCount = Subconfigs.size();
 		Debug::debug( Debug::MAP, "Tiles found: " + citoa(TileTypesCount) + ".\n" );
 	}
+	tiles = new TileInfo[TileTypesCount + 1];
 	for( unsigned int i = 0; i < TileTypesCount; ++i ){
-		if( Subconfigs[i].count("id") < 1 ){
+		std::map < std::string, std::string >& Subconfig = Subconfigs[i];
+		TileInfo& tile = tiles[i + 1];
+		if( Subconfig.count("id") < 1 ){
 			Debug::debug( Debug::MAP, "Tile have no id.\n" );
 			continue;
 		}
-		std::string id = Subconfigs[i]["id"];
-		tiles[id].id = Subconfigs[i]["id"];
-		if( Subconfigs[i].count("image") ){
-			std::string image = Subconfigs[i]["image"];
-			tiles[id].texture = RenderManager::Instance()->GetTextureNumberById( image );
+		tile.id = Subconfig["id"];
+		if( Subconfig.count("image") ){
+			std::string image = Subconfig["image"];
+			tile.texture = RenderManager::Instance()->GetTextureNumberById( image );
 		}
-		tiles[id].picture = Subconfigs[i].count("picture") ? atoi(Subconfigs[i]["picture"].c_str()) : 0;
-		tiles[id].passability = Subconfigs[i].count("passability") ? atoi(Subconfigs[i]["passability"].c_str()) : 0;
+		tile.picture = Subconfig.count("picture") ? atoi(Subconfig["picture"].c_str()) : 0;
+		tile.passability = Subconfig.count("passability") ? atoi(Subconfig["passability"].c_str()) : 0;
+		if( tile.id == conf.mapDefaultTile )
+			tiles[0] = tile;
 	}
+	// One for default tile;
+	TileTypesCount++;
 
 	TilesLoaded = true;
 
@@ -64,6 +70,10 @@ bool Region::init( )
 	return true;
 }
 
+void Region::clean( )
+{
+	delete[] tiles;
+}
 
 void Region::load( std::string name )
 {
@@ -86,7 +96,12 @@ void Region::load( std::string name )
 				x = atoi( (*it)["x"].c_str() );
 			if( it->count( "y" ) > 0 )
 				y = atoi( (*it)["y"].c_str() );
-			RegionDump[x][y] = &tiles[type];
+			for( unsigned int tile = 1; tile < TileTypesCount; ++tile ){
+				if( tiles[tile].id == type ){
+					RegionDump[x][y] = &tiles[tile];
+					break;
+				}
+			}
 		}
 	}
 	delete cfg;
@@ -100,5 +115,5 @@ TileInfo* Region::getTile( signed int x, signed int y )
 			return RegionDump[x][y];
 		}
 	}
-	return &tiles[conf.mapDefaultTile];
+	return &tiles[0];
 }

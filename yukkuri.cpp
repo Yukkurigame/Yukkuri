@@ -123,6 +123,7 @@ void Yukkuri::End()
 
 	// Clear other
 	Map::clean( );
+	Region::clean( );
 	DayTime::clean();
 
 	threadsManager::CleanThreads( );

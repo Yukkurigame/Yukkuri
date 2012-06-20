@@ -19,7 +19,6 @@
 
 #include <math.h>
 
-#include <stdio.h>
 
 
 extern MainConfig conf;
@@ -132,7 +131,6 @@ void MapChunkManager::returnSpace( unsigned int p )
 	state &= ~c; // Set occupied space as free
 }
 
-#include <stdio.h>
 
 MapChunk::MapChunk( signed int x, signed int y )
 {

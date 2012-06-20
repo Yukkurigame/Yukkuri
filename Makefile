@@ -18,7 +18,7 @@ MAPDIR = map/
 
 
 DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1 -DGL_GLEXT_PROTOTYPES=1
-CFLAGS= -O0 -g -Wall $(DEFINES)
+CFLAGS= -O0 -pg -g -Wall $(DEFINES)
 
 
 UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp Unit.cpp Animated.cpp Plant.cpp \

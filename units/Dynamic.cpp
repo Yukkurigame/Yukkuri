@@ -45,7 +45,7 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 	if( x != 0 || y != 0 ){
 		float zone = 1.0;
 		float l = sqrt( static_cast<float>(x * x  +  y * y) );
-		float speed = fabs( Parameters["speed"] * Parameters["fed"] ) * zone * ( dt / 100000.0f ) / l;
+		float speed = fabs( Char.chars.speed * Char.params.fed ) * zone * ( dt / 100000.0f ) / l;
 		float dx = speed * x;// / l;
 		float dy = speed * y ;// / l;
 		/*//MapTile* currentTile = map.GetTile( X , Y );
@@ -117,16 +117,10 @@ void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
 		X += dx;
 		Y += dy;
 		Image.setPosition(X, Y);
-		if( Parameters["fed"] > 1 )
-			Parameters["fed"] -= distance / 200;
+		Char.tire( distance / 200 );
 	}
 }
 
-void DynamicUnit::grow( )
-{
-	++Parameters["days"];
-	Parameters["exp"] += 10 * Parameters["level"];
-}
 
 void DynamicUnit::eat( )
 {
@@ -136,41 +130,37 @@ void DynamicUnit::eat( )
 		eat( victim );
 }
 
+
 void DynamicUnit::eat( Unit* victim )
 {
 	//TODO: пересмотреть надо бы
 	if( !victim->isEdible( ) )
 		return;
-	float fed = Parameters["fed"];
-	float level = Parameters["level"];
-	float hp = Parameters["hp"];
-	float hpmax = Parameters["hpmax"];
-	float dmg = Parameters["damage"] / fed * 100;
-	if( level == 0 ) level = 1;
+
+	float dmg = Char.getDamage();
 	victim->hit( dmg );
-	if( fed >= 80 && fed < 100 && hp < hpmax ){
-		float hpAdd = dmg / level;
-		if( (hp + hpAdd) > hpmax )
-			Parameters["hp"] = hpmax;
+	if( Char.state.fed >= 80 && Char.state.fed < 100 && Char.state.hp < Char.params.hp ){
+		float hpAdd = dmg / Char.level;
+		if( (Char.state.hp + hpAdd) > Char.params.hp )
+			Char.state.hp = Char.params.hp;
 		else
-			Parameters["hp"] += hpAdd;
+			Char.state.hp += hpAdd;
 	}
-	if( fed >= 100 ){
-		Parameters["fed"] = 100;
-		if( hp < hpmax ){
-			float hpAdd = dmg;
-			if( ( hp + hpAdd ) > hpmax )
-				Parameters["hp"] = hpmax;
+	if( Char.state.fed >= 100 ){
+		Char.state.fed = 100;
+		if( Char.state.hp < Char.params.hp ){
+			if( ( Char.state.hp + dmg ) > Char.params.hp )
+				Char.state.hp = Char.params.hp;
 			else
-				Parameters["hp"] += hpAdd;
+				Char.state.hp += dmg;
 		}
 	}else{
-		float n = victim->getUnitParameter("nutritive");
-		float fedAdd = dmg * n / level;
-		if( ( fed + fedAdd ) > 100 )
-			Parameters["fed"] = 100;
+		float n = victim->getUnitParameter( uChrNutritive );
+		float fedAdd = dmg * n / Char.level;
+		if( ( Char.state.fed + fedAdd ) > 100 )
+			Char.state.fed = 100;
 		else
-			Parameters["fed"] += fedAdd;
+			Char.state.fed += fedAdd;
 	}
 }
 
@@ -186,13 +176,16 @@ void DynamicUnit::die( )
 			corpse->setBloodColor( bcolor[0], bcolor[1], bcolor[2] );
 		else if( bcolor.size() >= 1 )
 			corpse->setBloodColor( bcolor[0] );
-		corpse->setUnitParameter( "hp", getUnitParameter( "hpmax" ) * getUnitParameter( "fed" ) / 100 );
+		corpse->setUnitParameter( uParamHP, getUnitParameter( uParamHP ) * getUnitParameter( uParamFed ) / 100 );
 		corpse->setUnitSize( Image.getSize() );
 		delete cfg;
 	}
 	if( this->Attacked ){
-		this->Attacked->increaseUnitParameter( "exp", getUnitParameter( "hpmax" ) / getUnitParameter( "level" ) );
-		this->Attacked->increaseUnitParameter( "kills" );
+		this->Attacked->setUnitParameter( uStateExp,
+				this->Attacked->getUnitParameter( uStateExp ) +
+				Char.get( uParamHP ) / Char.get( uBaseLevel ) );
+		this->Attacked->setUnitParameter( uBaseKills,
+				this->Attacked->getUnitParameter( uBaseKills ) + 1 );
 	}
 	this->setDeleted();
 }
@@ -200,51 +193,30 @@ void DynamicUnit::die( )
 void DynamicUnit::levelUp( int addlevel )
 {
 	//FIXME: level not decreased;
-	float scale;
-	float hp;
-	float hpmax;
-	float expmax;
-	float level;
-	for( int i = 1; i<= addlevel; ++i){
-		level = ++Parameters["level"];
-		scale = ( log( level ) / log( 40.0f ) );
-		if( scale < 0.35 )
-			scale = 0.35f;
-		else if( scale > 1.3 )
-			scale = 1.3f;
-		Image.setSize( scale );
-		hpmax = Parameters["hpmax"];
-		if( hpmax == 0 ) hpmax = 1;
-		expmax = Parameters["expmax"];
-		hp = Parameters["hp"] / hpmax;
-		Parameters["exp"] -= expmax;
-		Parameters["hpmax"] += 10 * level;
-		Parameters["expmax"] = expmax + log( level / 40.0f );
-		Parameters["hp"] = Parameters["hpmax"] * hp;
-	}
+
 }
 
-void DynamicUnit::update( const int& dt )
-{
-	AnimatedUnit::update( dt );
-	if( getUnitParameter( "hp" ) <= 0 ){
-		die( );
-		return;
-	}
-	if( this->Parameters["exp"] >= this->Parameters["expmax"] )
-		levelUp(1);
-}
 
 void DynamicUnit::takeAction( )
 {
 	AnimatedUnit::takeAction();
-	if( Parameters["fed"] > 1 )
-		Parameters["fed"] -= 0.2f * log( Parameters["level"] );
+	Char.tire();
 	if( Attacked ){
-		if( Attacked->isDeleted() || Attacked->getUnitParameter( "hp" ) <= 0 || dist(Attacked) >= 1000 ){
+		if( Attacked->isDeleted() || Attacked->getUnitParameter( uStateHP ) <= 0 || dist(Attacked) >= 1000 ){
 			Attacked = NULL;
 		}
 	}
+}
+
+void DynamicUnit::grow( )
+{
+	AnimatedUnit::grow();
+	float scale = ( log( Char.get( uBaseLevel ) ) / log( 40.0f ) );
+	if( scale < 0.35 )
+		scale = 0.35f;
+	else if( scale > 1.3 )
+		scale = 1.3f;
+	Image.setSize( scale );
 }
 
 void DynamicUnit::attack( )
@@ -259,19 +231,15 @@ void DynamicUnit::attackUnit( Unit* victim )
 {
 	if( victim == this || !victim )
 		return;
-	if( Parameters["fed"] > 1 )
-		Parameters["fed"] -= 0.1f;
-	float dmg =  Parameters["damage"] * Parameters["fed"] / 100;
-	if( dmg < 0.4 )
-		dmg = 0.4f;
+	Char.tire( 0.1f );
 	DynamicUnit* dvictim = dynamic_cast<DynamicUnit*>(victim);
 	if( dvictim && dvictim->Attacker() != this )
 		dvictim->Attacker( this );
-	victim->hit( dmg );
+	victim->hit( Char.getDamage() );
 }
 
 void DynamicUnit::hit( float damage )
 {
 	Image.getSprite()->clr.set( 255, 0, 0 );
-	Parameters["hp"] -= damage;
+	Char.recieveDamage( damage );
 }

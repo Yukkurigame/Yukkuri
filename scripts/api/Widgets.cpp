@@ -29,7 +29,7 @@ bool Widget::bindParam( lua_State* L )
 	luaL_argcheck( L, lua_isstring( L, 2 ), 2, "Parameter name expected" );
 
 	Unit* u = NULL;
-	std::string paramname = "";
+	enum character_float paramname;
 
 	if( lua_isnumber( L, 1 ) ){
 		UINT id = static_cast<UINT>( lua_tointeger(L, 1) );
@@ -37,15 +37,16 @@ bool Widget::bindParam( lua_State* L )
 	}else
 		u = reinterpret_cast<Unit*>( lua_touserdata( L, 1 ) );
 
-	paramname = lua_tostring( L, 2 );
+	paramname = static_cast<enum character_float>( lua_tointeger( L, 2 ) );
 
 	lua_pop( L, 2 );
 
 	if( !u ){
 		Debug::debug( Debug::INTERFACE, "Bind object not found.\n" );
-	}else if( paramname == "" ){
+	}else if( paramname <= 0 ){
 		Debug::debug( Debug::INTERFACE, "Bad bind parameter.\n" );
 	}else{
+		// FIXME: binded values point to wrong memory when unit dies.
 		this->bindValue( u->getUnitpParameter( paramname ) );
 		return true;
 	}
@@ -80,7 +81,7 @@ bool WidgetBar::bindBarMaxValue( lua_State* L )
 	luaL_argcheck( L, lua_isstring( L, 2 ), 2, "Parameter name expected" );
 
 	Unit* u = NULL;
-	std::string paramname = "";
+	enum character_float paramname;
 
 	if( lua_isnumber( L, 1 ) ){
 		UINT id = static_cast<UINT>( lua_tointeger(L, 1) );
@@ -88,13 +89,13 @@ bool WidgetBar::bindBarMaxValue( lua_State* L )
 	}else
 		u = reinterpret_cast<Unit*>( lua_touserdata( L, 1 ) );
 
-	paramname = lua_tostring( L, 2 );
+	paramname = static_cast<enum character_float>( lua_tointeger( L, 2 ) );
 
 	lua_pop( L, 2 );
 
 	if( !u ){
 		Debug::debug( Debug::INTERFACE, "Bind object not found.\n" );
-	}else if( paramname == "" ){
+	}else if( paramname == 0 ){
 		Debug::debug( Debug::INTERFACE, "Bad bind parameter.\n" );
 	}else{
 		this->bindBarMaxValue( u->getUnitpParameter( paramname ) );

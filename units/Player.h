@@ -8,7 +8,7 @@ class Player : public DynamicUnit
 public:
 	Player();
 
-	void Die( );
+	void die( );
 
 	void moveUnit( short axis, signed int val );
 	void update( const int& );

@@ -57,8 +57,8 @@ void Unit::update( const int& )
 {
 	if( isDeleted() )
 		return;
-	//if( HP < 0 )
-	//	return die();
+	if( Char.state.hp < 0 )
+		return die();
 	if( dist( UnitManager::GetPlayer( ) ) > 2000 ){
 		return setDeleted();
 	}
@@ -125,21 +125,31 @@ void Unit::update( const int& )
 
 			// Unit Parameters
 			case acSetParam:
-				if( txt_param )
-					Parameters[ std::string(txt_param) ] = param;
-				else
+				if( ps->CheckParamTypes( 1, stInt ) ){
+					int psparam = ps->PopInt();
+					if( psparam < uCharIntLast )
+						Char.set( (enum character)psparam, param );
+					else
+						Char.set( (enum character_float)psparam, param );
+				}else
 					Debug::debug( Debug::PROTO, "acSetParam bad parameter name.\n" );
 				break;
 			case acCopyParam:
-				if( !ps->CheckParamTypes( 1, stString ) )
+				if( !ps->CheckParamTypes( 1, stInt ) )
 					Debug::debug( Debug::PROTO, "acCopyParam bad original parameter name.\n" );
-				else if( !txt_param )
+				else if( !param )
 					Debug::debug( Debug::PROTO, "acCopyParam bad parameter name.\n" );
 				else{
-					std::string paramname = ps->PopString();
-					std::map < std::string, float >::iterator it = Parameters.find(paramname);
-					Parameters[txt_param] =
-							( it != Parameters.end() ) ? Parameters[ paramname ] : 0.0f;
+					int psparam = ps->PopInt();
+					float sparam;
+					if( psparam < uCharIntLast )
+						sparam = Char.get( (enum character)psparam );
+					else
+						sparam = Char.get( (enum character_float)psparam );
+					if( param < uCharIntLast )
+						Char.set( (enum character)param, sparam );
+					else
+						Char.set( (enum character_float)param, sparam );
 				}
 				break;
 			case acLoadParam:
@@ -147,9 +157,17 @@ void Unit::update( const int& )
 				if( !txt_param ){
 					Debug::debug( Debug::PROTO, "acLoadPraram bad parameter name.\n" );
 					break;
+				}else if ( !param ){
+					Debug::debug( Debug::PROTO, "acLoadPraram bad target parameter name.\n" );
+					break;
 				}
 				LuaConfig* cfg = new LuaConfig;
-				cfg->getValue( txt_param, UnitName, Type, Parameters[txt_param] );
+				if( param < uCharIntLast )
+					cfg->getValue( txt_param, UnitName, Type,
+									Char.getRef( (enum character)param ) );
+				else
+					cfg->getValue( txt_param, UnitName, Type,
+									Char.getRef( (enum character_float)param ) );
 				delete cfg;
 				break;
 			}
@@ -159,13 +177,18 @@ void Unit::update( const int& )
 					break;
 				LuaConfig* cfg = new LuaConfig;
 				for( int i = 0; i < param; i++ ){
-					if( !ps->CheckParamTypes( 1, stString ) ){
-						Debug::debug( Debug::PROTO, "acLoadPraramBunch parameter " +
-								citoa(i+1) + " not a string.\n" );
+					if( !ps->CheckParamTypes( 2, stInt, stString ) ){
+						Debug::debug( Debug::PROTO, "acLoadPraramBunch wrong " +
+								citoa(i+1) + " parameter set.\n" );
 						continue;
 					}
-					std::string paramname = ps->PopString();
-					cfg->getValue( paramname, UnitName, Type, Parameters[paramname] );
+					int psparam = ps->PopInt();
+					if( psparam < uCharIntLast )
+						cfg->getValue( ps->PopString(), UnitName, Type,
+								Char.getRef( (enum character)psparam ) );
+					else
+						cfg->getValue( ps->PopString(), UnitName, Type,
+								Char.getRef( (enum character_float)psparam ) );
 				}
 				delete cfg;
 				break;
@@ -215,16 +238,6 @@ void Unit::setUnitPos( float x, float y )
 void Unit::setUnitSize( float size )
 {
 	Image.setSize(size);
-}
-
-void Unit::setUnitParameter( std::string name, float value )
-{
-	Parameters[name] = value;
-}
-
-void Unit::increaseUnitParameter( std::string name, float value )
-{
-	Parameters[name] += value;
 }
 
 float Unit::dist( Unit* target )

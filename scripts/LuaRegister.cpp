@@ -18,6 +18,7 @@
 #include "Bindings.h"
 #include "units/Prototypes.h"
 #include "units/Unit.h"
+#include "units/YOBA.h"
 
 
 
@@ -101,6 +102,29 @@ void LuaMain::RegisterApi( lua_State* L )
 		FIELD(acCopyParam)
 		FIELD(acLoadParam)
 		FIELD(acLoadParamBunch)
+
+		// Unit base parameters
+		FIELD(uBaseLevel)
+		FIELD(uBaseAge)
+		FIELD(uBaseKills)
+		// Unit attributes
+		FIELD(uAttrStrength)
+		FIELD(uAttrIntelligence)
+		FIELD(uAttrAgility)
+		FIELD(uAttrLuck)
+		// Unit characteristics
+		FIELD(uChrSpeed)
+		FIELD(uChrDamage)
+		FIELD(uChrDefence)
+		FIELD(uChrNutritive)
+		// Unit parametes
+		FIELD(uParamHP)
+		FIELD(uParamExp)
+		FIELD(uParamFed)
+		// Unit state
+		FIELD(uStateHP)
+		FIELD(uStateExp)
+		FIELD(uStateFed)
 
 	}
 	lua_setglobal(L, "constants");		// Заносим таблицу в глобальную переменную. Стек:

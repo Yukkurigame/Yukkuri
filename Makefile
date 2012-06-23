@@ -18,7 +18,7 @@ MAPDIR = map/
 
 
 DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1 -DGL_GLEXT_PROTOTYPES=1
-CFLAGS= -O0 -pg -g -Wall $(DEFINES)
+CFLAGS= -O0 -g -Wall $(DEFINES)
 
 
 UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp Unit.cpp Animated.cpp Plant.cpp \
@@ -48,7 +48,7 @@ OBJ = $(SRCS:.cpp=.o)
 OBJS = $(addprefix $(OBJDIR), $(OBJ:.c=.o))
 
 
-UNIQHEADERS = $(SCRIPTSDIR)LuaScriptConfig.h \
+UNIQHEADERS = $(SCRIPTSDIR)LuaScriptConfig.h $(UNITSDIR)/YOBA.h \
          	$(addprefix $(3RDPARTYDIR), TypeList.h timer/InternalTimerEvent.h \
          	timer/InternalTimerEvent.h timer/TimerEvent.h timer/ITimerEventPerformer.h ) \
          	Define.h debug.h hacks.h safestring.h types.h 

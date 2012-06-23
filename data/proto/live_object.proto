@@ -6,9 +6,9 @@ actions = {
 	{
 		name = "init",
 		frames = {
-			{ com = constants.acLoadParam, text = "hp" },
-			{ com = constants.acPushString, text = "hp" },
-			{ com = constants.acCopyParam, text = "hpmax" },
+			{ com = constants.acLoadParam, text = "hp", param = constants.uParamHP },
+			{ com = constants.acPushInt, param = constants.uParamHP },
+			{ com = constants.acCopyParam, param = constants.uStateHP },
 		},
 	}
 }

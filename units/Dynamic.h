@@ -11,7 +11,6 @@ class DynamicUnit: public AnimatedUnit
 public:
 	DynamicUnit();
 	void moveUnit(  signed int x, signed int y , const int& dt);
-	void grow();
 	void eat( );
 	void eat( Unit* Victim );
 
@@ -20,8 +19,8 @@ public:
 
 	virtual void levelUp( int addlevel );
 
-	void update( const int& dt );
 	void takeAction( );
+	void grow( );
 
 	Unit* Attacker( ) { return Attacked; }
 	void Attacker( Unit* a ) { Attacked = a; }

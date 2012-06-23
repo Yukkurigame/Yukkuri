@@ -5,6 +5,7 @@
 
 #include "Animation.h"
 #include "Prototypes.h"
+#include "YOBA.h"
 #include "3rdparty/CUDataUser.h"
 
 class CUData;
@@ -26,10 +27,11 @@ public:
 
 
 	virtual void update( const int& );
-	virtual void grow() {};
 	virtual void die( ) { setDeleted(); };
 	virtual void moveUnit( signed int x, signed int y, const int& dt ) {};
 	virtual void moveUnit( short axis, signed int val ) {};
+	virtual void grow() { Char.grow(); }
+
 
 	float dist( Unit* );
 
@@ -39,24 +41,28 @@ public:
 	inline void setUnitX( float x ) { setUnitPos(x, Y); }
 	inline void setUnitY( float y ) { setUnitPos(X, y); }
 	void setUnitSize( float size );
-	void setUnitParameter( std::string name, float value );
-	void increaseUnitParameter( std::string name, float value = 1 );
+	inline void setUnitParameter( enum character param, float value ){ Char.set( param, value ); }
+	inline void setUnitParameter( enum character_float param, float value ){ Char.set( param, value ); }
 
+	inline int getUnitParameter( enum character param ){ 	return Char.get( param ); }
+	inline int* getUnitpParameter( enum character param ){ return Char.getPtr( param ); }
+	inline float getUnitParameter( enum character_float param ){ return Char.get( param ); }
+	inline float* getUnitpParameter( enum character_float param ){ return Char.getPtr( param ); }
 
-	inline unsigned int getUnitId( ) { return UnitId; }
+#define GET_PARAM( type, name, value ) \
+	inline type getUnit##name() { return value; }
 
-	std::string getUnitName() { return UnitName; }
-	std::string getUnitType() { return Type; }
-	enum unitType geteUnitType() { return UnitType; }
-	inline float getUnitX() { return (const float)X; }
-	inline float getUnitY() { return (const float)Y; }
-	inline float getUnitSize() { return Image.getSize(); }
-	inline float getUnitParameter( std::string name ) { return Parameters[name]; }
-	inline float* getUnitpX() { return &X; }
-	inline float* getUnitpY() { return &Y; }
-	inline float* getUnitpParameter( std::string name ){
-		return &Parameters[name];
-	}
+	GET_PARAM( unsigned int, Id, UnitId )
+
+	GET_PARAM( std::string, Name, UnitName )
+	GET_PARAM( std::string, Type, Type )
+	GET_PARAM( enum unitType, eType, UnitType )
+	GET_PARAM( float, X, (const float)X )
+	GET_PARAM( float, Y, (const float)Y )
+	GET_PARAM( float, Size, Image.getSize() )
+	GET_PARAM( float*, pX, &X )
+	GET_PARAM( float*, pY, &Y )
+#undef GET_PARAM
 
 
 	virtual bool isEdible( ) { return false; }
@@ -66,8 +72,7 @@ protected:
 	virtual CUData* createUData();
 
 	float X, Y, Z;
-	int HP;
-	std::map < std::string, float > Parameters;
+	CharBuild Char;
 	Animation Image;
 	ActionManager Actions;
 	std::string UnitName;
@@ -77,6 +82,7 @@ protected:
 private:
 	unsigned int UnitId;
 	unsigned int flags;		// 1 - deleted
+
 };
 
 #endif //UNIT_H

@@ -1,10 +1,13 @@
+
 #include "unitmanager.h"
 #include "Plant.h"
 #include "Corpse.h"
 #include "Entity.h"
 #include "Player.h"
 
+#include "graphics/Camera.h"
 #include "scripts/Lua.h"
+
 
 #include "debug.h"
 #include "hacks.h"
@@ -36,7 +39,9 @@ namespace {
 			return;
 		if( u == player )
 			player = NULL;
-		ChangeUnitsSize( u->geteUnitType( ), -1 );
+		if( u == Camera::GetTarget() )
+			Camera::DeleteTarget();
+		ChangeUnitsSize( u->getUniteType( ), -1 );
 		delete u;
 	}
 
@@ -98,7 +103,7 @@ Unit* UnitManager::CreateUnit( enum unitType type, float x, float y )
 	LastId++;
 
 	if( type == utPlayer ){
-		DeleteUnit( player );
+		RemoveUnit( player );
 		player = temp;
 	}
 

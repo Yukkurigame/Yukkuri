@@ -11,7 +11,7 @@ Player::Player()
 	FoodTypes.push_back( "corpse" );
 }
 
-void Player::Die( )
+void Player::die( )
 {
 	if( conf.playerDies ){
 		DynamicUnit::die( );
@@ -30,7 +30,7 @@ void Player::moveUnit( short axis, signed int val )
 
 void Player::update( const int& dt )
 {
-	DynamicUnit::update( dt );
+	AnimatedUnit::update( dt );
 	if( this->isDeleted() )
 		return;
 	DynamicUnit::moveUnit( moveX, moveY, dt );

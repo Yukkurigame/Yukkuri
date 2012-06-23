@@ -40,7 +40,7 @@ void Corpse::setUnitPos( float x, float y )
 
 void Corpse::update( const int& dt )
 {
-	Plant::update( dt );
+	AnimatedUnit::update( dt );
 	/*if( blood ){
 		blood->setPosition( getUnitX() - getUnitWidth()/4 , getUnitY(), Z - 1 );
 		if( !blood->coordinates ){

@@ -1,6 +1,8 @@
+
 #include "Entity.h"
 #include "Corpse.h"
 #include "unitmanager.h"
+
 
 Entity::Entity()
 {
@@ -12,12 +14,12 @@ Entity::Entity()
 
 void Entity::update( const int& dt )
 {
-	DynamicUnit::update( dt );
+	AnimatedUnit::update( dt );
 	if( this->isDeleted() )
 		return;
 	if( Attacked && !Attacked->isDeleted() ){
 		float dst = dist(Attacked);
-		if( getUnitParameter( "hp" ) * 3 <= getUnitParameter( "hpmax" ) && dst < 500 ){ //Run away
+		if( Char.get( uStateHP ) * 3 <= Char.get( uParamHP ) && dst < 500 ){ //Run away
 			signed int px = (( Attacked->getUnitX() > this->X ) ? -1 : 1);
 			signed int py = (( Attacked->getUnitY() > this->Y ) ? -1 : 1);
 			setPathTarget( this->X + 500 * px, this->Y + 500 * py );

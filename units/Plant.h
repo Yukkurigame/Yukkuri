@@ -16,8 +16,6 @@ public:
 
 	bool isEdible( ) { return true; }
 
-	void update( const int& );
-
 	void hit( float damage );
 
 protected:

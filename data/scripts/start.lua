@@ -1,8 +1,15 @@
 
+
 Interface.loadWidget("widget_fps_428624")
 Interface.loadWidget("widget_time_493245")
 
-SetBindings("bindings_game")
+
+local console = Interface.getWidget(Interface.loadWidget("widget_console"))
+console:resize(configs:getById('windows_width', 'config_general') - 1, 300)
+console:toggle()
+
+
+Input.set("bindings_game")
 
 local stats = Interface.loadWidget("widget_stats_98072")
 

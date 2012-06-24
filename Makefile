@@ -4,7 +4,7 @@ CC= g++
 #VPATH= 
 DEFS= $(shell sdl-config --cflags)
 PROGNAME= Yukkuri
-INCLUDES=  -I. -Iscripts -Iunits -Igraphics -Iinterface -I/usr/include/freetype2
+INCLUDES=  -I. -Iunits -Igraphics -Iinterface -I/usr/include/freetype2
 LIBS= $(shell sdl-config --libs) -lpng -lSDL_image -lGL -lfreetype -llua
 OBJDIR= obj/
 SCRIPTSAPIDIR = api/
@@ -26,7 +26,8 @@ UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp Unit.cpp Animated.cpp Pla
 RENDER = Atlas.cpp ElasticBox.cpp GLHelpers.cpp TextureArray.cpp
 GRAPHICS = GraphicsTypes.cpp Font.cpp Text.cpp sdl_graphics.cpp gl_extensions.cpp gl_shader.cpp \
 		   Animation.cpp Camera.cpp Render.cpp pngfuncs.c $(addprefix render/, $(RENDER))
-SCRIPTSAPI = UnitManager.cpp Interface.cpp Widgets.cpp ThreadManager.cpp CameraApi.cpp
+SCRIPTSAPI = UnitManager.cpp Interface.cpp Widgets.cpp ThreadManager.cpp CameraApi.cpp \
+			 BindingsApi.cpp
 SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp proto.cpp \
 		  api.cpp $(addprefix $(SCRIPTSAPIDIR), $(SCRIPTSAPI))
 WIDGETS = Widget.cpp WidgetText.cpp WidgetBar.cpp
@@ -42,7 +43,7 @@ SRCS =   main.cpp yukkuri.cpp config.cpp engine.cpp Bindings.cpp BindFunctions.c
          $(addprefix $(INTERFACEDIR), $(INTERFACE)) \
          $(addprefix $(MAPDIR), $(MAP)) \
          $(addprefix $(3RDPARTYDIR), $(3RDPARTY)) \
-         daytime.cpp
+         daytime.cpp utf.cpp
 
 OBJ = $(SRCS:.cpp=.o)
 OBJS = $(addprefix $(OBJDIR), $(OBJ:.c=.o))

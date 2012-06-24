@@ -5,7 +5,6 @@
  */
 
 #include "api.h"
-#include "Bindings.h"
 #include "map/Region.h"
 
 #include <string>
@@ -73,19 +72,6 @@ int scriptApi::Debug( lua_State* L )
 	str = lua_tostring( L, 2 );
 	Debug::debug( level, str + "\n" );
 	lua_pop( L, lua_gettop( L ) );
-	return 0;
-}
-
-
-int scriptApi::SetBindings( lua_State* L )
-{
-	std::string bname;
-	luaL_argcheck( L, lua_isstring( L, 1 ), 1, "Bindings id not given." );
-
-	bname = lua_tostring( L, 1 );
-
-	Bindings::bnd.LoadKeys( bname );
-
 	return 0;
 }
 

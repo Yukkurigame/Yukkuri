@@ -10,16 +10,26 @@
 #include "interface/widgets/WidgetBar.h"
 #include "units/unitmanager.h"
 
-#include "Lua.h"
+#include "scripts/Lua.h"
 
 #include "hacks.h"
 
+bool Widget::resize( lua_State* L )
+{
+	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Width expected" );
+	luaL_argcheck( L, lua_isnumber( L, 2 ), 2, "Height expected" );
 
+	this->resize( lua_tonumber( L, 1 ), lua_tonumber( L, 2 ) );
+
+	lua_pop( L, 2 );
+
+	return true;
+}
 
 bool Widget::toggle( lua_State* L )
 {
 	this->toggleVisibility();
-	return true;
+	return this->visible;
 }
 
 
@@ -29,7 +39,7 @@ bool Widget::bindParam( lua_State* L )
 	luaL_argcheck( L, lua_isstring( L, 2 ), 2, "Parameter name expected" );
 
 	Unit* u = NULL;
-	enum character_float paramname;
+	int paramname;
 
 	if( lua_isnumber( L, 1 ) ){
 		UINT id = static_cast<UINT>( lua_tointeger(L, 1) );
@@ -37,7 +47,7 @@ bool Widget::bindParam( lua_State* L )
 	}else
 		u = reinterpret_cast<Unit*>( lua_touserdata( L, 1 ) );
 
-	paramname = static_cast<enum character_float>( lua_tointeger( L, 2 ) );
+	paramname = lua_tointeger( L, 2 );
 
 	lua_pop( L, 2 );
 
@@ -47,7 +57,10 @@ bool Widget::bindParam( lua_State* L )
 		Debug::debug( Debug::INTERFACE, "Bad bind parameter.\n" );
 	}else{
 		// FIXME: binded values point to wrong memory when unit dies.
-		this->bindValue( u->getUnitpParameter( paramname ) );
+		if( paramname < uCharIntLast )
+			this->bindValue( u->getUnitpParameter( (enum character)paramname ) );
+		else
+			this->bindValue( u->getUnitpParameter( (enum character_float)paramname ) );
 		return true;
 	}
 
@@ -73,6 +86,19 @@ LuaRet Widget::getChildren( lua_State* L )
 
 }
 
+
+bool WidgetText::setText( lua_State* L )
+{
+	luaL_argcheck( L, lua_isstring( L, 1 ), 1, "Text expected" );
+
+	std::string text = lua_tostring( L, 1 );
+
+	lua_pop( L, 1 );
+
+	this->setText( text );
+
+	return true;
+}
 
 
 bool WidgetBar::bindBarMaxValue( lua_State* L )

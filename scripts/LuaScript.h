@@ -25,8 +25,8 @@ public:
 	void ReserveProc( LuaRegRef procref );
 	void ReleaseProc( LuaRegRef* procref );
 
-	int ExecChunk();
-	int ExecChunkFromReg( LuaRegRef r) ;
+	int ExecChunk( UINT args = 0 );
+	int ExecChunkFromReg( LuaRegRef r, UINT args = 0 );
 
 	static void StackDumpToLog( lua_State *L );
 };

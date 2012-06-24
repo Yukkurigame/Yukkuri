@@ -35,7 +35,7 @@ public:
 
 	static Bindings bnd;
 
-	void process( int num, short down );
+	void process( int num, short down, UINT16 unicode );
 
 	void BindKey( int key, std::string name );
 	void unBindKey( std::string name );
@@ -44,6 +44,7 @@ public:
 	void BindLuaFunction( int key, LuaRegRef func );
 
 	void LoadKeys( std::string );
+	std::string GetCurrent( ){ return Current; }
 
 	inline std::string KeyName( UINT i ){
 		if( i >= MAXKEYS )
@@ -51,10 +52,15 @@ public:
 		return KeyNames[i];
 	}
 
+	LuaRegRef& getReciever( ) { return Reciever; }
+
 private:
 	//std::map< std::string, UINT > Keys;
 	BindFunction BindedFunctions[ MAXKEYS ];
 	std::string KeyNames[ MAXKEYS ];
+	std::string Current;
+	LuaRegRef Reciever;
+
 };
 
 

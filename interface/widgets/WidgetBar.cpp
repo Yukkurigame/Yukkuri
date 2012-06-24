@@ -6,8 +6,8 @@
  */
 
 #include "widgets/WidgetBar.h"
-#include "Render.h"
-#include "LuaConfig.h"
+#include "graphics/Render.h"
+#include "scripts/LuaConfig.h"
 
 
 WidgetBar::WidgetBar()
@@ -139,9 +139,9 @@ bool WidgetBar::bindBarMaxValue( float* val )
 
 void WidgetBar::Update( )
 {
-	if( Binded != NULL ){
-		if( (*Binded) != BarValue )
-			setBarValue( *Binded );
+	if( fBinded != NULL ){
+		if( (*fBinded) != BarValue )
+			setBarValue( *fBinded );
 	}
 	if( BindedMaxValue != NULL ){
 		if( (*BindedMaxValue) != BarMaxValue )

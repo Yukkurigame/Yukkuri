@@ -31,6 +31,8 @@ public:
 
 	void toggleVisibility( );
 
+	bool setText( lua_State* L );
+
 protected:
 	virtual CUData* createUData();
 
@@ -43,7 +45,9 @@ private:
 	std::string TextContent;
 	std::string FontName;
 	int FontSize;
-	float BindedCache;
+	int iBindedCache;
+	float fBindedCache;
+
 };
 
 

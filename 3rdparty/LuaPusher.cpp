@@ -15,6 +15,7 @@
 #include "assert.h"
 #include <cstring>
 #include "types.h"
+#include "utf.h"
 
 // int
 template <>
@@ -357,6 +358,36 @@ bool CHINP_TESTER<std::string>(lua_State* L, int idx)
 	return lua_isstring(L, idx) != 0;
 }
 
+
+// std::wstring
+template <>
+int pushToLua( lua_State* L, std::wstring const & val )
+{
+	lua_pushstring(L, UTF8_to_str( val.c_str() ) );
+	return 1;
+}
+
+template<>
+std::wstring getFromLua( lua_State* L, int idx )
+{
+	size_t size = 0;
+	const wchar_t* s = str_to_UTF8( lua_tolstring(L, idx, &size) );
+	return std::wstring(s, size);
+}
+
+template<>
+void getFromLua( lua_State* L, int idx, std::wstring& val )
+{
+	size_t size = 0;
+	const wchar_t* s = str_to_UTF8( lua_tolstring(L, idx, &size) );
+	val.assign( s, size );
+}
+
+template<>
+bool CHINP_TESTER<std::wstring>( lua_State* L, int idx )
+{
+	return lua_isstring(L, idx) != 0;
+}
 
 
 //void

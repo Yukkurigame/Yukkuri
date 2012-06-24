@@ -9,8 +9,8 @@
 #include "SDL/SDL_keysym.h"
 
 #include "Bindings.h"
-#include "LuaScript.h"
-#include "LuaScriptConfig.h"
+#include "scripts/LuaScript.h"
+#include "scripts/LuaScriptConfig.h"
 #include <cstring>
 #include <cstdlib>
 
@@ -21,6 +21,8 @@ Bindings Bindings::bnd;
 
 Bindings::Bindings( )
 {
+	Reciever = LUA_NOREF;
+
 	BindKey( SDLK_BACKSPACE, "backspace" );
 	BindKey( SDLK_TAB, "tab" );
 	// SDLK_CLEAR = 12,
@@ -211,7 +213,9 @@ void Bindings::unBindKey( std::string name )
 	//}
 }
 
-void Bindings::process( int num, short down )
+
+
+void Bindings::process( int num, short down, UINT16 unicode )
 {
 	extern LuaScript* luaScript;
 
@@ -224,6 +228,13 @@ void Bindings::process( int num, short down )
 				luaScript->ExecChunkFromReg( BindedFunctions[num].luaref );
 			break;
 		case NOTAFUNC:
+			if( Reciever != LUA_NOREF ){
+				luaScript->push( num );
+				luaScript->push( down );
+				wchar_t w[2] = { unicode, '\0' };
+				luaScript->push( std::wstring(w) );
+				luaScript->ExecChunkFromReg( Reciever, 3 );
+			}
 			break;
 	}
 }
@@ -249,6 +260,7 @@ void Bindings::BindLuaFunction( int key, LuaRegRef func )
 void Bindings::LoadKeys( std::string subconfig )
 {
 	Debug::debug( Debug::INPUT, "Loading bindings set " + subconfig + ".\n" );
+	Current = subconfig;
 	std::map < UINT, UINT > Bindkeys;
 	std::map < UINT, LuaRegRef > Bindfuncs;
 	std::map < UINT, UINT > BindAliases;

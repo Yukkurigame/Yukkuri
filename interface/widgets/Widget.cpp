@@ -7,7 +7,7 @@
 #include "widgets/Widget.h"
 
 #include "Render.h"
-#include "LuaConfig.h"
+#include "scripts/LuaConfig.h"
 #include "config.h"
 
 #include "debug.h"
@@ -16,17 +16,18 @@
 
 Widget::Widget()
 {
-	Type = NONE;
+	Type = wtNone;
 	Width = 0;
 	Height = 0;
 	PosX = 0;
 	PosY = 0;
 	PosZ = 0;
-	Align = NONE;
+	Align = wtNone;
 	visible = true;
 	Parent = NULL;
 	background = NULL;
-	Binded = NULL;
+	iBinded = NULL;
+	fBinded = NULL;
 }
 
 Widget::~Widget()
@@ -73,16 +74,24 @@ bool Widget::load( std::string id )
 	setZ( z );
 
 	updatePosition( );
-
-	if( Type != NONE ){
+	if( Type != wtNone ){
 		std::string imgname;
-		int picture;
+		int picture = 0;
+		std::vector< int > bgcolor;
 		cfg->getValue( "image", baseID, imgname );
 		cfg->getValue( "picture", baseID, picture );
-		if( imgname != "" ){
+		cfg->getValue( "bgcolor", baseID, bgcolor );
+		if( imgname != "" || bgcolor.size() ){
 			background = RenderManager::Instance()->CreateGLSprite( PosX, PosY, getZ(), Width, Height,
-				RenderManager::Instance()->GetTextureNumberById( imgname ), picture );
+					RenderManager::Instance()->GetTextureNumberById( imgname ), picture );
 			background->setFixed();
+			if( bgcolor.size() ){
+				for( unsigned int i=0; i < 4; ++i ){
+					if( i >= bgcolor.size() )
+						bgcolor.push_back( i < 3 ? 0 : 255 );
+				}
+				background->clr.set( bgcolor[0], bgcolor[1], bgcolor[2], bgcolor[3] );
+			}
 		}
 	}
 
@@ -179,14 +188,23 @@ Widget* Widget::getChildren( std::string name )
 	return NULL;
 }
 
+bool Widget::bindValue( int* val )
+{
+	if( val ){
+		iBinded = val;
+		return true;
+	}
+	iBinded = NULL;
+	return false;
+}
 
 bool Widget::bindValue( float* val )
 {
 	if( val ){
-		Binded = val;
+		fBinded = val;
 		return true;
 	}
-	Binded = NULL;
+	fBinded = NULL;
 	return false;
 }
 

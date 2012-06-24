@@ -3,7 +3,7 @@
 
 #include "unitmanager.h"
 
-#include "LuaConfig.h"
+#include "scripts/LuaConfig.h"
 
 #include <stdlib.h>
 #include <math.h>

@@ -119,6 +119,8 @@ bool CEngine::Init()
 	debug( INPUT, "Joystick not enabled.\n" );
 #endif
 
+	SDL_EnableUNICODE( 1 );
+
 	if(	!AdditionalInit() ){
 		return false;
 	}
@@ -203,6 +205,7 @@ void CEngine::HandleInput()
 	while( SDL_PollEvent( &event ) )
 	{
 		int evnt = 0;
+		Uint16 unicode = 0;
 		short down = 1;
 		switch( event.type ){
 
@@ -226,6 +229,7 @@ void CEngine::HandleInput()
 				down = 0;	//Yes, no break.
 			case SDL_KEYDOWN:
 				evnt = event.key.keysym.sym;
+				unicode = event.key.keysym.unicode;
 				break;			//It's break for both SDL_KEY events.
 
 #ifdef JOYSTICKENABLE
@@ -295,7 +299,7 @@ void CEngine::HandleInput()
 		} // switch
 
 		if( evnt > 0 )
-			Bindings::bnd.process( evnt, down );
+			Bindings::bnd.process( evnt, down, unicode );
 
 	} // while (handling input)
 

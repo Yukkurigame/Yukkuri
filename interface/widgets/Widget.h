@@ -16,7 +16,7 @@ class CUData;
 struct LuaRet;
 
 
-enum wType { NONE = 0, BLANK, TEXT, BAR};
+enum wType { wtNone = 0, wtBlank, wtText, wtBar, wtConsole };
 
 enum wAlign { LEFT = 1, CENTER, RIGHT };
 enum wVAlign { TOP = 1, MIDDLE, BOTTOM };
@@ -58,6 +58,7 @@ public:
 	LuaRet getChildren( lua_State* L );
 	void addChild( Widget* child );
 
+	bool bindValue( int* val );
 	bool bindValue( float* val );
 	bool bindValue( std::string* val );
 
@@ -77,6 +78,7 @@ public:
 	virtual void setBarValue( int val ) {};
 
 	// Lua methods
+	bool resize( lua_State* L );
 	bool toggle( lua_State* L );
 	bool bindParam( lua_State* L );
 
@@ -94,7 +96,8 @@ protected:
 	float OffsetX;
 	float OffsetY;
 
-	float* Binded;
+	int* iBinded;
+	float* fBinded;
 	std::string* SBinded;
 
 	std::string baseID;

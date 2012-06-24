@@ -1,0 +1,25 @@
+{
+	{
+		picture = "",
+		font = "./LiberationSerif-Regular.ttf",
+		name = "console",
+		text = ">",
+		align = "Left",
+		fontcolor = {255,255,255},
+		id = "widget_console",
+		height = 200,
+		width = 300,
+		depth = 2,
+		fontsize = 18,
+		textalign = "Left",
+		image = "",
+		bgcolor = {0, 0, 0, 127},
+		valign = "Top",
+		y = 0,
+		x = 0,
+		textx = 0,
+		texty = 0,
+		type = "TextWidget",
+		children = {}
+	},
+}

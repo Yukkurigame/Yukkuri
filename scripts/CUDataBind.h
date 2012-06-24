@@ -112,11 +112,13 @@ void RegisterAllTypeMetatables(lua_State* L)
 
 // Widgets
 #define DECL_WIDGET_METH								\
+		EXEC_METHOD_DECL(resize)						\
 		EXEC_METHOD_DECL(toggle)						\
 		EXEC_METHOD_DECL(bindParam)						\
 		EXEC_NAMED_METHOD_DECL(children, getChildren)
 
-#define DECL_WIDGETTEXT_METH
+#define DECL_WIDGETTEXT_METH							\
+		EXEC_METHOD_DECL(setText)
 
 #define DECL_WIDGETBAR_METH						\
 		GETSETF_METHOD_DECL(BarSize)			\
@@ -135,19 +137,22 @@ DECL_WIDGETBAR_METH
 
 // Widgets
 #define WIDGET_METH_ENTRY(ID)					\
-		EXEC_METHOD_ENTRY(ID, toggle),			\
-		EXEC_METHOD_ENTRY(ID, bindParam),		\
+		EXEC_METHOD_ENTRY(ID, resize)			\
+		EXEC_METHOD_ENTRY(ID, toggle)			\
+		EXEC_METHOD_ENTRY(ID, bindParam)		\
 		EXEC_NAMED_METHOD_ENTRY(ID, children)
 
 
 
 #define WIDGETTEXT_METH_ENTRY(ID)				\
-		WIDGET_METH_ENTRY(ID)
+		WIDGET_METH_ENTRY(ID)					\
+		EXEC_METHOD_ENTRY(ID, setText)
+
 
 
 #define WIDGETBAR_METH_ENTRY(ID)				\
-		WIDGETTEXT_METH_ENTRY(ID),				\
-		EXEC_METHOD_ENTRY(ID, bindBarMaxValue),	\
+		WIDGETTEXT_METH_ENTRY(ID)				\
+		EXEC_METHOD_ENTRY(ID, bindBarMaxValue)	\
 		GETSETF_METHOD_ENTRY(ID, BarSize)
 
 
@@ -192,17 +197,17 @@ static const struct luaL_reg ud_meta[TL::Length<ClassesList>::value][METAMETHODS
 	},
 	{
 		STD_METHODS(7),
-		WIDGET_METH_ENTRY(7),
+		WIDGET_METH_ENTRY(7)
 		END
 	},
 	{
 		STD_METHODS(8),
-		WIDGETTEXT_METH_ENTRY(8),
+		WIDGETTEXT_METH_ENTRY(8)
 		END
 	},
 	{
 		STD_METHODS(9),
-		WIDGETBAR_METH_ENTRY(9),
+		WIDGETBAR_METH_ENTRY(9)
 		END
 	}
 

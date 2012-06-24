@@ -5,7 +5,7 @@
  */
 
 #include "config.h"
-#include "LuaConfig.h"
+#include "scripts/LuaConfig.h"
 #include <cstring>
 
 MainConfig conf;

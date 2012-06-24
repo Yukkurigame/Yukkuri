@@ -121,10 +121,10 @@ void LuaScript::ReleaseProc( LuaRegRef* procref )
 }
 
 
-int LuaScript::ExecChunk( )
+int LuaScript::ExecChunk( UINT args )
 {
-	int level = lua_gettop( Lst ) - 1; // - args //Верх стека - аргументы - одна функция
-	if( lua_pcall( Lst, 0, LUA_MULTRET, 0 ) ){ // args
+	int level = lua_gettop( Lst )  - args - 1; //Верх стека - аргументы - одна функция
+	if( lua_pcall( Lst, args, LUA_MULTRET, 0 ) ){
 		std::string err = lua_tostring( Lst, -1 );
 		Debug::debug( Debug::SCRIPT, "In ExecChunk(): " + err + ".\n" );
 		return -1;
@@ -132,18 +132,17 @@ int LuaScript::ExecChunk( )
 	return lua_gettop( Lst ) - level; //Новый верх стека - старый = количество результатов
 }
 
-int LuaScript::ExecChunkFromReg( LuaRegRef r )
+int LuaScript::ExecChunkFromReg( LuaRegRef r, UINT args )
 {
 	GetFromRegistry( Lst, r );
 
-	//TODO: args
-	int i = lua_gettop( Lst ); // - args;
+	int i = lua_gettop( Lst ) - args;
 	if (i <= 0)
 		i = 1;
 
 	lua_insert( Lst, i );
 
-	return ExecChunk( ); // (args);
+	return ExecChunk( args );
 }
 
 

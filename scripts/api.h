@@ -16,8 +16,6 @@ namespace scriptApi
 
 	int Debug( lua_State* L );
 
-	int SetBindings( lua_State* L );
-
 	int LoadMapRegion( lua_State* L );
 
 }

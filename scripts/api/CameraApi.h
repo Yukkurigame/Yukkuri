@@ -8,7 +8,7 @@
 #ifndef APICAMERA_H_
 #define APICAMERA_H_
 
-#include "Lua.h"
+#include "scripts/Lua.h"
 
 
 namespace CameraApi {

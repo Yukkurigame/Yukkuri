@@ -305,6 +305,6 @@ void TimerEvent::ExecEvent()
 		threadsManager::ProcessThread(this->action);
 	}else{
 		extern LuaScript* luaScript;
-		luaScript->ExecChunkFromReg( this->action );
+		luaScript->ExecChunkFromReg( this->action, 0 );
 	}
 }

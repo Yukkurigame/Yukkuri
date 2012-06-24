@@ -16,8 +16,8 @@
 #include "debug.h"
 using namespace Debug;
 
-#include "LuaScript.h"
-#include "LuaThread.h"
+#include "scripts/LuaScript.h"
+#include "scripts/LuaThread.h"
 
 #include "hacks.h"
 

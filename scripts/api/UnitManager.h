@@ -8,7 +8,7 @@
 #ifndef APIUNITMANAGER_H_
 #define APIUNITMANAGER_H_
 
-#include "Lua.h"
+#include "scripts/Lua.h"
 
 
 namespace UMApi {

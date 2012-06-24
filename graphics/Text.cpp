@@ -175,8 +175,6 @@ void Text::clear( )
 }
 
 
-
-
 void Text::addSprite( int x, int y, Char* c )
 {
 	Sprite* s = RenderManager::Instance()->CreateGLSprite(

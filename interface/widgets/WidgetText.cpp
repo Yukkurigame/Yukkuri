@@ -6,8 +6,8 @@
  */
 
 #include "widgets/WidgetText.h"
-#include "Render.h"
-#include "LuaConfig.h"
+#include "graphics/Render.h"
+#include "scripts/LuaConfig.h"
 
 
 WidgetText::WidgetText( )
@@ -16,9 +16,10 @@ WidgetText::WidgetText( )
 	FontSize = 12;
 	TextX = 0;
 	TextY = 0;
-	TextAlign = NONE;
+	TextAlign = wtNone;
 	TextContent = "";
-	BindedCache = 0.00123f;
+	fBindedCache = 0.00123f;
+	iBindedCache = 123000;
 }
 
 
@@ -148,12 +149,15 @@ void WidgetText::setTextPosition( float x, float y )
 
 void WidgetText::Update( )
 {
-	if( !Binded )
-		return;
-	if( (*Binded) != BindedCache ){
-		BindedCache = (*Binded);
+	if( fBinded && (*fBinded) != fBindedCache ){
+		fBindedCache = (*fBinded);
 		char d[6];
-		snprintf(d, 6, "%.0f", BindedCache);
+		snprintf(d, 6, "%.0f", fBindedCache);
+		setText( d );
+	}else if( iBinded && (*iBinded) != iBindedCache ){
+		iBindedCache = (*iBinded);
+		char d[6];
+		snprintf(d, 6, "%.0i", iBindedCache);
 		setText( d );
 	}
 }
@@ -163,3 +167,4 @@ void WidgetText::toggleVisibility( )
 	Widget::toggleVisibility( );
 	TextSprite.setVisible(visible);
 }
+

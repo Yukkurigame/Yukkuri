@@ -32,7 +32,7 @@
 
 // Macros, that puts new method entry in metatable methods array
 #define GETTER_METHOD_ENTRY(ID, FIELD)    \
-	{ #FIELD, GETTER_METHOD(ID, FIELD) }
+	{ #FIELD, GETTER_METHOD(ID, FIELD) },
 //////////////////////////////////////////////////////////////////////////
 
 
@@ -87,7 +87,7 @@
 
 // Macros, that puts new method entry in metatable methods array
 #define GETTER_NAMED_METHOD_ENTRY(ID, NAME)    \
-	{ #NAME, GETTER_NAMED_METHOD(ID, NAME) }
+	{ #NAME, GETTER_NAMED_METHOD(ID, NAME) },
 //////////////////////////////////////////////////////////////////////////
 
 
@@ -115,7 +115,7 @@
 
 // Macros, that puts new method entry in metatable methods array
 #define GETSET_METHOD_ENTRY(ID, FIELD)    \
-	{ #FIELD, GETSET_METHOD(ID, FIELD) }
+	{ #FIELD, GETSET_METHOD(ID, FIELD) },
 //////////////////////////////////////////////////////////////////////////
 
 
@@ -253,7 +253,7 @@
 
 // Macros, that puts new method entry in metatable methods array
 #define GETSET_NAMED_METHOD_ENTRY(ID, NAME)    \
-	{ #NAME, GETSET_NAMED_METHOD(ID, NAME) }
+	{ #NAME, GETSET_NAMED_METHOD(ID, NAME) },
 //////////////////////////////////////////////////////////////////////////
 
 

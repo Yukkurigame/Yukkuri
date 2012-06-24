@@ -22,6 +22,8 @@ extern "C" {
 #include <string>
 #include <utility>
 
+#include "3rdparty/LuaPusher.h"
+
 #include "debug.h"
 
 struct LuaRet {
@@ -57,6 +59,11 @@ public:
 	void RegisterLib( std::string name, const luaL_Reg* functions );
 
 	bool OpenFile( std::string name );
+
+	template <typename T>
+	int push( T const & val ){
+		return pushToLua( Lst, val );
+	}
 
 	//Какого хрена шаблоны перестают работать, если их вынести?
 	//FIXME: move from header

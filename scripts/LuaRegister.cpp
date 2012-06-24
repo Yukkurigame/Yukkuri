@@ -14,6 +14,7 @@
 #include "api/Interface.h"
 #include "api/ThreadManager.h"
 #include "api/CameraApi.h"
+#include "api/BindingsApi.h"
 
 #include "Bindings.h"
 #include "units/Prototypes.h"
@@ -37,8 +38,6 @@ void LuaMain::RegisterApi( lua_State* L )
 
 	lua_register( L, "Debug", &scriptApi::Debug );
 
-	lua_register( L, "SetBindings", &scriptApi::SetBindings );
-
 	lua_register( L, "LoadMapRegion", &scriptApi::LoadMapRegion );
 
 
@@ -48,6 +47,7 @@ void LuaMain::RegisterApi( lua_State* L )
 	luaL_register( L, "Interface", IfaceApi::methods );
 	luaL_register( L, "Thread", ThreadApi::methods );
 	luaL_register( L, "Camera", CameraApi::methods );
+	luaL_register( L, "Input", BindingsApi::methods );
 
 
 	// Регистрируем константные названия для клавиш.

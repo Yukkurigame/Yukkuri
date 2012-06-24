@@ -9,7 +9,7 @@
 #define APIINTERFACE_H_
 
 
-#include "Lua.h"
+#include "scripts/Lua.h"
 
 
 namespace IfaceApi {

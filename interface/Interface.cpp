@@ -7,7 +7,7 @@
 #include "Interface.h"
 #include "widgets/WidgetText.h"
 #include "widgets/WidgetBar.h"
-#include "LuaConfig.h"
+#include "scripts/LuaConfig.h"
 
 #include "hacks.h"
 #include "debug.h"
@@ -67,17 +67,17 @@ Widget* Interface::LoadWidget( std::string id )
 
 	if( type == "Widget" ){
 		w = new Widget( );
-		w->setType( BLANK );
+		w->setType( wtBlank );
 	}else if( type == "TextWidget" ){
 		w = new WidgetText( );
-		w->setType( TEXT );
+		w->setType( wtText );
 	}else if( type == "BarWidget" ){
 		w = new WidgetBar( );
-		w->setType( BAR );
+		w->setType( wtBar );
 	}else{
 		debug( Debug::INTERFACE, "Widget with id " + id + " have bad type " + type + ".\n" );
 		w = new Widget( );
-		w->setType( NONE );
+		w->setType( wtNone );
 	}
 
 	if( !w->load( id ) ){

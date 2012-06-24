@@ -9,6 +9,7 @@
 
 #include <string>
 #include <sstream>
+#include "types.h"
 
 //TODO: strcat, strcpy
 // TODO: sprintf_s и snprintf немного отличаются поведением.

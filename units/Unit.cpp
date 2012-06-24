@@ -79,7 +79,7 @@ void Unit::update( const int& )
 
 			extern LuaScript* luaScript;
 
-			int ret_val = luaScript->ExecChunkFromReg( frame.param );
+			int ret_val = luaScript->ExecChunkFromReg( frame.param, 0 );
 			if( ret_val == -1 )	{
 				Debug::debug( Debug::PROTO,
 					"An error occurred while executing a local function. obj id  " +

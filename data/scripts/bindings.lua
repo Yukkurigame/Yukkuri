@@ -18,6 +18,7 @@ Console.__index = Console
 function Console:widget()
 	if self.console == nil then
 		self.console = Interface.getWidgetByName("console")
+		self.line = self.console:LineSize()
 	end
 	return self.console
 end
@@ -43,7 +44,6 @@ function Console:process( keynum, char )
 		char = ''
 		self.string = string.sub(self.string, 1, -2) 
 	end
-	
 	self.string = self.string .. char
 	self:widget():setText(self.string)
 end

@@ -36,6 +36,7 @@ bool WidgetText::load( std::string id )
 	std::string talign;
 	std::string tvalign;
 	int fontsize = 12;
+	float lineheight;
 	std::vector<int> vcolor;
 	LuaConfig* cfg = new LuaConfig;
 
@@ -47,6 +48,9 @@ bool WidgetText::load( std::string id )
 	cfg->getValue( "font", id, font );
 	cfg->getValue( "fontsize", id, fontsize );
 	cfg->getValue( "fontcolor", id, vcolor );
+	cfg->getValue( "lineheight", id, lineheight );
+	if( !lineheight )
+		lineheight = 1.0;
 
 	delete cfg;
 
@@ -66,6 +70,7 @@ bool WidgetText::load( std::string id )
 	TextSprite.setPosition( TextX, TextX, getZ() );
 	TextSprite.setFont( font, fontsize );
 	TextSprite.setFixed( true );
+	TextSprite.setLineHeight( lineheight );
 	setText( "" );
 
 	for( unsigned int i=0; i < 3; ++i ){
@@ -112,7 +117,8 @@ void WidgetText::updatePosition( )
 				break;
 			case TOP:
 			default:
-				posy = PosY + this->Height - height + TextY;
+				posy = PosY + this->Height -
+				TextSprite.getLineSize() + TextY;
 				break;
 		}
 	TextSprite.setPosition( posx, posy, getZ( ) + 0.1f );

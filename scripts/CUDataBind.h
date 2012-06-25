@@ -118,7 +118,9 @@ void RegisterAllTypeMetatables(lua_State* L)
 		EXEC_NAMED_METHOD_DECL(children, getChildren)
 
 #define DECL_WIDGETTEXT_METH							\
-		EXEC_METHOD_DECL(setText)
+		EXEC_METHOD_DECL(setText)						\
+		GETTERF_METHOD_DECL(LineSize)					\
+		GETSETF_METHOD_DECL(LineHeight)
 
 #define DECL_WIDGETBAR_METH						\
 		GETSETF_METHOD_DECL(BarSize)			\
@@ -146,7 +148,9 @@ DECL_WIDGETBAR_METH
 
 #define WIDGETTEXT_METH_ENTRY(ID)				\
 		WIDGET_METH_ENTRY(ID)					\
-		EXEC_METHOD_ENTRY(ID, setText)
+		EXEC_METHOD_ENTRY(ID, setText)			\
+		GETTERF_METHOD_ENTRY(ID, LineSize)		\
+		GETSETF_METHOD_ENTRY(LineHeight)
 
 
 

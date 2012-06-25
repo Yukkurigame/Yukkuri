@@ -27,6 +27,13 @@ public:
 	float getTextX( ){ return TextX; }
 	float getTextY( ){ return TextY; }
 
+	inline float getLineHeight( ){ return TextSprite.getLineHeight(); }
+	inline void  setLineHeight( float lh ){ TextSprite.setLineHeight( lh ); }
+
+	inline int getLineSize( ){ return TextSprite.getLineSize(); }
+
+
+
 	void Update();
 
 	void toggleVisibility( );

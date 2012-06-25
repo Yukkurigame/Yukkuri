@@ -16,6 +16,7 @@
 
 Widget::Widget()
 {
+	ID = 0;
 	Type = wtNone;
 	Width = 0;
 	Height = 0;

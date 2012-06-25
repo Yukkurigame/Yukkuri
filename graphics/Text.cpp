@@ -66,6 +66,7 @@ Text::Text( )
 	font = NULL;
 	lineHeight = 1;
 	Visible = true;
+	Lines = 0;
 	Width = Height = 0;
 }
 
@@ -97,7 +98,6 @@ void Text::setText(const char* str)
 {
 	int textlen;
 	int lineheight;
-	int nlines;
 
 	if( !font )
 		return;
@@ -110,12 +110,12 @@ void Text::setText(const char* str)
 	strcpy( text, str );
 
 	char* token;
-	nlines = 0;
+	Lines = 0;
 	token = strtok( text, "\n" );
 	lineheight = font->cellHeight * lineHeight;
 	while( token != 0 ){
 		int tmpwidth = 0;
-		int tmpheight = lineheight * nlines;
+		int tmpheight = lineheight * Lines;
 		char* line = token;
 		FT_UInt prev = 0;
 		for( unsigned int g = 0, e = strlen( line ); g < e; ++g ){
@@ -125,12 +125,11 @@ void Text::setText(const char* str)
 			tmpwidth += kerning + tmpc->horiAdvance;
 			prev = tmpc->index;
 		}
-		++nlines;
+		++Lines;
 		Width += tmpwidth;
-		Height += tmpheight;
 		token = strtok(NULL, "\n");
 	}
-	Height += lineheight;
+	Height = Lines * lineheight;
 	free(text);
 
 	setVisible( Visible );

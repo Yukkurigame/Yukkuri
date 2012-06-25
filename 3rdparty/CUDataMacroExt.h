@@ -60,6 +60,31 @@
 //////////////////////////////////////////////////////////////////////////
 
 
+//////////////////////////////////////////////////////////////////////////
+// Macros for declaration of getter function method
+#define GETTERF_METHOD_DECL(FIELD)										\
+	template <typename T>												\
+	int getterf_##FIELD(lua_State* L) {									\
+		CUData* ud = check_userdata<T>(L, 1);							\
+		if( !ud->getUser() )											\
+			luaL_error( L, "Object destroyed" );						\
+		return pushToLua(L, static_cast<T*>(ud->getUser())->FIELD());	\
+	}
+
+
+// Macros for getting the pointer to getter method
+#define GETTERF_METHOD(ID, FIELD)                          \
+	&getterf_##FIELD<TL::TypeAt<ClassesList, ID>::Result>
+
+
+// Macros, that puts new method entry in metatable methods array
+#define GETTERF_METHOD_ENTRY(ID, FIELD)    \
+	{ #FIELD, GETTERF_METHOD(ID, FIELD) },
+//////////////////////////////////////////////////////////////////////////
+
+
+
+
 // Macros for declaration of getset function method
 #define GETSETF_METHOD_DECL(FIELD)                                                               \
 	template <typename T>                                                                       \

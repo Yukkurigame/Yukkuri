@@ -10,7 +10,7 @@
 #include "types.h"
 
 #include <string>
-#include <map>
+#include <vector>
 
 #include "BindFunctions.h"
 #include "SDL/SDL_keysym.h"
@@ -44,6 +44,7 @@ public:
 	void BindLuaFunction( int key, LuaRegRef func );
 
 	void LoadKeys( std::string );
+	void FreeKeys( );
 	std::string GetCurrent( ){ return Current; }
 
 	inline std::string KeyName( UINT i ){
@@ -59,6 +60,7 @@ private:
 	BindFunction BindedFunctions[ MAXKEYS ];
 	std::string KeyNames[ MAXKEYS ];
 	std::string Current;
+	std::vector < UINT > BindedKeys;
 	LuaRegRef Reciever;
 
 };

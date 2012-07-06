@@ -17,6 +17,7 @@
 #include "hacks.h"
 
 Bindings Bindings::bnd;
+extern LuaScript* luaScript;
 
 
 Bindings::Bindings( )
@@ -217,7 +218,7 @@ void Bindings::unBindKey( std::string name )
 
 void Bindings::process( int num, short down, UINT16 unicode )
 {
-	extern LuaScript* luaScript;
+
 
 	switch(BindedFunctions[num].type){
 		case CFUNC:
@@ -252,15 +253,35 @@ void Bindings::BindLuaFunction( int key, LuaRegRef func )
 {
 	if( key < 0 || key > MAXKEYS )
 		return;
-	BindedFunctions[key].type = LUAFUNC;
-	BindedFunctions[key].luaref = func;
+	BindFunction& bfunct = BindedFunctions[key];
+	bfunct.type = LUAFUNC;
+	if( bfunct.luaref != func ){
+		luaScript->ReleaseProc( &bfunct.luaref );
+		bfunct.luaref = func;
+	}
 }
 
+
+#define BIND_TO_KEY( bindarr, bindfinc )												\
+	FOREACHIT( bindarr ){																\
+		if( it->first < MAXKEYS ){														\
+			bindfinc( it->first, it->second );											\
+			BindedKeys.push_back( it->first );											\
+			std::map < UINT, UINT >::iterator alias = BindAliases.find( it->first );	\
+			if( alias != BindAliases.end() ){											\
+				bindfinc( alias->second, it->second );									\
+				BindedKeys.push_back( alias->second );									\
+			}																			\
+		}else																			\
+			Debug::debug( Debug::INPUT, "Bad key name.\n" );							\
+	}
 
 void Bindings::LoadKeys( std::string subconfig )
 {
 	Debug::debug( Debug::INPUT, "Loading bindings set " + subconfig + ".\n" );
+	FreeKeys();
 	Current = subconfig;
+	BindedKeys.clear();
 	std::map < UINT, UINT > Bindkeys;
 	std::map < UINT, LuaRegRef > Bindfuncs;
 	std::map < UINT, UINT > BindAliases;
@@ -269,25 +290,17 @@ void Bindings::LoadKeys( std::string subconfig )
 	cfg->getValue( "keys", subconfig, config, Bindkeys, Bindfuncs );
 	cfg->LuaConfig::getValue( "aliases", subconfig, config, BindAliases );
 
-	FOREACHIT( Bindkeys ){
-		if( it->first < MAXKEYS ){
-			BindCFunction( it->first, it->second );
-			std::map < UINT, UINT >::iterator alias = BindAliases.find( it->first );
-			if( alias != BindAliases.end() )
-				BindCFunction( alias->second, it->second );
-		}else
-			Debug::debug( Debug::INPUT, "Bad key name.\n" );
-	}
-	FOREACHIT( Bindfuncs ){
-		if( it->first < MAXKEYS ){
-			BindLuaFunction( it->first, it->second );
-			std::map < UINT, UINT >::iterator alias = BindAliases.find( it->first );
-			if( alias != BindAliases.end() )
-				BindLuaFunction( alias->second, it->second );
-		}else
-			Debug::debug( Debug::INPUT, "Bad key name.\n" );
-	}
 	delete cfg;
+
+	BIND_TO_KEY( Bindkeys, BindCFunction )
+	BIND_TO_KEY( Bindfuncs, BindLuaFunction )
+
 }
 
+#undef BIND_TO_KEY
 
+void Bindings::FreeKeys( )
+{
+	FOREACHIT( BindedKeys )
+		BindedFunctions[*it].type = NOTAFUNC;
+}

@@ -31,6 +31,7 @@ public:
 	inline void  setLineHeight( float lh ){ TextSprite.setLineHeight( lh ); }
 
 	inline int getLineSize( ){ return TextSprite.getLineSize(); }
+	inline int getLines( ){ return Height / TextSprite.getLineSize(); }
 
 
 

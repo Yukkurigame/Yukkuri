@@ -36,7 +36,7 @@ function table.dump(self)
                 end;
             end;
         end;
-        
+
         if mt then
         	mt.__tostring = __tostring;
         end;

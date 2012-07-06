@@ -120,6 +120,8 @@ void Text::setText(const char* str)
 		FT_UInt prev = 0;
 		for( unsigned int g = 0, e = strlen( line ); g < e; ++g ){
 			Char* tmpc = font->getChar(static_cast<unsigned int>(line[g]));
+			if(!tmpc)
+				continue;
 			int kerning = font->getKerning(prev, tmpc->index);
 			addSprite(tmpwidth + kerning, tmpheight, tmpc);
 			tmpwidth += kerning + tmpc->horiAdvance;

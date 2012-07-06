@@ -8,6 +8,7 @@ Console = {
 Console.__index = Console
 Console.iLua = require('data/scripts/ilua')
 -- Output log. Commands log in iLua console history
+Console.offset = 0
 Console.history = {}
 
 function Console:widget()
@@ -55,7 +56,6 @@ function Console:process( keynum, char )
 		if type(completion) == "string" then
 			self.string = completion
 		elseif type(completion) == "table" then
-			print(table.dump(completion))
 			local maxlen = 0
 			for k,v in pairs(completion) do
 				if maxlen < #v then maxlen = #v end
@@ -76,6 +76,13 @@ function Console:process( keynum, char )
 				compl = ""
 			end
 		end
+	elseif keynum == keys.pgdown then
+		self.offset = self.offset - 3
+		if self.offset < 0 then self.offset = 0 end
+	elseif keynum == keys.pgup then
+		self.offset = self.offset + 3
+		local hcount = table.getn(self.history) - self.lines
+		if self.offset > hcount then self.offset = hcount end
 	else
 		self.string = self.string .. char
 	end
@@ -89,7 +96,7 @@ function Console:process( keynum, char )
 		if count > self.lines then
 			number = count - self.lines
 		end
-		for line = number, number + self.lines do
+		for line = number - self.offset, number + self.lines - self.offset do
 			if line < count then
 				out = out .. self.history[line + 1]
 			end

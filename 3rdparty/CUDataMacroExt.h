@@ -60,35 +60,25 @@
 //////////////////////////////////////////////////////////////////////////
 
 
+
 //////////////////////////////////////////////////////////////////////////
 // Macros for declaration of getter function method
 #define GETTERF_METHOD_DECL(FIELD)											\
 	template <typename T>													\
-	int getterf_##FIELD(lua_State* L) {										\
+	int getter_##FIELD(lua_State* L) {										\
 		CUData* ud = check_userdata<T>(L, 1);								\
 		if( !ud->getUser() )												\
 			luaL_error( L, "Object destroyed" );							\
 		return pushToLua(L, static_cast<T*>(ud->getUser())->get##FIELD());	\
 	}
 
-
-// Macros for getting the pointer to getter method
-#define GETTERF_METHOD(ID, FIELD)                          					\
-	&getterf_##FIELD<TL::TypeAt<ClassesList, ID>::Result>
-
-
-// Macros, that puts new method entry in metatable methods array
-#define GETTERF_METHOD_ENTRY(ID, FIELD)    									\
-	{ #FIELD, GETTERF_METHOD(ID, FIELD) },
 //////////////////////////////////////////////////////////////////////////
-
-
 
 
 // Macros for declaration of getset function method
 #define GETSETF_METHOD_DECL(FIELD)                                                               \
 	template <typename T>                                                                       \
-	int getsetf_##FIELD( lua_State* L ){                                                         \
+	int getset_##FIELD( lua_State* L ){                                                         \
 		CUData* ud = check_userdata<T>(L, 1);                                                   \
 		if (!ud->getUser())                                                                     \
 			luaL_error(L, "Object destroyed");                                                  \
@@ -100,14 +90,24 @@
 		return pushToLua(L, obj->get##FIELD() );                                                \
 	}
 
-
-// Macros for getting the pointer to getset method
-#define GETSETF_METHOD(ID, FIELD)                          \
-	&getsetf_##FIELD<TL::TypeAt<ClassesList, ID>::Result>
-
-
-// Macros, that puts new method entry in metatable methods array
-#define GETSETF_METHOD_ENTRY(ID, FIELD)    \
-	{ #FIELD, GETSETF_METHOD(ID, FIELD) },
 //////////////////////////////////////////////////////////////////////////
 
+
+// Macros for declaration of getset method fro flag with specified NAME
+// FLAG is flagname: in IsDead, the FLAG will be Dead
+#define GETSET_FLAG_METHOD_DECL(FLAG)			                                          		 \
+	template <typename T>                                                                        \
+	int getset_##FLAG(lua_State* L)		                                                         \
+	{                                                                                            \
+		CUData* ud = check_userdata<T>(L, 1);                                                    \
+		T* obj = static_cast<T*>(ud->getUser());                                                 \
+		if (!obj)                                                                                \
+			luaL_error(L, "Object destroyed");                                                   \
+		bool typecheck = lua_isboolean(L, 2) != 0;                                               \
+		luaL_argcheck(L, typecheck || lua_isnone(L, 2), 2, "typecheck lua_isboolean failed");    \
+		if (typecheck)                                                                           \
+			getFromLua<bool>(L, 2) ? obj->set##FLAG() : obj->clear##FLAG();                      \
+		return pushToLua(L, obj->is##FLAG());                                                    \
+	}
+
+//////////////////////////////////////////////////////////////////////////

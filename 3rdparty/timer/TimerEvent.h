@@ -33,7 +33,8 @@ public:
 	UINT flags;
 	// 1 - threadResume				данное событие - запуск приостановленной coroutine
 	// 2 - periodic					событие переодическое
-	// 4 - pausable					на время игровой паузы прекращается обработка этого события, его время "замораживается"
+	// 4 - endless					event is endless and does not ended
+	// 8 - pausable					на время игровой паузы прекращается обработка этого события, его время "замораживается"
 									// и продолжится после снятия игровой паузы
 
 	inline BYTE IsThreadResume()	{ return flags & 1; }

@@ -121,10 +121,12 @@ void RegisterAllTypeMetatables(lua_State* L)
 		EXEC_METHOD_DECL(setText)						\
 		GETTERF_METHOD_DECL(Lines)						\
 		GETTERF_METHOD_DECL(LineSize)					\
-		GETSETF_METHOD_DECL(LineHeight)
+		GETSETF_METHOD_DECL(LineHeight)					\
+		GETSETF_METHOD_DECL(Cursor)						\
+		GETSET_FLAG_METHOD_DECL(CursorVisible)
 
-#define DECL_WIDGETBAR_METH						\
-		GETSETF_METHOD_DECL(BarSize)			\
+#define DECL_WIDGETBAR_METH								\
+		GETSETF_METHOD_DECL(BarSize)					\
 		EXEC_METHOD_DECL(bindBarMaxValue)
 
 
@@ -150,16 +152,17 @@ DECL_WIDGETBAR_METH
 #define WIDGETTEXT_METH_ENTRY(ID)				\
 		WIDGET_METH_ENTRY(ID)					\
 		EXEC_METHOD_ENTRY(ID, setText)			\
-		GETTERF_METHOD_ENTRY(ID, Lines)			\
-		GETTERF_METHOD_ENTRY(ID, LineSize)		\
-		GETSETF_METHOD_ENTRY(ID, LineHeight)
-
+		GETTER_METHOD_ENTRY(ID, Lines)			\
+		GETTER_METHOD_ENTRY(ID, LineSize)		\
+		GETSET_METHOD_ENTRY(ID, LineHeight)		\
+		GETSET_METHOD_ENTRY(ID, Cursor)			\
+		GETSET_METHOD_ENTRY(ID, CursorVisible)
 
 
 #define WIDGETBAR_METH_ENTRY(ID)				\
 		WIDGETTEXT_METH_ENTRY(ID)				\
 		EXEC_METHOD_ENTRY(ID, bindBarMaxValue)	\
-		GETSETF_METHOD_ENTRY(ID, BarSize)
+		GETSET_METHOD_ENTRY(ID, BarSize)
 
 
 

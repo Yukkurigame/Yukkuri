@@ -194,8 +194,8 @@
 		bool typecheck = lua_isboolean(L, 2) != 0;                                               \
 		luaL_argcheck(L, typecheck || lua_isnone(L, 2), 2, "typecheck lua_isboolean failed");    \
 		if (typecheck)                                                                           \
-			getFromLua<bool>(L, 2) ? obj->Set##FLAG() : obj->Clear##FLAG();                      \
-		return pushToLua(L, obj->Is##FLAG());                                                    \
+			getFromLua<bool>(L, 2) ? obj->set##FLAG() : obj->clear##FLAG();                      \
+		return pushToLua(L, obj->is##FLAG());                                                    \
 	}
 
 

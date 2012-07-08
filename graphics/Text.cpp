@@ -12,7 +12,7 @@
 #include "hacks.h"
 #include <map>
 
-#define ITER_SPRITES for( std::vector< Sprite* >:: iterator it = sprites.begin(), vend = sprites.end(); it != vend; ++it )
+#define ITER_SPRITES FOREACHIT( sprites )
 
 static std::map < std::string, std::map< int, font_data* > > LoadedFonts;
 
@@ -64,15 +64,19 @@ font_data* GetFont( std::string name, int size  )
 Text::Text( )
 {
 	font = NULL;
+	cursor = NULL;
 	lineHeight = 1;
-	Visible = true;
+	flags = 1; // Visible only
 	Lines = 0;
+	cursorBearing = 0;
+	cursorPosition = 0;
 	Width = Height = 0;
 }
 
 Text::~Text( )
 {
 	clear();
+	RenderManager::Instance()->FreeGLSprite( cursor );
 }
 
 
@@ -134,8 +138,8 @@ void Text::setText(const char* str)
 	Height = Lines * lineheight;
 	free(text);
 
-	setVisible( Visible );
-	setFixed( Fixed );
+	setVisible( isVisible() );
+	setFixed( isFixed() );
 }
 
 void Text::setColor( int r, int g, int b )
@@ -146,28 +150,24 @@ void Text::setColor( int r, int g, int b )
 	}
 }
 
-
-
-void Text::setVisible( bool v )
-{
-	Visible = v;
-	ITER_SPRITES{
-		if( v )
-			(*it)->setVisible();
-		else
-			(*it)->clearVisible();
-	}
+#define SETSPRITEFLAG(name, flag)			\
+void Text::set##name( bool v )				\
+{											\
+	if( v ){								\
+		flags |= flag;						\
+		ITER_SPRITES (*it)->set##name();	\
+	}else{									\
+		flags &= ~flag;						\
+		ITER_SPRITES (*it)->clear##name();	\
+	}										\
 }
-void Text::setFixed( bool f )
-{
-	Fixed = f;
-	ITER_SPRITES{
-		if( f )
-			(*it)->setFixed();
-		else
-			(*it)->clearFixed();
-	}
-}
+
+// Some macro for flags
+SETSPRITEFLAG(Visible, 1)
+SETSPRITEFLAG(Fixed, 2)
+
+#undef SETSPRITEFLAG
+
 
 void Text::clear( )
 {
@@ -185,3 +185,29 @@ void Text::addSprite( int x, int y, Char* c )
 	sprites.push_back(s);
 }
 
+void Text::setCursorPosition( unsigned int pos )
+{
+	if(!font)
+		return;
+	cursorPosition = pos;
+	// \n was not added when string was build so remove it
+	pos += 1 - Lines;
+	if( cursor == NULL ){
+		Char* tmpc = font->getChar('|');
+		cursorBearing = (tmpc->metrics.horiBearingX >> 6) + 2;
+		cursor = RenderManager::Instance()->CreateGLSprite(
+				position.x, position.y, position.z,
+				font->cellWidth, font->cellHeight, font->texture, tmpc->pic );
+		cursor->setFixed();
+	}
+	Sprite* next = NULL;
+	if( pos >= sprites.size() ){
+		next = sprites.back();
+		cursorPosition = sprites.size() - 1;
+	}else{
+		next = sprites[pos];
+	}
+	if(next)
+		cursor->setPosition( next->vertices.lb.x - cursorBearing, next->vertices.lb.y );
+	cursor->setVisible();
+}

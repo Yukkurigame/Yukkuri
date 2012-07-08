@@ -23,8 +23,6 @@ public:
 
 	inline int width(){ return Width; }
 	inline int height(){ return Height; }
-	inline bool isVisible(){ return Visible; }
-	inline bool isFixed(){ return Fixed; }
 	inline int getLines( ){ return Lines; }
 	inline int getLineHeight( ){ return lineHeight; }
 	inline int getLineSize( ){ return font->cellHeight * lineHeight; }
@@ -36,7 +34,15 @@ public:
 	void setLineHeight( float lh ){ lineHeight = lh; }
 
 	void setVisible( bool v );
+	inline unsigned char isVisible()	{ return flags & 1; }
 	void setFixed( bool f );
+	inline unsigned char isFixed()	{ return flags & 2; }
+
+	inline unsigned char isCursorVisible()	{ if( cursor ) return cursor->isVisible(); return 0; }
+	inline void setCursorVisible()			{ if( cursor ) cursor->setVisible(); }
+	inline void clearCursorVisible()		{ if( cursor ) cursor->clearVisible(); }
+	void setCursorPosition( unsigned int pos );
+	inline int getCursorPosition() { return cursorPosition; }
 
 	void clear( );
 
@@ -44,13 +50,16 @@ private:
 	int Width;
 	int Height;
 	int Lines;
-	bool Fixed;
-	bool Visible;
-	s3f position;
+	unsigned int flags;		// 1 - visible
+					// 2 - fixed
+	float lineHeight;
 	color4u color;
+	s3f position;
 	font_data* font;
 
-	float lineHeight;
+	int cursorBearing;
+	int cursorPosition;
+	Sprite* cursor;
 	std::vector< Sprite* > sprites;
 
 	void addSprite( int x, int y, Char* c );

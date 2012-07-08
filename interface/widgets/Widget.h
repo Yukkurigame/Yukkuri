@@ -69,13 +69,8 @@ public:
 	bool getVisible( ) { return visible; };
 	virtual void toggleVisibility( );
 
-	virtual void setFontColor( int r, int g, int b ) {};
 	virtual void setText( std::string ) {};
 	virtual void setTextPosition( float, float ) {};
-
-	virtual void createBar( std::string name, int* ) {};
-	virtual void setBarSize( float size ) {};
-	virtual void setBarValue( int val ) {};
 
 	// Lua methods
 	bool resize( lua_State* L );

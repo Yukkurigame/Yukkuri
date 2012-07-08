@@ -4,12 +4,14 @@
 Console = {
 	cursor = 0,
 	string = '',
+	offset = 0,
+	prompt = '> ',
+	-- Output log. Commands log in iLua console history
+	history = {},
 }
 Console.__index = Console
 Console.iLua = require('data/scripts/ilua')
--- Output log. Commands log in iLua console history
-Console.offset = 0
-Console.history = {}
+
 
 function Console:widget()
 	if self.console == nil then
@@ -27,6 +29,7 @@ function Console:toggle()
 			if down == 1 then self:process(keynum, char) end
 			end
 		)
+		self:widget():CursorVisible(true)
 	else
 		Input.set( self.old_bindings )
 		Input.setReciever(nil)
@@ -49,8 +52,14 @@ function Console:process( keynum, char )
 			function(c) self.history[#self.history+1] = c .. '\n' end
 		)
 		self.string = ''
+		self.cursor = 0
 	elseif keynum == keys.backspace then
-		self.string = string.sub(self.string, 1, -2)
+		if self.cursor >= 1 then
+			local start = self.string:sub(0, self.cursor - 1)
+			local send = self.string:sub(self.cursor + 1)
+			self.string = start .. send
+			self.cursor = self.cursor - 1
+		end
 	elseif keynum == keys.tab then
 		local completion = ilua.complete(self.string)
 		if type(completion) == "string" then
@@ -63,7 +72,7 @@ function Console:process( keynum, char )
 			local compl = ""
 			local cols = 3
 			if cols > #completion then cols = #completion end
-			table.insert(self.history, '> ' .. self.string .. '\n')
+			table.insert(self.history, self.prompt .. self.string .. '\n')
 			local lines = math.ceil(#completion / cols)
 			cols = cols - 1
 			for j = 1, lines do
@@ -76,6 +85,7 @@ function Console:process( keynum, char )
 				compl = ""
 			end
 		end
+		self.cursor = self.string:len()
 	elseif keynum == keys.pgdown then
 		self.offset = self.offset - 3
 		if self.offset < 0 then self.offset = 0 end
@@ -83,8 +93,15 @@ function Console:process( keynum, char )
 		self.offset = self.offset + 3
 		local hcount = table.getn(self.history) - self.lines
 		if self.offset > hcount then self.offset = hcount end
+	elseif keynum == keys.right then
+		self.cursor = self.cursor + 1
+	elseif keynum == keys.left then
+		self.cursor = self.cursor - 1
 	else
-		self.string = self.string .. char
+		self.cursor = self.cursor + 1
+		local start = self.string:sub(0, self.cursor - 1)
+		local send = self.string:sub(self.cursor)
+		self.string = start .. char .. send
 	end
 
 	-- Print lines of log
@@ -102,5 +119,10 @@ function Console:process( keynum, char )
 			end
 		end
 	end
-	self:widget():setText(out .. '> ' .. self.string)
+	if self.cursor < 0 then self.cursor = 0 end
+	if self.cursor > self.string:len() then
+		self.cursor = self.string:len()
+	end
+	self:widget():setText(out .. self.prompt .. self.string .. ' ')
+	self:widget():Cursor(out:len() + self.prompt:len() + self.cursor)
 end

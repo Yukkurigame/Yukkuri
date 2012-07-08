@@ -21,7 +21,7 @@ public:
 
 	void updatePosition( );
 
-	void setFontColor( int r, int g, int b );
+	void setFontColor( unsigned int r, unsigned int g, unsigned int b );
 	void setText( std::string text );
 	void setTextPosition( float x, float y );
 	float getTextX( ){ return TextX; }
@@ -34,12 +34,18 @@ public:
 	inline int getLines( ){ return Height / TextSprite.getLineSize(); }
 
 
-
 	void Update();
 
 	void toggleVisibility( );
+	inline unsigned char isCursorVisible()	{ return TextSprite.isCursorVisible(); }
+	inline void setCursorVisible()			{ TextSprite.setCursorVisible(); }
+	inline void clearCursorVisible()		{ TextSprite.clearCursorVisible(); }
 
 	bool setText( lua_State* L );
+
+	inline void setCursor( unsigned int pos ) { TextSprite.setCursorPosition( pos ); }
+	inline int getCursor( ) { return TextSprite.getCursorPosition(); };
+
 
 protected:
 	virtual CUData* createUData();

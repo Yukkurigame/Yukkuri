@@ -124,7 +124,7 @@ void WidgetText::updatePosition( )
 	TextSprite.setPosition( posx, posy, getZ( ) + 0.1f );
 }
 
-void WidgetText::setFontColor( int r, int g, int b )
+void WidgetText::setFontColor( unsigned int r, unsigned int g, unsigned int b )
 {
 	TextSprite.setColor( r, g, b );
 }
@@ -172,5 +172,8 @@ void WidgetText::toggleVisibility( )
 {
 	Widget::toggleVisibility( );
 	TextSprite.setVisible(visible);
+	// You need to show cursor every time. No remembering of old state.
+	if( isCursorVisible() )
+		clearCursorVisible();
 }
 

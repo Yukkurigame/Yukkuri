@@ -21,5 +21,6 @@ static void clear_vector( Vector* V ){
 #define FOREACHIT( vec ) FOREACH( it, vec )
 #define FOREACHP( item, vec ) for( typeof((vec)->begin()) item = (vec)->begin(), end##item = (vec)->end(); \
 										item != end##item; ++item )
+#define FOREACHPIT( vec ) FOREACHP( it, vec )
 
 #endif /* HACKS_H_ */

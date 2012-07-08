@@ -207,7 +207,7 @@ Char* font_data::getChar( unsigned int c )
 {
 	//TODO: unicode support
 	if( c < 0 || c > CHARSIZE )
-		return NULL;
+		return getChar('?');
 	return chars[ c ];
 }
 

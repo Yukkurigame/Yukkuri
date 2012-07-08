@@ -244,9 +244,8 @@ void RenderManager::FreeGLSprite( Sprite* sprite )
 
 void RenderManager::FreeGLSprites( std::vector< Sprite* >* sprites )
 {
-	for( std::vector< Sprite* >:: iterator it = sprites->begin(), vend = sprites->end(); it != vend; ++it ){
+	FOREACHPIT(sprites)
 		FreeGLSprite(*it);
-	}
 	sprites->clear();
 }
 

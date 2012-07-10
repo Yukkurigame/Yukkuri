@@ -10,7 +10,7 @@
 		speed = 80.0,
 		id = "entity_Flan_700488",
 		name = "Flan",
-		proto = "entity",
+		proto = "unit_sane",
 		meeting = 0.89,
 		damage = 3.0,
 		width = 84,

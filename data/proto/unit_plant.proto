@@ -1,6 +1,6 @@
 
 
-parent = "live_object"
+parent = "unit_dynamic"
 
 actions = {
 	{

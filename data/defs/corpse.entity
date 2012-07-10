@@ -2,7 +2,7 @@
 	{
 		picture = "0",
 		name = "Corpse",
-		proto = "corpse",
+		proto = "unit_corpse",
 		meeting = 100.0,
 		image = "sprite_Corpse_952625",
 		height = 45,

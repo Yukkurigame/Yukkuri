@@ -1,0 +1,21 @@
+
+parent = "unit_sane"
+
+actions = {
+	{
+		name = "init",
+		frames = {
+			{ constants.acSuper },
+		},
+	},
+	{
+		name = "idle",
+		frames = {
+			{ constants.acSuper },
+			{ constants.acIfNotFlag, constants.ufMoving },
+				-- { com = constants.acMove },
+				-- { com = constants.acRepeatDelay, param = 3000 },
+			{ constants.acEnd },
+		}
+	}
+}

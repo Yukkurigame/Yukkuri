@@ -90,6 +90,7 @@ void LuaMain::RegisterApi( lua_State* L )
 		FIELD(acNone)
 
 		// Action parameters stack
+		FIELD(acPush)
 		FIELD(acPushInt)
 		FIELD(acPushFloat)
 		FIELD(acPushString)

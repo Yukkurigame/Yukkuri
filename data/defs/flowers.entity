@@ -7,7 +7,7 @@
 		imagerows = 1,
 		id = "plant_Flower_580779",
 		name = "Flower",
-		proto = "plant",
+		proto = "unit_plant",
 		meeting = 99.99,
 		nutritive = 4.0,
 		width = 60,

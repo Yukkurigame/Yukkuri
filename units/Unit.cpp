@@ -156,8 +156,7 @@ bool Unit::update( const Frame& frame )
 			}
 			break;
 		case acLoop:
-			Actions.frame = -1;
-			Actions.breakLoop = true;
+			Actions.looped = true;
 			break;
 
 
@@ -172,6 +171,20 @@ bool Unit::update( const Frame& frame )
 			break;
 		case acPushString:
 			Actions.params.Push( param.stringData );
+			break;
+		case acPush:
+			for( int i = 0; i < FRAME_PARAMS_COUNT; ++i ){
+				switch( frame.param_types[i] ){
+					case stInt:
+						Actions.params.Push( frame.params[i].intData );
+						break;
+					case stString:
+						Actions.params.Push( frame.params[i].stringData );
+						break;
+					default:
+						break;
+				}
+			}
 			break;
 
 		// Conditions

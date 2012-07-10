@@ -1,6 +1,6 @@
 
 
-parent = "object"
+parent = "unit"
 
 actions = {
 	{
@@ -14,6 +14,7 @@ actions = {
 		name = "idle",
 		frames = {
 			{ constants.acMove },
+			{ constants.acLoop }
 		}
 	}
 }

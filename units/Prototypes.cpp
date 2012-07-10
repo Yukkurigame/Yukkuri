@@ -81,10 +81,6 @@ bool ActionManager::nextFrame( )
 {
 	if( done || action == NULL )
 		return true;
-	if( breakLoop ){
-		breakLoop = false;
-		return true;
-	}
 
 	UINT now = sdl_time;
 
@@ -95,7 +91,8 @@ bool ActionManager::nextFrame( )
 		lastTick = now;
 
 		if( frame >= (int)action->framesCount - 1 ){
-			done = true;
+			if( !looped )
+				done = true;
 			if( forceParent ){
 				forceParent = false;
 				restoreState();

@@ -19,7 +19,7 @@
 enum ActionCommand
 {
 	acNone = 0,
-	acPushInt, acPushFloat, acPushString,
+	acPush, acPushInt, acPushFloat, acPushString,
 	acSuper, acRepeatDelay, acSetAction, acLoop,
 	acCondition,
 	// Comparison between parameter and number
@@ -91,7 +91,7 @@ struct ActionManager
 	bool loaded;
 	bool done;
 	bool forceParent;
-	bool breakLoop;
+	bool looped;
 	UINT lastTick;
 	int frame;
 	Proto* proto;
@@ -101,7 +101,7 @@ struct ActionManager
 
 	std::stack< ActionManagerState > stateStack;
 
-	ActionManager( ) : loaded(false), done(false), forceParent(false), breakLoop(false),
+	ActionManager( ) : loaded(false), done(false), forceParent(false), looped(false),
 			lastTick(0), frame(-1), action(NULL) { }
 	~ActionManager( ) { }
 

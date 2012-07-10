@@ -37,16 +37,3 @@ void Corpse::setUnitPos( float x, float y )
 		blood->resize( Image.getWidth() * getUnitSize(), Image.getHeight() * getUnitSize() );
 	}
 }
-
-void Corpse::update( const int& dt )
-{
-	AnimatedUnit::update( dt );
-	/*if( blood ){
-		blood->setPosition( getUnitX() - getUnitWidth()/4 , getUnitY(), Z - 1 );
-		if( !blood->coordinates ){
-			getUnitImage( )->setPosition( 0, 0, Z - 1);
-			blood->resize( getUnitWidth() * getUnitSize(), getUnitHeight() * getUnitSize() );
-			blood->coordinates = Graphics::Instance( )->GetAnimation( getUnitName(), 1 );
-		}
-	}*/
-}

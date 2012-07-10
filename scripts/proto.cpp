@@ -13,6 +13,7 @@
 #include "safestring.h"
 
 #include <cstdlib>
+#include <stack>
 
 int ProtoManager::Count = 0;
 
@@ -147,7 +148,7 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 
 				getValueByName( L, "name", aname );
 
-				//proto->Actions[aname] = Action(aname);
+
 
 				Action* a = &proto->Actions[aname];
 				a->name = aname;
@@ -159,32 +160,73 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 						a->frames = (Frame*)malloc( sizeof(Frame) * a->framesCount );
 
 						size_t j = 0;
+						std::stack< Frame* > conditions;
 
 						// Стек: env actions key actions[key] frames nil
 						for( lua_pushnil(L); lua_next(L, -2); lua_pop(L, 1), j++ ){
 							// Стек: env actions key actions[key] frames key frame
 							assert( j < a->framesCount );
 							if( lua_istable( L, -1 ) ){
-								UINT command;
+								UINT command = acNone;
+								Frame& frame = a->frames[j];
 
-								getValueByName( L, "num", a->frames[j].num );
-								getValueByName( L, "dur", a->frames[j].duration );
-								getValueByName( L, "com", command );
-								a->frames[j].command = (enum ActionCommand)command;
-
-								lua_getfield( L, -1, "param" ); // st: ... frames key frame param
-								if( lua_isfunction( L, -1 ) ){
-									RegProc( L, static_cast<LuaRegRef*>( &(a->frames[j].param) ), -1 );
-									a->frames[j].is_param_function = true;
-
-									// st: ... frames key frame
-								}else{
-									a->frames[j].is_param_function = false;
-									lua_pop( L, 1 ); // st: ... frames key frame
-									getValueByName( L, "param", a->frames[j].param );
+								for(int fr = 0; fr < FRAME_PARAMS_COUNT; ++fr ){
+									frame.params[fr].stringData = NULL;
+									frame.param_types[fr] = stNone;
 								}
 
-								getValueByName( L, "text", a->frames[j].txt_param );
+								getValueByName( L, "num", frame.num );
+								getValueByName( L, "dur", frame.duration );
+
+								// Add non-keyworded parameters
+								int params_added = 0;
+								for( lua_pushnil(L); lua_next(L, -2); lua_pop(L, 1) ){
+									// Стек: env ... frames key frame nil
+									if( params_added >= FRAME_PARAMS_COUNT )
+										break;
+									if( !lua_isnumber( L, -2 ) )
+										continue;
+									if( lua_tonumber( L, -2 ) == 1 ){
+										command = lua_tointeger( L, -1 );
+									}else{
+										if( lua_isnumber( L, -1 ) ){
+											frame.param_types[params_added] = stInt;
+											frame.params[params_added].intData = lua_tonumber( L, -1 );
+										}else if( lua_isstring( L, -1 )){
+											frame.param_types[params_added] = stString;
+											frame.params[params_added].stringData = lua_tostring( L, -1 );
+										}else
+											continue;
+										params_added++;
+									}
+								}
+
+								frame.command = (enum ActionCommand)command;
+
+								// Add condition to condition stack.
+								if( command >= acCondition && command < acEnd )
+									conditions.push( &a->frames[j] );
+								else if( command == acEnd ){
+									if( conditions.empty() )
+										Debug::debug( Debug::CONFIG, "Unexpected acEnd command at frame " + citoa(j) +
+											" in action '" + a->name + "' of proto '" + proto->name + "'. Skipping.\n");
+									else{
+										conditions.top()->condition_end = j;
+										conditions.pop();
+									}
+								}
+
+								lua_getfield( L, -1, "func" ); // st: ... frames key frame param
+								if( lua_isfunction( L, -1 ) ){
+									RegProc( L, &frame.func, -1 );
+									// st: ... frames key frame
+								}else{
+									lua_pop( L, 1 ); // st: ... frames key frame
+									frame.func = LUA_NOREF;
+									//getValueByName( L, "param", frame.param );
+								}
+
+								//getValueByName( L, "text", frame.txt_param );
 							}else{
 								Debug::debug( Debug::CONFIG,
 									"In proto '" + proto->name + "', action '" + a->name + "' " +
@@ -193,6 +235,15 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 								a->framesCount = 0;
 							}
 							//lua_pop(L, 1);	// Стек: env actions key actions[key] frames key
+						}
+
+						while( !conditions.empty() ){
+							Frame* f = conditions.top();
+							Debug::debug( Debug::CONFIG,
+									"End of " + citoa(f->command) + " condition expected. In proto '" + proto->name +
+									"', action '" + a->name + "'.\n");
+							f->condition_end = a->framesCount;
+							conditions.pop();
 						}
 					}else{
 						Debug::debug( Debug::CONFIG, "There are no frames in action '" +

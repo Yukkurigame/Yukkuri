@@ -57,7 +57,7 @@
 #include "interface/widgets/WidgetBar.h"
 
 // Typelist with all types, that can be passed to lua as userdata
-typedef TYPELIST_10( Unit, AnimatedUnit, DynamicUnit, Entity, Plant, Corpse, Player, Widget, WidgetText, WidgetBar ) ClassesList;
+typedef TYPELIST_9( Unit, DynamicUnit, Entity, Plant, Corpse, Player, Widget, WidgetText, WidgetBar ) ClassesList;
 
 
 
@@ -65,7 +65,6 @@ typedef TYPELIST_10( Unit, AnimatedUnit, DynamicUnit, Entity, Plant, Corpse, Pla
 
 // 2. For each type, it's needed to explicitly declare functions for userdata creation.
 UDATA_CREATOR_FUNC_DECL(Unit);
-UDATA_CREATOR_FUNC_DECL(AnimatedUnit);
 UDATA_CREATOR_FUNC_DECL(DynamicUnit);
 UDATA_CREATOR_FUNC_DECL(Entity);
 UDATA_CREATOR_FUNC_DECL(Plant);
@@ -89,7 +88,6 @@ void RegisterAllTypeMetatables(lua_State* L)
 
 	// Make RegisterTypeMetatable calls for each type
 	RegisterTypeMetatable<Unit>(L);
-	RegisterTypeMetatable<AnimatedUnit>(L);
 	RegisterTypeMetatable<DynamicUnit>(L);
 	RegisterTypeMetatable<Entity>(L);
 	RegisterTypeMetatable<Plant>(L);
@@ -174,49 +172,49 @@ static const struct luaL_reg ud_meta[TL::Length<ClassesList>::value][METAMETHODS
 		//GAMEOBJ_METH_ENTRY(0),
 		END
 	},
-	{
+	/*{
 		STD_METHODS(1),
 		//OBJPHYS_METH_ENTRY(1),
+		END
+	},*/
+	{
+		STD_METHODS(1),
+		//OBJDYNAMIC_METH_ENTRY(1),
 		END
 	},
 	{
 		STD_METHODS(2),
-		//OBJDYNAMIC_METH_ENTRY(2),
+		//OBJPLAYER_METH_ENTRY(2),
 		END
 	},
 	{
 		STD_METHODS(3),
-		//OBJPLAYER_METH_ENTRY(3),
+		//OBJENEMY_METH_ENTRY(3),
 		END
 	},
 	{
 		STD_METHODS(4),
-		//OBJENEMY_METH_ENTRY(4),
+		//OBJBULLET_METH_ENTRY(4),
 		END
 	},
 	{
 		STD_METHODS(5),
-		//OBJBULLET_METH_ENTRY(5),
+		//OBJRAY_METH_ENTRY(5),
 		END
 	},
 	{
 		STD_METHODS(6),
-		//OBJRAY_METH_ENTRY(6),
+		WIDGET_METH_ENTRY(6)
 		END
 	},
 	{
 		STD_METHODS(7),
-		WIDGET_METH_ENTRY(7)
+		WIDGETTEXT_METH_ENTRY(7)
 		END
 	},
 	{
 		STD_METHODS(8),
-		WIDGETTEXT_METH_ENTRY(8)
-		END
-	},
-	{
-		STD_METHODS(9),
-		WIDGETBAR_METH_ENTRY(9)
+		WIDGETBAR_METH_ENTRY(8)
 		END
 	}
 

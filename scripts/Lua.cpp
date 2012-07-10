@@ -78,30 +78,6 @@ bool LuaMain::OpenFile( std::string name )
 }
 
 
-bool LuaMain::getBool( int index )
-{
-	if( lua_isboolean( Lst, index ) ){
-		return lua_toboolean( Lst, index ) != 0;
-	}
-	return false;
-}
-
-double LuaMain::getNumber( int index )
-{
-	if( lua_isnumber( Lst, index ) ){
-		return lua_tonumber( Lst, index );
-	}
-	return 0.0;
-}
-
-std::string LuaMain::getString( int index )
-{
-	if( lua_isstring( Lst, index) ){
-		return (std::string)lua_tostring( Lst, index );
-	}
-	return "";
-}
-
 template<> bool LuaMain::getValue( lua_State* L, int index, bool& ret)
 {
 	ret = false;

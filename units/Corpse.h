@@ -19,8 +19,6 @@ public:
 
 	void setUnitPos( float x, float y );
 
-	void update( const int& dt );
-
 	void setBloodColor( int c ) { if( blood ) blood->clr.set( c ); }
 	void setBloodColor( int r, int g, int b ) { if( blood ) blood->clr.set( r, g, b ); }
 

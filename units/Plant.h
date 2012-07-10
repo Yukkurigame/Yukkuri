@@ -9,12 +9,10 @@
 
 #include "Animated.h"
 
-class Plant: public AnimatedUnit
+class Plant: public Unit
 {
 public:
 	Plant();
-
-	bool isEdible( ) { return true; }
 
 	void hit( float damage );
 

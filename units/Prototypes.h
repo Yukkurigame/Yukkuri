@@ -14,12 +14,23 @@
 #include <stack>
 #include <map>
 
+#define FRAME_PARAMS_COUNT 4
+
 enum ActionCommand
 {
-	acNone,
+	acNone = 0,
 	acPushInt, acPushFloat, acPushString,
-	acSuper,
+	acSuper, acRepeatDelay, acSetAction, acLoop,
+	acCondition,
+	// Comparison between parameter and number
+	acIfParamEqual, acIfParamLess, acIfParamMore,
+	// Comparison between parameter and parameter
+	acIfParametersEqual, acIfParametersLess, acIfParametersMore, acIfParametersLessBy,
+	acIfFlag, acIfNotFlag,
+	acEnd,
 	acSetParam, acCopyParam, acLoadParam, acLoadParamBunch,
+	acSetFlag, acRemoveFlag,
+	acMove
 };
 
 struct Frame
@@ -27,12 +38,16 @@ struct Frame
 	UINT duration;
 	UINT num;
 
-	int param;
-	char* txt_param;
-	ActionCommand command;
-	bool is_param_function;
+	StackData params[FRAME_PARAMS_COUNT];
+	StackElementType param_types[FRAME_PARAMS_COUNT];
 
-	Frame( ) : duration(), num(), param(), command(acNone), is_param_function(false) {};
+	int condition_end;
+	long repeat;
+	LuaRegRef func;
+	ActionCommand command;
+
+	Frame( ) : duration(), num(), condition_end(), repeat(),
+			func(-2), command(acNone) {};
 };
 
 struct Action
@@ -43,6 +58,7 @@ struct Action
 
 	Action( ) : framesCount(0), frames(NULL) {}
 	~Action( );
+
 };
 
 struct Proto
@@ -75,6 +91,7 @@ struct ActionManager
 	bool loaded;
 	bool done;
 	bool forceParent;
+	bool breakLoop;
 	UINT lastTick;
 	int frame;
 	Proto* proto;
@@ -84,19 +101,22 @@ struct ActionManager
 
 	std::stack< ActionManagerState > stateStack;
 
-	ActionManager( ) : loaded(false), done(false), forceParent(false),
+	ActionManager( ) : loaded(false), done(false), forceParent(false), breakLoop(false),
 			lastTick(0), frame(-1), action(NULL) { }
 	~ActionManager( ) { }
 
 	void setProto( Proto* );
-	void setAction( std::string );
-	void setParentAction( std::string name = "" );
+	void setAction( std::string, bool force = false );
+	void setParentAction( const char* name );
 
 	bool nextFrame( );
 
 	void saveState( );
 	void restoreState( );
 	void popState( );
+
+	// TODO: make anything with this
+	bool checkFrameParams( const Frame& f, int num, enum StackElementType first, ... );
 
 };
 

@@ -61,7 +61,7 @@ public:
 	bool OpenFile( std::string name );
 
 	template <typename T>
-	int push( T const & val ){
+	inline int push( T const & val ){
 		return pushToLua( Lst, val );
 	}
 
@@ -96,9 +96,30 @@ public:
 		return lua_gettop( Lst );
 	}
 
-	bool getBool( int index );
-	double getNumber( int index );
-	std::string getString( int index );
+	inline int getType( int index ){
+		return lua_type( Lst, index );
+	}
+
+	inline bool getBool( int index ){
+		if( lua_isboolean( Lst, index ) )
+			return lua_toboolean( Lst, index ) != 0;
+		return false;
+	}
+	inline double getNumber( int index ){
+		if( lua_isnumber( Lst, index ) )
+			return lua_tonumber( Lst, index );
+		return 0.0;
+	}
+	inline const char* getChar( int index ){
+		if( lua_isstring( Lst, index) )
+			return lua_tostring( Lst, index );
+		return NULL;
+	}
+	inline std::string getString( int index ){
+		if( lua_isstring( Lst, index) )
+			return (std::string)lua_tostring( Lst, index );
+		return "";
+	}
 
 	template<typename T>
 	bool getValue( lua_State* L, int index, T& ret);

@@ -12,12 +12,18 @@ Entity::Entity()
 	Attacked = NULL;
 }
 
-void Entity::update( const int& dt )
+bool Entity::update( const Frame& frame )
 {
-	AnimatedUnit::update( dt );
-	if( this->isDeleted() )
-		return;
-	if( Attacked && !Attacked->isDeleted() ){
+	switch( frame.command ){
+		case acMove:
+			move( );
+			break;
+		default:
+			return DynamicUnit::update( frame );
+			break;
+	}
+	return true;
+	/*if( Attacked && !Attacked->isDeleted() ){
 		float dst = dist(Attacked);
 		if( Char.get( uStateHP ) * 3 <= Char.get( uParamHP ) && dst < 500 ){ //Run away
 			signed int px = (( Attacked->getUnitX() > this->X ) ? -1 : 1);
@@ -26,8 +32,8 @@ void Entity::update( const int& dt )
 		}else if( dst  > getUnitSize( ) * 100 ){ //Get closer
 			setPathTarget( Attacked->getUnitX(), Attacked->getUnitY() );
 		}
-	}
-	move( dt );
+	}*/
+
 }
 
 void Entity::takeAction( )
@@ -46,7 +52,7 @@ void Entity::takeAction( )
 	}
 }
 
-void Entity::move( const int& dt )
+void Entity::move( )
 {
 	if( !isMoved() ){
 		Image.setFrame(0);
@@ -63,7 +69,7 @@ void Entity::move( const int& dt )
 		stopMove();
 		return;
 	}
-	moveUnit( dx, dy, dt );
+	moveUnit( dx, dy );
 }
 
 void Entity::setPathTarget(float X, float Y)

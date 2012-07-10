@@ -153,6 +153,7 @@ struct CharBuild {
 			break;							\
 	}
 
+
 	inline int get( enum character name ){
 		PARAM_SWITCH( return,  );
 		return 0;
@@ -160,6 +161,11 @@ struct CharBuild {
 	inline float get( enum character_float name ){
 		PARAM_SWITCH_FLOAT( return,  );
 		return 0.0;
+	}
+	inline float get( int name ){
+		if( name < uCharIntLast )
+			return get( (enum character)name );
+		return get( (enum character_float)name );
 	}
 	inline int* getPtr( enum character name ){
 		PARAM_SWITCH( return &,  );
@@ -184,8 +190,12 @@ struct CharBuild {
 	inline void set( enum character_float name, float value ){
 		PARAM_SWITCH_FLOAT(  , = value );
 	}
-
-
+	inline void set( int name, float val ){
+		if( name < uCharIntLast )
+			set( (enum character)name, val );
+		else
+			set( (enum character_float)name, val );
+	}
 
 #undef PARAM_SWITCH
 #undef PARAM_SWITCH_FLOAT

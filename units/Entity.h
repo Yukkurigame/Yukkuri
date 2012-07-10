@@ -9,9 +9,9 @@ class Entity: public DynamicUnit
 public:
 	Entity( );
 	void setPathTarget(float, float);
-	void update( const int& );
+	bool update( const Frame& f );
 	void takeAction( );
-	void move( const int& );
+	void move( );
 	void stopMove(){ ForceGo = false; };
 	void startMove(){ ForceGo = true; };
 	bool isMoved(){ return ForceGo; };

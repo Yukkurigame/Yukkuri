@@ -11,7 +11,8 @@ public:
 	void die( );
 
 	void moveUnit( short axis, signed int val );
-	void update( const int& );
+	bool update( const Frame& f );
+
 
 protected:
 	virtual CUData* createUData();

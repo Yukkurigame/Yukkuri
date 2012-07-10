@@ -5,22 +5,29 @@ actions = {
 	{
 		name = "init",
 		frames = {
-			{ com = constants.acSuper, text = "init" },
-			{ com = constants.acPushString, text = "damage" },
-			{ com = constants.acPushInt, param = constants.uChrDamage },
-			{ com = constants.acPushString, text = "speed" },
-			{ com = constants.acPushInt, param = constants.uChrSpeed },
-			{ com = constants.acLoadParamBunch, param = 2 },
-			{ com = constants.acPushInt, param = constants.uStateFed },
-			{ com = constants.acSetParam, param = 100 },
-			{ com = constants.acPushInt, param = constants.uParamExp },			
-			{ com = constants.acSetParam, param = 200 },
-			{ com = constants.acPushInt, param = constants.uStateExp },
-			{ com = constants.acSetParam, param = 20 },
-			{ com = constants.acPushInt, param = constants.uBaseLevel },
-			{ com = constants.acSetParam, param = 1 },
-			{ com = constants.acPushInt, param = constants.uBaseAge },
-			{ com = constants.acSetParam, param = 0 },
+			{ constants.acSuper },
+			{ constants.acPushString, "damage" },
+			{ constants.acPushInt, constants.uChrDamage },
+			{ constants.acPushString, "speed" },
+			{ constants.acPushInt, constants.uChrSpeed },
+			{ constants.acLoadParamBunch, 2 },
+			{ constants.acSetParam, constants.uStateFed, 100 },
+			{ constants.acSetParam, constants.uParamExp, 200 },
+			{ constants.acSetParam, constants.uStateExp, 20 },
+			{ constants.acSetParam, constants.uBaseLevel, 1 },
+			{ constants.acSetParam, constants.uBaseAge, 0 },
+			{ constants.acSetAction, "idle" },
 		},
-	}
+	},
+	{
+		name = "idle",
+		frames = {
+			{ constants.acSuper },
+			{ constants.acIfNotFlag, constants.ufMoving },
+				-- { com = constants.acMove },
+				-- { com = constants.acRepeatDelay, param = 3000 },
+			{ constants.acEnd },
+			{ constants.acLoop }
+		}
+	},
 }

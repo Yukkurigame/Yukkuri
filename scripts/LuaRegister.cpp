@@ -89,19 +89,46 @@ void LuaMain::RegisterApi( lua_State* L )
 		// Actions
 		FIELD(acNone)
 
-		// Functions
-		FIELD(acSuper)
-
 		// Action parameters stack
 		FIELD(acPushInt)
 		FIELD(acPushFloat)
 		FIELD(acPushString)
+
+		// Functions
+		FIELD(acSuper)
+		FIELD(acRepeatDelay)
+		FIELD(acSetAction)
+		FIELD(acLoop)
+
+		// Conditions
+		FIELD(acCondition)
+		FIELD(acIfParamEqual)
+		FIELD(acIfParamLess)
+		FIELD(acIfParamMore)
+		FIELD(acIfParametersEqual)
+		FIELD(acIfParametersLess)
+		FIELD(acIfParametersMore)
+		FIELD(acIfParametersLessBy)
+		FIELD(acIfFlag)
+		FIELD(acIfNotFlag)
+		FIELD(acEnd)
+
+		// Unit flags
+		FIELD(ufDeleted)
+		FIELD(ufEdible)
+		FIELD(ufMoving)
+		FIELD(ufLast)
+		FIELD(acSetFlag)
+		FIELD(acRemoveFlag)
 
 		// Unit Parameters
 		FIELD(acSetParam)
 		FIELD(acCopyParam)
 		FIELD(acLoadParam)
 		FIELD(acLoadParamBunch)
+
+		// Misc commands
+		FIELD(acMove)
 
 		// Unit base parameters
 		FIELD(uBaseLevel)

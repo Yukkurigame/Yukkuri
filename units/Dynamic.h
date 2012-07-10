@@ -1,23 +1,21 @@
 #ifndef DYNAMIC_UNIT_H
 #define DYNAMIC_UNIT_H
 
-#include "Animated.h"
-#include "map/Map.h"
-#include <map>
+#include "Unit.h"
 #include <vector>
 
-class DynamicUnit: public AnimatedUnit
+class DynamicUnit: public Unit
 {
 public:
 	DynamicUnit();
-	void moveUnit(  signed int x, signed int y , const int& dt);
+	void moveUnit( signed int x, signed int y );
 	void eat( );
 	void eat( Unit* Victim );
 
 	virtual bool Create( int id );
 	virtual void die( );
 
-	virtual void levelUp( int addlevel );
+	virtual bool update( const Frame& f );
 
 	void takeAction( );
 	void grow( );

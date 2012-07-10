@@ -5,16 +5,19 @@
  *
  */
 #include "Prototypes.h"
-#include "debug.h"
 #include <cstdlib>
+#include <stdarg.h>
+
+#include "safestring.h"
+#include "debug.h"
 
 extern long sdl_time;
 
+
 Action::~Action( )
 {
-	for( UINT i = 0; i < framesCount; ++i )
-		free(frames[i].txt_param);
-	free(frames);
+	// FIXME: leak
+	//free(frames);
 }
 
 Action* Proto::getAction( std::string aname )
@@ -45,7 +48,7 @@ void ActionManager::setProto( Proto* p )
 		loaded = true;
 }
 
-void ActionManager::setAction( std::string aname )
+void ActionManager::setAction( std::string aname, bool force )
 {
 	action = NULL;
 	if( !loaded )
@@ -54,21 +57,19 @@ void ActionManager::setAction( std::string aname )
 	action = proto->getAction( aname );
 	frame = -1;
 	done = false;
-	forceParent = false;
+	forceParent = force;
 }
 
-void ActionManager::setParentAction( std::string aname )
+void ActionManager::setParentAction( const char* aname )
 {
 	if( !loaded )
 		return;
 	// Load the same action from parent if it was called without name
-	if( aname == "" )
-		aname = actionname;
-	else
-		actionname = aname;
-	action = proto->getParentAction( aname );
+	if( aname != NULL )
+		actionname = std::string(aname);
+	action = proto->getParentAction( actionname );
 	if( action == NULL )
-		Debug::debug( Debug::PROTO, "Action " + aname + " not found in parent prototypes of " +
+		Debug::debug( Debug::PROTO, "Action " + actionname + " not found in parent prototypes of " +
 				proto->name + " prototype.\n" );
 	frame = -1;
 	done = false;
@@ -80,17 +81,28 @@ bool ActionManager::nextFrame( )
 {
 	if( done || action == NULL )
 		return true;
+	if( breakLoop ){
+		breakLoop = false;
+		return true;
+	}
 
 	UINT now = sdl_time;
 
-	if( frame < 0 || now - lastTick >= action->frames[frame].duration ){
+	Frame& f = action->frames[frame];
+
+	if( frame < 0 || now - lastTick >= f.duration || f.repeat > now ){
+
 		lastTick = now;
 
 		if( frame >= (int)action->framesCount - 1 ){
 			done = true;
 			if( forceParent ){
-				restoreState();
 				forceParent = false;
+				restoreState();
+				if( frame >= (int)action->framesCount - 1 ){
+					done = true;
+					return true;
+				}
 			}else
 				return true;
 		}
@@ -129,4 +141,28 @@ void ActionManager::restoreState()
 void ActionManager::popState()
 {
 	stateStack.pop();
+}
+
+
+bool ActionManager::checkFrameParams( const Frame& fr, int num, enum StackElementType first, ... )
+{
+	va_list mark;
+	StackElementType setp = first;
+	if( num > FRAME_PARAMS_COUNT ){
+		Debug::debug( Debug::PROTO, "Wrong count of parameters to check.\n" );
+		num = FRAME_PARAMS_COUNT;
+	}
+	va_start( mark, first );
+	for( int i = 0; i < num; i++ ){
+		if( fr.param_types[i] != setp ){
+			Debug::debug( Debug::PROTO, "Wrong set of parameters of frame with action " +
+					citoa( fr.command ) + ".\n" );
+			return false;
+		}
+		// TODO: warning: ‘StackElementType’ is promoted to ‘int’ when passed through ‘...’
+		// note: (so you should pass ‘int’ not ‘StackElementType’ to ‘va_arg’)
+		setp = (StackElementType)va_arg( mark, int );
+	}
+	va_end( mark );
+	return true;
 }

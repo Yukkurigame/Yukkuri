@@ -6,8 +6,9 @@ actions = {
 	{
 		name = "init",
 		frames = {
-			{ com = constants.acSuper, text = "init" },
-			{ com = constants.acLoadParam, text = "nutritive", param = constants.uChrNutritive },
+			{ constants.acSuper },
+			{ constants.acLoadParam, constants.uChrNutritive, "nutritive" },
+			{ constants.acSetFlag, constants.ufEdible },
 		},
 	}
 }

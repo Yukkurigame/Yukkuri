@@ -8,6 +8,7 @@
 #include "scripts/LuaConfig.h"
 #include "scripts/proto.h"
 
+extern long sdl_time;
 
 Unit::Unit()
 {
@@ -15,6 +16,7 @@ Unit::Unit()
 	X = 0.0;
 	Y = 0.0;
 	Z = 1;
+	DT = 0;
 	UnitName = "";
 	Type = "";
 	flags = 0;
@@ -53,8 +55,9 @@ bool Unit::Create( int id )
 	return true;
 }
 
-void Unit::update( const int& )
+void Unit::update( const int& dt )
 {
+	DT = dt;
 	if( isDeleted() )
 		return;
 	if( Char.state.hp < 0 )
@@ -67,19 +70,15 @@ void Unit::update( const int& )
 	if( !Actions.loaded )
 		return;
 
-	int param = 0;
-	const char* txt_param = NULL;
-
-	ParametersStack* ps = &Actions.params;
-
 	while( !Actions.nextFrame() ){
 		const Frame& frame = Actions.action->frames[Actions.frame];
 
-		if( frame.is_param_function ){
+		if( frame.func != LUA_NOREF ){
 
 			extern LuaScript* luaScript;
 
-			int ret_val = luaScript->ExecChunkFromReg( frame.param, 0 );
+			this->pushUData( luaScript->getState() );
+			int ret_val = luaScript->ExecChunkFromReg( frame.func, 1 );
 			if( ret_val == -1 )	{
 				Debug::debug( Debug::PROTO,
 					"An error occurred while executing a local function. obj id  " +
@@ -88,117 +87,212 @@ void Unit::update( const int& )
 					": " + luaScript->getString( -1 ) + ".\n" );
 			}
 
-			const int top = luaScript->top();
-			const int p1 = top - ret_val + 1;
-			const int p2 = top - ret_val + 2;
+			for(int i = 0; i > ret_val; ++i ){
+				switch( luaScript->getType( 1 ) ){
+					case LUA_TNUMBER:
+						Actions.params.Push( luaScript->getNumber( 1 ) );
+						break;
+					case LUA_TSTRING:
+						Actions.params.Push( luaScript->getChar( 1 ) );
+						break;
 
-			param     = (ret_val > 0 ) ? luaScript->getNumber( p1 ) : 0;
-			txt_param = ((ret_val > 1 ) ? luaScript->getString( p2 ) : "").c_str();
-
-		}else{
-			param = frame.param;
-			txt_param = frame.txt_param;
+				}
+			}
 		}
 
-		switch(frame.command){
-			case acNone:
-				break;
+		update( frame );
 
-			// Functions
-			case acSuper:
-				Actions.saveState();
-				Actions.setParentAction( txt_param );
-				break;
-
-			// Action parameters stack
-			case acPushInt:
-				ps->Push( param );
-				break;
-			case acPushFloat:
-				//TODO: float
-				ps->Push( param );
-				Debug::debug( Debug::PROTO, "acPushFloat not implemented.\n" );
-				break;
-			case acPushString:
-				ps->Push( txt_param );
-				break;
-
-			// Unit Parameters
-			case acSetParam:
-				if( ps->CheckParamTypes( 1, stInt ) ){
-					int psparam = ps->PopInt();
-					if( psparam < uCharIntLast )
-						Char.set( (enum character)psparam, param );
-					else
-						Char.set( (enum character_float)psparam, param );
-				}else
-					Debug::debug( Debug::PROTO, "acSetParam bad parameter name.\n" );
-				break;
-			case acCopyParam:
-				if( !ps->CheckParamTypes( 1, stInt ) )
-					Debug::debug( Debug::PROTO, "acCopyParam bad original parameter name.\n" );
-				else if( !param )
-					Debug::debug( Debug::PROTO, "acCopyParam bad parameter name.\n" );
-				else{
-					int psparam = ps->PopInt();
-					float sparam;
-					if( psparam < uCharIntLast )
-						sparam = Char.get( (enum character)psparam );
-					else
-						sparam = Char.get( (enum character_float)psparam );
-					if( param < uCharIntLast )
-						Char.set( (enum character)param, sparam );
-					else
-						Char.set( (enum character_float)param, sparam );
-				}
-				break;
-			case acLoadParam:
-			{
-				if( !txt_param ){
-					Debug::debug( Debug::PROTO, "acLoadPraram bad parameter name.\n" );
-					break;
-				}else if ( !param ){
-					Debug::debug( Debug::PROTO, "acLoadPraram bad target parameter name.\n" );
-					break;
-				}
-				LuaConfig* cfg = new LuaConfig;
-				if( param < uCharIntLast )
-					cfg->getValue( txt_param, UnitName, Type,
-									Char.getRef( (enum character)param ) );
-				else
-					cfg->getValue( txt_param, UnitName, Type,
-									Char.getRef( (enum character_float)param ) );
-				delete cfg;
-				break;
-			}
-			case acLoadParamBunch:
-			{
-				if( param <= 0 )
-					break;
-				LuaConfig* cfg = new LuaConfig;
-				for( int i = 0; i < param; i++ ){
-					if( !ps->CheckParamTypes( 2, stInt, stString ) ){
-						Debug::debug( Debug::PROTO, "acLoadPraramBunch wrong " +
-								citoa(i+1) + " parameter set.\n" );
-						continue;
-					}
-					int psparam = ps->PopInt();
-					if( psparam < uCharIntLast )
-						cfg->getValue( ps->PopString(), UnitName, Type,
-								Char.getRef( (enum character)psparam ) );
-					else
-						cfg->getValue( ps->PopString(), UnitName, Type,
-								Char.getRef( (enum character_float)psparam ) );
-				}
-				delete cfg;
-				break;
-			}
-
-
-		}
 	}
 
 }
+
+#define PARAMCOND(sign)																	\
+	if( Actions.checkFrameParams( frame, 2, stInt, stInt ) ){							\
+		if( Char.get( frame.params[1].intData ) sign param.intData )					\
+			Actions.frame = frame.condition_end;										\
+		else																			\
+			Debug::debug( Debug::PROTO, "acIfParameterCond bad parameter name.\n" );	\
+	}
+
+#define PARAMSCOND(sign)															\
+	if( Actions.params.CheckParamTypes( 2, stInt, stInt ) ){						\
+		if( Char.get( param.intData ) sign Char.get( frame.params[1].intData ) )	\
+			Actions.frame = frame.condition_end;									\
+	}else																			\
+		Debug::debug( Debug::PROTO, "acIfParametersEqual bad parameter name.\n" );	\
+
+#define CHECKFLAG															\
+	if( param.intData < 1 || param.intData >= ufLast )						\
+		Debug::debug( Debug::PROTO, "acFlagOperation bad flag name.\n" );	\
+	else
+
+
+bool Unit::update( const Frame& frame )
+{
+	const StackData& param = frame.params[0];
+
+	switch(frame.command){
+		case acNone:
+			break;
+
+		// Functions
+		case acSuper:
+			Actions.saveState();
+			Actions.setParentAction( param.stringData );
+			break;
+		case acRepeatDelay:
+			if( Actions.frame != 0 && Actions.checkFrameParams( frame, 1, stInt ) ){
+				Frame& fr = Actions.action->frames[Actions.frame - 1];
+				if( fr.repeat <= sdl_time &&
+					( fr.command < acCondition || fr.command > acEnd ) )
+					fr.repeat = sdl_time + param.intData;
+			}
+			break;
+		case acSetAction:
+			// If param is not null, it will be action call, not replacing
+			if( Actions.checkFrameParams( frame, 1, stString ) ){
+				Actions.saveState();
+				Actions.setAction( param.stringData, frame.params[1].intData );
+			}
+			break;
+		case acLoop:
+			Actions.frame = -1;
+			Actions.breakLoop = true;
+			break;
+
+
+		// Action parameters stack
+		case acPushInt:
+			Actions.params.Push( param.intData );
+			break;
+		case acPushFloat:
+			//TODO: float
+			Actions.params.Push( param.intData );
+			Debug::debug( Debug::PROTO, "acPushFloat not implemented.\n" );
+			break;
+		case acPushString:
+			Actions.params.Push( param.stringData );
+			break;
+
+		// Conditions
+		case acCondition: // acCondition always false
+			Actions.frame = frame.condition_end;
+			break;
+		case acEnd: // Do nothing
+			break;
+
+
+
+		case acIfParamEqual:
+			PARAMCOND( != )
+			break;
+		case acIfParamLess:
+			PARAMCOND( > )
+			break;
+		case acIfParamMore:
+			PARAMCOND( < )
+			break;
+
+
+		case acIfParametersEqual:
+			PARAMSCOND( != )
+			break;
+		case acIfParametersLess:
+			PARAMSCOND( > )
+			break;
+		case acIfParametersMore:
+			PARAMSCOND( < )
+			break;
+		case acIfParametersLessBy:
+			PARAMSCOND( + param.intData > )
+			break;
+
+
+
+		// Unit flags
+		case acIfFlag:
+			CHECKFLAG
+				if( !( flags & param.intData ) )
+					Actions.frame = frame.condition_end;
+			break;
+		case acIfNotFlag:
+			CHECKFLAG
+				if( flags & param.intData )
+					Actions.frame = frame.condition_end;
+			break;
+		case acSetFlag:
+			CHECKFLAG
+				flags |= param.intData;
+			break;
+		case acRemoveFlag:
+			CHECKFLAG
+				flags &= ~param.intData;
+			break;
+
+
+
+		// Unit Parameters
+		case acSetParam:
+			if( Actions.checkFrameParams( frame, 2, stInt, stInt ) )
+				Char.set( param.intData, frame.params[1].intData );
+			else
+				Debug::debug( Debug::PROTO, "acSetParam bad parameter name.\n" );
+			break;
+		case acCopyParam:
+			if( !Actions.checkFrameParams( frame, 2, stInt, stInt ) )
+				Debug::debug( Debug::PROTO, "acCopyParam bad original parameter name.\n" );
+			else if( !param.intData )
+				Debug::debug( Debug::PROTO, "acCopyParam bad parameter name.\n" );
+			else
+				Char.set( param.intData, Char.get( frame.params[1].intData ) );
+			break;
+		case acLoadParam:
+		{
+			if( !Actions.checkFrameParams( frame, 2, stInt, stString ) )
+				break;
+			LuaConfig* cfg = new LuaConfig;
+			if( param.intData < uCharIntLast )
+				cfg->getValue( frame.params[1].stringData, UnitName, Type,
+								Char.getRef( (enum character)param.intData ) );
+			else
+				cfg->getValue( frame.params[1].stringData, UnitName, Type,
+								Char.getRef( (enum character_float)param.intData ) );
+			delete cfg;
+			break;
+		}
+		case acLoadParamBunch:
+		{
+			if( param.intData <= 0 )
+				break;
+			LuaConfig* cfg = new LuaConfig;
+			for( int i = 0; i < param.intData; i++ ){
+				if( !Actions.params.CheckParamTypes( 2, stInt, stString ) ){
+					Debug::debug( Debug::PROTO, "acLoadPraramBunch wrong " +
+							citoa(i+1) + " parameter set.\n" );
+					continue;
+				}
+				int psparam = Actions.params.PopInt();
+				if( psparam < uCharIntLast )
+					cfg->getValue( Actions.params.PopString(), UnitName, Type,
+							Char.getRef( (enum character)psparam ) );
+				else
+					cfg->getValue( Actions.params.PopString(), UnitName, Type,
+							Char.getRef( (enum character_float)psparam ) );
+			}
+			delete cfg;
+			break;
+		}
+		default:
+			return false;
+	}
+	return true;
+}
+
+#undef PARAMCOND
+#undef PARAMSCOND
+#undef CHECKFLAG
+
+
 
 void Unit::setUnitType( enum unitType type )
 {

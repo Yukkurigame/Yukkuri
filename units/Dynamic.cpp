@@ -26,7 +26,7 @@ DynamicUnit::DynamicUnit()
 
 bool DynamicUnit::Create( int id )
 {
-	if( !AnimatedUnit::Create( id ) )
+	if( !Unit::Create( id ) )
 		return false;
 
 	setUnitSize( 0.35f );
@@ -40,12 +40,12 @@ bool DynamicUnit::Create( int id )
 	@return Boolean value represents a Collision (true)
 	@remark
 **/
-void DynamicUnit::moveUnit( signed int x, signed int y, const int& dt )
+void DynamicUnit::moveUnit( signed int x, signed int y )
 {
 	if( x != 0 || y != 0 ){
 		float zone = 1.0;
 		float l = sqrt( static_cast<float>(x * x  +  y * y) );
-		float speed = fabs( Char.chars.speed * Char.params.fed ) * zone * ( dt / 100000.0f ) / l;
+		float speed = fabs( Char.chars.speed * Char.params.fed ) * zone * ( DT / 100000.0f ) / l;
 		float dx = speed * x;// / l;
 		float dy = speed * y ;// / l;
 		/*//MapTile* currentTile = map.GetTile( X , Y );
@@ -190,16 +190,14 @@ void DynamicUnit::die( )
 	this->setDeleted();
 }
 
-void DynamicUnit::levelUp( int addlevel )
+
+bool DynamicUnit::update( const Frame& frame )
 {
-	//FIXME: level not decreased;
-
+	return Unit::update( frame );
 }
-
 
 void DynamicUnit::takeAction( )
 {
-	AnimatedUnit::takeAction();
 	Char.tire();
 	if( Attacked ){
 		if( Attacked->isDeleted() || Attacked->getUnitParameter( uStateHP ) <= 0 || dist(Attacked) >= 1000 ){
@@ -210,7 +208,7 @@ void DynamicUnit::takeAction( )
 
 void DynamicUnit::grow( )
 {
-	AnimatedUnit::grow();
+	Unit::grow();
 	float scale = ( log( Char.get( uBaseLevel ) ) / log( 40.0f ) );
 	if( scale < 0.35 )
 		scale = 0.35f;

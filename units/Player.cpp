@@ -28,10 +28,15 @@ void Player::moveUnit( short axis, signed int val )
 		Image.setDefault();
 }
 
-void Player::update( const int& dt )
+bool Player::update( const Frame& frame )
 {
-	AnimatedUnit::update( dt );
-	if( this->isDeleted() )
-		return;
-	DynamicUnit::moveUnit( moveX, moveY, dt );
+	switch( frame.command ){
+		case acMove:
+			DynamicUnit::moveUnit( moveX, moveY );
+			break;
+		default:
+			return DynamicUnit::update( frame );
+			break;
+	}
+	return true;
 }

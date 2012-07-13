@@ -170,6 +170,8 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 								UINT command = acNone;
 								Frame& frame = a->frames[j];
 
+								frame.repeat = 0;
+
 								for(int fr = 0; fr < FRAME_PARAMS_COUNT; ++fr ){
 									frame.params[fr].stringData = NULL;
 									frame.param_types[fr] = stNone;

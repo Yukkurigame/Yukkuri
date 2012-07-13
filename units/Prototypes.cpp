@@ -48,32 +48,36 @@ void ActionManager::setProto( Proto* p )
 		loaded = true;
 }
 
-void ActionManager::setAction( std::string aname, bool force )
+void ActionManager::setAction( const char* aname )
 {
-	action = NULL;
 	if( !loaded )
 		return;
-	actionname = aname;
-	action = proto->getAction( aname );
+	if( aname != NULL ){
+		action = NULL;
+		action = proto->getAction( aname );
+	}
 	frame = -1;
 	done = false;
-	forceParent = force;
 }
 
 void ActionManager::setParentAction( const char* aname )
 {
-	if( !loaded )
+	if( !loaded || proto->parent == NULL )
 		return;
 	// Load the same action from parent if it was called without name
+	std::string actionname = "";
 	if( aname != NULL )
 		actionname = std::string(aname);
-	action = proto->getParentAction( actionname );
+	else if( action != NULL )
+		actionname = action->name;
+	if( action && action->name == actionname )
+		proto = proto->parent;
+	action = proto->getAction( actionname );
 	if( action == NULL )
 		Debug::debug( Debug::PROTO, "Action " + actionname + " not found in parent prototypes of " +
 				proto->name + " prototype.\n" );
 	frame = -1;
 	done = false;
-	forceParent = true;
 }
 
 
@@ -82,43 +86,38 @@ bool ActionManager::nextFrame( )
 	if( done || action == NULL )
 		return true;
 
-	UINT now = sdl_time;
+new_frame: ;
 
-	Frame& f = action->frames[frame];
+	if( frame < 0 || sdl_time - lastTick >= action->frames[frame].duration ){
 
-	if( frame < 0 || now - lastTick >= f.duration || f.repeat > now ){
-
-		lastTick = now;
+		lastTick = sdl_time;
 
 		if( frame >= (int)action->framesCount - 1 ){
-			if( !looped )
-				done = true;
-			if( forceParent ){
-				forceParent = false;
+			done = true;
+			if( topStateForced() ){
 				restoreState();
-				if( frame >= (int)action->framesCount - 1 ){
-					done = true;
-					return true;
-				}
-			}else
-				return true;
+				// It may cause a bug,
+				// When f.duration of restored frame is more than delta, controller
+				// may repeat previous command that swiched the flow to this state
+				goto new_frame;
+			}
+			return true;
 		}
-
 		frame++;
 
-	}else{
+	}else
 		return true;
-	}
 
 	return false;
 }
 
 
-
-void ActionManager::saveState()
+void ActionManager::saveState( bool forced )
 {
-	stateStack.push( ActionManagerState( frame, actionname, sdl_time - lastTick ) );
+	stateStack.push( new ActionManagerState( frame, action, proto,
+			sdl_time - lastTick, forced ) );
 }
+
 
 // This function returns state flag depends of execution
 // If state is not restored state flag should remain true
@@ -126,12 +125,14 @@ void ActionManager::restoreState()
 {
 	if( stateStack.empty() )
 		return;
-	ActionManagerState s = stateStack.top();
-	setAction( s.currentAction );
-	frame = s.currentFrame;
-	lastTick = sdl_time - s.prevActionTickDiff;
+	ActionManagerState* s = stateStack.top();
+	action = s->currentAction;
+	proto = s->currentPrototype;
+	frame = s->currentFrame;
+	lastTick = sdl_time - s->prevActionTickDiff;
+	done = false;
 	stateStack.pop();
-	return;
+	delete s;
 }
 
 
@@ -151,7 +152,10 @@ bool ActionManager::checkFrameParams( const Frame& fr, int num, enum StackElemen
 	}
 	va_start( mark, first );
 	for( int i = 0; i < num; i++ ){
-		if( fr.param_types[i] != setp ){
+		const StackElementType& el = fr.param_types[i];
+		if( !( el == setp ||
+			( setp == stIntOrNone && (el == stInt || el == stNone) ) ||
+			( setp == stStringOrNone && (el == stString || el == stNone) ) ) ){
 			Debug::debug( Debug::PROTO, "Wrong set of parameters of frame with action " +
 					citoa( fr.command ) + ".\n" );
 			return false;

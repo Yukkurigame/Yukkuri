@@ -9,8 +9,8 @@
 #define TEXT_H_
 
 #include <vector>
-#include "Font.h"
-#include "GraphicsTypes.h"
+#include "graphics/Font.h"
+#include "graphics/GraphicsTypes.h"
 
 
 void CleanFonts();

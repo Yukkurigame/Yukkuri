@@ -20,7 +20,7 @@ public:
 	Unit();
 	virtual ~Unit();
 
-	virtual bool Create( int id );
+	virtual bool Create( int id, std::string proto );
 
 	inline unsigned char isDeleted()	{ return flags & 1; }
 	inline void setDeleted()				{ flags |= 1; }
@@ -45,7 +45,7 @@ public:
 	virtual void setUnitPos( float x, float y );
 	inline void setUnitX( float x ) { setUnitPos(x, Y); }
 	inline void setUnitY( float y ) { setUnitPos(X, y); }
-	void setUnitSize( float size );
+	inline void setUnitSize( float size ) { Image.setSize(size); }
 	inline void setUnitParameter( enum character param, float value ){ Char.set( param, value ); }
 	inline void setUnitParameter( enum character_float param, float value ){ Char.set( param, value ); }
 
@@ -84,11 +84,12 @@ protected:
 	enum unitType UnitType;
 	std::string Type;
 
-private:
-	unsigned int UnitId;
 	unsigned int flags;		// 1 - deleted
 							// 2 - isEdible
 							// 4 - isMoving
+
+private:
+	unsigned int UnitId;
 
 };
 

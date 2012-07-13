@@ -1,0 +1,11 @@
+
+parent = "unit_plant"
+
+actions = {
+	{
+		name = "init",
+		frames = {
+			{ constants.acSuper },
+		},
+	}
+}

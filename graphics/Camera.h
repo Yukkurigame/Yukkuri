@@ -1,7 +1,7 @@
 #ifndef YCAMERA_H
 #define YCAMERA_H
 
-#include "graphics/GraphicsTypes.h"
+#include "basic_types.h"
 
 class Unit;
 

@@ -12,7 +12,7 @@ public:
 	void eat( );
 	void eat( Unit* Victim );
 
-	virtual bool Create( int id );
+	virtual bool Create( int id, std::string proto );
 	virtual void die( );
 
 	virtual bool update( const Frame& f );

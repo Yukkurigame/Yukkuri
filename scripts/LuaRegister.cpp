@@ -97,9 +97,10 @@ void LuaMain::RegisterApi( lua_State* L )
 
 		// Functions
 		FIELD(acSuper)
+		FIELD(acRestoreState)
 		FIELD(acRepeatDelay)
 		FIELD(acSetAction)
-		FIELD(acLoop)
+
 
 		// Conditions
 		FIELD(acCondition)
@@ -130,6 +131,8 @@ void LuaMain::RegisterApi( lua_State* L )
 
 		// Misc commands
 		FIELD(acMove)
+		FIELD(acSetUnitSize)
+		FIELD(acEAddPathTarget)
 
 		// Unit base parameters
 		FIELD(uBaseLevel)

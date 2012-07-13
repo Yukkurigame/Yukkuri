@@ -24,12 +24,12 @@ DynamicUnit::DynamicUnit()
 	currentTile = -1;
 }
 
-bool DynamicUnit::Create( int id )
+bool DynamicUnit::Create( int id, std::string proto )
 {
-	if( !Unit::Create( id ) )
+	if( !Unit::Create( id, proto ) )
 		return false;
 
-	setUnitSize( 0.35f );
+	//setUnitSize( 0.35f );
 
 	return true;
 }

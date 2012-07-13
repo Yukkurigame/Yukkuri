@@ -16,18 +16,21 @@ int UMApi::createUnit( lua_State* L )
 {
 	unitType type;
 	int x, y;
+	const char* proto;
 	luaL_argcheck( L, lua_isnumber(L, 1), 1, "Unit type excepted." );
 	luaL_argcheck( L, lua_isnumber(L, 2) || lua_isnoneornil(L, 2), 2, "Number or nil excepted." );
 	luaL_argcheck( L, lua_isnumber(L, 3) || lua_isnoneornil(L, 3), 3, "Number or nil excepted." );
+	luaL_argcheck( L, lua_isstring(L, 4) || lua_isnoneornil(L, 4), 4, "Number or nil excepted." );
 
 	x = y = 0;
 	type = (unitType)lua_tonumber(L, 1);
 	x = lua_tonumber(L, 2);
 	y = lua_tonumber(L, 3);
+	proto = lua_tostring(L, 4);
 
 	lua_pop( L, lua_gettop( L ) );
 
-	Unit* ret = UnitManager::CreateUnit( type, x, y );
+	Unit* ret = UnitManager::CreateUnit( type, x, y, proto );
 	if( !ret ){
 		Debug::debug( Debug::UNIT, "Unit creation failed.\n" );
 		lua_pushnil( L );

@@ -20,7 +20,7 @@ enum ActionCommand
 {
 	acNone = 0,
 	acPush, acPushInt, acPushFloat, acPushString,
-	acSuper, acRepeatDelay, acSetAction, acLoop,
+	acSuper, acRestoreState, acSetAction, acRepeatDelay,
 	acCondition,
 	// Comparison between parameter and number
 	acIfParamEqual, acIfParamLess, acIfParamMore,
@@ -30,7 +30,12 @@ enum ActionCommand
 	acEnd,
 	acSetParam, acCopyParam, acLoadParam, acLoadParamBunch,
 	acSetFlag, acRemoveFlag,
-	acMove
+	// Unit
+	acSetUnitSize,
+	// Dynamic unit
+	acMove,
+	// Entity
+	acEAddPathTarget,
 };
 
 struct Frame
@@ -78,11 +83,14 @@ struct Proto
 struct ActionManagerState
 {
 	UINT currentFrame;
-	std::string currentAction;
+	Action* currentAction;
+	Proto* currentPrototype;
 	UINT prevActionTickDiff;
+	bool forced;
 
-	ActionManagerState( UINT frame, std::string action, UINT diff ):
-		currentFrame( frame ), currentAction( action ), prevActionTickDiff( diff ) { }
+	ActionManagerState( UINT frame, Action* action, Proto* proto, UINT diff, bool force ):
+		currentFrame( frame ), currentAction( action ), currentPrototype( proto ),
+		prevActionTickDiff( diff ), forced( force ) { }
 };
 
 
@@ -90,30 +98,34 @@ struct ActionManager
 {
 	bool loaded;
 	bool done;
-	bool forceParent;
-	bool looped;
-	UINT lastTick;
+	long lastTick;
 	int frame;
 	Proto* proto;
 	Action* action;
-	std::string actionname;
 	ParametersStack params;
 
-	std::stack< ActionManagerState > stateStack;
+	std::stack< ActionManagerState* > stateStack;
 
-	ActionManager( ) : loaded(false), done(false), forceParent(false), looped(false),
+	ActionManager( ) : loaded(false), done(false),
 			lastTick(0), frame(-1), action(NULL) { }
 	~ActionManager( ) { }
 
 	void setProto( Proto* );
-	void setAction( std::string, bool force = false );
+	void setAction( const char* name );
 	void setParentAction( const char* name );
 
 	bool nextFrame( );
 
-	void saveState( );
+	void saveState( bool forced );
 	void restoreState( );
 	void popState( );
+	inline bool topStateForced( ){
+		if( !stateStack.empty() )
+			return stateStack.top()->forced;
+		return false;
+	}
+
+
 
 	// TODO: make anything with this
 	bool checkFrameParams( const Frame& f, int num, enum StackElementType first, ... );

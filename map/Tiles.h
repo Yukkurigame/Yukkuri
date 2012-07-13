@@ -8,7 +8,7 @@
 #ifndef TILES_H_
 #define TILES_H_
 
-#include "GraphicsTypes.h"
+#include "graphics/GraphicsTypes.h"
 
 
 // Power of two

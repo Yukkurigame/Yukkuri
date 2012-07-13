@@ -7,7 +7,8 @@
 #ifndef YUKKURIFONT_H_
 #define YUKKURIFONT_H_
 
-#include "GraphicsTypes.h"
+#include "graphics/GraphicsTypes.h"
+
 #include <ft2build.h>
 #include <freetype/freetype.h>
 #include <freetype/ftglyph.h>

@@ -13,6 +13,8 @@ actions = {
 			{ constants.acSetParam, constants.uStateExp, 20 },
 			{ constants.acSetParam, constants.uBaseLevel, 1 },
 			{ constants.acSetParam, constants.uBaseAge, 0 },
+			{ constants.acSetUnitSize, 35 },
+			{ constants.acRestoreState },
 			{ constants.acSetAction, "idle" },
 		},
 	},
@@ -20,6 +22,8 @@ actions = {
 		name = "idle",
 		frames = {
 			{ constants.acSuper },
+			{ constants.acRestoreState },
+			{ constants.acSetAction },
 		}
 	},
 }

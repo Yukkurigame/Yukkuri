@@ -20,7 +20,7 @@ typedef union
 
 enum StackElementType
 {
-	stNone, stInt, stString, stIntOrNone
+	stNone, stInt, stString, stIntOrNone, stStringOrNone,
 };
 
 // Элемент стека

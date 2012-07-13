@@ -14,7 +14,7 @@ namespace UnitManager
 	void init();
 	void clean();
 
-	Unit* CreateUnit( enum unitType type, float x, float y );
+	Unit* CreateUnit( enum unitType type, float x, float y, const char* proto = NULL );
 	void RemoveUnit( Unit* u );
 	void BatchRemove( );
 	Unit* GetUnit( unsigned int id );

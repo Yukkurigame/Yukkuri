@@ -15,7 +15,7 @@ public:
 	Corpse();
 	~Corpse();
 
-	bool Create( int id );
+	bool Create( int id, std::string proto );
 
 	void setUnitPos( float x, float y );
 

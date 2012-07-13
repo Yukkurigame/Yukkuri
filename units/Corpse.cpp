@@ -17,9 +17,9 @@ Corpse::~Corpse( )
 	RenderManager::Instance( )->FreeGLSprite( blood );
 }
 
-bool Corpse::Create( int id )
+bool Corpse::Create( int id, std::string proto )
 {
-	if( !Unit::Create( id ) )
+	if( !Unit::Create( id, proto ) )
 		return false;
 	TextureInfo* t = Image.getSprite()->tex;
 	if( t->rows > 1 || t->cols > 1 ){

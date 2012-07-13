@@ -67,7 +67,7 @@ void UnitManager::clean()
  * Build a unit according to criteria passed to the function and call
  * AddUnit to push it onto the stack
  **/
-Unit* UnitManager::CreateUnit( enum unitType type, float x, float y )
+Unit* UnitManager::CreateUnit( enum unitType type, float x, float y, const char* proto )
 {
 	Unit* temp;
 	switch(type){
@@ -90,7 +90,11 @@ Unit* UnitManager::CreateUnit( enum unitType type, float x, float y )
 
 	temp->setUnitType( type );
 
-	if( !temp->Create( LastId ) ){
+	std::string protoname = "";
+	if( proto != NULL )
+		protoname = std::string(proto);
+
+	if( !temp->Create( LastId, protoname ) ){
 		delete temp;
 		return NULL;
 	}

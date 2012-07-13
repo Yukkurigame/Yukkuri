@@ -8,40 +8,10 @@
 #define GRAPHICSTYPES_H_
 
 #include "SDL/SDL_opengl.h"
+#include "basic_types.h"
 
 #include <string>
 #include <cstdlib>
-
-
-struct s2i
-{
-	signed int x;
-	signed int y;
-	s2i() : x(), y() {}
-};
-
-
-struct s2f
-{
-	float x;
-	float y;
-	s2f() : x(), y() {}
-};
-
-struct s3f
-{
-	float x;
-	float y;
-	float z;
-	s3f() : x(), y(), z() {}
-	s3f operator-(const s3f& b){
-		s3f result = *this;
-		result.x -= b.x;
-		result.y -= b.y;
-		result.z -= b.z;
-		return result;
-	}
-};
 
 
 struct s4ub
@@ -102,28 +72,6 @@ struct color4u
 	void set( unsigned int cr, unsigned int cg, unsigned int cb ) { r = cr; g = cg; b = cb; }
 	void set( unsigned int cr, unsigned int cg, unsigned int cb, unsigned int ca ) { r = cr; g = cg; b = cb; a = ca; }
 	void set( color4u* c ) { if( !c ) return; r = c->r; g = c->g; b = c->b; a = c->a; }
-};
-
-
-struct rect2f
-{
-	float x;
-	float y;
-	float width;
-	float height;
-	rect2f () : x(), y(), width(), height() {}
-};
-
-struct rect2i
-{
-	int x;
-	int y;
-	int width;
-	int height;
-	rect2i () : x(), y(), width(), height() {}
-	inline bool operator < ( const rect2i& r ) {
-		return  r.width * r.height < width * height;
-	}
 };
 
 
@@ -289,7 +237,7 @@ struct Sprite
 	inline void clearCentered()			{ flags &= ~2; }
 
 	inline unsigned char isFixed()		{ return flags & 4; }
-		   void setFixed();				// Needs shader placing
+		void setFixed();				// Needs shader placing
 	inline void clearFixed()			{ flags &= ~4; shader = 0; }
 
 

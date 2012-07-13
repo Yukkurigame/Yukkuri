@@ -6,15 +6,23 @@ actions = {
 		name = "init",
 		frames = {
 			{ constants.acSuper },
+			{ constants.acSetAction, "idle" },
 		},
 	},
 	{
 		name = "idle",
 		frames = {
 			{ constants.acSuper },
+			{ constants.acSuper, "check" },
+			{ constants.acRepeatDelay, 3000 },
+			{ constants.acSetAction }
+		}
+	},
+	{
+		name = "check",
+		frames = {
 			{ constants.acIfNotFlag, constants.ufMoving },
-				-- { com = constants.acMove },
-				-- { com = constants.acRepeatDelay, param = 3000 },
+				{ constants.acEAddPathTarget },
 			{ constants.acEnd },
 		}
 	}

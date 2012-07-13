@@ -29,7 +29,7 @@ Unit::~Unit()
 }
 
 
-bool Unit::Create( int id )
+bool Unit::Create( int id, std::string proto )
 {
 	UnitId = id;
 
@@ -39,18 +39,17 @@ bool Unit::Create( int id )
 	if( !Image.init( UnitName, Type ) )
 		return false;
 
-	//FIXME: ololo
-	std::string protoname;
-	LuaConfig* cfg = new LuaConfig;
-	cfg->getValue( "proto", UnitName, Type, protoname );
-	if( protoname != "" ){
+	if( proto == "" ){
+		LuaConfig* cfg = new LuaConfig;
+		cfg->getValue( "proto", UnitName, Type, proto );
+		delete cfg;
+	}
+	if( proto != "" ){
 		ProtoManager* pm = new ProtoManager;
-		Actions.setProto( pm->GetProtoByName( protoname ) );
+		Actions.setProto( pm->GetProtoByName( proto ) );
 		Actions.setAction( "init" );
 		delete pm;
 	}
-
-	delete cfg;
 
 	return true;
 }
@@ -100,7 +99,9 @@ void Unit::update( const int& dt )
 			}
 		}
 
-		update( frame );
+		// Make a pause on false result;
+		if( !update( frame ) )
+			break;
 
 	}
 
@@ -137,11 +138,15 @@ bool Unit::update( const Frame& frame )
 
 		// Functions
 		case acSuper:
-			Actions.saveState();
+			Actions.saveState( true );
 			Actions.setParentAction( param.stringData );
 			break;
+		case acRestoreState:
+			// This is return for acSuper command. It does nothing if no saved state .
+			Actions.restoreState();
+			break;
 		case acRepeatDelay:
-			if( Actions.frame != 0 && Actions.checkFrameParams( frame, 1, stInt ) ){
+			if( Actions.frame > 0 && Actions.checkFrameParams( frame, 1, stInt ) ){
 				Frame& fr = Actions.action->frames[Actions.frame - 1];
 				if( fr.repeat <= sdl_time &&
 					( fr.command < acCondition || fr.command > acEnd ) )
@@ -150,13 +155,10 @@ bool Unit::update( const Frame& frame )
 			break;
 		case acSetAction:
 			// If param is not null, it will be action call, not replacing
-			if( Actions.checkFrameParams( frame, 1, stString ) ){
-				Actions.saveState();
-				Actions.setAction( param.stringData, frame.params[1].intData );
+			if( Actions.checkFrameParams( frame, 1, stStringOrNone ) ){
+				Actions.setAction( param.stringData );
+				return false;
 			}
-			break;
-		case acLoop:
-			Actions.looped = true;
 			break;
 
 
@@ -295,6 +297,14 @@ bool Unit::update( const Frame& frame )
 			delete cfg;
 			break;
 		}
+
+
+		// Different
+		case acSetUnitSize:
+			if( Actions.checkFrameParams( frame, 1, stInt ) )
+				setUnitSize( static_cast<float>(param.intData) / 100 );
+			break;
+
 		default:
 			return false;
 	}
@@ -340,11 +350,6 @@ void Unit::setUnitPos( float x, float y )
 	Y = y;
 	Image.setPosition( x, y, Z );
 
-}
-
-void Unit::setUnitSize( float size )
-{
-	Image.setSize(size);
 }
 
 float Unit::dist( Unit* target )

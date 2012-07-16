@@ -2,13 +2,13 @@
 #include "Unit.h"
 #include "unitmanager.h" //FUUUUUUUUUUUUU~
 
+#include "hacks.h"
 #include "safestring.h"
 #include <cmath>
 
 #include "scripts/LuaConfig.h"
 #include "scripts/proto.h"
 
-extern long sdl_time;
 
 Unit::Unit()
 {
@@ -65,11 +65,13 @@ void Unit::update( const int& dt )
 		return setDeleted();
 	}
 
+	FOREACHIT( FramesTimer )
+		it->second -= dt;
 
 	if( !Actions.loaded )
 		return;
 
-	while( !Actions.nextFrame() ){
+	while( !Actions.nextFrame( FramesTimer ) ){
 		const Frame& frame = Actions.action->frames[Actions.frame];
 
 		if( frame.func != LUA_NOREF ){
@@ -144,14 +146,6 @@ bool Unit::update( const Frame& frame )
 		case acRestoreState:
 			// This is return for acSuper command. It does nothing if no saved state .
 			Actions.restoreState();
-			break;
-		case acRepeatDelay:
-			if( Actions.frame > 0 && Actions.checkFrameParams( frame, 1, stInt ) ){
-				Frame& fr = Actions.action->frames[Actions.frame - 1];
-				if( fr.repeat <= sdl_time &&
-					( fr.command < acCondition || fr.command > acEnd ) )
-					fr.repeat = sdl_time + param.intData;
-			}
 			break;
 		case acSetAction:
 			// If param is not null, it will be action call, not replacing

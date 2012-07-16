@@ -44,7 +44,6 @@
 // Includes of declarations of all types in typelist
 /* Units */
 #include "units/Unit.h"
-#include "units/Animated.h"
 #include "units/Dynamic.h"
 #include "units/Entity.h"
 #include "units/Plant.h"

@@ -12,7 +12,6 @@
 #include "debug.h"
 #include "hacks.h"
 
-
 namespace {
 	static unsigned int LastId = 1;
 
@@ -46,8 +45,6 @@ namespace {
 	}
 
 }
-
-
 
 
 void UnitManager::init()

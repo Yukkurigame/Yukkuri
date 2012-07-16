@@ -21,7 +21,7 @@ actions = {
 	{
 		name = "idle",
 		frames = {
-			{ constants.acSuper },
+			{ constants.acMove },
 			{ constants.acRestoreState },
 			{ constants.acSetAction },
 		}

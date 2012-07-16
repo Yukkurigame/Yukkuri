@@ -81,7 +81,7 @@ void ActionManager::setParentAction( const char* aname )
 }
 
 
-bool ActionManager::nextFrame( )
+bool ActionManager::nextFrame( std::map< Frame*, int >& timer )
 {
 	if( done || action == NULL )
 		return true;
@@ -104,7 +104,17 @@ new_frame: ;
 			return true;
 		}
 		frame++;
-
+		Frame* pframe = &(action->frames[frame]);
+		if( pframe->skip_on_delay ){
+			std::map< Frame*, int >::iterator fr = timer.find( pframe );
+			if( fr != timer.end() ){
+				if( fr->second <= 0 )
+					fr->second = pframe->skip_on_delay;
+				else
+					goto new_frame;
+			}else
+				timer[pframe] = pframe->skip_on_delay;
+		}
 	}else
 		return true;
 

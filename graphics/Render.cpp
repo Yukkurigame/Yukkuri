@@ -119,7 +119,7 @@ bool RenderManager::LoadTextures( )
 
 int RenderManager::PushTexture( TextureProxy* proxy, GLuint atlas )
 {
-	textures = (TextureInfo*)realloc(textures, sizeof(TextureInfo) * ( 1 + texturesCount ) );
+	textures = (TextureInfo*)realloc(textures, (unsigned)sizeof(TextureInfo) * ( 1 + texturesCount ) );
 	textures[texturesCount].fromTextureProxy( proxy, atlas );
 	textures[texturesCount].id = new char[proxy->id.size() + 1];
 	strcpy(textures[texturesCount].id, proxy->id.c_str());
@@ -132,7 +132,7 @@ int RenderManager::PushTexture( TextureProxy* proxy, GLuint atlas )
 void RenderManager::PushTextures( std::vector < TextureProxy* >& tarray, GLuint atlas )
 {
 	int tcount = tarray.size();
-	textures = (TextureInfo*)realloc(textures, sizeof(TextureInfo) * ( tcount + texturesCount ) );
+	textures = (TextureInfo*)realloc(textures, (unsigned)sizeof(TextureInfo) * ( tcount + texturesCount ) );
 	for( int i = 0; i < tcount; ++i ){
 		TextureProxy* proxy = tarray.at( i );
 		textures[texturesCount].fromTextureProxy( proxy, atlas );
@@ -304,9 +304,9 @@ RenderManager::RenderManager( ){
 	atlasHandle = 0;
 	GLSprites.clear();
 	// Set first texture info to 0
-	textures = (TextureInfo*)malloc( sizeof(TextureInfo) );
+	textures = (TextureInfo*)malloc( (unsigned)sizeof(TextureInfo) );
 	texturesCount = 1;
-	memset( &textures[0], 0, sizeof(TextureInfo) );
+	memset( &textures[0], 0, (unsigned)sizeof(TextureInfo) );
 
 	std::string n = "0";
 	textures[0].id = new char[2];

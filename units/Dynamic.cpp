@@ -1,9 +1,11 @@
+
 #include "Dynamic.h"
 #include "Corpse.h"
 
 #include "unitmanager.h"
 
 #include "scripts/LuaConfig.h"
+#include "graphics/AnimationDefines.h"
 
 #include <stdlib.h>
 #include <math.h>
@@ -11,7 +13,6 @@
 #include <string>
 #include <math.h>
 #include "map/Map.h"
-
 
 
 DynamicUnit::DynamicUnit()
@@ -46,8 +47,8 @@ void DynamicUnit::moveUnit( signed int x, signed int y )
 		float zone = 1.0;
 		float l = sqrt( static_cast<float>(x * x  +  y * y) );
 		float speed = fabs( Char.chars.speed * Char.params.fed ) * zone * ( DT / 100000.0f ) / l;
-		float dx = speed * x;// / l;
-		float dy = speed * y ;// / l;
+		float dx = speed * x; // / l;
+		float dy = speed * y; // / l;
 		/*//MapTile* currentTile = map.GetTile( X , Y );
 		if( currentTile && !currentTile->Type->passability ){
 			//FIXME: Bad
@@ -97,21 +98,21 @@ void DynamicUnit::moveUnit( signed int x, signed int y )
 		TotalDistance += distance;
 		if( dx || dy ) { //FUUU
 			if( dx < 0 && dy > 0 )
-				Image.setAnimation("leftup");
+				Image.setAnimation(AnimDef::leftup);
 			else if( dx < 0 && dy < 0 )
-				Image.setAnimation("leftdown");
+				Image.setAnimation(AnimDef::leftdown);
 			else if( dx > 0 && dy > 0 )
-				Image.setAnimation("rightup");
+				Image.setAnimation(AnimDef::rightup);
 			else if( dx > 0 && dy < 0 )
-				Image.setAnimation("rightdown");
+				Image.setAnimation(AnimDef::rightdown);
 			else if( dy > 0 )
-				Image.setAnimation("up");
+				Image.setAnimation(AnimDef::up);
 			else if( dy < 0 )
-				Image.setAnimation("down");
+				Image.setAnimation(AnimDef::down);
 			else if( dx < 0 )
-				Image.setAnimation("left");
+				Image.setAnimation(AnimDef::left);
 			else if( dx > 0 )
-				Image.setAnimation("right");
+				Image.setAnimation(AnimDef::right);
 			Image.setFrame( Image.getCount() ? ( static_cast<int>(TotalDistance) / m_animdistance) % Image.getCount() : 0 );
 		}
 		X += dx;

@@ -98,7 +98,6 @@ void LuaMain::RegisterApi( lua_State* L )
 		// Functions
 		FIELD(acSuper)
 		FIELD(acRestoreState)
-		FIELD(acRepeatDelay)
 		FIELD(acSetAction)
 
 

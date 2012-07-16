@@ -12,9 +12,8 @@ actions = {
 	{
 		name = "idle",
 		frames = {
-			{ constants.acSuper },
-			{ constants.acSuper, "check" },
-			{ constants.acRepeatDelay, 3000 },
+			{ constants.acMove },
+			{ constants.acSuper, "check", skip = 5000 },
 			{ constants.acSetAction }
 		}
 	},

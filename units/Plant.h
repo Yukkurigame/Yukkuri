@@ -7,7 +7,7 @@
 #ifndef PLANTS_H_
 #define PLANTS_H_
 
-#include "Animated.h"
+#include "Unit.h"
 
 class Plant: public Unit
 {

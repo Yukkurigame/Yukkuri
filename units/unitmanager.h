@@ -29,7 +29,6 @@ namespace UnitManager
 	void grow( ); //FUUUUU
 
 
-
 };
 
 #endif // UNITMANAGER_H

@@ -83,6 +83,7 @@ protected:
 	std::string UnitName;
 	enum unitType UnitType;
 	std::string Type;
+	std::map< Frame*, int > FramesTimer;
 
 	unsigned int flags;		// 1 - deleted
 							// 2 - isEdible

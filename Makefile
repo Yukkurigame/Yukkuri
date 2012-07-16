@@ -25,7 +25,8 @@ UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp Unit.cpp Plant.cpp \
 		 Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp
 RENDER = Atlas.cpp ElasticBox.cpp GLHelpers.cpp TextureArray.cpp
 GRAPHICS = GraphicsTypes.cpp Font.cpp Text.cpp sdl_graphics.cpp gl_extensions.cpp gl_shader.cpp \
-		   Animation.cpp Camera.cpp Render.cpp pngfuncs.c $(addprefix render/, $(RENDER))
+		   Animation.cpp AnimationDefines.cpp Camera.cpp Render.cpp pngfuncs.c \
+		   $(addprefix render/, $(RENDER))
 SCRIPTSAPI = UnitManager.cpp Interface.cpp Widgets.cpp ThreadManager.cpp CameraApi.cpp \
 			 BindingsApi.cpp
 SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp proto.cpp \

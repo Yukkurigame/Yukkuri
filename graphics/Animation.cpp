@@ -8,13 +8,24 @@
 #include "Render.h"
 #include "scripts/LuaConfig.h"
 
-#include <vector>
+#include "hacks.h"
+
+#include <map>
+
+namespace {
+
+	std::map < std::string, unsigned int > animation_names;
+
+}
+
 
 Animation::Animation( )
 {
 	sprite = NULL;
 	size = 1;
 	width = height = picture = count = 0;
+	animationSize = currentId = 0;
+	animation = current = NULL;
 }
 
 Animation::~Animation( )
@@ -25,6 +36,7 @@ Animation::~Animation( )
 
 bool Animation::init(  std::string subconfig, std::string config)
 {
+	std::map < std::string, std::pair <int, int> > anim;
 	LuaConfig* cfg = new LuaConfig;
 
 	std::string image;
@@ -32,14 +44,29 @@ bool Animation::init(  std::string subconfig, std::string config)
 	cfg->getValue( "width", subconfig, config, width );
 	cfg->getValue( "image", subconfig, config, image );
 	cfg->getValue( "picture", subconfig, config, picture );
-	cfg->getValue( "animation", subconfig, config, animation );
+	cfg->getValue( "animation", subconfig, config, anim );
+
+	delete cfg;
+
+	FOREACHIT( anim ){
+		std::map < std::string, unsigned int >::iterator name = animation_names.find( it->first );
+		if( name == animation_names.end() ){
+			name = animation_names.insert(
+					std::pair< std::string, int >( it->first, animation_names.size() + 1 )
+					).first;
+		}
+		GROW_ARRAY( animation, AnimationFrames, name->second, animationSize )
+		animation[name->second].start = it->second.first;
+		animation[name->second].end = it->second.second;
+	}
+
 	sprite = RenderManager::Instance()->CreateGLSprite( 0, 0, 0, width, height,
 							RenderManager::Instance()->GetTextureNumberById( image ), picture);
 	sprite->setCentered();
 	sprite->setPicture( picture );
 	count = 0;
 
-	delete cfg;
+
 
 	return true;
 }
@@ -47,11 +74,20 @@ bool Animation::init(  std::string subconfig, std::string config)
 
 void Animation::setAnimation( std::string name )
 {
-	current = animation.find(name);
-	if( current == animation.end() )
-		count = 0;
-	else
-		count = current->second.second - current->second.first + 1;
+	setAnimation(getAnimationId( name ));
+}
+
+void Animation::setAnimation( unsigned int id )
+{
+	if( id == currentId )
+		return;
+	currentId = id;
+	count = 0;
+	current = NULL;
+	if( id < animationSize ){
+		current = &animation[id];
+		count = current->end - current->start + 1;
+	}
 }
 
 void Animation::setPicture( int pic )
@@ -63,13 +99,24 @@ void Animation::setFrame( int frame )
 {
 	if( count <= 0 || frame < 0 || frame > count )
 		return setDefault();
-	setPicture( current->second.first + frame );
+	setPicture( current->start + frame );
 }
 
 void Animation::setDefault()
 {
 	setPicture(picture);
 }
+
+int Animation::getAnimationId( std::string name )
+{
+	std::map < std::string, unsigned int >::iterator n = animation_names.find( name );
+	if( n != animation_names.end() )
+		return n->second;
+	animation_names.insert(
+		std::pair< std::string, int >( name, animation_names.size() + 1 ) );
+	return animation_names.size();
+}
+
 
 void Animation::setPosition( float x, float y )
 {

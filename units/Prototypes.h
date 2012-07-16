@@ -20,7 +20,7 @@ enum ActionCommand
 {
 	acNone = 0,
 	acPush, acPushInt, acPushFloat, acPushString,
-	acSuper, acRestoreState, acSetAction, acRepeatDelay,
+	acSuper, acRestoreState, acSetAction,
 	acCondition,
 	// Comparison between parameter and number
 	acIfParamEqual, acIfParamLess, acIfParamMore,
@@ -47,11 +47,11 @@ struct Frame
 	StackElementType param_types[FRAME_PARAMS_COUNT];
 
 	int condition_end;
-	long repeat;
+	int skip_on_delay;
 	LuaRegRef func;
 	ActionCommand command;
 
-	Frame( ) : duration(), num(), condition_end(), repeat(),
+	Frame( ) : duration(), num(), condition_end(), skip_on_delay(),
 			func(-2), command(acNone) {};
 };
 
@@ -114,7 +114,7 @@ struct ActionManager
 	void setAction( const char* name );
 	void setParentAction( const char* name );
 
-	bool nextFrame( );
+	bool nextFrame( std::map< Frame*, int >& timer );
 
 	void saveState( bool forced );
 	void restoreState( );

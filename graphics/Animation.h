@@ -8,10 +8,16 @@
 #ifndef ANIMATION_H_
 #define ANIMATION_H_
 
-#include <map>
-#include <utility>
 #include <string>
 #include "GraphicsTypes.h"
+
+
+struct AnimationFrames
+{
+	unsigned int start;
+	unsigned int end;
+	AnimationFrames() : start(), end() {}
+};
 
 class Animation
 {
@@ -22,9 +28,12 @@ public:
 	bool init( std::string subconfig, std::string config );
 
 	void setAnimation( std::string );
+	void setAnimation( unsigned int );
 	void setPicture( int pic );
 	void setFrame( int frame );
 	void setDefault( );
+
+	static int getAnimationId( std::string );
 
 	inline int getPicture( ) { return picture; }
 
@@ -47,8 +56,10 @@ private:
 	int count;
 	float size;
 	Sprite* sprite;
-	std::map < std::string, std::pair <int, int> > animation;
-	std::map < std::string, std::pair <int, int> >::iterator current;
+	unsigned int currentId;
+	unsigned int animationSize;
+	AnimationFrames* animation; // Array
+	AnimationFrames* current; // Pointer
 };
 
 

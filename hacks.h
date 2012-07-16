@@ -23,4 +23,10 @@ static void clear_vector( Vector* V ){
 										item != end##item; ++item )
 #define FOREACHPIT( vec ) FOREACHP( it, vec )
 
+#define GROW_ARRAY( array, type, req, size) 								\
+	if( req > size ){ 														\
+		size = req << 1;													\
+		array = (type*)realloc( array, (unsigned)(size * sizeof(type)) );	\
+	}
+
 #endif /* HACKS_H_ */

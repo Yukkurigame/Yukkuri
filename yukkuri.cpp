@@ -7,6 +7,7 @@
 #include "yukkuri.h"
 #include "graphics/Text.h"
 #include "graphics/Render.h"
+#include "graphics/AnimationDefines.h"
 #include "interface/Interface.h"
 #include "units/unitmanager.h"
 #include "3rdparty/timer/TimerManager.h"
@@ -44,6 +45,8 @@ bool Yukkuri::AdditionalInit()
 
 	Region::init();
 	Map::init( );
+
+	AnimDef::init();
 
 	DayTime::init();
 

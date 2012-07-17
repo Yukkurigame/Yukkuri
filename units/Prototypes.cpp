@@ -81,7 +81,17 @@ void ActionManager::setParentAction( const char* aname )
 }
 
 
-bool ActionManager::nextFrame( std::map< Frame*, int >& timer )
+void ActionManager::updateTimers( const int& dt )
+{
+	FrameTimer* timer = timers;
+	while( timer != NULL ){
+		timer->time -= dt;
+		timer = timer->next;
+	}
+}
+
+
+bool ActionManager::nextFrame( )
 {
 	if( done || action == NULL )
 		return true;
@@ -103,17 +113,23 @@ new_frame: ;
 			}
 			return true;
 		}
+
 		frame++;
+
 		Frame* pframe = &(action->frames[frame]);
 		if( pframe->skip_on_delay ){
-			std::map< Frame*, int >::iterator fr = timer.find( pframe );
-			if( fr != timer.end() ){
-				if( fr->second <= 0 )
-					fr->second = pframe->skip_on_delay;
-				else
-					goto new_frame;
-			}else
-				timer[pframe] = pframe->skip_on_delay;
+			FrameTimer* timer = timers;
+			while( timer != NULL ){
+				if( timer->frame == pframe )
+					break;
+				timer = timer->next;
+			}
+			if( !timer )
+				timers = new FrameTimer( pframe, pframe->skip_on_delay, timers );
+			else if( timer->time <= 0 )
+				timer->time = pframe->skip_on_delay;
+			else
+				goto new_frame;
 		}
 	}else
 		return true;

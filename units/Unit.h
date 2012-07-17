@@ -63,8 +63,8 @@ public:
 	GET_PARAM( std::string, Name, UnitName )
 	GET_PARAM( std::string, Type, Type )
 	GET_PARAM( enum unitType, eType, UnitType )
-	GET_PARAM( float, X, (const float)X )
-	GET_PARAM( float, Y, (const float)Y )
+	GET_PARAM( const float, X, X )
+	GET_PARAM( const float, Y, Y )
 	GET_PARAM( float, Size, Image.getSize() )
 	GET_PARAM( float*, pX, &X )
 	GET_PARAM( float*, pY, &Y )
@@ -83,7 +83,6 @@ protected:
 	std::string UnitName;
 	enum unitType UnitType;
 	std::string Type;
-	std::map< Frame*, int > FramesTimer;
 
 	unsigned int flags;		// 1 - deleted
 							// 2 - isEdible
@@ -93,5 +92,7 @@ private:
 	unsigned int UnitId;
 
 };
+
+
 
 #endif //UNIT_H

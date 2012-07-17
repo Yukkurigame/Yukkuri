@@ -6,9 +6,6 @@
 
 Entity::Entity()
 {
-	//gotoX = 0.0;
-	//gotoY = 0.0;
-	//ForceGo = false;
 	target = NULL;
 	Attacked = NULL;
 }

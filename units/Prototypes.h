@@ -55,6 +55,14 @@ struct Frame
 			func(-2), command(acNone) {};
 };
 
+struct FrameTimer {
+	Frame* frame;
+	int time;
+	FrameTimer* next;
+	FrameTimer() : frame(NULL), time(), next(NULL) {}
+	FrameTimer( Frame* f, int t, FrameTimer* n ) : frame(f), time(t), next(n) {}
+};
+
 struct Action
 {
 	std::string name;
@@ -103,18 +111,20 @@ struct ActionManager
 	Proto* proto;
 	Action* action;
 	ParametersStack params;
+	FrameTimer* timers;
 
 	std::stack< ActionManagerState* > stateStack;
 
 	ActionManager( ) : loaded(false), done(false),
-			lastTick(0), frame(-1), action(NULL) { }
+			lastTick(0), frame(-1), action(NULL), timers(NULL) { }
 	~ActionManager( ) { }
 
 	void setProto( Proto* );
 	void setAction( const char* name );
 	void setParentAction( const char* name );
 
-	bool nextFrame( std::map< Frame*, int >& timer );
+	void updateTimers( const int& dt );
+	bool nextFrame( );
 
 	void saveState( bool forced );
 	void restoreState( );

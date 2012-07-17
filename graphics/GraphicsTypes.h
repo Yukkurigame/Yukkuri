@@ -146,12 +146,16 @@ struct TextureInfo
 		}
 	}
 	inline coord2farr getSubTexture( int pic ){
+		coord2farr rect;
+		getSubTexture( pic, rect );
+		return rect;
+	}
+	inline void getSubTexture( int pic, coord2farr& rect ){
 		int row = pic / cols;
 		int col = pic - row * cols;
-		return getSubTexture( col, row );
+		getSubTexture( col, row, rect );
 	}
-	coord2farr getSubTexture(int col, int row){
-		coord2farr rect;
+	inline void getSubTexture( int col, int row, coord2farr& rect ){
 		if( cols < 1 && rows < 1 ){
 			rect.lb.x = rect.lt.x = 0;
 			rect.lb.y = rect.rb.y = 0;
@@ -167,7 +171,6 @@ struct TextureInfo
 			rect.rb.x = rect.rt.x = x + twidth;
 			rect.lt.y = rect.rt.y = y + theight;
 		}
-		return rect;
 	}
 };
 
@@ -251,7 +254,7 @@ struct Sprite
 	void setPicture( int pic ){
 		picture = pic;
 		if( texid && tex ){
-			coordinates = tex->getSubTexture(pic);
+			tex->getSubTexture(pic, coordinates);
 		}else{
 			coordinates.lb.x = coordinates.lt.x = 0;
 			coordinates.lb.y = coordinates.rb.y = 0;

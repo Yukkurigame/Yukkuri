@@ -65,13 +65,12 @@ void Unit::update( const int& dt )
 		return setDeleted();
 	}
 
-	FOREACHIT( FramesTimer )
-		it->second -= dt;
+	Actions.updateTimers( dt );
 
 	if( !Actions.loaded )
 		return;
 
-	while( !Actions.nextFrame( FramesTimer ) ){
+	while( !Actions.nextFrame( ) ){
 		const Frame& frame = Actions.action->frames[Actions.frame];
 
 		if( frame.func != LUA_NOREF ){

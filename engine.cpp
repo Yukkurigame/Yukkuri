@@ -138,9 +138,13 @@ void CEngine::Start()
 	long ElapsedTicks;
 	float UpdateInterval;
 	float MaxCycles;
+	int inputInterval = 100;
+	int inputTicks = 0;
 
 	UpdateInterval = 1.0f / conf.maxFrameRate;
 	MaxCycles = conf.maxFrameRate / conf.minFrameRate;
+	//inputInterval;
+	//inputTicks;
 
 	// Main loop.
 	while( !EndLoop ){
@@ -160,8 +164,13 @@ void CEngine::Start()
 
 		ElapsedTicks = Tick - LastTick;
 
+		inputTicks += ElapsedTicks;
+
 		// Handle mouse and keyboard input
-		HandleInput();
+		if( inputTicks > inputInterval ){
+			HandleInput();
+			inputTicks = 0;
+		}
 
 		if( Minimized ){
 			// Release some system resources if the app. is minimized.

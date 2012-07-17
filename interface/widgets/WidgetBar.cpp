@@ -24,8 +24,8 @@ WidgetBar::WidgetBar()
 
 WidgetBar::~WidgetBar( )
 {
-	RenderManager::Instance()->FreeGLSprite( BarSprite );
-	RenderManager::Instance()->FreeGLSprite( TopSprite );
+	RenderManager::FreeGLSprite( BarSprite );
+	RenderManager::FreeGLSprite( TopSprite );
 }
 
 bool WidgetBar::load( std::string id )
@@ -71,11 +71,11 @@ bool WidgetBar::load( std::string id )
 void WidgetBar::createBar( std::string name, int picture, int height, color4u clr )
 {
 	Height -= height + BarY;
-	BarSprite = RenderManager::Instance()->CreateGLSprite( PosX + BarX, PosY + BarY, getZ(), BarWidth, height );
+	BarSprite = RenderManager::CreateGLSprite( PosX + BarX, PosY + BarY, getZ(), BarWidth, height );
 	BarSprite->setFixed();
 	if( name != "" ){
-		TopSprite = RenderManager::Instance()->CreateGLSprite( PosX + TopX, PosY + TopY, getZ() + 0.1f,
-						Width, Height, RenderManager::Instance()->GetTextureNumberById(name), picture );
+		TopSprite = RenderManager::CreateGLSprite( PosX + TopX, PosY + TopY, getZ() + 0.1f,
+						Width, Height, RenderManager::GetTextureNumberById(name), picture );
 		TopSprite->setFixed();
 	}
 	if( BarSprite ){

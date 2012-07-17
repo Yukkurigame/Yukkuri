@@ -23,7 +23,7 @@ CFLAGS= -O0 -pg -g -Wall $(DEFINES)
 
 UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp Unit.cpp Plant.cpp \
 		 Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp
-RENDER = Atlas.cpp ElasticBox.cpp GLHelpers.cpp TextureArray.cpp
+RENDER = Atlas.cpp ElasticBox.cpp GLHelpers.cpp GLTextures.cpp TextureArray.cpp
 GRAPHICS = GraphicsTypes.cpp Font.cpp Text.cpp sdl_graphics.cpp gl_extensions.cpp gl_shader.cpp \
 		   Animation.cpp AnimationDefines.cpp Camera.cpp Render.cpp pngfuncs.c \
 		   $(addprefix render/, $(RENDER))

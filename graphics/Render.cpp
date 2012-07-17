@@ -7,9 +7,12 @@
 #include "graphics/gl_extensions.h"
 #include "graphics/gl_shader.h"
 #include "graphics/sdl_graphics.h"
+#include "graphics/AnimationDefines.h"
 #include "graphics/Camera.h"
+#include "graphics/Text.h"
 #include "graphics/render/Atlas.h"
 #include "graphics/render/GLHelpers.h"
+#include "graphics/render/GLTextures.h"
 #include "graphics/render/TextureArray.h"
 
 #include "scripts/LuaConfig.h"
@@ -23,7 +26,112 @@
 #include "safestring.h"
 
 
-RenderManager* RenderManager::graph = NULL;
+namespace {
+
+	//////////////////////////////////////////////////
+	// Textures
+
+	unsigned int texturesCount;
+	TextureInfo* textures;
+
+	//////////////////////////////////////////////////
+	// Sprites
+
+	std::vector < Sprite* > GLSprites;
+
+
+	//////////////////////////////////////////////////
+	// Verticles
+
+	int verticlesSize;
+	VertexV2FT2FC4UI* verticles;
+
+	void ExtendVerticles( )
+	{
+		verticlesSize *= 2;
+		verticles = (VertexV2FT2FC4UI*)realloc( verticles, (unsigned)sizeof(VertexV2FT2FC4UI) * verticlesSize * 4 );
+	}
+
+
+	//////////////////////////////////////////////////
+	// VBO
+
+	GLuint VBOHandle;
+
+	// Returns count of breakings
+	//int VBOHandlesCount;
+	//int VBOHandlesSize;
+	//VBOStructureHandle* VBOHandles;
+
+
+	//////////////////////////////////////////////////
+	// Atlases
+
+	int atlasWidth, atlasHeight;
+	GLuint atlasHandle;
+
+	void TestDrawAtlas(int x, int y, GLuint atlas)
+	{
+		if( !atlas )
+			atlas = atlasHandle;
+
+		GLHelpers::DrawToQuad( atlas, 0, 0, atlasWidth, atlasHeight );
+
+	#ifdef DEBUG_DRAW_RECTANGLES
+		glBegin(GL_LINES);
+		for( int i=0; i< 8190; i += 86  ){
+			glVertex2f(x + i, y);
+			glVertex2f(x + i, y + 300);
+		}
+		glEnd();
+	#endif
+	}
+
+
+}
+
+
+
+void RenderManager::init( )
+{
+	textures = NULL;
+	verticles = NULL;
+	verticlesSize = 1; // for success multiplication
+	atlasHandle = 0;
+	GLSprites.clear();
+	// Set first texture info to 0
+	textures = (TextureInfo*)malloc( (unsigned)sizeof(TextureInfo) );
+	texturesCount = 1;
+	memset( &textures[0], 0, (unsigned)sizeof(TextureInfo) );
+
+	std::string n = "0";
+	textures[0].id = new char[2];
+	strcpy(textures[0].id, n.c_str());
+
+	AnimDef::init();
+	Camera::init( &vpoint );
+
+}
+
+
+void RenderManager::clean( )
+{
+	glDeleteBuffers( 1, &VBOHandle );
+
+	TextureAtlas::clean( );
+	if( textures ){
+		for( unsigned int i = 0; i < texturesCount; ++i )
+			delete[] textures[i].id;
+		free(textures);
+	}
+	if( verticles )
+		free(verticles);
+	GLTextures::clearCache();
+	CleanFonts();
+	ftDone();
+}
+
+
 
 
 void RenderManager::openglInit( )
@@ -89,6 +197,9 @@ void RenderManager::openglSetup( int wwidth, int wheight )
 
 }
 
+
+//////////////////////////////////////////////////
+// Textures
 
 bool RenderManager::LoadTextures( )
 {
@@ -163,6 +274,11 @@ TextureInfo* RenderManager::GetTextureByNumber( unsigned int number )
 }
 
 
+
+//////////////////////////////////////////////////
+// Sprites
+
+
 /* This function creating sprite structure with texture.
  * x, y, z - right top coordinates;
  * texX, texY - right top coordinates of texture rectangle;
@@ -204,6 +320,7 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 	return sprite;
 }
 
+
 // Create new sprite form exists
 Sprite* RenderManager::CreateGLSprite( Sprite* osprite )
 {
@@ -229,6 +346,7 @@ Sprite* RenderManager::CreateGLSprite( Sprite* osprite )
 	return sprite;
 }
 
+
 void RenderManager::FreeGLSprite( Sprite* sprite )
 {
 	std::vector< Sprite* >::iterator it;
@@ -242,6 +360,7 @@ void RenderManager::FreeGLSprite( Sprite* sprite )
 		delete sprite;
 }
 
+
 void RenderManager::FreeGLSprites( std::vector< Sprite* >* sprites )
 {
 	FOREACHPIT(sprites)
@@ -250,9 +369,13 @@ void RenderManager::FreeGLSprites( std::vector< Sprite* >* sprites )
 }
 
 
+//////////////////////////////////////////////////
+// Scene
+
 static const std::string fixedShaders[] = {
 	"fixed", "daytime", ""
 };
+
 
 void RenderManager::MoveGlScene( )
 {
@@ -291,150 +414,3 @@ void RenderManager::CleanGLScene()
 {
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 }
-
-
-
-// PRIVATE
-
-
-RenderManager::RenderManager( ){
-	textures = NULL;
-	verticles = NULL;
-	verticlesSize = 1; // for success multiplication
-	atlasHandle = 0;
-	GLSprites.clear();
-	// Set first texture info to 0
-	textures = (TextureInfo*)malloc( (unsigned)sizeof(TextureInfo) );
-	texturesCount = 1;
-	memset( &textures[0], 0, (unsigned)sizeof(TextureInfo) );
-
-	std::string n = "0";
-	textures[0].id = new char[2];
-	strcpy(textures[0].id, n.c_str());
-
-	Camera::init( &vpoint );
-
-}
-
-
-RenderManager::~RenderManager( )
-{
-	glDeleteBuffers( 1, &VBOHandle );
-
-	TextureAtlas::clean( );
-	if( textures ){
-		for( unsigned int i = 0; i < texturesCount; ++i )
-			delete[] textures[i].id;
-		free(textures);
-	}
-	if( verticles )
-		free(verticles);
-	ClearGLTexturesCache();
-}
-
-
-
-Texture* RenderManager::GetGLTexture( std::string name )
-{
-	std::map < std::string, Texture* >::iterator it;
-	it = texturesCache.find(name);
-	if( it != texturesCache.end() ){
-		return it->second;
-	}
-	return NULL;
-}
-
-Texture* RenderManager::LoadGLTexture( std::string name )
-{
-	Texture* tex;
-	SDL_Surface* surface;
-
-	if( name == "" )
-		return NULL;
-
-	tex = GetGLTexture( name );
-
-	if( !tex ){
-
-		surface = SDLGraphics::LoadImage( name.c_str() );
-
-		if( !surface ){
-			Debug::debug( Debug::GRAPHICS, name + " not loaded.\n" );
-			return NULL;
-		}
-
-		tex = new Texture();
-		tex->tex = SDLGraphics::CreateGlTexture( surface );
-		tex->w = surface->w;
-		tex->h = surface->h;
-
-		AddGLTexture( name,  tex );
-
-		if( surface )
-			SDL_FreeSurface( surface );
-	}
-
-	return tex;
-}
-
-void RenderManager::AddGLTexture( std::string name, Texture* texture )
-{
-	Texture* cached;
-	if( !texture )
-		return;
-	cached = GetGLTexture( name );
-	if( cached == texture )
-		return;
-	FreeGLTexture( cached );
-	texturesCache[name] = texture;
-}
-
-void RenderManager::FreeGLTexture( Texture* tex )
-{
-	if( tex && tex->tex ){
-		glDeleteTextures( 1, &tex->tex );
-		delete tex;
-		tex = NULL;
-	}
-}
-
-void RenderManager::ClearGLTexturesCache( )
-{
-	FOREACHIT( texturesCache ){
-		FreeGLTexture( it->second );
-		it->second = NULL;
-	}
-	texturesCache.clear();
-}
-
-
-
-
-void RenderManager::ExtendVerticles( )
-{
-	verticlesSize *= 2;
-	verticles = (VertexV2FT2FC4UI*)realloc( verticles, sizeof(VertexV2FT2FC4UI) * verticlesSize * 4 );
-}
-
-
-
-
-void RenderManager::TestDrawAtlas(int x, int y, GLuint atlas)
-{
-	if( !atlas )
-		atlas = atlasHandle;
-
-	GLHelpers::DrawToQuad( atlas, 0, 0, atlasWidth, atlasHeight );
-
-#ifdef DEBUG_DRAW_RECTANGLES
-	glBegin(GL_LINES);
-	for( int i=0; i< 8190; i += 86  ){
-		glVertex2f(x + i, y);
-		glVertex2f(x + i, y + 300);
-	}
-	glEnd();
-#endif
-
-
-}
-

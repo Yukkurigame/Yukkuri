@@ -104,7 +104,7 @@ void MapChunkManager::init(){
 		tp.atlas.x = tp.atlas.y = 0.0;
 	}
 	GLHelpers::CreateTexture( &atlas, box.Width, box.Height );
-	texture = RenderManager::Instance()->PushTexture( &tp, atlas );
+	texture = RenderManager::PushTexture( &tp, atlas );
 }
 
 // You must call this for request a new free space, not only checking for
@@ -117,7 +117,7 @@ signed int MapChunkManager::getFreeSpace( s2f& pos ){
 		if( p > chunksCount ) // No free space
 			return -1;
 	}
-	TextureInfo* texinfo = RenderManager::Instance()->GetTextureByNumber( texture );
+	TextureInfo* texinfo = RenderManager::GetTextureByNumber( texture );
 	texinfo->getTexturePosition( pos, p );
 	state |= c; // Set free space as occupied
 	return p;
@@ -143,9 +143,9 @@ MapChunk::MapChunk( signed int x, signed int y )
 	int picture = ChunkManager.getFreeSpace( atlasPos );
 	if( picture < 0 )
 		return;
-	sprite = RenderManager::Instance()->CreateGLSprite( realPos.x, realPos.y, 0,
+	sprite = RenderManager::CreateGLSprite( realPos.x, realPos.y, 0,
 			ChunkManager.chunkSize.x, ChunkManager.chunkSize.y, ChunkManager.texture, picture );
-	tiles = (MapTile*)malloc( sizeof(MapTile) * ChunkManager.chunkTilesCount );
+	tiles = (MapTile*)malloc( (unsigned)sizeof(MapTile) * ChunkManager.chunkTilesCount );
 	unsigned int row = 0;
 	unsigned int col = 0;
 	Sprite sprites[ChunkManager.chunkTilesCount];
@@ -158,7 +158,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 
 		Sprite& s = sprites[tile];
 		s.texid = t.Type->texture;
-		s.tex = RenderManager::Instance()->GetTextureByNumber( s.texid );
+		s.tex = RenderManager::GetTextureByNumber( s.texid );
 		s.atlas = s.tex->atlas;
 		s.setPosition(
 				col * conf.mapTileSize + ( row % 2 ? (conf.mapTileSize >> 1) : 0 ),
@@ -184,7 +184,7 @@ MapChunk::~MapChunk()
 {
 	if( sprite ){
 		ChunkManager.returnSpace( sprite->picture );
-		RenderManager::Instance()->FreeGLSprite( sprite );
+		RenderManager::FreeGLSprite( sprite );
 	}
 	if( tiles )
 		free( tiles );

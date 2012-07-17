@@ -83,7 +83,8 @@ bool CEngine::Init()
 	videoFlags = SDL_OPENGL; // Enable OpenGL in SDL
 	videoFlags |= SDL_HWPALETTE; // Store the palette in hardware
 
-	RenderManager::Instance()->openglInit( );
+	RenderManager::init();
+	RenderManager::openglInit( );
 
 	// Attempt to create a window with the specified height and width.
 	if( !SDLGraphics::SetScreen( SDL_SetVideoMode( conf.windowWidth, conf.windowHeight, 0, videoFlags ) ) ) {
@@ -92,13 +93,13 @@ bool CEngine::Init()
 		return false;
 	}
 
-	RenderManager::Instance()->openglSetup( conf.windowWidth, conf.windowHeight );
+	RenderManager::openglSetup( conf.windowWidth, conf.windowHeight );
 
 	debug( NONE, "Done\n" );
 
 	debug( MAIN, "Load sprites.\n" );
 
-	if( !RenderManager::Instance()->LoadTextures( ) ){
+	if( !RenderManager::LoadTextures( ) ){
 		debug( MAIN, "Sprites loading failed." );
 		return false;
 	}

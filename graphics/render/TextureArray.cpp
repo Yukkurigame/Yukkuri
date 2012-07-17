@@ -203,7 +203,7 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, S
 		!GLHelpers::SetUpView( width, height, 1 ) )
 		return false;
 
-	VertexV2FT2FC4UI* vertices = (VertexV2FT2FC4UI*)malloc( sizeof(VertexV2FT2FC4UI) * count * 4 );
+	VertexV2FT2FC4UI* vertices = (VertexV2FT2FC4UI*)malloc( (unsigned)sizeof(VertexV2FT2FC4UI) * count * 4 );
 	int vboc = 0;
 	VBOStructureHandle* vbostructure = prepareVBO( &vboc, sprites, count, vertices );
 

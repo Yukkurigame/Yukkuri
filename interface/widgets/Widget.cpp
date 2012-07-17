@@ -33,7 +33,7 @@ Widget::Widget()
 
 Widget::~Widget()
 {
-	RenderManager::Instance()->FreeGLSprite( background );
+	RenderManager::FreeGLSprite( background );
 	Parent = NULL;
 	//FIXME: parent dies but children overcomes this.
 	Children.clear();
@@ -83,8 +83,8 @@ bool Widget::load( std::string id )
 		cfg->getValue( "picture", baseID, picture );
 		cfg->getValue( "bgcolor", baseID, bgcolor );
 		if( imgname != "" || bgcolor.size() ){
-			background = RenderManager::Instance()->CreateGLSprite( PosX, PosY, getZ(), Width, Height,
-					RenderManager::Instance()->GetTextureNumberById( imgname ), picture );
+			background = RenderManager::CreateGLSprite( PosX, PosY, getZ(), Width, Height,
+					RenderManager::GetTextureNumberById( imgname ), picture );
 			background->setFixed();
 			if( bgcolor.size() ){
 				for( unsigned int i=0; i < 4; ++i ){

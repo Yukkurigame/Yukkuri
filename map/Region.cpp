@@ -53,7 +53,7 @@ bool Region::init( )
 		tile.id = Subconfig["id"];
 		if( Subconfig.count("image") ){
 			std::string image = Subconfig["image"];
-			tile.texture = RenderManager::Instance()->GetTextureNumberById( image );
+			tile.texture = RenderManager::GetTextureNumberById( image );
 		}
 		tile.picture = Subconfig.count("picture") ? atoi(Subconfig["picture"].c_str()) : 0;
 		tile.passability = Subconfig.count("passability") ? atoi(Subconfig["passability"].c_str()) : 0;

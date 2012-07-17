@@ -59,12 +59,12 @@ void DayTime::init()
 
 void DayTime::clean()
 {
-	RenderManager::Instance()->FreeGLSprite( sfield );
+	RenderManager::FreeGLSprite( sfield );
 }
 
 void DayTime::loadInterface()
 {
-	sfield = RenderManager::Instance()->CreateGLSprite(0, 0, 4, conf.windowWidth, conf.windowHeight );
+	sfield = RenderManager::CreateGLSprite(0, 0, 4, conf.windowWidth, conf.windowHeight );
 	sfield->setFixed();
 	sfield->clr.set( 0, 0, 0, 0 );
 	// Load daytime shader and get uniform vars.

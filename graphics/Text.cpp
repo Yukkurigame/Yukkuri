@@ -76,7 +76,7 @@ Text::Text( )
 Text::~Text( )
 {
 	clear();
-	RenderManager::Instance()->FreeGLSprite( cursor );
+	RenderManager::FreeGLSprite( cursor );
 }
 
 
@@ -110,7 +110,7 @@ void Text::setText(const char* str)
 
 	textlen = strlen( str );
 
-	char* text = (char*)malloc( sizeof(char)*textlen + 1 );
+	char* text = (char*)malloc( (unsigned)sizeof(char)*textlen + 1 );
 	strcpy( text, str );
 
 	char* token;
@@ -172,15 +172,15 @@ SETSPRITEFLAG(Fixed, 2)
 void Text::clear( )
 {
 	Width = Height = 0;
-	RenderManager::Instance()->FreeGLSprites( &sprites );
+	RenderManager::FreeGLSprites( &sprites );
 }
 
 
 void Text::addSprite( int x, int y, Char* c )
 {
-	Sprite* s = RenderManager::Instance()->CreateGLSprite(
-		position.x + static_cast<float>(x), position.y - static_cast<float>(y), position.z,
-		font->cellWidth, font->cellHeight, font->texture, c->pic );
+	Sprite* s = RenderManager::CreateGLSprite( position.x + static_cast<float>(x),
+		position.y - static_cast<float>(y), position.z, font->cellWidth,
+		font->cellHeight, font->texture, c->pic );
 	s->clr.set( &color );
 	sprites.push_back(s);
 }
@@ -195,7 +195,7 @@ void Text::setCursorPosition( unsigned int pos )
 	if( cursor == NULL ){
 		Char* tmpc = font->getChar('|');
 		cursorBearing = (tmpc->metrics.horiBearingX >> 6) + 2;
-		cursor = RenderManager::Instance()->CreateGLSprite(
+		cursor = RenderManager::CreateGLSprite(
 				position.x, position.y, position.z,
 				font->cellWidth, font->cellHeight, font->texture, tmpc->pic );
 		cursor->setFixed();

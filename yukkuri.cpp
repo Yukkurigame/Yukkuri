@@ -5,9 +5,7 @@
  *
  */
 #include "yukkuri.h"
-#include "graphics/Text.h"
 #include "graphics/Render.h"
-#include "graphics/AnimationDefines.h"
 #include "interface/Interface.h"
 #include "units/unitmanager.h"
 #include "3rdparty/timer/TimerManager.h"
@@ -46,8 +44,6 @@ bool Yukkuri::AdditionalInit()
 	Region::init();
 	Map::init( );
 
-	AnimDef::init();
-
 	DayTime::init();
 
 	if( !luaScript->OpenFile( "start" ) ){
@@ -73,13 +69,13 @@ void Yukkuri::Think( const int& ElapsedTime )
 
 void Yukkuri::Render( )
 {
-	RenderManager::Instance()->CleanGLScene( );
+	RenderManager::CleanGLScene( );
 
 	// Display slick graphics on screen
 	Map::onDraw( );
 
 	//Draw to screen
-	RenderManager::Instance()->DrawGLScene( );
+	RenderManager::DrawGLScene( );
 }
 
 void Yukkuri::MouseMoved( const int& Button, const int& X, const int& Y, const int& RelX, const int& RelY )
@@ -131,9 +127,7 @@ void Yukkuri::End()
 
 	threadsManager::CleanThreads( );
 
-	RenderManager::Destroy( );
-	CleanFonts();
-	ftDone();
+	RenderManager::clean();
 
 	Debug::debug( Debug::MAIN, "Done.\n" );
 }

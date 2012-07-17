@@ -30,7 +30,7 @@ Animation::Animation( )
 
 Animation::~Animation( )
 {
-	RenderManager::Instance()->FreeGLSprite(sprite);
+	RenderManager::FreeGLSprite(sprite);
 }
 
 
@@ -60,8 +60,8 @@ bool Animation::init(  std::string subconfig, std::string config)
 		animation[name->second].end = it->second.second;
 	}
 
-	sprite = RenderManager::Instance()->CreateGLSprite( 0, 0, 0, width, height,
-							RenderManager::Instance()->GetTextureNumberById( image ), picture);
+	sprite = RenderManager::CreateGLSprite( 0, 0, 0, width, height,
+							RenderManager::GetTextureNumberById( image ), picture);
 	sprite->setCentered();
 	sprite->setPicture( picture );
 	count = 0;

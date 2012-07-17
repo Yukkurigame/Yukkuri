@@ -10,6 +10,7 @@
 #include "graphics/render/Atlas.h"
 #include "graphics/render/ElasticBox.h"
 #include "graphics/render/TextureArray.h"
+#include "graphics/render/GLTextures.h"
 #include "graphics/Render.h"
 
 #include "scripts/LuaConfig.h"
@@ -63,7 +64,7 @@ void TextureAtlas::addTexture( std::string name ){
 	lc->getValue("offsetx", name, config, t->offset.x);
 	lc->getValue("offsety", name, config, t->offset.y);
 
-	t->texture = RenderManager::Instance()->LoadGLTexture( t->image );
+	t->texture = GLTextures::load( t->image );
 
 	internalTextures.push_back(t);
 
@@ -156,7 +157,7 @@ bool TextureAtlas::create( GLuint* ahandle, int& width, int& height )
 	}
 
 	// Push textures to render and clear array
-	RenderManager::Instance()->PushTextures( internalTextures, *ahandle );
+	RenderManager::PushTextures( internalTextures, *ahandle );
 	clear_vector( &internalTextures );
 
 	return true;

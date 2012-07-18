@@ -24,12 +24,12 @@ int Unit::color( lua_State* L )
 		lua_rawseti( L, -2, 3 );
 		lua_pushinteger( L, clr.a );
 		lua_rawseti( L, -2, 4 );
-	}else if( top > 2 ){
-		getFromLua( L, 0, clr.r );
-		getFromLua( L, 1, clr.g );
-		getFromLua( L, 2, clr.b );
+	}else if( top > 2 && top < 5 ){
+		getFromLua( L, -top, clr.r );
+		getFromLua( L, 1 - top, clr.g );
+		getFromLua( L, 2 - top, clr.b );
 		if( lua_isnumber( L, 4) )
-			getFromLua( L, 2, clr.a );
+			getFromLua( L, 3 - top, clr.a );
 	}else{
 		Debug::debug( Debug::SCRIPT, "Color: bad arguments count" );
 	}

@@ -20,11 +20,6 @@ Camera.setTarget(player)
 LoadMapRegion('region_test2_881880')
 
 local plevel = Interface.getWidgetByName("plevel", stats)
-
-pu = UnitManager.getUnit(player)
-for i,v in pairs(getmetatable(pu)) do print(i,v) end
-for i,v in pairs(getmetatable(plevel)) do print(i,v) end
---[[
 local pdays = Interface.getWidgetByName("pdays", stats)
 if plevel then
 	plevel:bindParam(player, constants.uBaseLevel)
@@ -59,4 +54,4 @@ Thread.resume(Thread.newThread(function()
 		Thread.wait(500)
 	end
 end))
-]]--
+

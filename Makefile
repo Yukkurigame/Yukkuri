@@ -93,6 +93,7 @@ $(OBJDIR):
 	 $(GRAPHICSDIR) $(GRAPHICSDIR)render/ $(INTERFACEDIR) $(INTERFACEDIR)$(WIDGETSDIR) \
 	 $(MAPDIR) $(3RDPARTYDIR) $(3RDPARTYDIR)timer)
 
+
 clean: cleanheaders cleanobjs cleanprog cleandirs
 
 cleanheaders:

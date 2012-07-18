@@ -28,7 +28,13 @@ Unit::Unit()
 
 Unit::~Unit()
 {
-
+	ActionTimer* timer = NULL;
+	while( actionTimers != NULL ){
+		timer = actionTimers;
+		Timer::DeleteTimerEventById( timer->timerId );
+		actionTimers = timer->next;
+		delete timer, timer = NULL;
+	}
 }
 
 

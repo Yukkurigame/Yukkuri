@@ -8,6 +8,8 @@
 
 #include "scripts/LuaConfig.h"
 #include "scripts/proto.h"
+#include "3rdparty/timer/TimerManager.h"
+
 
 
 Unit::Unit()
@@ -20,6 +22,7 @@ Unit::Unit()
 	UnitName = "";
 	Type = "";
 	flags = 0;
+	actionTimers = NULL;
 }
 
 
@@ -95,7 +98,6 @@ void Unit::update( const int& dt )
 					case LUA_TSTRING:
 						Actions.params.Push( luaScript->getChar( 1 ) );
 						break;
-
 				}
 			}
 		}
@@ -153,7 +155,34 @@ bool Unit::update( const Frame& frame )
 				return false;
 			}
 			break;
-
+		case acSetTimer:
+			if( Actions.checkFrameParams( frame, 2, stFunction, stInt ) ){
+				ActionTimer* timer = actionTimers;
+				const Frame* pframe = &frame;
+				while( timer != NULL ){
+					if( timer->frame == pframe )
+						break;
+					timer = timer->next;
+				}
+				if( !timer || !Timer::UpdateEventById( timer->timerId, frame.params[1].intData) ){
+					if( timer ){
+						ActionTimer* oldtimer = actionTimers;
+						while( timer != NULL ){
+							// ActionTimer is deleted from manager. Delete it from holder.
+							if( oldtimer->next == timer ){
+								oldtimer->next = oldtimer->next->next;
+								delete timer, timer = NULL;
+								break;
+							}
+							timer = timer->next;
+						}
+					}
+					IActionTimer* t = new IActionTimer( this, param.intData );
+					actionTimers = new ActionTimer( pframe, t, actionTimers );
+					actionTimers->timerId = Timer::AddInternalTimerEvent( t, frame.params[1].intData );
+				}
+			}
+			break;
 
 		// Action parameters stack
 		case acPushInt:
@@ -292,10 +321,15 @@ bool Unit::update( const Frame& frame )
 		}
 
 
-		// Different
+		// Misc
 		case acSetUnitSize:
 			if( Actions.checkFrameParams( frame, 1, stInt ) )
 				setUnitSize( static_cast<float>(param.intData) / 100 );
+			break;
+		case acSetColor:
+			if( Actions.checkFrameParams( frame, 4, stInt, stInt, stInt, stInt ) )
+				Image.getSprite()->clr.set( frame.params[0].intData, frame.params[1].intData,
+						frame.params[2].intData, frame.params[3].intData );
 			break;
 
 		default:

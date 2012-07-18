@@ -14,6 +14,8 @@ actions = {
 			{ constants.acSetParam, constants.uBaseLevel, 1 },
 			{ constants.acSetParam, constants.uBaseAge, 0 },
 			{ constants.acSetUnitSize, 35 },
+			{ constants.acDAddFood, constants.utPlant },
+			{ constants.acDAddFood, constants.utCorpse },
 			{ constants.acRestoreState },
 			{ constants.acSetAction, "idle" },
 		},
@@ -24,6 +26,16 @@ actions = {
 			{ constants.acMove },
 			{ constants.acRestoreState },
 			{ constants.acSetAction },
+		}
+	},
+	{
+		name = "hit",
+		frames = {
+			{ constants.acSetColor, 255, 0, 0, 255 },
+			{ constants.acSetTimer, function(unit)
+				print(table.dump(unit:UnitId()))
+				unit:color(0, 0, 0)
+			end, 1000 },
 		}
 	},
 }

@@ -21,14 +21,14 @@ DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1 -DGL_GLEXT_PROTOTYPES=1
 CFLAGS= -O0 -pg -g -Wall $(DEFINES)
 
 
-UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp Unit.cpp Plant.cpp \
+UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp ActionTimer.cpp Unit.cpp Plant.cpp \
 		 Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp
 RENDER = Atlas.cpp ElasticBox.cpp GLHelpers.cpp GLTextures.cpp TextureArray.cpp
 GRAPHICS = GraphicsTypes.cpp Font.cpp Text.cpp sdl_graphics.cpp gl_extensions.cpp gl_shader.cpp \
 		   Animation.cpp AnimationDefines.cpp Camera.cpp Render.cpp pngfuncs.c \
 		   $(addprefix render/, $(RENDER))
 SCRIPTSAPI = UnitManager.cpp Interface.cpp Widgets.cpp ThreadManager.cpp CameraApi.cpp \
-			 BindingsApi.cpp
+			 BindingsApi.cpp Units.cpp
 SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp proto.cpp \
 		  api.cpp $(addprefix $(SCRIPTSAPIDIR), $(SCRIPTSAPI))
 WIDGETS = Widget.cpp WidgetText.cpp WidgetBar.cpp
@@ -59,7 +59,7 @@ HEADERS = $(OBJS:.o=.h) $(addprefix $(OBJDIR), $(UNIQHEADERS))
  
  
 GCHOLD = $(HEADERS:.h=.h.gch)
-GCH = $(shell echo $(GCHOLD) | sed -e "s/[^ ]\+\/\(main\|LuaRegister\|api\/Widgets\).h.gch //g")
+GCH = $(shell echo $(GCHOLD) | sed -e "s/[^ ]\+\/\(main\|LuaRegister\|api\/Widgets\|api\/Units\).h.gch //g")
 
 
 #.cpp.o:

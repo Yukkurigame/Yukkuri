@@ -28,7 +28,7 @@
 //
 // There are more declaration macros like GETSET_METHOD_DECL in 3rdparty/CUData.cpp.
 //
-// If there is field with equeal names in different classes, only one declaration must be.
+// If there is field with equal names in different classes, only one declaration must be.
 // METAMETHODS_MAX_COUNT value can be increased, if needed.
 //
 //////////////////////////////////////////////////////////////////////////
@@ -106,6 +106,18 @@ void RegisterAllTypeMetatables(lua_State* L)
 
 // Declarations
 
+// Units
+#define DECL_UNIT_METH									\
+		GETSETF_METHOD_DECL(UnitName)					\
+		GETSETF_METHOD_DECL(UnitX)						\
+		GETSETF_METHOD_DECL(UnitY)						\
+		GETSETF_METHOD_DECL(UnitSize)					\
+		GETTERF_METHOD_DECL(UnitId)						\
+		GETTERF_METHOD_DECL(UnitName)					\
+		GETTERF_METHOD_DECL(UnitTypeName)				\
+		GETTERF_METHOD_DECL(UnitSize)					\
+		EXEC_METHOD_DECL(color)
+
 
 // Widgets
 #define DECL_WIDGET_METH								\
@@ -127,6 +139,8 @@ void RegisterAllTypeMetatables(lua_State* L)
 		EXEC_METHOD_DECL(bindBarMaxValue)
 
 
+
+DECL_UNIT_METH
 DECL_WIDGET_METH
 DECL_WIDGETTEXT_METH
 DECL_WIDGETBAR_METH
@@ -135,6 +149,18 @@ DECL_WIDGETBAR_METH
 
 // Metatable records
 
+
+// Units
+#define UNIT_METH_ENTRY(ID)						\
+		GETSET_METHOD_ENTRY(ID, UnitName)		\
+		GETSET_METHOD_ENTRY(ID, UnitX)			\
+		GETSET_METHOD_ENTRY(ID, UnitY)			\
+		GETSET_METHOD_ENTRY(ID, UnitSize)		\
+		GETTER_METHOD_ENTRY(ID, UnitId)			\
+		GETTER_METHOD_ENTRY(ID, UnitName)		\
+		GETTER_METHOD_ENTRY(ID, UnitTypeName)	\
+		GETTER_METHOD_ENTRY(ID, UnitSize)		\
+		EXEC_METHOD_ENTRY(ID, color)
 
 
 // Widgets
@@ -168,7 +194,7 @@ const size_t METAMETHODS_MAX_COUNT = 70;
 static const struct luaL_reg ud_meta[TL::Length<ClassesList>::value][METAMETHODS_MAX_COUNT] = {
 	{
 		STD_METHODS(0),
-		//GAMEOBJ_METH_ENTRY(0),
+		UNIT_METH_ENTRY(0)
 		END
 	},
 	/*{

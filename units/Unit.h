@@ -4,6 +4,7 @@
 #include <string>
 
 #include "Animation.h"
+#include "ActionTimer.h"
 #include "Prototypes.h"
 #include "YOBA.h"
 #include "3rdparty/CUDataUser.h"
@@ -11,8 +12,9 @@
 class CUData;
 
 
-enum unitType { utStatic = 0, utPlayer, utEntity, utPlant, utCorpse };
+enum unitType { utStatic = 0, utPlayer, utEntity, utPlant, utCorpse, utLast };
 enum unitFlag { ufDeleted = 1, ufEdible = 2, ufMoving = 4, ufLast };
+
 
 class Unit : public CUDataUser
 {
@@ -61,8 +63,8 @@ public:
 	GET_PARAM( unsigned int, Id, UnitId )
 
 	GET_PARAM( std::string, Name, UnitName )
-	GET_PARAM( std::string, Type, Type )
-	GET_PARAM( enum unitType, eType, UnitType )
+	GET_PARAM( std::string, TypeName, Type )
+	GET_PARAM( enum unitType, Type, UnitType )
 	GET_PARAM( const float, X, X )
 	GET_PARAM( const float, Y, Y )
 	GET_PARAM( float, Size, Image.getSize() )
@@ -72,8 +74,13 @@ public:
 
 	virtual void hit( float ) {};
 
+	// Function bindings
+	int color( lua_State* L );
+
 protected:
 	virtual CUData* createUData();
+
+	ActionTimer* actionTimers;
 
 	float X, Y, Z;
 	CharBuild Char;

@@ -7,8 +7,6 @@ Player::Player()
 {
 	moveX = 0;
 	moveY = 0;
-
-	FoodTypes.push_back( "corpse" );
 }
 
 void Player::die( )

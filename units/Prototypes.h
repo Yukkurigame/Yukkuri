@@ -20,7 +20,7 @@ enum ActionCommand
 {
 	acNone = 0,
 	acPush, acPushInt, acPushFloat, acPushString,
-	acSuper, acRestoreState, acSetAction,
+	acSuper, acRestoreState, acSetAction, acSetTimer,
 	acCondition,
 	// Comparison between parameter and number
 	acIfParamEqual, acIfParamLess, acIfParamMore,
@@ -31,9 +31,9 @@ enum ActionCommand
 	acSetParam, acCopyParam, acLoadParam, acLoadParamBunch,
 	acSetFlag, acRemoveFlag,
 	// Unit
-	acSetUnitSize,
+	acSetUnitSize, acSetColor,
 	// Dynamic unit
-	acMove,
+	acMove, acDAddFood,
 	// Entity
 	acEAddPathTarget,
 };
@@ -101,7 +101,6 @@ struct ActionManagerState
 		prevActionTickDiff( diff ), forced( force ) { }
 };
 
-
 struct ActionManager
 {
 	bool loaded;
@@ -111,12 +110,12 @@ struct ActionManager
 	Proto* proto;
 	Action* action;
 	ParametersStack params;
-	FrameTimer* timers;
+	FrameTimer* skipTimers;
 
 	std::stack< ActionManagerState* > stateStack;
 
 	ActionManager( ) : loaded(false), done(false),
-			lastTick(0), frame(-1), action(NULL), timers(NULL) { }
+			lastTick(0), frame(-1), action(NULL), skipTimers(NULL) { }
 	~ActionManager( ) { }
 
 	void setProto( Proto* );

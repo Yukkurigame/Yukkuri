@@ -156,7 +156,7 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 				if( lua_istable(L, -1) ){
 					a->framesCount = lua_objlen(L, -1);
 					if( a->framesCount > 0 ){
-						a->frames = (Frame*)malloc( sizeof(Frame) * a->framesCount );
+						a->frames = (Frame*)malloc( (unsigned)sizeof(Frame) * a->framesCount );
 
 						size_t j = 0;
 						std::stack< Frame* > conditions;
@@ -195,6 +195,12 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 										}else if( lua_isstring( L, -1 )){
 											frame.param_types[params_added] = stString;
 											frame.params[params_added].stringData = lua_tostring( L, -1 );
+										}else if( lua_isfunction( L, -1 ) ){
+											frame.param_types[params_added] = stFunction;
+											// This will remove function from stack.
+											RegProc( L, &(frame.params[params_added].intData), -1 );
+											// We need to add one value for lua_next
+											lua_pushnil( L );
 										}else
 											continue;
 										params_added++;
@@ -223,10 +229,8 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 								}else{
 									lua_pop( L, 1 ); // st: ... frames key frame
 									frame.func = LUA_NOREF;
-									//getValueByName( L, "param", frame.param );
 								}
 
-								//getValueByName( L, "text", frame.txt_param );
 							}else{
 								Debug::debug( Debug::CONFIG,
 									"In proto '" + proto->name + "', action '" + a->name + "' " +

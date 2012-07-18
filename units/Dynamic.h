@@ -29,7 +29,7 @@ public:
 protected:
 	virtual CUData* createUData();
 
-	std::vector< std::string > FoodTypes;
+	std::vector< enum unitType > FoodTypes;
 	Unit* Attacked;
 	float TotalDistance;
 	const static int m_animdistance = 20;

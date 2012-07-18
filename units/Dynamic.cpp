@@ -19,9 +19,6 @@ DynamicUnit::DynamicUnit()
 {
 	TotalDistance = 0;
 	Attacked = NULL;
-
-	//FIXME: get it from config
-	FoodTypes.push_back( "plant" );
 	currentTile = -1;
 }
 
@@ -194,7 +191,18 @@ void DynamicUnit::die( )
 
 bool DynamicUnit::update( const Frame& frame )
 {
-	return Unit::update( frame );
+	switch(frame.command){
+		case acDAddFood:
+			if( Actions.checkFrameParams( frame, 1, stInt ) ){
+				int type = frame.params[0].intData;
+				if( type > 0 && type < utLast )
+					FoodTypes.push_back( (enum unitType)type );
+			}
+			break;
+		default:
+			return Unit::update( frame );
+	}
+	return true;
 }
 
 void DynamicUnit::takeAction( )
@@ -221,7 +229,7 @@ void DynamicUnit::grow( )
 void DynamicUnit::attack( )
 {
 	Unit* victim = NULL;
-	victim = UnitManager::closer( this, "entity", 120.0 );
+	victim = UnitManager::closer( this, utEntity, 120.0 );
 	if( victim )
 		this->attackUnit( victim );
 }
@@ -239,6 +247,8 @@ void DynamicUnit::attackUnit( Unit* victim )
 
 void DynamicUnit::hit( float damage )
 {
-	Image.getSprite()->clr.set( 255, 0, 0 );
+	Actions.saveState( true );
+	Actions.setAction( "hit" );
+	//Image.getSprite()->clr.set( 255, 0, 0 );
 	Char.recieveDamage( damage );
 }

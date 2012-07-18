@@ -40,7 +40,7 @@ namespace {
 			player = NULL;
 		if( u == Camera::GetTarget() )
 			Camera::DeleteTarget();
-		ChangeUnitsSize( u->getUniteType( ), -1 );
+		ChangeUnitsSize( u->getUnitType( ), -1 );
 		delete u;
 	}
 
@@ -156,7 +156,7 @@ int UnitManager::GetUnitVecSize()
 }
 
 
-Unit* UnitManager::closer( Unit* u, std::string type, float limit )
+Unit* UnitManager::closer( Unit* u, enum unitType type, float limit )
 {
 	//FIXME: quick and dirty
 	if( u == NULL )
@@ -180,7 +180,7 @@ Unit* UnitManager::closer( Unit* u, std::string type, float limit )
 }
 
 
-Unit* UnitManager::closer( Unit* u, std::vector< std::string >* types, float limit )
+Unit* UnitManager::closer( Unit* u, std::vector< enum unitType >* types, float limit )
 {
 	//FIXME: quick and dirty
 	if( u == NULL )

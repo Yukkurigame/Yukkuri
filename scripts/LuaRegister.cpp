@@ -95,11 +95,12 @@ void LuaMain::RegisterApi( lua_State* L )
 		FIELD(acPushFloat)
 		FIELD(acPushString)
 
+
 		// Functions
 		FIELD(acSuper)
 		FIELD(acRestoreState)
 		FIELD(acSetAction)
-
+		FIELD(acSetTimer)
 
 		// Conditions
 		FIELD(acCondition)
@@ -131,6 +132,8 @@ void LuaMain::RegisterApi( lua_State* L )
 		// Misc commands
 		FIELD(acMove)
 		FIELD(acSetUnitSize)
+		FIELD(acSetColor)
+		FIELD(acDAddFood)
 		FIELD(acEAddPathTarget)
 
 		// Unit base parameters

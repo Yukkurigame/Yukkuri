@@ -79,7 +79,7 @@ UINT Timer::AddEvent( UINT dt, LuaRegRef action, UINT period, UINT maxCalls )
 	te->maxCalls = maxCalls;
 
 	AddTimerEvent( te );
-	return 1;
+	return te->id;
 }
 
 
@@ -95,7 +95,7 @@ UINT Timer::AddEvent( UINT dt, LuaRegRef action )
 
 	AddTimerEvent(te);
 
-	return 1;
+	return te->id;
 }
 
 
@@ -112,6 +112,14 @@ void Timer::AddThreadTimerEvent( UINT dt, LuaRegRef action, bool pausable )
 	AddTimerEvent(te);
 }
 
+int Timer::AddInternalTimerEvent( ITimerEventPerformer* performer, UINT dt )
+{
+	InternalTimerEvent* te = new InternalTimerEvent();
+	te->performer = performer;
+	te->execTime = sdl_time + dt;
+	AddTimerEvent(te);
+	return te->id;
+}
 
 int Timer::AddInternalTimerEvent( ITimerEventPerformer* performer, UINT dt, UINT period, UINT max_Calls, bool periodic, bool pausable )
 {
@@ -133,6 +141,23 @@ int Timer::AddInternalTimerEvent( ITimerEventPerformer* performer, UINT dt, UINT
 	return te->id;
 }
 
+bool Timer::UpdateEventById( UINT id, UINT dt )
+{
+	TimerEvent* t = NULL;
+	FOREACHIT( timerEvents ){
+		if( (*it)->id == id ){
+			t = *it;
+			break;
+		}
+	}
+	if( t == NULL )
+		return false;
+
+	t->execTime = sdl_time + dt;
+
+	return true;
+}
+
 
 // Удаление события таймера с заданным action
 int Timer::DeleteTimerEvent( LuaRegRef action )
@@ -141,7 +166,7 @@ int Timer::DeleteTimerEvent( LuaRegRef action )
 	TimerEvent* t = NULL;
 	TEvIter tit = timerEvents.end();
 	FOREACHIT( timerEvents ){
-		if( t->action == action ){
+		if( (*it)->action == action ){
 			t = *it;
 			tit = it;
 			break;
@@ -175,8 +200,8 @@ bool Timer::DeleteTimerEventById(UINT id)
 	TimerEvent* t = NULL;
 	TEvIter tit = timerEvents.end();
 	FOREACHIT( timerEvents ){
-		if( t->id == id ){
-			t = *it;
+		t = *it;
+		if( (*it)->id == id ){
 			tit = it;
 			break;
 		}

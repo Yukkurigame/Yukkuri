@@ -83,7 +83,7 @@ void ActionManager::setParentAction( const char* aname )
 
 void ActionManager::updateTimers( const int& dt )
 {
-	FrameTimer* timer = timers;
+	FrameTimer* timer = skipTimers;
 	while( timer != NULL ){
 		timer->time -= dt;
 		timer = timer->next;
@@ -118,14 +118,14 @@ new_frame: ;
 
 		Frame* pframe = &(action->frames[frame]);
 		if( pframe->skip_on_delay ){
-			FrameTimer* timer = timers;
+			FrameTimer* timer = skipTimers;
 			while( timer != NULL ){
 				if( timer->frame == pframe )
 					break;
 				timer = timer->next;
 			}
 			if( !timer )
-				timers = new FrameTimer( pframe, pframe->skip_on_delay, timers );
+				skipTimers = new FrameTimer( pframe, pframe->skip_on_delay, skipTimers );
 			else if( timer->time <= 0 )
 				timer->time = pframe->skip_on_delay;
 			else

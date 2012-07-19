@@ -5,8 +5,8 @@ extern MainConfig conf;
 
 Player::Player()
 {
-	moveX = 0;
-	moveY = 0;
+	force.x = 0;
+	force.y = 0;
 }
 
 void Player::die( )
@@ -19,10 +19,14 @@ void Player::die( )
 void Player::moveUnit( short axis, signed int val )
 {
 	if( axis )
-		moveX = val;
+		force.x = val;
 	else
-		moveY = val;
-	if( moveX == 0 && moveY == 0 )
+		force.y = val;
+	if( physBody ){
+		cpBodySetVel( physBody, cpvzero );
+		cpBodySetForce( physBody, force );
+	}
+	if( force.x == 0 && force.y == 0 )
 		Image.setDefault();
 }
 
@@ -30,7 +34,7 @@ bool Player::update( const Frame& frame )
 {
 	switch( frame.command ){
 		case acMove:
-			DynamicUnit::moveUnit( moveX, moveY );
+			//DynamicUnit::moveUnit( moveX, moveY );
 			break;
 		default:
 			return DynamicUnit::update( frame );

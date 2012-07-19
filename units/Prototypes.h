@@ -31,7 +31,7 @@ enum ActionCommand
 	acSetParam, acCopyParam, acLoadParam, acLoadParamBunch,
 	acSetFlag, acRemoveFlag,
 	// Unit
-	acSetUnitSize, acSetColor,
+	acSetUnitSize, acSetColor, acSetUnitPhysics,
 	// Dynamic unit
 	acMove, acDAddFood,
 	// Entity
@@ -116,7 +116,7 @@ struct ActionManager
 
 	ActionManager( ) : loaded(false), done(false),
 			lastTick(0), frame(-1), action(NULL), skipTimers(NULL) { }
-	~ActionManager( ) { }
+	~ActionManager( );
 
 	void setProto( Proto* );
 	void setAction( const char* name );

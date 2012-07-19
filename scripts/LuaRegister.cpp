@@ -55,7 +55,7 @@ void LuaMain::RegisterApi( lua_State* L )
 	{
 		for( UINT i = 1; i < MAXKEYS; i++){		// Цикл по всем возможным кодам
 			lua_pushinteger( L, i );		// Помещаем в стек код клавиши. Стек: таблица, i
-			lua_setfield( L, -2, Bindings::bnd.KeyName(i).c_str() ); // Заносим в таблицу перменную с именем и значением. Стек: таблица
+			lua_setfield( L, -2, Bindings::keyName(i) ); // Заносим в таблицу перменную с именем и значением. Стек: таблица
 		}
 	}
 	lua_setglobal(L, "keys");		// Заносим таблицу в глобальную переменную. Стек:
@@ -83,6 +83,18 @@ void LuaMain::RegisterApi( lua_State* L )
 		FIELD(utEntity)
 		FIELD(utPlant)
 		FIELD(utCorpse)
+
+		// Physics objects types
+		FIELD(potNone)
+		FIELD(potCircle)
+		FIELD(potQuad)
+		FIELD(potRectangle)
+		FIELD(potPolygon)
+		// Physics objects parameters types
+		FIELD(pptMat)
+		FIELD(pptType)
+		FIELD(pptRadius)
+		FIELD(pptSides)
 
 
 		// ***********************
@@ -132,6 +144,7 @@ void LuaMain::RegisterApi( lua_State* L )
 		// Misc commands
 		FIELD(acMove)
 		FIELD(acSetUnitSize)
+		FIELD(acSetUnitPhysics)
 		FIELD(acSetColor)
 		FIELD(acDAddFood)
 		FIELD(acEAddPathTarget)

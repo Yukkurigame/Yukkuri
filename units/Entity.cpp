@@ -10,6 +10,13 @@ Entity::Entity()
 	Attacked = NULL;
 }
 
+
+Entity::~Entity( )
+{
+	while( nextTarget() ) continue;
+}
+
+
 bool Entity::update( const Frame& frame )
 {
 	switch( frame.command ){
@@ -44,12 +51,6 @@ void Entity::takeAction( )
 		if( dist(Attacked) < getUnitSize( ) * 100 ){
 			attackUnit( Attacked );
 		}
-	}else{
-		/*if( !isMoved() ){
-			float x = getUnitX() + ( -150 + ( rand() % 300 ) );
-			float y = getUnitY() - ( -150 + ( rand() % 300 ) );
-			setPathTarget(x, y);
-		}*/
 	}
 }
 
@@ -66,20 +67,26 @@ void Entity::move( )
 	if( target == NULL && !nextTarget() ){
 		Image.setFrame(0);
 		clearMoving();
+		if( physBody ){
+			cpBodySetVel( physBody, cpvzero );
+			cpBodySetForce( physBody, force );
+		}
 		return;
 	}
-	int dx = 0, dy = 0;
+	force.x = 0;
+	force.y = 0;
 	int nx = static_cast<int>(target->x - getUnitX());
 	int ny = static_cast<int>(target->y - getUnitY());
 	if( abs(nx) > 1 )
-		dx = nx / abs(nx);
+		force.x = nx / abs(nx);
 	if( abs(ny) > 1 )
-		dy = ny / abs(ny);
-	if( dx == 0 && dy == 0){
+		force.y = ny / abs(ny);
+	if( force.x == 0 && force.y == 0){
 		nextTarget();
 		return;
 	}
 	setMoving();
-	moveUnit( dx, dy );
+	//cpBodySetVel( physBody, cpvzero );
+	cpBodySetForce( physBody, force );
 
 }

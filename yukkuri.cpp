@@ -12,6 +12,10 @@
 #include "daytime.h"
 #include "map/Region.h"
 #include "map/Map.h"
+#include "physics/physics.h"
+#include "Bindings.h"
+#include "scripts/proto.h"
+
 #include "debug.h"
 using namespace Debug;
 
@@ -27,6 +31,12 @@ bool Yukkuri::Init()
 {
 	extern LuaScript* luaScript;
 
+	// Load key names for register in api
+	Bindings::init();
+
+	// Register lua api
+	luaScript->RegisterApi( luaScript->getState() );
+
 	if( !luaScript->Init( ) || !luaScript->OpenFile( "init" ) ){
 		debug( MAIN, "Lua loading failed.\n" );
 		return false;
@@ -40,6 +50,9 @@ bool Yukkuri::AdditionalInit()
 	extern LuaScript* luaScript;
 
 	debug( MAIN, "Additional Init\n" );
+
+	// Create physics space;
+	Phys::space = cpSpaceNew();
 
 	Region::init();
 	Map::init( );
@@ -108,8 +121,6 @@ void Yukkuri::WindowActive()
 
 void Yukkuri::End()
 {
-	extern std::vector<Proto*> Prototypes;
-
 	//Clear timer
 	Timer::DeleteAllEvents();
 
@@ -118,12 +129,15 @@ void Yukkuri::End()
 
 	// Clear units
 	UnitManager::clean( );
-	clear_vector( &Prototypes );
+	clean_prototypes();
 
 	// Clear other
 	Map::clean( );
 	Region::clean( );
 	DayTime::clean();
+
+	// Free physics engine
+	cpSpaceFree( Phys::space );
 
 	threadsManager::CleanThreads( );
 

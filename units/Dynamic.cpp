@@ -14,12 +14,24 @@
 #include <math.h>
 #include "map/Map.h"
 
+#include "chipmunk/chipmunk_unsafe.h"
+
 
 DynamicUnit::DynamicUnit()
 {
 	TotalDistance = 0;
 	Attacked = NULL;
 	currentTile = -1;
+	force.x = 0;
+	force.y = 0;
+}
+
+DynamicUnit::~DynamicUnit()
+{
+	if( physShape ){
+		cpSpaceRemoveShape( Phys::space, physShape );
+		cpShapeFree( physShape );
+	}
 }
 
 bool DynamicUnit::Create( int id, std::string proto )
@@ -27,7 +39,8 @@ bool DynamicUnit::Create( int id, std::string proto )
 	if( !Unit::Create( id, proto ) )
 		return false;
 
-	//setUnitSize( 0.35f );
+	cpShape* shape = cpCircleShapeNew( physBody, phys.radius, cpvzero );
+	physShape = cpSpaceAddShape( Phys::space, shape );
 
 	return true;
 }
@@ -40,13 +53,14 @@ bool DynamicUnit::Create( int id, std::string proto )
 **/
 void DynamicUnit::moveUnit( signed int x, signed int y )
 {
-	if( x != 0 || y != 0 ){
+	/*if( x != 0 || y != 0 ){
 		float zone = 1.0;
 		float l = sqrt( static_cast<float>(x * x  +  y * y) );
 		float speed = fabs( Char.chars.speed * Char.params.fed ) * zone * ( DT / 100000.0f ) / l;
 		float dx = speed * x; // / l;
 		float dy = speed * y; // / l;
-		/*//MapTile* currentTile = map.GetTile( X , Y );
+		*/
+		/* //MapTile* currentTile = map.GetTile( X , Y );
 		if( currentTile && !currentTile->Type->passability ){
 			//FIXME: Bad
 			int x, y, px, py;
@@ -89,7 +103,7 @@ void DynamicUnit::moveUnit( signed int x, signed int y )
 			if( !zone )
 				zone = -0.5;
 		}*/
-		dx *= zone;
+		/*dx *= zone;
 		dy *= zone;
 		float distance = sqrt( dx * dx + dy * dy );
 		TotalDistance += distance;
@@ -112,11 +126,12 @@ void DynamicUnit::moveUnit( signed int x, signed int y )
 				Image.setAnimation(AnimDef::right);
 			Image.setFrame( Image.getCount() ? ( static_cast<int>(TotalDistance) / m_animdistance) % Image.getCount() : 0 );
 		}
-		X += dx;
-		Y += dy;
-		Image.setPosition(X, Y);
+		unitX += dx;
+		unitY += dy;
+		Image.setPosition(unitX, unitY);
 		Char.tire( distance / 200 );
-	}
+
+	}*/
 }
 
 
@@ -223,7 +238,19 @@ void DynamicUnit::grow( )
 		scale = 0.35f;
 	else if( scale > 1.3 )
 		scale = 1.3f;
-	Image.setSize( scale );
+	setUnitSize( scale );
+}
+
+
+void DynamicUnit::updatePhysics( ){
+	Unit::updatePhysics( );
+	switch(phys.type){
+		case potCircle:
+			cpCircleShapeSetRadius( physShape, phys.radius );
+			break;
+		default:
+			break;
+	}
 }
 
 void DynamicUnit::attack( )
@@ -249,6 +276,5 @@ void DynamicUnit::hit( float damage )
 {
 	Actions.saveState( true );
 	Actions.setAction( "hit" );
-	//Image.getSprite()->clr.set( 255, 0, 0 );
 	Char.recieveDamage( damage );
 }

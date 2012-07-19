@@ -8,6 +8,7 @@ class DynamicUnit: public Unit
 {
 public:
 	DynamicUnit();
+	~DynamicUnit();
 	void moveUnit( signed int x, signed int y );
 	void eat( );
 	void eat( Unit* Victim );
@@ -16,6 +17,7 @@ public:
 	virtual void die( );
 
 	virtual bool update( const Frame& f );
+	virtual void updatePhysics( );
 
 	void takeAction( );
 	void grow( );
@@ -28,6 +30,9 @@ public:
 
 protected:
 	virtual CUData* createUData();
+
+	cpShape* physShape;
+	cpVect force;
 
 	std::vector< enum unitType > FoodTypes;
 	Unit* Attacked;

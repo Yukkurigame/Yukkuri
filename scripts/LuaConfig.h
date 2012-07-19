@@ -39,6 +39,14 @@ public:
 		bool res = execFunction("configs:get", prm, prmsz, ret);
 		return res;
 	}
+	template<typename T>
+	bool getValue( const char* field, const char* subconfig, const char* config, T& ret)
+	{
+		const int prmsz = 3;
+		const char* prm[prmsz] = { field, subconfig, config };
+		bool res = execFunction("configs:get", prm, prmsz, ret);
+		return res;
+	}
 
 	// Get value by id
 	template<typename T>

@@ -17,9 +17,6 @@ public:
 protected:
 	virtual CUData* createUData();
 
-private:
-	signed int moveX;
-	signed int moveY;
 };
 
 #endif //PLAYER_H

@@ -5,11 +5,12 @@ CC= g++
 DEFS= $(shell sdl-config --cflags)
 PROGNAME= Yukkuri
 INCLUDES=  -I. -Iunits -Igraphics -Iinterface -I/usr/include/freetype2
-LIBS= $(shell sdl-config --libs) -lpng -lSDL_image -lGL -lfreetype -llua
+LIBS= $(shell sdl-config --libs) -lpng -lSDL_image -lGL -lfreetype -llua -L./libs -dynamic -lchipmunk-dev
 OBJDIR= obj/
 SCRIPTSAPIDIR = api/
 SCRIPTSDIR= scripts/
 UNITSDIR= units/
+PHYSICSDIR= physics/
 GRAPHICSDIR= graphics/
 WIDGETSDIR= widgets/
 INTERFACEDIR= interface/
@@ -23,6 +24,7 @@ CFLAGS= -O0 -pg -g -Wall $(DEFINES)
 
 UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp ActionTimer.cpp Unit.cpp Plant.cpp \
 		 Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp
+PHYSICS = physics.cpp
 RENDER = Atlas.cpp ElasticBox.cpp GLHelpers.cpp GLTextures.cpp TextureArray.cpp
 GRAPHICS = GraphicsTypes.cpp Font.cpp Text.cpp sdl_graphics.cpp gl_extensions.cpp gl_shader.cpp \
 		   Animation.cpp AnimationDefines.cpp Camera.cpp Render.cpp pngfuncs.c \
@@ -39,6 +41,7 @@ MAP = Tiles.cpp Region.cpp Map.cpp
 
 SRCS =   main.cpp yukkuri.cpp config.cpp engine.cpp Bindings.cpp BindFunctions.cpp \
          $(addprefix $(SCRIPTSDIR), $(SCRIPTS)) \
+         $(addprefix $(PHYSICSDIR), $(PHYSICS)) \
          $(addprefix $(UNITSDIR), $(UNITS)) \
          $(addprefix $(GRAPHICSDIR), $(GRAPHICS)) \
          $(addprefix $(INTERFACEDIR), $(INTERFACE)) \
@@ -91,7 +94,7 @@ $(PROGNAME) : | $(OBJDIR) $(GCH) $(OBJS)
 $(OBJDIR):
 	mkdir -p $(addprefix $(OBJDIR), $(SCRIPTSDIR) $(SCRIPTSDIR)$(SCRIPTSAPIDIR) $(UNITSDIR) \
 	 $(GRAPHICSDIR) $(GRAPHICSDIR)render/ $(INTERFACEDIR) $(INTERFACEDIR)$(WIDGETSDIR) \
-	 $(MAPDIR) $(3RDPARTYDIR) $(3RDPARTYDIR)timer)
+	 $(MAPDIR) $(3RDPARTYDIR) $(3RDPARTYDIR)timer $(PHYSICSDIR))
 
 
 clean: cleanheaders cleanobjs cleanprog cleandirs

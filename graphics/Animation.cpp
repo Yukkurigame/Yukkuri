@@ -31,6 +31,8 @@ Animation::Animation( )
 Animation::~Animation( )
 {
 	RenderManager::FreeGLSprite(sprite);
+	if( animation )
+		free( animation );
 }
 
 

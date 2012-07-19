@@ -2,8 +2,10 @@
 #include "engine.h"
 #include "config.h"
 
-#include "Render.h"
-#include "sdl_graphics.h"
+#include "graphics/Render.h"
+#include "graphics/sdl_graphics.h"
+
+#include "physics/physics.h"
 
 #include "Bindings.h"
 
@@ -173,6 +175,8 @@ void CEngine::Start()
 			inputTicks = 0;
 		}
 
+		cpSpaceStep( Phys::space, ElapsedTicks );
+
 		if( Minimized ){
 			// Release some system resources if the app. is minimized.
 			//WaitMessage(); // pause the application until focus in regained
@@ -309,7 +313,7 @@ void CEngine::HandleInput()
 		} // switch
 
 		if( evnt > 0 )
-			Bindings::bnd.process( evnt, down, unicode );
+			Bindings::process( evnt, down, unicode );
 
 	} // while (handling input)
 

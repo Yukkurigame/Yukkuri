@@ -16,210 +16,218 @@
 
 #include "hacks.h"
 
-Bindings Bindings::bnd;
 extern LuaScript* luaScript;
 
+namespace {
 
-Bindings::Bindings( )
+	BindFunction BindedFunctions[ MAXKEYS ];
+	const char* KeyNames[ MAXKEYS ];
+	const char* Current;
+	std::vector < UINT > BindedKeys;
+	LuaRegRef Reciever;
+
+	const char* none_string = "\0";
+}
+
+
+
+void Bindings::init( )
 {
 	Reciever = LUA_NOREF;
 
-	BindKey( SDLK_BACKSPACE, "backspace" );
-	BindKey( SDLK_TAB, "tab" );
+	bindKey( SDLK_BACKSPACE, "backspace" );
+	bindKey( SDLK_TAB, "tab" );
 	// SDLK_CLEAR = 12,
-	BindKey( SDLK_RETURN, "enter" );
-	BindKey( SDLK_PAUSE, "pause" );
-	BindKey( SDLK_ESCAPE, "esc" );
-	BindKey( SDLK_SPACE, "space" );
-	BindKey( SDLK_EXCLAIM, "exclaim" );
-	BindKey( SDLK_QUOTEDBL, "quotedbl" );
-	BindKey( SDLK_HASH, "hash" );
-	BindKey( SDLK_DOLLAR, "dollar" );
-	BindKey( SDLK_AMPERSAND, "ampersand" );
-	BindKey( SDLK_QUOTE, "quote" );
-	BindKey( SDLK_LEFTPAREN, "leftparen" );
-	BindKey( SDLK_RIGHTPAREN, "rightparen" );
-	BindKey( SDLK_ASTERISK, "asterisk" );
-	BindKey( SDLK_PLUS, "plus" );
-	BindKey( SDLK_COMMA, "comma" );
-	BindKey( SDLK_MINUS, "minus" );
-	BindKey( SDLK_PERIOD, "period" );
-	BindKey( SDLK_SLASH, "slash" );
+	bindKey( SDLK_RETURN, "enter" );
+	bindKey( SDLK_PAUSE, "pause" );
+	bindKey( SDLK_ESCAPE, "esc" );
+	bindKey( SDLK_SPACE, "space" );
+	bindKey( SDLK_EXCLAIM, "exclaim" );
+	bindKey( SDLK_QUOTEDBL, "quotedbl" );
+	bindKey( SDLK_HASH, "hash" );
+	bindKey( SDLK_DOLLAR, "dollar" );
+	bindKey( SDLK_AMPERSAND, "ampersand" );
+	bindKey( SDLK_QUOTE, "quote" );
+	bindKey( SDLK_LEFTPAREN, "leftparen" );
+	bindKey( SDLK_RIGHTPAREN, "rightparen" );
+	bindKey( SDLK_ASTERISK, "asterisk" );
+	bindKey( SDLK_PLUS, "plus" );
+	bindKey( SDLK_COMMA, "comma" );
+	bindKey( SDLK_MINUS, "minus" );
+	bindKey( SDLK_PERIOD, "period" );
+	bindKey( SDLK_SLASH, "slash" );
 
-	BindKey( SDLK_0, "0" );
-	BindKey( SDLK_1, "1" );
-	BindKey( SDLK_2, "2" );
-	BindKey( SDLK_3, "3" );
-	BindKey( SDLK_4, "4" );
-	BindKey( SDLK_5, "5" );
-	BindKey( SDLK_6, "6" );
-	BindKey( SDLK_7, "7" );
-	BindKey( SDLK_8, "8" );
-	BindKey( SDLK_9, "9" );
-	BindKey( SDLK_COLON, "colon" );
-	BindKey( SDLK_SEMICOLON, "semicolon" );
-	BindKey( SDLK_LESS, "less" );
-	BindKey( SDLK_EQUALS, "equals" );
-	BindKey( SDLK_GREATER, "greater" );
-	BindKey( SDLK_QUESTION, "question" );
-	BindKey( SDLK_AT, "at" );
+	bindKey( SDLK_0, "0" );
+	bindKey( SDLK_1, "1" );
+	bindKey( SDLK_2, "2" );
+	bindKey( SDLK_3, "3" );
+	bindKey( SDLK_4, "4" );
+	bindKey( SDLK_5, "5" );
+	bindKey( SDLK_6, "6" );
+	bindKey( SDLK_7, "7" );
+	bindKey( SDLK_8, "8" );
+	bindKey( SDLK_9, "9" );
+	bindKey( SDLK_COLON, "colon" );
+	bindKey( SDLK_SEMICOLON, "semicolon" );
+	bindKey( SDLK_LESS, "less" );
+	bindKey( SDLK_EQUALS, "equals" );
+	bindKey( SDLK_GREATER, "greater" );
+	bindKey( SDLK_QUESTION, "question" );
+	bindKey( SDLK_AT, "at" );
 
-	BindKey( SDLK_LEFTBRACKET, "lbracket" );
-	BindKey( SDLK_BACKSLASH, "backslash" );
-	BindKey( SDLK_RIGHTBRACKET, "rbracket" );
-	BindKey( SDLK_CARET, "caret" );
-	BindKey( SDLK_UNDERSCORE, "underscore" );
-	BindKey( SDLK_BACKQUOTE, "backquote" );
-	BindKey( SDLK_a, "a" );
-	BindKey( SDLK_b, "b" );
-	BindKey( SDLK_c, "c" );
-	BindKey( SDLK_d, "d" );
-	BindKey( SDLK_e, "e" );
-	BindKey( SDLK_f, "f" );
-	BindKey( SDLK_g, "g" );
-	BindKey( SDLK_h, "h" );
-	BindKey( SDLK_i, "i" );
-	BindKey( SDLK_j, "j" );
-	BindKey( SDLK_k, "k" );
-	BindKey( SDLK_l, "l" );
-	BindKey( SDLK_m, "m" );
-	BindKey( SDLK_n, "n" );
-	BindKey( SDLK_o, "o" );
-	BindKey( SDLK_p, "p" );
-	BindKey( SDLK_q, "q" );
-	BindKey( SDLK_r, "r" );
-	BindKey( SDLK_s, "s" );
-	BindKey( SDLK_t, "t" );
-	BindKey( SDLK_u, "u" );
-	BindKey( SDLK_v, "v" );
-	BindKey( SDLK_w, "w" );
-	BindKey( SDLK_x, "x" );
-	BindKey( SDLK_y, "y" );
-	BindKey( SDLK_z, "z" );
-	BindKey( SDLK_DELETE, "delete" );
+	bindKey( SDLK_LEFTBRACKET, "lbracket" );
+	bindKey( SDLK_BACKSLASH, "backslash" );
+	bindKey( SDLK_RIGHTBRACKET, "rbracket" );
+	bindKey( SDLK_CARET, "caret" );
+	bindKey( SDLK_UNDERSCORE, "underscore" );
+	bindKey( SDLK_BACKQUOTE, "backquote" );
+	bindKey( SDLK_a, "a" );
+	bindKey( SDLK_b, "b" );
+	bindKey( SDLK_c, "c" );
+	bindKey( SDLK_d, "d" );
+	bindKey( SDLK_e, "e" );
+	bindKey( SDLK_f, "f" );
+	bindKey( SDLK_g, "g" );
+	bindKey( SDLK_h, "h" );
+	bindKey( SDLK_i, "i" );
+	bindKey( SDLK_j, "j" );
+	bindKey( SDLK_k, "k" );
+	bindKey( SDLK_l, "l" );
+	bindKey( SDLK_m, "m" );
+	bindKey( SDLK_n, "n" );
+	bindKey( SDLK_o, "o" );
+	bindKey( SDLK_p, "p" );
+	bindKey( SDLK_q, "q" );
+	bindKey( SDLK_r, "r" );
+	bindKey( SDLK_s, "s" );
+	bindKey( SDLK_t, "t" );
+	bindKey( SDLK_u, "u" );
+	bindKey( SDLK_v, "v" );
+	bindKey( SDLK_w, "w" );
+	bindKey( SDLK_x, "x" );
+	bindKey( SDLK_y, "y" );
+	bindKey( SDLK_z, "z" );
+	bindKey( SDLK_DELETE, "delete" );
 
 	/* International keyboard syms later */
 
-	BindKey( SDLK_KP0, "num0" );
-	BindKey( SDLK_KP1, "num1" );
-	BindKey( SDLK_KP2, "num2" );
-	BindKey( SDLK_KP3, "num3" );
-	BindKey( SDLK_KP4, "num4" );
-	BindKey( SDLK_KP5, "num5" );
-	BindKey( SDLK_KP6, "num6" );
-	BindKey( SDLK_KP7, "num7" );
-	BindKey( SDLK_KP8, "num8" );
-	BindKey( SDLK_KP9, "num9" );
-	BindKey( SDLK_KP_PERIOD, "decimal" );
-	BindKey( SDLK_KP_DIVIDE, "divide" );
-	BindKey( SDLK_KP_MULTIPLY, "multiply" );
-	BindKey( SDLK_KP_MINUS, "kpminus" );
-	BindKey( SDLK_KP_PLUS, "kpplus" );
-	BindKey( SDLK_KP_ENTER, "kpenter" );
-	BindKey( SDLK_KP_EQUALS, "equals" );
+	bindKey( SDLK_KP0, "num0" );
+	bindKey( SDLK_KP1, "num1" );
+	bindKey( SDLK_KP2, "num2" );
+	bindKey( SDLK_KP3, "num3" );
+	bindKey( SDLK_KP4, "num4" );
+	bindKey( SDLK_KP5, "num5" );
+	bindKey( SDLK_KP6, "num6" );
+	bindKey( SDLK_KP7, "num7" );
+	bindKey( SDLK_KP8, "num8" );
+	bindKey( SDLK_KP9, "num9" );
+	bindKey( SDLK_KP_PERIOD, "decimal" );
+	bindKey( SDLK_KP_DIVIDE, "divide" );
+	bindKey( SDLK_KP_MULTIPLY, "multiply" );
+	bindKey( SDLK_KP_MINUS, "kpminus" );
+	bindKey( SDLK_KP_PLUS, "kpplus" );
+	bindKey( SDLK_KP_ENTER, "kpenter" );
+	bindKey( SDLK_KP_EQUALS, "equals" );
 
-	BindKey( SDLK_UP, "up" );
-	BindKey( SDLK_DOWN, "down" );
-	BindKey( SDLK_RIGHT, "right" );
-	BindKey( SDLK_LEFT, "left" );
-	BindKey( SDLK_INSERT, "insert" );
-	BindKey( SDLK_HOME, "home" );
-	BindKey( SDLK_END, "end" );
-	BindKey( SDLK_PAGEUP, "pgup" );
-	BindKey( SDLK_PAGEDOWN, "pgdown" );
+	bindKey( SDLK_UP, "up" );
+	bindKey( SDLK_DOWN, "down" );
+	bindKey( SDLK_RIGHT, "right" );
+	bindKey( SDLK_LEFT, "left" );
+	bindKey( SDLK_INSERT, "insert" );
+	bindKey( SDLK_HOME, "home" );
+	bindKey( SDLK_END, "end" );
+	bindKey( SDLK_PAGEUP, "pgup" );
+	bindKey( SDLK_PAGEDOWN, "pgdown" );
 
-	BindKey( SDLK_F1, "f1" );
-	BindKey( SDLK_F2, "f2" );
-	BindKey( SDLK_F3, "f3" );
-	BindKey( SDLK_F4, "f4" );
-	BindKey( SDLK_F5, "f5" );
-	BindKey( SDLK_F6, "f6" );
-	BindKey( SDLK_F7, "f7" );
-	BindKey( SDLK_F8, "f8" );
-	BindKey( SDLK_F9, "f9" );
-	BindKey( SDLK_F10, "f10" );
-	BindKey( SDLK_F11, "f11" );
-	BindKey( SDLK_F12, "f12" );
-	BindKey( SDLK_F13, "f13" );
-	BindKey( SDLK_F14, "f14" );
-	BindKey( SDLK_F15, "f15" );
+	bindKey( SDLK_F1, "f1" );
+	bindKey( SDLK_F2, "f2" );
+	bindKey( SDLK_F3, "f3" );
+	bindKey( SDLK_F4, "f4" );
+	bindKey( SDLK_F5, "f5" );
+	bindKey( SDLK_F6, "f6" );
+	bindKey( SDLK_F7, "f7" );
+	bindKey( SDLK_F8, "f8" );
+	bindKey( SDLK_F9, "f9" );
+	bindKey( SDLK_F10, "f10" );
+	bindKey( SDLK_F11, "f11" );
+	bindKey( SDLK_F12, "f12" );
+	bindKey( SDLK_F13, "f13" );
+	bindKey( SDLK_F14, "f14" );
+	bindKey( SDLK_F15, "f15" );
 
-	BindKey( SDLK_NUMLOCK, "numlock" );
-	BindKey( SDLK_CAPSLOCK, "capslock" );
-	BindKey( SDLK_SCROLLOCK, "scrollock" );
-	BindKey( SDLK_RSHIFT, "rshift" );
-	BindKey( SDLK_LSHIFT, "lshift" );
-	BindKey( SDLK_RCTRL, "rctrl" );
-	BindKey( SDLK_LCTRL, "lctrl" );
-	BindKey( SDLK_RALT, "ralt" );
-	BindKey( SDLK_LALT, "lalt" );
-	BindKey( SDLK_RMETA, "rmeta" );
-	BindKey( SDLK_LMETA, "lmeta" );
-	BindKey( SDLK_LSUPER, "lwin" );
-	BindKey( SDLK_RSUPER, "rwin" );
+	bindKey( SDLK_NUMLOCK, "numlock" );
+	bindKey( SDLK_CAPSLOCK, "capslock" );
+	bindKey( SDLK_SCROLLOCK, "scrollock" );
+	bindKey( SDLK_RSHIFT, "rshift" );
+	bindKey( SDLK_LSHIFT, "lshift" );
+	bindKey( SDLK_RCTRL, "rctrl" );
+	bindKey( SDLK_LCTRL, "lctrl" );
+	bindKey( SDLK_RALT, "ralt" );
+	bindKey( SDLK_LALT, "lalt" );
+	bindKey( SDLK_RMETA, "rmeta" );
+	bindKey( SDLK_LMETA, "lmeta" );
+	bindKey( SDLK_LSUPER, "lwin" );
+	bindKey( SDLK_RSUPER, "rwin" );
 	// SDLK_MODE		= 313,		/**< "Alt Gr" key */
 	// SDLK_COMPOSE		= 314,		/**< Multi-key compose key */
 
 	// SDLK_HELP		= 315,
-	BindKey( SDLK_PRINT, "printscreen" );
-	BindKey( SDLK_SYSREQ, "sysreq" );
-	BindKey( SDLK_BREAK, "break" );
-	BindKey( SDLK_MENU, "menu" );
+	bindKey( SDLK_PRINT, "printscreen" );
+	bindKey( SDLK_SYSREQ, "sysreq" );
+	bindKey( SDLK_BREAK, "break" );
+	bindKey( SDLK_MENU, "menu" );
 	// SDLK_POWER		= 320,		/**< Power Macintosh power key */
 	// SDLK_EURO		= 321,		/**< Some european keyboards */
 	// SDLK_UNDO		= 322,		/**< Atari keyboard has Undo */
 
-	BindKey( SDLK_LAST + 1, "joyaxis01" );
-	BindKey( SDLK_LAST + 2, "joyaxis00" );
-	BindKey( SDLK_LAST + 3, "joyaxis11" );
-	BindKey( SDLK_LAST + 4, "joyaxis10" );
-	BindKey( SDLK_LAST + 5, "joyaxis21" );
-	BindKey( SDLK_LAST + 6, "joyaxis20" );
-	BindKey( SDLK_LAST + 7, "joy1" );
-	BindKey( SDLK_LAST + 8, "joy2" );
-	BindKey( SDLK_LAST + 9, "joy3" );
-	BindKey( SDLK_LAST + 10, "joy4" );
-	BindKey( SDLK_LAST + 11, "joy5" );
-	BindKey( SDLK_LAST + 12, "joy6" );
-	BindKey( SDLK_LAST + 13, "joy7" );
-	BindKey( SDLK_LAST + 14, "joy8" );
-	BindKey( SDLK_LAST + 15, "joy9" );
-	BindKey( SDLK_LAST + 16, "joy10" );
-	BindKey( SDLK_LAST + 17, "joy11" );
-	BindKey( SDLK_LAST + 18, "joy12" );
-	BindKey( SDLK_LAST + 19, "joy13" );
+	bindKey( SDLK_LAST + 1, "joyaxis01" );
+	bindKey( SDLK_LAST + 2, "joyaxis00" );
+	bindKey( SDLK_LAST + 3, "joyaxis11" );
+	bindKey( SDLK_LAST + 4, "joyaxis10" );
+	bindKey( SDLK_LAST + 5, "joyaxis21" );
+	bindKey( SDLK_LAST + 6, "joyaxis20" );
+	bindKey( SDLK_LAST + 7, "joy1" );
+	bindKey( SDLK_LAST + 8, "joy2" );
+	bindKey( SDLK_LAST + 9, "joy3" );
+	bindKey( SDLK_LAST + 10, "joy4" );
+	bindKey( SDLK_LAST + 11, "joy5" );
+	bindKey( SDLK_LAST + 12, "joy6" );
+	bindKey( SDLK_LAST + 13, "joy7" );
+	bindKey( SDLK_LAST + 14, "joy8" );
+	bindKey( SDLK_LAST + 15, "joy9" );
+	bindKey( SDLK_LAST + 16, "joy10" );
+	bindKey( SDLK_LAST + 17, "joy11" );
+	bindKey( SDLK_LAST + 18, "joy12" );
+	bindKey( SDLK_LAST + 19, "joy13" );
 
 	//memset( &BindedFunctions[0], 0, sizeof(Bindings) );
 }
 
-Bindings::~Bindings( )
-{
 
-}
-
-void Bindings::BindKey( int key, std::string name )
+void Bindings::bindKey( int key, const char* name )
 {
 	if( key > MAXKEYS )
 		return;
 	KeyNames[key] = name;
-	//Keys[key] = key;
 }
 
-void Bindings::unBindKey( std::string name )
+
+const char* Bindings::getCurrent( )
 {
-	//std::map< std::string, UINT >::iterator fkey = Keys.find( name );
-	//if( fkey != Keys.end() ){
-	//	KeyNames[fkey->second] = "";
-	//	Keys.erase( fkey );
-	//}
+	return Current;
 }
 
+
+const char* Bindings::keyName( UINT i )
+{
+	if( i >= MAXKEYS || KeyNames[i] == NULL )
+		return none_string;
+	return KeyNames[i];
+}
 
 
 void Bindings::process( int num, short down, UINT16 unicode )
 {
-
-
 	switch(BindedFunctions[num].type){
 		case CFUNC:
 			BindedFunctions[num].cref(down);
@@ -241,7 +249,7 @@ void Bindings::process( int num, short down, UINT16 unicode )
 }
 
 
-void Bindings::BindCFunction( int key, UINT funcnumber )
+void Bindings::bindCFunction( int key, UINT funcnumber )
 {
 	if( key < 0 || key > MAXKEYS )
 		return;
@@ -249,7 +257,7 @@ void Bindings::BindCFunction( int key, UINT funcnumber )
 }
 
 
-void Bindings::BindLuaFunction( int key, LuaRegRef func )
+void Bindings::bindLuaFunction( int key, LuaRegRef func )
 {
 	if( key < 0 || key > MAXKEYS )
 		return;
@@ -259,6 +267,11 @@ void Bindings::BindLuaFunction( int key, LuaRegRef func )
 		luaScript->ReleaseProc( &bfunct.luaref );
 		bfunct.luaref = func;
 	}
+}
+
+
+LuaRegRef& Bindings::getReciever( ) {
+	return Reciever;
 }
 
 
@@ -276,30 +289,32 @@ void Bindings::BindLuaFunction( int key, LuaRegRef func )
 			Debug::debug( Debug::INPUT, "Bad key name.\n" );							\
 	}
 
-void Bindings::LoadKeys( std::string subconfig )
+
+void Bindings::loadKeys( const char* subconfig )
 {
-	Debug::debug( Debug::INPUT, "Loading bindings set " + subconfig + ".\n" );
-	FreeKeys();
+	Debug::debug( Debug::INPUT, "Loading bindings set " + std::string(subconfig) + ".\n" );
+	freeKeys();
 	Current = subconfig;
 	BindedKeys.clear();
 	std::map < UINT, UINT > Bindkeys;
 	std::map < UINT, LuaRegRef > Bindfuncs;
 	std::map < UINT, UINT > BindAliases;
-	std::string config = "bindings";
+	const char* config = "bindings";
 	LuaScriptConfig* cfg = new LuaScriptConfig;
 	cfg->getValue( "keys", subconfig, config, Bindkeys, Bindfuncs );
 	cfg->LuaConfig::getValue( "aliases", subconfig, config, BindAliases );
 
 	delete cfg;
 
-	BIND_TO_KEY( Bindkeys, BindCFunction )
-	BIND_TO_KEY( Bindfuncs, BindLuaFunction )
+	BIND_TO_KEY( Bindkeys, bindCFunction )
+	BIND_TO_KEY( Bindfuncs, bindLuaFunction )
 
 }
 
 #undef BIND_TO_KEY
 
-void Bindings::FreeKeys( )
+
+void Bindings::freeKeys( )
 {
 	FOREACHIT( BindedKeys )
 		BindedFunctions[*it].type = NOTAFUNC;

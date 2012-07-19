@@ -27,7 +27,7 @@ extern MainConfig conf;
 
 namespace {
 
-	SDL_Surface* screen;
+	SDL_Surface* screen = NULL;
 
 }
 
@@ -38,6 +38,7 @@ bool SDLGraphics::SetScreen( SDL_Surface* s ){
 	screen = s;
 	return true;
 }
+
 
 SDL_Surface* SDLGraphics::GetScreen() {
 	return screen;

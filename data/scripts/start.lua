@@ -54,4 +54,3 @@ Thread.resume(Thread.newThread(function()
 		Thread.wait(500)
 	end
 end))
-

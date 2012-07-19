@@ -7,6 +7,7 @@
 #include "ActionTimer.h"
 #include "Prototypes.h"
 #include "YOBA.h"
+#include "physics/physics.h"
 #include "3rdparty/CUDataUser.h"
 
 class CUData;
@@ -14,6 +15,9 @@ class CUData;
 
 enum unitType { utStatic = 0, utPlayer, utEntity, utPlant, utCorpse, utLast };
 enum unitFlag { ufDeleted = 1, ufEdible = 2, ufMoving = 4, ufLast };
+
+// Wrapper for velocity_func
+void call_velocity_func(cpBody *body, cpVect gravity, cpFloat damping, cpFloat dt);
 
 
 class Unit : public CUDataUser
@@ -34,6 +38,8 @@ public:
 	void update( const int& );
 
 	virtual bool update( const Frame& f );
+	virtual void updatePhysics( );
+	virtual void velocityFunc( ) { };
 	virtual void die( ) { setDeleted(); };
 	virtual void moveUnit( signed int x, signed int y, const int& dt ) {};
 	virtual void moveUnit( short axis, signed int val ) {};
@@ -45,9 +51,9 @@ public:
 	bool setUnitName( std::string type );
 	void setUnitType( enum unitType type );
 	virtual void setUnitPos( float x, float y );
-	inline void setUnitX( float x ) { setUnitPos(x, Y); }
-	inline void setUnitY( float y ) { setUnitPos(X, y); }
-	inline void setUnitSize( float size ) { Image.setSize(size); }
+	void setUnitSize( float size );
+	inline void setUnitX( float x ) { setUnitPos(x, physBody->p.y); }
+	inline void setUnitY( float y ) { setUnitPos(physBody->p.x, y); }
 	inline void setUnitParameter( enum character param, float value ){ Char.set( param, value ); }
 	inline void setUnitParameter( enum character_float param, float value ){ Char.set( param, value ); }
 
@@ -65,11 +71,11 @@ public:
 	GET_PARAM( std::string, Name, UnitName )
 	GET_PARAM( std::string, TypeName, Type )
 	GET_PARAM( enum unitType, Type, UnitType )
-	GET_PARAM( const float, X, X )
-	GET_PARAM( const float, Y, Y )
+	GET_PARAM( const float, X, physBody->p.x )
+	GET_PARAM( const float, Y, physBody->p.y )
 	GET_PARAM( float, Size, Image.getSize() )
-	GET_PARAM( float*, pX, &X )
-	GET_PARAM( float*, pY, &Y )
+	GET_PARAM( double*, pX, &(physBody->p.x) )
+	GET_PARAM( double*, pY, &(physBody->p.y) )
 #undef GET_PARAM
 
 	virtual void hit( float ) {};
@@ -82,7 +88,11 @@ protected:
 
 	ActionTimer* actionTimers;
 
-	float X, Y, Z;
+	cpBody* physBody;
+
+
+	float Z;
+	PhysObject phys;
 	CharBuild Char;
 	Animation Image;
 	int DT;

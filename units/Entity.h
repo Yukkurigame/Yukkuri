@@ -10,6 +10,7 @@ class Entity: public DynamicUnit
 {
 public:
 	Entity( );
+	~Entity( );
 
 	bool update( const Frame& f );
 	void takeAction( );

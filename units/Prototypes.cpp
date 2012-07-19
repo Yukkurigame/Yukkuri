@@ -41,6 +41,16 @@ Action* Proto::getParentAction( std::string aname )
 }
 
 
+ActionManager::~ActionManager( )
+{
+	FrameTimer* timer = NULL;
+	while( skipTimers != NULL ){
+		timer = skipTimers;
+		skipTimers = skipTimers->next;
+		delete timer, timer = NULL;
+	}
+}
+
 void ActionManager::setProto( Proto* p )
 {
 	proto = p;

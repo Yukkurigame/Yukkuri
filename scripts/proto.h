@@ -13,6 +13,9 @@
 #include "types.h"
 
 
+void clean_prototypes( );
+
+
 class ProtoManager : public LuaScript
 {
 public:

@@ -22,6 +22,18 @@ int ProtoManager::Count = 0;
 std::vector<Proto*> Prototypes;
 
 
+void clean_prototypes( )
+{
+	FOREACHIT( Prototypes ){
+		FOREACH( ait, (*it)->Actions ){
+			if( ait->second.frames )
+				free( ait->second.frames );
+		}
+		delete *it, *it = NULL;
+	}
+}
+
+
 ProtoManager::ProtoManager()
 {
 
@@ -155,6 +167,8 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 				lua_getfield(L, -1, "frames");	// Стек: env actions key actions[key] frames
 				if( lua_istable(L, -1) ){
 					a->framesCount = lua_objlen(L, -1);
+					a->frames = NULL;
+
 					if( a->framesCount > 0 ){
 						a->frames = (Frame*)malloc( (unsigned)sizeof(Frame) * a->framesCount );
 

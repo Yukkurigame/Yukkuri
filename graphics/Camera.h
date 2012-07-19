@@ -21,7 +21,7 @@ namespace Camera {
 	void Move( float X, float Y );
 	void ChangeMode( enum ctMode mode );
 	void SetTarget( Unit* u );
-	void SetTarget( float* X, float* Y );
+	void SetTarget( double* X, double* Y );
 	Unit* GetTarget( );
 	void DeleteTarget( );
 

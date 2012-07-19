@@ -37,9 +37,7 @@ LuaMain::LuaMain()
 	if( Lst == NULL ){
 		Lst = luaL_newstate();
 		luaL_openlibs(Lst);
-		RegisterApi( Lst );
 	}
-
 	count++;
 }
 

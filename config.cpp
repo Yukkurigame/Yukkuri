@@ -12,7 +12,7 @@ MainConfig conf;
 
 MainConfig::MainConfig()
 {
-		memset( this, 0, sizeof(this) );
+		memset( this, 0, (unsigned)sizeof(this) );
 }
 
 bool MainConfig::load( )

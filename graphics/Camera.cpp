@@ -13,8 +13,8 @@ namespace {
 	int TargetMode = ctmNormal;
 	s2f pos;
 	s2f offset;
-	float* TargetX = NULL;
-	float* TargetY = NULL;
+	double* TargetX = NULL;
+	double* TargetY = NULL;
 	Unit* Target = NULL;
 	s3f* MainView = NULL;
 }
@@ -97,7 +97,7 @@ void Camera::SetTarget( Unit* u )
 }
 
 
-void Camera::SetTarget( float* x, float* y )
+void Camera::SetTarget( double* x, double* y )
 {
 	TargetX = x;
 	TargetY = y;

@@ -11,18 +11,22 @@
 #include "3rdparty/timer/TimerManager.h"
 
 
+void call_velocity_func(cpBody *body, cpVect gravity, cpFloat damping, cpFloat dt)
+{
+	( (Unit*)body->data )->velocityFunc();
+}
+
 
 Unit::Unit()
 {
 	UnitId = 0;
-	X = 0.0;
-	Y = 0.0;
 	Z = 1;
 	DT = 0;
 	UnitName = "";
 	Type = "";
 	flags = 0;
 	actionTimers = NULL;
+	physBody = cpBodyNew( 1.0, 1.0 );
 }
 
 
@@ -34,6 +38,10 @@ Unit::~Unit()
 		Timer::DeleteTimerEventById( timer->timerId );
 		actionTimers = timer->next;
 		delete timer, timer = NULL;
+	}
+	if( physBody ){
+		cpSpaceRemoveBody( Phys::space, physBody );
+		cpBodyFree( physBody );
 	}
 }
 
@@ -59,6 +67,8 @@ bool Unit::Create( int id, std::string proto )
 		Actions.setAction( "init" );
 		delete pm;
 	}
+	cpSpaceAddBody( Phys::space, physBody );
+	//physBody->velocity_func = call_velocity_func;
 
 	return true;
 }
@@ -75,6 +85,9 @@ void Unit::update( const int& dt )
 	}
 
 	Actions.updateTimers( dt );
+
+	if( physBody )
+		Image.setPosition( physBody->p.x, physBody->p.y );
 
 	if( !Actions.loaded )
 		return;
@@ -328,6 +341,30 @@ bool Unit::update( const Frame& frame )
 
 
 		// Misc
+		case acSetUnitPhysics:
+			if( Actions.checkFrameParams( frame, 3, stInt, stInt, stIntOrNone ) ){
+				int firstparam = frame.params[1].intData;
+				switch(param.intData){
+					case pptMat:
+						break;
+					case pptType:
+						if( firstparam >= 0 && firstparam < potLast )
+							phys.type = (enum PhysObectType)firstparam;
+						else
+							Debug::debug( Debug::UNIT, "acSetUnitPhysics: bad physics object type." );
+						break;
+					case pptRadius:
+						phys.radius = firstparam;
+						break;
+					case pptSides:
+						phys.sides.x = firstparam;
+						phys.sides.y = frame.params[2].intData;
+						break;
+				}
+				phys.calc_mass();
+				updatePhysics( );
+			}
+			break;
 		case acSetUnitSize:
 			if( Actions.checkFrameParams( frame, 1, stInt ) )
 				setUnitSize( static_cast<float>(param.intData) / 100 );
@@ -348,6 +385,21 @@ bool Unit::update( const Frame& frame )
 #undef PARAMSCOND
 #undef CHECKFLAG
 
+
+void Unit::updatePhysics( )
+{
+	cpBodySetMass( physBody, phys.mass );
+	cpFloat moment;
+	switch(phys.type){
+		case potCircle:
+			moment = cpMomentForCircle( phys.mass, 0, phys.radius, cpvzero );
+			break;
+		default:
+			moment = 1.0;
+			break;
+	}
+	cpBodySetMoment( physBody, moment );
+}
 
 
 void Unit::setUnitType( enum unitType type )
@@ -379,8 +431,8 @@ bool Unit::setUnitName( std::string type )
 
 void Unit::setUnitPos( float x, float y )
 {
-	X = x;
-	Y = y;
+	cpVect v = {x, y};
+	cpBodySetPos( physBody, v );
 	Image.setPosition( x, y, Z );
 
 }
@@ -389,7 +441,15 @@ float Unit::dist( Unit* target )
 {
 	if( !target )
 		return 0; //Lol, Nobody here!
-	float x = X - target->getUnitX();
-	float y = Y - target->getUnitY();
+	float x = physBody->p.x - target->getUnitX();
+	float y = physBody->p.y - target->getUnitY();
 	return sqrt( ( x * x ) + ( y * y ) );
+}
+
+void Unit::setUnitSize( float size )
+{
+	Image.setSize(size);
+	phys.scale( size );
+	updatePhysics( );
+
 }

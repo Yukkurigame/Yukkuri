@@ -9,9 +9,6 @@
 
 #include "types.h"
 
-#include <string>
-#include <vector>
-
 #include "BindFunctions.h"
 #include "SDL/SDL_keysym.h"
 
@@ -27,41 +24,24 @@ struct BindFunction {
 };
 
 
-class Bindings
+namespace Bindings
 {
-public:
-	Bindings();
-	~Bindings();
-
-	static Bindings bnd;
+	void init();
 
 	void process( int num, short down, UINT16 unicode );
 
-	void BindKey( int key, std::string name );
-	void unBindKey( std::string name );
+	void bindKey( int key, const char* name );
 
-	void BindCFunction( int key, UINT funcname );
-	void BindLuaFunction( int key, LuaRegRef func );
+	void bindCFunction( int key, UINT funcname );
+	void bindLuaFunction( int key, LuaRegRef func );
 
-	void LoadKeys( std::string );
-	void FreeKeys( );
-	std::string GetCurrent( ){ return Current; }
+	void loadKeys( const char* );
+	void freeKeys( );
+	const char* getCurrent( );
+	const char* keyName( UINT i );
 
-	inline std::string KeyName( UINT i ){
-		if( i >= MAXKEYS )
-			return "";
-		return KeyNames[i];
-	}
+	LuaRegRef& getReciever( );
 
-	LuaRegRef& getReciever( ) { return Reciever; }
-
-private:
-	//std::map< std::string, UINT > Keys;
-	BindFunction BindedFunctions[ MAXKEYS ];
-	std::string KeyNames[ MAXKEYS ];
-	std::string Current;
-	std::vector < UINT > BindedKeys;
-	LuaRegRef Reciever;
 
 };
 

@@ -17,6 +17,12 @@
 #include "chipmunk/chipmunk_unsafe.h"
 
 
+void call_updateAnimOnMovement(cpBody* body, cpFloat dt)
+{
+	((DynamicUnit* )body->data)->updateAnimOnMovement( body, dt );
+}
+
+
 DynamicUnit::DynamicUnit()
 {
 	TotalDistance = 0;
@@ -41,6 +47,7 @@ bool DynamicUnit::Create( int id, std::string proto )
 
 	cpShape* shape = cpCircleShapeNew( physBody, phys.radius, cpvzero );
 	physShape = cpSpaceAddShape( Phys::space, shape );
+	physBody->position_func = call_updateAnimOnMovement;
 
 	return true;
 }
@@ -250,6 +257,32 @@ void DynamicUnit::updatePhysics( ){
 			break;
 		default:
 			break;
+	}
+}
+
+void DynamicUnit::updateAnimOnMovement( cpBody* body, cpFloat dt )
+{
+	cpVect oldpos = body->p;
+	cpBodyUpdatePosition( body, dt );
+	TotalDistance += cpvdist( oldpos, body->p );
+	if( !cpveql( body->v, cpvzero ) ) { //FUUU
+		if( body->v.x < 0 && body->v.y > 0 )
+			Image.setAnimation(AnimDef::leftup);
+		else if( body->v.x < 0 && body->v.y < 0 )
+			Image.setAnimation(AnimDef::leftdown);
+		else if( body->v.x > 0 && body->v.y > 0 )
+			Image.setAnimation(AnimDef::rightup);
+		else if( body->v.x > 0 && body->v.y < 0 )
+			Image.setAnimation(AnimDef::rightdown);
+		else if( body->v.y > 0 )
+			Image.setAnimation(AnimDef::up);
+		else if( body->v.y < 0 )
+			Image.setAnimation(AnimDef::down);
+		else if( body->v.x < 0 )
+			Image.setAnimation(AnimDef::left);
+		else if( body->v.x > 0 )
+			Image.setAnimation(AnimDef::right);
+		Image.setFrame( Image.getCount() ? ( static_cast<int>(TotalDistance) / m_animdistance) % Image.getCount() : 0 );
 	}
 }
 

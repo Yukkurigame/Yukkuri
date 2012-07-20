@@ -15,6 +15,14 @@ static void clear_vector( Vector* V ){
 	V->clear();
 }
 
+template<typename Vector>
+static void clear_cvector( Vector* V ){
+	for( typename Vector:: iterator it = V->begin(), vend = V->end(); it != vend; ++it ){
+		free(*it);
+	}
+	V->clear();
+}
+
 //TODO: decltype
 #define FOREACH( item, vec ) for( typeof((vec).begin()) item = (vec).begin(), end##item = (vec).end(); \
 										item != end##item; ++item )

@@ -27,6 +27,7 @@ Unit::Unit()
 	flags = 0;
 	actionTimers = NULL;
 	physBody = cpBodyNew( 1.0, 1.0 );
+	physBody->data = this;
 }
 
 

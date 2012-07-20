@@ -49,6 +49,8 @@ ActionManager::~ActionManager( )
 		skipTimers = skipTimers->next;
 		delete timer, timer = NULL;
 	}
+	while( !stateStack.empty() )
+		restoreState();
 }
 
 void ActionManager::setProto( Proto* p )

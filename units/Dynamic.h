@@ -4,6 +4,9 @@
 #include "Unit.h"
 #include <vector>
 
+void call_updateAnimOnMovement(cpBody* body, cpFloat dt);
+
+
 class DynamicUnit: public Unit
 {
 public:
@@ -18,6 +21,7 @@ public:
 
 	virtual bool update( const Frame& f );
 	virtual void updatePhysics( );
+	void updateAnimOnMovement( cpBody* body, cpFloat dt );
 
 	void takeAction( );
 	void grow( );

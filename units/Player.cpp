@@ -19,13 +19,11 @@ void Player::die( )
 void Player::moveUnit( short axis, signed int val )
 {
 	if( axis )
-		force.x = val;
+		force.x = phys.mass / 2 * val;
 	else
-		force.y = val;
-	if( physBody ){
-		cpBodySetVel( physBody, cpvzero );
-		cpBodySetForce( physBody, force );
-	}
+		force.y = phys.mass / 2 * val;
+	cpBodySetVel( physBody, cpvzero );
+	cpBodyApplyImpulse( physBody, force, cpvzero );
 	if( force.x == 0 && force.y == 0 )
 		Image.setDefault();
 }

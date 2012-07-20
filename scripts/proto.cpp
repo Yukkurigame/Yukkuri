@@ -14,6 +14,7 @@
 
 #include <cstdlib>
 #include <stack>
+#include <algorithm>
 
 int ProtoManager::Count = 0;
 
@@ -24,13 +25,16 @@ std::vector<Proto*> Prototypes;
 
 void clean_prototypes( )
 {
+	std::vector< Frame* > deleted;
 	FOREACHIT( Prototypes ){
 		FOREACH( ait, (*it)->Actions ){
-			if( ait->second.frames )
-				free( ait->second.frames );
+			Frame* f = ait->second.frames;
+			if( f != NULL && std::find( deleted.begin(), deleted.end(), f ) == deleted.end() )
+				deleted.push_back( f );
 		}
 		delete *it, *it = NULL;
 	}
+	clear_cvector( &deleted );
 }
 
 

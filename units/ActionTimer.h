@@ -33,6 +33,9 @@ struct ActionTimer {
 	ActionTimer* next;
 	UINT timerId;
 	ActionTimer( const Frame* f, IActionTimer* a, ActionTimer* n ) : frame(f), action(a), next(n) {}
+	~ActionTimer() {
+		delete action, action = NULL;
+	}
 };
 
 

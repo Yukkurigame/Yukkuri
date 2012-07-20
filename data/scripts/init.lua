@@ -1,6 +1,6 @@
 
 -- Require all libraries needed in configs
--- require("data/scripts/debugger")()
+--require("data/scripts/debugger")()
 require("data/scripts/console")
 
 -- Load configs

@@ -14,6 +14,8 @@ Input.set("bindings_game")
 local stats = Interface.loadWidget("widget_stats_98072")
 
 local player = UnitManager.createUnit(constants.utPlayer)
+Player = UnitManager.getPlayer()
+
 Camera.setTarget(player)
 
 

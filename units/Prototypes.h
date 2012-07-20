@@ -31,7 +31,9 @@ enum ActionCommand
 	acSetParam, acCopyParam, acLoadParam, acLoadParamBunch,
 	acSetFlag, acRemoveFlag,
 	// Unit
-	acSetUnitSize, acSetColor, acSetUnitPhysics,
+	acSetUnitSize, acSetColor,
+	// Unit physics
+	acSetUnitPhysics, acSetPhysicsLayer,
 	// Dynamic unit
 	acMove, acDAddFood,
 	// Entity

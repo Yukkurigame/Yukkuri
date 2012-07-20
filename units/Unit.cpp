@@ -28,6 +28,7 @@ Unit::Unit()
 	actionTimers = NULL;
 	physBody = cpBodyNew( 1.0, 1.0 );
 	physBody->data = this;
+	physShape = NULL;
 }
 
 
@@ -341,7 +342,7 @@ bool Unit::update( const Frame& frame )
 		}
 
 
-		// Misc
+		// Physics
 		case acSetUnitPhysics:
 			if( Actions.checkFrameParams( frame, 3, stInt, stInt, stIntOrNone ) ){
 				int firstparam = frame.params[1].intData;
@@ -366,6 +367,13 @@ bool Unit::update( const Frame& frame )
 				updatePhysics( );
 			}
 			break;
+		case acSetPhysicsLayer:
+			if( Actions.checkFrameParams( frame, 1, stInt ) && physShape != NULL )
+				cpShapeSetGroup( physShape, param.intData );
+			break;
+
+
+		// Misc
 		case acSetUnitSize:
 			if( Actions.checkFrameParams( frame, 1, stInt ) )
 				setUnitSize( static_cast<float>(param.intData) / 100 );

@@ -9,6 +9,8 @@
 #include "graphics/Render.h"
 #include "scripts/LuaConfig.h"
 
+#include "safestring.h"
+
 
 WidgetText::WidgetText( )
 {
@@ -88,8 +90,8 @@ bool WidgetText::load( std::string id )
 void WidgetText::updatePosition( )
 {
 	float posx, posy, height, width;
-	width = TextSprite.width();
-	height = TextSprite.height();
+	width = (float)TextSprite.width();
+	height = (float)TextSprite.height();
 	if( width + TextX > Width )
 		this->Width = width + TextX;
 	if( height + TextY > Height )
@@ -98,7 +100,7 @@ void WidgetText::updatePosition( )
 	posx = posy = 0;
 	switch(TextAlign){
 		case CENTER:
-			posx = PosX + this->Width * 0.5 - width * 0.5 + TextX;
+			posx = PosX + this->Width * 0.5f - width * 0.5f + TextX;
 			break;
 		case RIGHT:
 			posx = PosX + this->Width - width + TextX;
@@ -136,12 +138,12 @@ void WidgetText::setText( std::string text )
 		return;
 	TextContent = text;
 	TextSprite.setText( (BaseText + text).c_str() );
-	w = Width;
-	h = Height;
+	w = (float)Width;
+	h = (float)Height;
 	if( !Width || Width < TextSprite.width() )
-		w = TextSprite.width();
+		w = (float)TextSprite.width();
 	if( !Height || Height < TextSprite.height() )
-		h = TextSprite.height();
+		h = (float)TextSprite.height();
 	resize( w, h );
 	updatePosition();
 }

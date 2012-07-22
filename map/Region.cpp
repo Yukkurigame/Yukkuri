@@ -56,7 +56,8 @@ bool Region::init( )
 			tile.texture = RenderManager::GetTextureNumberById( image );
 		}
 		tile.picture = Subconfig.count("picture") ? atoi(Subconfig["picture"].c_str()) : 0;
-		tile.passability = Subconfig.count("passability") ? atoi(Subconfig["passability"].c_str()) : 0;
+		// FIXME: useless
+		tile.passability = (float)(Subconfig.count("passability") ? atoi(Subconfig["passability"].c_str()) : 0);
 		if( tile.id == conf.mapDefaultTile )
 			tiles[0] = tile;
 	}

@@ -254,7 +254,7 @@ bool GLHelpers::UpdateGLTextureFromTexture(
 
 	// Update subimage form pixbuffer
 	glBindTexture( GL_TEXTURE_2D, basetex );
-	glTexSubImage2D( GL_TEXTURE_2D, 0, offset.x, offset.y, w, h, GL_RGBA,
+	glTexSubImage2D( GL_TEXTURE_2D, 0, (GLint)offset.x, (GLint)offset.y, w, h, GL_RGBA,
 					 GL_UNSIGNED_BYTE, BUFFER_OFFSET(bufferofset) );
 
 	// Unbind buffer
@@ -303,13 +303,13 @@ void GLHelpers::DrawToQuad( GLuint tex, int x, int y, int width, int height )
 	glBegin(GL_QUADS);
 	{
 		glTexCoord2f(0.0, 0.0);
-		glVertex2f(x, y);
+		glVertex2i(x, y);
 		glTexCoord2f(1, 0);
-		glVertex2f(x + width, y);
+		glVertex2i(x + width, y);
 		glTexCoord2f(1, 1);
-		glVertex2f(x + width, y + height);
+		glVertex2i(x + width, y + height);
 		glTexCoord2f(0, 1);
-		glVertex2f(x, y + height);
+		glVertex2i(x, y + height);
 	}
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D, 0);

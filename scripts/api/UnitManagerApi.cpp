@@ -4,7 +4,7 @@
  *  Created on: 19.05.2012
  *
  */
-#include "scripts/api/UnitManager.h"
+#include "scripts/api/UnitManagerApi.h"
 #include "units/unitmanager.h"
 
 #include "safestring.h"
@@ -15,7 +15,7 @@
 int UMApi::createUnit( lua_State* L )
 {
 	unitType type;
-	int x, y;
+	float x, y;
 	const char* proto;
 	luaL_argcheck( L, lua_isnumber(L, 1), 1, "Unit type excepted." );
 	luaL_argcheck( L, lua_isnumber(L, 2) || lua_isnoneornil(L, 2), 2, "Number or nil excepted." );
@@ -23,9 +23,9 @@ int UMApi::createUnit( lua_State* L )
 	luaL_argcheck( L, lua_isstring(L, 4) || lua_isnoneornil(L, 4), 4, "Number or nil excepted." );
 
 	x = y = 0;
-	type = (unitType)lua_tonumber(L, 1);
-	x = lua_tonumber(L, 2);
-	y = lua_tonumber(L, 3);
+	type = static_cast<enum unitType>((int)lua_tonumber(L, 1));
+	x = (float)lua_tonumber(L, 2);
+	y = (float)lua_tonumber(L, 3);
 	proto = lua_tostring(L, 4);
 
 	lua_pop( L, lua_gettop( L ) );
@@ -105,7 +105,7 @@ int UMApi::getUnitsSize( lua_State* L )
 	if( lua_isnoneornil(L, 1) )
 		count = UnitManager::GetUnitVecSize();
 	else{
-		type = (unitType)lua_tonumber(L, 1);
+		type = static_cast<enum unitType>((int)lua_tonumber(L, 1));
 		count = UnitManager::GetUnitsSize( type );
 	}
 

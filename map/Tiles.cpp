@@ -143,12 +143,12 @@ MapChunk::MapChunk( signed int x, signed int y )
 	int picture = ChunkManager.getFreeSpace( atlasPos );
 	if( picture < 0 )
 		return;
-	sprite = RenderManager::CreateGLSprite( realPos.x, realPos.y, 0,
+	sprite = RenderManager::CreateGLSprite( (float)realPos.x, (float)realPos.y, 0,
 			ChunkManager.chunkSize.x, ChunkManager.chunkSize.y, ChunkManager.texture, picture );
 	tiles = (MapTile*)malloc( (unsigned)sizeof(MapTile) * ChunkManager.chunkTilesCount );
 	unsigned int row = 0;
 	unsigned int col = 0;
-	Sprite sprites[ChunkManager.chunkTilesCount];
+	Sprite* sprites = (Sprite*)malloc( sizeof(Sprite) * ChunkManager.chunkTilesCount );
 	for( int tile = ChunkManager.chunkTilesCount - 1; tile >= 0; --tile ){
 		MapTile& t = tiles[tile];
 		int tx = realPos.x + col * conf.mapTileSize + ( row % 2 ? (conf.mapTileSize >> 1) : 0 );
@@ -161,21 +161,22 @@ MapChunk::MapChunk( signed int x, signed int y )
 		s.tex = RenderManager::GetTextureByNumber( s.texid );
 		s.atlas = s.tex->atlas;
 		s.setPosition(
-				col * conf.mapTileSize + ( row % 2 ? (conf.mapTileSize >> 1) : 0 ),
-				row * conf.mapTileSize - row * ( 3 * (conf.mapTileSize >> 2) ) );
+				(float)( col * conf.mapTileSize + ( row % 2 ? (conf.mapTileSize >> 1) : 0 ) ),
+				(float)( row * conf.mapTileSize - row * ( 3 * (conf.mapTileSize >> 2) ) ) );
 		s.setPicture( t.Type->picture );
-		s.resize( conf.mapTileSize, conf.mapTileSize );
+		s.resize( (float)conf.mapTileSize, (float)conf.mapTileSize );
 		if( ++col >= side ){
 			col = 0;
 			row++;
 		}
-	}
+	}	
 	Texture tex;
 	tex.w = ChunkManager.chunkSize.x;
 	tex.h = ChunkManager.chunkSize.y;
 	tex.tex = 0;
 	TextureArray::drawToNewGLTexture( &tex.tex, ChunkManager.chunkSize.x, ChunkManager.chunkSize.y, sprites, ChunkManager.chunkTilesCount );
-	GLHelpers::UpdateTexture( ChunkManager.atlas, &tex, atlasPos.x, atlasPos.y );
+	GLHelpers::UpdateTexture( ChunkManager.atlas, &tex, (int)atlasPos.x, (int)atlasPos.y );
+	free( sprites );
 }
 
 

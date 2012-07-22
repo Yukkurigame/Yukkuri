@@ -12,11 +12,12 @@
 #include "types.h"
 
 //TODO: strcat, strcpy
-// TODO: sprintf_s и snprintf немного отличаются поведением.
-// sprintf_s гарантирует, что в конце буефера будет 0.
 
 #if WIN32
-	#define snprintf sprintf_s
+	// TODO: sprintf_s и snprintf немного отличаются поведением.
+	// sprintf_s гарантирует, что в конце буефера будет 0.
+	#define snprintf sprintf_s	
+	#define strdup _strdup
 #endif
 
 

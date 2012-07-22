@@ -12,6 +12,8 @@
 #include "hacks.h"
 #include <map>
 
+#include "safestring.h" // strdup
+
 #define ITER_SPRITES FOREACHIT( sprites )
 
 static std::map < std::string, std::map< int, font_data* > > LoadedFonts;
@@ -101,7 +103,7 @@ void Text::setPosition( float x, float y, float z )
 void Text::setText(const char* str)
 {
 	int textlen;
-	int lineheight;
+	float lineheight;
 
 	if( !font )
 		return;
@@ -110,8 +112,7 @@ void Text::setText(const char* str)
 
 	textlen = strlen( str );
 
-	char* text = (char*)malloc( (unsigned)sizeof(char)*textlen + 1 );
-	strcpy( text, str );
+	char* text = strdup( str );
 
 	char* token;
 	Lines = 0;
@@ -119,7 +120,7 @@ void Text::setText(const char* str)
 	lineheight = font->cellHeight * lineHeight;
 	while( token != 0 ){
 		int tmpwidth = 0;
-		int tmpheight = lineheight * Lines;
+		int tmpheight = (int)lineheight * Lines;
 		char* line = token;
 		FT_UInt prev = 0;
 		for( unsigned int g = 0, e = strlen( line ); g < e; ++g ){
@@ -135,11 +136,13 @@ void Text::setText(const char* str)
 		Width += tmpwidth;
 		token = strtok(NULL, "\n");
 	}
-	Height = Lines * lineheight;
+	Height = (int)(Lines * lineheight);
 	free(text);
 
-	setVisible( isVisible() );
-	setFixed( isFixed() );
+	// FIXME: 1>yukkuri\graphics\text.cpp(140): warning C4800: 'unsigned char' : 
+	//          forcing value to bool 'true' or 'false' (performance warning)
+	setVisible( (bool)isVisible() );
+	setFixed( (bool)isFixed() );
 }
 
 void Text::setColor( int r, int g, int b )

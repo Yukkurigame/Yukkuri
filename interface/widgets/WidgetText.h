@@ -27,11 +27,11 @@ public:
 	float getTextX( ){ return TextX; }
 	float getTextY( ){ return TextY; }
 
-	inline float getLineHeight( ){ return TextSprite.getLineHeight(); }
+	inline int getLineHeight( ){ return (int)TextSprite.getLineHeight(); }
 	inline void  setLineHeight( float lh ){ TextSprite.setLineHeight( lh ); }
 
 	inline int getLineSize( ){ return TextSprite.getLineSize(); }
-	inline int getLines( ){ return Height / TextSprite.getLineSize(); }
+	inline int getLines( ){ return (int)(Height / TextSprite.getLineSize()); }
 
 
 	void Update();

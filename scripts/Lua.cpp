@@ -141,8 +141,7 @@ template<> bool LuaMain::getValue( lua_State* L, int index, char*& ret)
 {
 	if( lua_isstring(L, index) ){
 		const char* lstring = lua_tostring(L, index);
-		ret = (char* )malloc( sizeof(char) * ( strlen(lstring) + 1 ) );
-		strcpy( ret, lstring );
+		ret = strdup( lstring );
 		return true;
 	}
 	ret = '\0';
@@ -153,8 +152,8 @@ int LuaMain::execFunction( std::string function )
 {
 	int cnum;
 	int szadd = 0;
-	char funcname[function.length()];
-	char subfuncname[function.length()];
+	char* funcname = (char*)malloc( sizeof(char) * function.length() );
+	char* subfuncname = (char*)malloc( sizeof(char) * function.length() );
 	char delimetr = '\0';
 
 	//FIXME: needs refactoring
@@ -168,6 +167,7 @@ int LuaMain::execFunction( std::string function )
 		}
 	}
 	if( delimetr != '\0' ){
+		// FIXME: strdup?
 		strcpy(funcname, function.substr( 0, cnum ).c_str( ));
 		strcpy(subfuncname, function.substr( cnum +1, function.length( ) ).c_str( ));
 	}else{
@@ -182,6 +182,9 @@ int LuaMain::execFunction( std::string function )
 			szadd++;
 		}
 	}
+
+	free( funcname );
+	free( subfuncname );
 
 	return szadd;
 

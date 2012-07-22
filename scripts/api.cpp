@@ -13,6 +13,10 @@
 
 #include "debug.h"
 
+#ifdef _MSC_VER
+	#include <direct.h>
+	#define getcwd _getcwd
+#endif
 
 
 int scriptApi::ReadDirectory( lua_State* L )

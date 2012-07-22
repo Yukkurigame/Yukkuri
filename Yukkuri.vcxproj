@@ -1,0 +1,230 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{2162E196-78EC-49EE-8C08-979B1E1F2462}</ProjectGuid>
+    <RootNamespace>Yukkuri</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <ReferencePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\graphics;.\units;.\scripts;$(ReferencePath)</ReferencePath>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\YBuild\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\obj\Debug.win\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <ReferencePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\graphics;.\units;.\scripts;$(ReferencePath)</ReferencePath>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\YBuild\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\obj\Release.win\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.;./includes.win;./chipmunk;./graphics;./interface;./units;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/NODEFAULTLIB:MSVCRT /NODEFAULTLIB:LIBCMT %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>freetype244.lib;libpng.lib;zlib.lib;lua5.1.lib;SDL.lib;SDLmain.lib;SDL_image.lib;chipmunk.lib;glew32.lib;C:\Program Files\Microsoft SDKs\Windows\v7.1\Lib\OpenGL32.Lib;C:\Program Files\Microsoft SDKs\Windows\v7.1\Lib\GlU32.Lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>.\libs;.\libs\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.;.\includes.win;.\chipmunk;.\graphics;.\interface;.\units;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>libpng.lib;zlib.lib;freetype244.lib;lua5.1.lib;SDL.lib;SDLmain.lib;SDL_image.lib;chipmunk.lib;glew32.lib;C:\Program Files\Microsoft SDKs\Windows\v7.1\Lib\OpenGL32.Lib;C:\Program Files\Microsoft SDKs\Windows\v7.1\Lib\GlU32.Lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AddModuleNamesToAssembly>%(AddModuleNamesToAssembly)</AddModuleNamesToAssembly>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>.\libs;.\libs\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="scripts\api\InterfaceApi.h" />
+    <ClInclude Include="scripts\api\ThreadManagerApi.h" />
+    <ClInclude Include="scripts\api\UnitManagerApi.h" />
+    <ClInclude Include="units\ActionTimer.h" />
+    <ClInclude Include="graphics\Animation.h" />
+    <ClInclude Include="graphics\AnimationDefines.h" />
+    <ClInclude Include="scripts\api.h" />
+    <ClInclude Include="graphics\render\Atlas.h" />
+    <ClInclude Include="basic_types.h" />
+    <ClInclude Include="BindFunctions.h" />
+    <ClInclude Include="Bindings.h" />
+    <ClInclude Include="scripts\api\BindingsApi.h" />
+    <ClInclude Include="graphics\Camera.h" />
+    <ClInclude Include="scripts\api\CameraApi.h" />
+    <ClInclude Include="config.h" />
+    <ClInclude Include="units\Corpse.h" />
+    <ClInclude Include="3rdparty\CUData.h" />
+    <ClInclude Include="scripts\CUDataBind.h" />
+    <ClInclude Include="3rdparty\CUDataMacro.h" />
+    <ClInclude Include="3rdparty\CUDataMacroExt.h" />
+    <ClInclude Include="3rdparty\CUDataTemplates.h" />
+    <ClInclude Include="3rdparty\CUDataUser.h" />
+    <ClInclude Include="daytime.h" />
+    <ClInclude Include="debug.h" />
+    <ClInclude Include="Define.h" />
+    <ClInclude Include="units\Dynamic.h" />
+    <ClInclude Include="graphics\render\ElasticBox.h" />
+    <ClInclude Include="engine.h" />
+    <ClInclude Include="units\Entity.h" />
+    <ClInclude Include="graphics\Font.h" />
+    <ClInclude Include="graphics\gl_extensions.h" />
+    <ClInclude Include="graphics\gl_shader.h" />
+    <ClInclude Include="graphics\render\GLHelpers.h" />
+    <ClInclude Include="graphics\render\GLTextures.h" />
+    <ClInclude Include="graphics\GraphicsTypes.h" />
+    <ClInclude Include="hacks.h" />
+    <ClInclude Include="interface\Interface.h" />
+    <ClInclude Include="3rdparty\timer\InternalTimerEvent.h" />
+    <ClInclude Include="3rdparty\timer\ITimerEventPerformer.h" />
+    <ClInclude Include="scripts\Lua.h" />
+    <ClInclude Include="scripts\LuaConfig.h" />
+    <ClInclude Include="3rdparty\LuaPusher.h" />
+    <ClInclude Include="scripts\LuaScript.h" />
+    <ClInclude Include="scripts\LuaScriptConfig.h" />
+    <ClInclude Include="scripts\LuaThread.h" />
+    <ClInclude Include="map\Map.h" />
+    <ClInclude Include="physics\physics.h" />
+    <ClInclude Include="units\Plant.h" />
+    <ClInclude Include="units\Player.h" />
+    <ClInclude Include="graphics\pngfuncs.h" />
+    <ClInclude Include="scripts\proto.h" />
+    <ClInclude Include="units\ProtoStack.h" />
+    <ClInclude Include="units\Prototypes.h" />
+    <ClInclude Include="map\Region.h" />
+    <ClInclude Include="graphics\Render.h" />
+    <ClInclude Include="safestring.h" />
+    <ClInclude Include="graphics\sdl_graphics.h" />
+    <ClInclude Include="graphics\Text.h" />
+    <ClInclude Include="graphics\render\TextureArray.h" />
+    <ClInclude Include="map\Tiles.h" />
+    <ClInclude Include="3rdparty\timer\TimerEvent.h" />
+    <ClInclude Include="3rdparty\timer\TimerManager.h" />
+    <ClInclude Include="3rdparty\TypeList.h" />
+    <ClInclude Include="types.h" />
+    <ClInclude Include="units\Unit.h" />
+    <ClInclude Include="units\unitmanager.h" />
+    <ClInclude Include="utf.h" />
+    <ClInclude Include="map\Waypoint.h" />
+    <ClInclude Include="interface\widgets\Widget.h" />
+    <ClInclude Include="interface\widgets\WidgetBar.h" />
+    <ClInclude Include="interface\widgets\WidgetText.h" />
+    <ClInclude Include="units\YOBA.h" />
+    <ClInclude Include="yukkuri.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="scripts\api\InterfaceApi.cpp" />
+    <ClCompile Include="scripts\api\ThreadManagerApi.cpp" />
+    <ClCompile Include="scripts\api\UnitManagerApi.cpp" />
+    <ClCompile Include="units\ActionTimer.cpp" />
+    <ClCompile Include="graphics\Animation.cpp" />
+    <ClCompile Include="graphics\AnimationDefines.cpp" />
+    <ClCompile Include="scripts\api.cpp" />
+    <ClCompile Include="graphics\render\Atlas.cpp" />
+    <ClCompile Include="BindFunctions.cpp" />
+    <ClCompile Include="Bindings.cpp" />
+    <ClCompile Include="scripts\api\BindingsApi.cpp" />
+    <ClCompile Include="graphics\Camera.cpp" />
+    <ClCompile Include="scripts\api\CameraApi.cpp" />
+    <ClCompile Include="config.cpp" />
+    <ClCompile Include="units\Corpse.cpp" />
+    <ClCompile Include="3rdparty\CUData.cpp" />
+    <ClCompile Include="3rdparty\CUDataTemplates.cpp" />
+    <ClCompile Include="3rdparty\CUDataUser.cpp" />
+    <ClCompile Include="daytime.cpp" />
+    <ClCompile Include="units\Dynamic.cpp" />
+    <ClCompile Include="graphics\render\ElasticBox.cpp" />
+    <ClCompile Include="engine.cpp" />
+    <ClCompile Include="units\Entity.cpp" />
+    <ClCompile Include="graphics\Font.cpp" />
+    <ClCompile Include="graphics\gl_extensions.cpp" />
+    <ClCompile Include="graphics\gl_shader.cpp" />
+    <ClCompile Include="graphics\render\GLHelpers.cpp" />
+    <ClCompile Include="graphics\render\GLTextures.cpp" />
+    <ClCompile Include="graphics\GraphicsTypes.cpp" />
+    <ClCompile Include="interface\Interface.cpp" />
+    <ClCompile Include="scripts\Lua.cpp" />
+    <ClCompile Include="scripts\LuaConfig.cpp" />
+    <ClCompile Include="3rdparty\LuaPusher.cpp" />
+    <ClCompile Include="scripts\LuaRegister.cpp" />
+    <ClCompile Include="scripts\LuaScript.cpp" />
+    <ClCompile Include="scripts\LuaThread.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="map\Map.cpp" />
+    <ClCompile Include="physics\physics.cpp" />
+    <ClCompile Include="units\Plant.cpp" />
+    <ClCompile Include="units\Player.cpp" />
+    <ClCompile Include="graphics\pngfuncs.c" />
+    <ClCompile Include="scripts\proto.cpp" />
+    <ClCompile Include="units\ProtoStack.cpp" />
+    <ClCompile Include="units\Prototypes.cpp" />
+    <ClCompile Include="map\Region.cpp" />
+    <ClCompile Include="graphics\Render.cpp" />
+    <ClCompile Include="graphics\sdl_graphics.cpp" />
+    <ClCompile Include="graphics\Text.cpp" />
+    <ClCompile Include="graphics\render\TextureArray.cpp" />
+    <ClCompile Include="map\Tiles.cpp" />
+    <ClCompile Include="3rdparty\timer\TimerManager.cpp" />
+    <ClCompile Include="units\Unit.cpp" />
+    <ClCompile Include="units\unitmanager.cpp" />
+    <ClCompile Include="scripts\api\Units.cpp" />
+    <ClCompile Include="utf.cpp" />
+    <ClCompile Include="interface\widgets\Widget.cpp" />
+    <ClCompile Include="interface\widgets\WidgetBar.cpp" />
+    <ClCompile Include="scripts\api\Widgets.cpp" />
+    <ClCompile Include="interface\widgets\WidgetText.cpp" />
+    <ClCompile Include="yukkuri.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

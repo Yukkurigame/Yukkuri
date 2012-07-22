@@ -351,8 +351,8 @@ void Map::onDraw( )
 	toChunkCoordinates( cx, cy );
 	if( posX != cx || posY != cy ){
 		createChunksRectangle( cx, cy, ChunkManager.screen.x, ChunkManager.screen.y );
-		posX = cx;
-		posY = cy;
+		posX = (float)cx;
+		posY = (float)cy;
 	}
 }
 

@@ -244,7 +244,7 @@ struct Sprite
 	inline void clearFixed()			{ flags &= ~4; shader = 0; }
 
 
-	Sprite(){
+	Sprite() : rect(), vertices(), coordinates(), clr(){
 		tex = NULL;
 		picture = atlas = texid = 0;
 		flags = 1; // visible only

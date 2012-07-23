@@ -148,7 +148,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 	tiles = (MapTile*)malloc( (unsigned)sizeof(MapTile) * ChunkManager.chunkTilesCount );
 	unsigned int row = 0;
 	unsigned int col = 0;
-	Sprite* sprites = (Sprite*)malloc( sizeof(Sprite) * ChunkManager.chunkTilesCount );
+	Sprite* sprites = new Sprite[ ChunkManager.chunkTilesCount ];
 	for( int tile = ChunkManager.chunkTilesCount - 1; tile >= 0; --tile ){
 		MapTile& t = tiles[tile];
 		int tx = realPos.x + col * conf.mapTileSize + ( row % 2 ? (conf.mapTileSize >> 1) : 0 );
@@ -176,7 +176,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 	tex.tex = 0;
 	TextureArray::drawToNewGLTexture( &tex.tex, ChunkManager.chunkSize.x, ChunkManager.chunkSize.y, sprites, ChunkManager.chunkTilesCount );
 	GLHelpers::UpdateTexture( ChunkManager.atlas, &tex, (int)atlasPos.x, (int)atlasPos.y );
-	free( sprites );
+	delete sprites;
 }
 
 

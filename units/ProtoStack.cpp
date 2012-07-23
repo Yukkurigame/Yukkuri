@@ -9,6 +9,7 @@
 #include <stdarg.h>
 #include <cstring>
 
+#include "safestring.h"
 #include "debug.h"
 
 
@@ -126,9 +127,7 @@ void ParametersStack::Push( const char* str )
 	if(this->locked)
 		return;
 	StackElement* se = new StackElement();
-	char* tmp = new char[ strlen(str) + 1 ];
-	strcpy( tmp, str );
-	se->data.stringData = tmp;
+	se->data.stringData = strdup( str );
 	se->type = stString;
 	se->next = this->top;
 	this->top = se;
@@ -167,10 +166,12 @@ void ParametersStack::Dump()
 		return;
 	StackElement* sd = this->top;
 	int i = 0;
-	char dbg[ 50 + strlen(sd->data.stringData) ];
+	int dsz = 50 + strlen(sd->data.stringData);
+	char* dbg = new char[ dsz ];
 	for( ; sd; sd = sd->next, i++){
-		sprintf( dbg, "%d: t=%d, i=%d, s=%s\n", i, (int)sd->type, sd->data.intData,
+		snprintf( dbg, dsz, "%d: t=%d, i=%d, s=%s\n", i, (int)sd->type, sd->data.intData,
 					sd->type == stString ? sd->data.stringData : NULL );
 		Debug::debug( Debug::PROTO, dbg );
 	}
+	delete dbg;
 }

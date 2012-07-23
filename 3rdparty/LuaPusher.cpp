@@ -188,6 +188,12 @@ float getFromLua(lua_State* L, int idx)
 }
 
 template<>
+float const getFromLua(lua_State* L, int idx)
+{
+	return static_cast<float const>(lua_tonumber(L, idx));
+}
+
+template<>
 void getFromLua(lua_State* L, int idx, float& val)
 {
 	val = static_cast<float>(lua_tonumber(L, idx));

@@ -110,7 +110,7 @@ bool ActionManager::nextFrame( )
 
 new_frame: ;
 
-	if( frame < 0 || sdl_time - lastTick >= action->frames[frame].duration ){
+	if( frame < 0 || (UINT)(sdl_time - lastTick) >= action->frames[frame].duration ){
 
 		lastTick = sdl_time;
 

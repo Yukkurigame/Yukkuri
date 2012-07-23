@@ -17,10 +17,10 @@ int CameraApi::position(lua_State* L)
 	lua_newtable( L );
 	int top = lua_gettop( L );
 	lua_pushstring( L, "x" );
-	lua_pushinteger( L, Camera::GetX() );
+	lua_pushnumber( L, Camera::GetX() );
 	lua_settable( L, top );
 	lua_pushstring( L, "y" );
-	lua_pushinteger( L, Camera::GetY() );
+	lua_pushnumber( L, Camera::GetY() );
 	lua_settable( L, top );
 	return 1;
 }
@@ -31,7 +31,7 @@ int CameraApi::moveTo(lua_State* L)
 	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Number expected" );
 	luaL_argcheck( L, lua_isnumber( L, 2 ), 2, "Number expected" );
 
-	Camera::Move( lua_tonumber(L, 1), lua_tonumber(L, 2) );
+	Camera::Move( (float)lua_tonumber(L, 1), (float)lua_tonumber(L, 2) );
 
 	lua_pop( L, 2 );
 

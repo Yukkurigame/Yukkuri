@@ -164,7 +164,7 @@ struct CharBuild {
 	}
 	inline float get( int name ){
 		if( name < uCharIntLast )
-			return get( (enum character)name );
+			return (float)get( (enum character)name );
 		return get( (enum character_float)name );
 	}
 	inline int* getPtr( enum character name ){
@@ -185,7 +185,7 @@ struct CharBuild {
 	}
 
 	inline void set( enum character name, float value ){
-		PARAM_SWITCH(  , = value );
+		PARAM_SWITCH(  , = (int)value );
 	}
 	inline void set( enum character_float name, float value ){
 		PARAM_SWITCH_FLOAT(  , = value );
@@ -216,7 +216,7 @@ struct CharBuild {
 		state.hp -= dmg;
 	}
 
-	inline void tire( ){ tire( 0.2f * log( level ) ); }
+	inline void tire( ){ tire( 0.2f * log( (float)level ) ); }
 	inline void tire( float value ){
 		if( state.fed > 1 )
 			state.fed -= value;

@@ -5,6 +5,7 @@
  */
 
 #include "gl_extensions.h"
+#include "SDL/SDL_video.h"
 #include "debug.h"
 
 bool GLExtensions::load( )
@@ -18,11 +19,11 @@ bool GLExtensions::load( )
 		glBufferData = (PFNGLBUFFERDATAARBPROC)SDL_GL_GetProcAddress("glBufferDataARB");
 		//glBufferSubData = (PFNGLBUFFERSUBDATAARBPROC)SDL_GL_GetProcAddress("glBufferSubDataARB");
 		if( glGenBuffers || glBindBuffer || glDeleteBuffers || glBufferData ){
-			debug( dbg_level::GRAPHICS, "One or more GL_ARB_vertex_buffer_object functions were not found.\n" );
+			Debug::debug( Debug::GRAPHICS, "One or more GL_ARB_vertex_buffer_object functions were not found.\n" );
 			return false;
 		}
 #else
-		debug( dbg_level::GRAPHICS, "No vbo support.\n" );
+		Debug::debug( Debug::GRAPHICS, "No vbo support.\n" );
 		return false;
 #endif
 
@@ -53,7 +54,7 @@ bool GLExtensions::load( )
 		!glFramebufferTexture2DEXT || // !glFramebufferTexture3DEXT || !glFramebufferRenderbufferEXT||
 		!glGetFramebufferAttachmentParameterivEXT // || !glGenerateMipmapEXT
 		){
-		debug( dbg_level::GRAPHICS, "One or more EXT_framebuffer_object functions were not found.\n" );
+		Debug::debug( Debug::GRAPHICS, "One or more EXT_framebuffer_object functions were not found.\n" );
 		return false;
 	}
 #else
@@ -62,7 +63,7 @@ bool GLExtensions::load( )
 
 #ifdef GL_ARB_shader_objects
 	// Load shaders
-	/*
+
 	glCreateProgramObjectARB  = (PFNGLCREATEPROGRAMOBJECTARBPROC)SDL_GL_GetProcAddress("glCreateProgramObjectARB");
 	glDeleteObjectARB         = (PFNGLDELETEOBJECTARBPROC)SDL_GL_GetProcAddress("glDeleteObjectARB");
 	glUseProgramObjectARB     = (PFNGLUSEPROGRAMOBJECTARBPROC)SDL_GL_GetProcAddress("glUseProgramObjectARB");
@@ -83,14 +84,18 @@ bool GLExtensions::load( )
 		!glGetObjectParameterivARB || !glAttachObjectARB || !glGetInfoLogARB ||
 		!glLinkProgramARB || !glGetUniformLocationARB || !glUniform4fARB ||
 		!glUniform1iARB ){
-		debug( dbg_level::GRAPHICS, "One or more GL_ARB_shader_objects functions were not found\n" );
+		Debug::debug( Debug::GRAPHICS, "One or more GL_ARB_shader_objects functions were not found\n" );
 		return false;
 	}
-	*/
+
 #else
-	debug( dbg_level::GRAPHICS, "No shaders support.\n" );
+	Debug::debug( Debug::GRAPHICS, "No shaders support.\n" );
 #endif
 
+#else
+	#ifndef GL_GLEXT_PROTOTYPES
+		glewInit();
+	#endif
 #endif
 
 	return true;

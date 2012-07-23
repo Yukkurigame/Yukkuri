@@ -23,9 +23,9 @@ public:
 
 	inline int width(){ return Width; }
 	inline int height(){ return Height; }
-	inline int getLines( ){ return Lines; }
-	inline int getLineHeight( ){ return lineHeight; }
-	inline int getLineSize( ){ return font->cellHeight * lineHeight; }
+	inline int getLines( ){ return Lines; }	
+	inline int getLineSize( ){ return (int)((float)font->cellHeight * lineHeight); }
+	inline float getLineHeight( ){ return lineHeight; }
 
 	void setFont( std::string name, int size );
 	void setPosition( float x, float y, float z );

@@ -1,0 +1,489 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files\graphics">
+      <UniqueIdentifier>{157bd9bc-bdd9-4ab6-befc-8cac59a459b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\graphics\render">
+      <UniqueIdentifier>{2d5e4c1b-1353-4aaf-b119-92fa902bbbe0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\interface">
+      <UniqueIdentifier>{9f8b56ff-2b7e-4f23-aa4d-391f06caee19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\interface\widgets">
+      <UniqueIdentifier>{9239eda3-6b97-4a86-9b4d-c0b534454f52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\map">
+      <UniqueIdentifier>{dbf28d69-e81f-41ff-9988-712701fd9f0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\physics">
+      <UniqueIdentifier>{e55e5579-c3d0-4816-b2d0-ddb9e871a868}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\3rdparty">
+      <UniqueIdentifier>{4562913c-8945-42d9-ab2e-bd6540aa08d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\3rdparty\timer">
+      <UniqueIdentifier>{48bccd6a-e1ee-42e2-bdf3-86a35249cd84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\scripts">
+      <UniqueIdentifier>{3192d516-9c8a-42e4-916f-d8794ab879b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\scripts\api">
+      <UniqueIdentifier>{448e8078-5bb5-452f-af95-a04e035f4875}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\units">
+      <UniqueIdentifier>{a6f8cef0-9164-4b9c-890a-b6831d65f6a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\units">
+      <UniqueIdentifier>{a6aaf94f-015e-4819-9944-b7283d6f1de2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\scripts">
+      <UniqueIdentifier>{b466e931-bb2f-42af-bbc6-fd4ddb899837}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\scripts\api">
+      <UniqueIdentifier>{e95f8005-1cba-48fc-900c-af2a81ed4a85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\physics">
+      <UniqueIdentifier>{29262c8f-b417-41c2-afcc-29e50fb69b38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\3rdparty">
+      <UniqueIdentifier>{36d9a7fa-4517-470a-80ca-5fe04e021d1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\3rdparty\timer">
+      <UniqueIdentifier>{ead455e4-fc51-4c2b-9ce9-5ada3835afa8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics">
+      <UniqueIdentifier>{310927ed-e912-428f-ad9d-b3583d90ce94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics\render">
+      <UniqueIdentifier>{f679339c-b68a-49f6-b805-f84d7c43efbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\interface">
+      <UniqueIdentifier>{4543078a-19e8-4fee-83d4-96d588323383}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\interface\widgets">
+      <UniqueIdentifier>{a55b3d1c-3536-417d-95fe-03318ac2a3bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\map">
+      <UniqueIdentifier>{49cf1e6c-4800-4ba0-95a4-0a5f2c3b0f35}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="basic_types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BindFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Bindings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="daytime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Define.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hacks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="safestring.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="yukkuri.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\Animation.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\AnimationDefines.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\Camera.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\Font.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\render\Atlas.h">
+      <Filter>Header Files\graphics\render</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\render\ElasticBox.h">
+      <Filter>Header Files\graphics\render</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\render\GLHelpers.h">
+      <Filter>Header Files\graphics\render</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\render\GLTextures.h">
+      <Filter>Header Files\graphics\render</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\render\TextureArray.h">
+      <Filter>Header Files\graphics\render</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\gl_extensions.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\gl_shader.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\GraphicsTypes.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\pngfuncs.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\Render.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\Text.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="interface\Interface.h">
+      <Filter>Header Files\interface</Filter>
+    </ClInclude>
+    <ClInclude Include="interface\widgets\Widget.h">
+      <Filter>Header Files\interface\widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="interface\widgets\WidgetBar.h">
+      <Filter>Header Files\interface\widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="interface\widgets\WidgetText.h">
+      <Filter>Header Files\interface\widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="map\Map.h">
+      <Filter>Header Files\map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\Region.h">
+      <Filter>Header Files\map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\Tiles.h">
+      <Filter>Header Files\map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\Waypoint.h">
+      <Filter>Header Files\map</Filter>
+    </ClInclude>
+    <ClInclude Include="physics\physics.h">
+      <Filter>Header Files\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\CUData.h">
+      <Filter>Header Files\3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\CUDataMacro.h">
+      <Filter>Header Files\3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\CUDataMacroExt.h">
+      <Filter>Header Files\3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\CUDataTemplates.h">
+      <Filter>Header Files\3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\CUDataUser.h">
+      <Filter>Header Files\3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\LuaPusher.h">
+      <Filter>Header Files\3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\TypeList.h">
+      <Filter>Header Files\3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\timer\InternalTimerEvent.h">
+      <Filter>Header Files\3rdparty\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\timer\ITimerEventPerformer.h">
+      <Filter>Header Files\3rdparty\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\timer\TimerEvent.h">
+      <Filter>Header Files\3rdparty\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\timer\TimerManager.h">
+      <Filter>Header Files\3rdparty\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\api\BindingsApi.h">
+      <Filter>Header Files\scripts\api</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\api\CameraApi.h">
+      <Filter>Header Files\scripts\api</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\api.h">
+      <Filter>Header Files\scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\CUDataBind.h">
+      <Filter>Header Files\scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\Lua.h">
+      <Filter>Header Files\scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\LuaConfig.h">
+      <Filter>Header Files\scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\LuaScript.h">
+      <Filter>Header Files\scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\LuaScriptConfig.h">
+      <Filter>Header Files\scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\LuaThread.h">
+      <Filter>Header Files\scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\proto.h">
+      <Filter>Header Files\scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="units\ActionTimer.h">
+      <Filter>Header Files\units</Filter>
+    </ClInclude>
+    <ClInclude Include="units\Corpse.h">
+      <Filter>Header Files\units</Filter>
+    </ClInclude>
+    <ClInclude Include="units\Dynamic.h">
+      <Filter>Header Files\units</Filter>
+    </ClInclude>
+    <ClInclude Include="units\Entity.h">
+      <Filter>Header Files\units</Filter>
+    </ClInclude>
+    <ClInclude Include="units\Plant.h">
+      <Filter>Header Files\units</Filter>
+    </ClInclude>
+    <ClInclude Include="units\Player.h">
+      <Filter>Header Files\units</Filter>
+    </ClInclude>
+    <ClInclude Include="units\ProtoStack.h">
+      <Filter>Header Files\units</Filter>
+    </ClInclude>
+    <ClInclude Include="units\Prototypes.h">
+      <Filter>Header Files\units</Filter>
+    </ClInclude>
+    <ClInclude Include="units\Unit.h">
+      <Filter>Header Files\units</Filter>
+    </ClInclude>
+    <ClInclude Include="units\unitmanager.h">
+      <Filter>Header Files\units</Filter>
+    </ClInclude>
+    <ClInclude Include="units\YOBA.h">
+      <Filter>Header Files\units</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\sdl_graphics.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\api\ThreadManagerApi.h">
+      <Filter>Header Files\scripts\api</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\api\UnitManagerApi.h">
+      <Filter>Header Files\scripts\api</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\api\InterfaceApi.h">
+      <Filter>Header Files\scripts\api</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="BindFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Bindings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="daytime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="yukkuri.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="units\unitmanager.cpp">
+      <Filter>Source Files\units</Filter>
+    </ClCompile>
+    <ClCompile Include="units\Unit.cpp">
+      <Filter>Source Files\units</Filter>
+    </ClCompile>
+    <ClCompile Include="units\ProtoStack.cpp">
+      <Filter>Source Files\units</Filter>
+    </ClCompile>
+    <ClCompile Include="units\Prototypes.cpp">
+      <Filter>Source Files\units</Filter>
+    </ClCompile>
+    <ClCompile Include="units\Player.cpp">
+      <Filter>Source Files\units</Filter>
+    </ClCompile>
+    <ClCompile Include="units\Plant.cpp">
+      <Filter>Source Files\units</Filter>
+    </ClCompile>
+    <ClCompile Include="units\Entity.cpp">
+      <Filter>Source Files\units</Filter>
+    </ClCompile>
+    <ClCompile Include="units\Dynamic.cpp">
+      <Filter>Source Files\units</Filter>
+    </ClCompile>
+    <ClCompile Include="units\Corpse.cpp">
+      <Filter>Source Files\units</Filter>
+    </ClCompile>
+    <ClCompile Include="units\ActionTimer.cpp">
+      <Filter>Source Files\units</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\proto.cpp">
+      <Filter>Source Files\scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\LuaThread.cpp">
+      <Filter>Source Files\scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\LuaScript.cpp">
+      <Filter>Source Files\scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\LuaRegister.cpp">
+      <Filter>Source Files\scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\LuaConfig.cpp">
+      <Filter>Source Files\scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\Lua.cpp">
+      <Filter>Source Files\scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\api.cpp">
+      <Filter>Source Files\scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\api\Widgets.cpp">
+      <Filter>Source Files\scripts\api</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\api\Units.cpp">
+      <Filter>Source Files\scripts\api</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\api\CameraApi.cpp">
+      <Filter>Source Files\scripts\api</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\api\BindingsApi.cpp">
+      <Filter>Source Files\scripts\api</Filter>
+    </ClCompile>
+    <ClCompile Include="physics\physics.cpp">
+      <Filter>Source Files\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\CUData.cpp">
+      <Filter>Source Files\3rdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\CUDataTemplates.cpp">
+      <Filter>Source Files\3rdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\CUDataUser.cpp">
+      <Filter>Source Files\3rdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\LuaPusher.cpp">
+      <Filter>Source Files\3rdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\timer\TimerManager.cpp">
+      <Filter>Source Files\3rdparty\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\Animation.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\AnimationDefines.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\Camera.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\Font.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\gl_extensions.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\gl_shader.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\GraphicsTypes.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\pngfuncs.c">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\Render.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\sdl_graphics.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\Text.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\render\Atlas.cpp">
+      <Filter>Source Files\graphics\render</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\render\ElasticBox.cpp">
+      <Filter>Source Files\graphics\render</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\render\GLHelpers.cpp">
+      <Filter>Source Files\graphics\render</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\render\GLTextures.cpp">
+      <Filter>Source Files\graphics\render</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\render\TextureArray.cpp">
+      <Filter>Source Files\graphics\render</Filter>
+    </ClCompile>
+    <ClCompile Include="interface\Interface.cpp">
+      <Filter>Source Files\interface</Filter>
+    </ClCompile>
+    <ClCompile Include="interface\widgets\Widget.cpp">
+      <Filter>Source Files\interface\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="interface\widgets\WidgetBar.cpp">
+      <Filter>Source Files\interface\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="interface\widgets\WidgetText.cpp">
+      <Filter>Source Files\interface\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="map\Map.cpp">
+      <Filter>Source Files\map</Filter>
+    </ClCompile>
+    <ClCompile Include="map\Region.cpp">
+      <Filter>Source Files\map</Filter>
+    </ClCompile>
+    <ClCompile Include="map\Tiles.cpp">
+      <Filter>Source Files\map</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\api\InterfaceApi.cpp">
+      <Filter>Source Files\scripts\api</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\api\ThreadManagerApi.cpp">
+      <Filter>Source Files\scripts\api</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\api\UnitManagerApi.cpp">
+      <Filter>Source Files\scripts\api</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

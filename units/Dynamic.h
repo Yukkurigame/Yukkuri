@@ -39,7 +39,7 @@ protected:
 
 	std::vector< enum unitType > FoodTypes;
 	Unit* Attacked;
-	float TotalDistance;
+	cpFloat TotalDistance;
 	const static int m_animdistance = 20;
 
 private:

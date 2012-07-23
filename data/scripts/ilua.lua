@@ -37,7 +37,7 @@ local jstack = {}
 
 local output = ''
 
-local readline = require("data/scripts/3rdparty/rlcompleter")
+local readline = pcall(reqire, "data/scripts/3rdparty/rlcompleter")
 
 local function oprint(...)
 	for i, v in ipairs(arg) do
@@ -275,7 +275,11 @@ function ilua:start()
 	-- any import complaints?
 	self:import()
 	-- set input to stream
-	rlcompleter.set_input_source(1)
+	if not readline then
+		Debug(2, "No readline module. No interactive console.")
+	else
+		rlcompleter.set_input_source(1)
+	end
 end
 
 function ilua.process(line)
@@ -286,35 +290,40 @@ function ilua.process(line)
 end
 
 function ilua.complete(line)
-	local rl = rlcompleter.complete(line)
-	if rl == nil then
-		return ""
-	else
-		return rl
+	if readline then
+		local rl = rlcompleter.complete(line)
+		if rl ~= nil then
+			return rl
+		end
 	end
+	return ""
 end
 
 function ilua.prev_history()
-	local rl = rlcompleter.previous_history()
-	if rl == nil then
-		return ""
-	else
-		return rl
+	if readline then
+		local rl = rlcompleter.previous_history()
+		if rl ~= nil then
+			return rl
+		end
 	end
+	return ""
 end
 
 function ilua.next_history()
-	local rl = rlcompleter.next_history()
-	if rl == nil then
-		return ""
-	else
-		return rl
+	if readline then
+		local rl = rlcompleter.next_history()
+		if rl ~= nil then
+			return rl
+		end
 	end
+	return ""
 end
 
 function ilua.add_history(line)
-	rlcompleter.add_history(line)
-	rlcompleter.next_history()
+	if readline then
+		rlcompleter.add_history(line)
+		rlcompleter.next_history()
+	end
 end
 
 

@@ -59,9 +59,9 @@ namespace RenderManager
 	static s3f vpoint;
 
 	inline void MoveGlScene( int x, int y, int z ){
-		vpoint.x = x;
-		vpoint.y = y;
-		vpoint.z = z;
+		vpoint.x = (float)x;
+		vpoint.y = (float)y;
+		vpoint.z = (float)z;
 		MoveGlScene();
 	}
 

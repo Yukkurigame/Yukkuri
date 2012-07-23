@@ -23,7 +23,7 @@ public:
 
 	LuaRegRef action;           // Ссылка на реестр луа
 
-	UINT execTime;				// Время наступления события
+	long execTime;				// Время наступления события
 
 	UINT period;				// Период периодического события
 	UINT maxCalls;				// Количество срабатыванй

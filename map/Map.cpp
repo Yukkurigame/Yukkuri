@@ -309,26 +309,27 @@ void Map::clear( )
 	cx = static_cast<int>(Camera::GetX()) - 64;
 	cy = static_cast<int>(Camera::GetY()) - 64;
 	toChunkCoordinates( cx, cy );
-	//cy--;
 	ytop = cy + ChunkManager.screen.y - 1;
 	ChunkListIter xlborder = getChunkXIt( cx );
 	if( xlborder != chunkVec.end() ){
+		// Remove chunks before visible X
 		std::for_each( chunkVec.begin(), xlborder, deleteChunkp );
-		chunkVec.erase( chunkVec.begin(), xlborder );
+		xlborder = chunkVec.erase( chunkVec.begin(), xlborder );
 	}
 	ChunkListIter xrborder = getChunkXIt( cx + ChunkManager.screen.x );
 	if( xrborder != chunkVec.end() ){
+		// Remove chunks after visible X
 		std::for_each( xrborder, chunkVec.end(), deleteChunkp );
-		chunkVec.erase( xrborder, chunkVec.end() );
+		xrborder = chunkVec.erase( xrborder, chunkVec.end() );
 	}
-	ChunkListIter tiley = xlborder;
-	while( tiley < chunkVec.end() ){
-		MapChunk* c = *tiley;
+	// Remove unvisible Y chunks
+	while( xlborder != chunkVec.end() ){
+		MapChunk* c = *xlborder;
 		if( c->pos.y < cy || c->pos.y > ytop ){
 			deleteChunk( c );
-			tiley = chunkVec.erase( tiley );
+			xlborder = chunkVec.erase( xlborder );
 		}else{
-			tiley++;
+			++xlborder;
 		}
 	}
 	Updated = false;
@@ -351,8 +352,8 @@ void Map::onDraw( )
 	toChunkCoordinates( cx, cy );
 	if( posX != cx || posY != cy ){
 		createChunksRectangle( cx, cy, ChunkManager.screen.x, ChunkManager.screen.y );
-		posX = cx;
-		posY = cy;
+		posX = (float)cx;
+		posY = (float)cy;
 	}
 }
 

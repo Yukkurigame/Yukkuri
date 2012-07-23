@@ -101,7 +101,7 @@ bool TextureAtlas::buildMap( int& width, int& height )
 	width = box.Width;
 	height = box.Height;
 
-	return buildRelativeMap( box.Width, box.Height );
+	return buildRelativeMap( (float)box.Width, (float)box.Height );
 }
 
 
@@ -134,7 +134,7 @@ bool TextureAtlas::build( GLuint* ahandle, int width, int height )
 
 inline bool compareTextureProxies( TextureProxy* t1, TextureProxy* t2 )
 {
-	return t2->abs.width * t2->abs.height - t1->abs.width * t1->abs.height;
+	return (t2->abs.width * t2->abs.height - t1->abs.width * t1->abs.height) > 0;
 }
 
 

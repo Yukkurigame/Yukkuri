@@ -33,7 +33,7 @@ void Camera::Update( )
 	MainView->y = -floor( pos.y - offset.y );
 	if( TargetX && TargetY ){
 		if( (*TargetX) != pos.x || (*TargetY) != pos.y ){
-			Move( pos.x - (*TargetX), pos.y - (*TargetY) );
+			Move( (float)(pos.x - (*TargetX)), (float)(pos.y - (*TargetY)) );
 		}
 	}
 }
@@ -77,8 +77,8 @@ void Camera::ChangeMode( enum ctMode mode )
 	TargetMode = mode;
 	switch( mode ){
 		case ctmCenter:
-			offset.x = conf.windowWidth >> 1;
-			offset.y = conf.windowHeight >> 1;
+			offset.x = (float)(conf.windowWidth >> 1);
+			offset.y = (float)(conf.windowHeight >> 1);
 			break;
 		case ctmNormal:
 			offset.x = offset.y = 0;

@@ -5,6 +5,8 @@
  */
 #include <cstdlib>
 
+#include "Define.h"
+
 #include "sdl_graphics.h"
 #include "SDL/SDL_image.h"
 #include "safestring.h"

@@ -33,7 +33,7 @@ void Corpse::setUnitPos( float x, float y )
 {
 	Plant::setUnitPos( x, y );
 	if( blood ){
-		blood->setPosition( getUnitX() - Image.getWidth() / 4, getUnitY(), Z - 0.1 );
+		blood->setPosition( getUnitX() - Image.getWidth() / 4, getUnitY(), Z - 0.1f );
 		blood->resize( Image.getWidth() * getUnitSize(), Image.getHeight() * getUnitSize() );
 	}
 }

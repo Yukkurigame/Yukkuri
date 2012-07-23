@@ -205,7 +205,7 @@ void DynamicUnit::die( )
 				this->Attacked->getUnitParameter( uStateExp ) +
 				Char.get( uParamHP ) / Char.get( uBaseLevel ) );
 		this->Attacked->setUnitParameter( uBaseKills,
-				this->Attacked->getUnitParameter( uBaseKills ) + 1 );
+				(float)this->Attacked->getUnitParameter( uBaseKills ) + 1.0f );
 	}
 	this->setDeleted();
 }
@@ -240,7 +240,7 @@ void DynamicUnit::takeAction( )
 void DynamicUnit::grow( )
 {
 	Unit::grow();
-	float scale = ( log( Char.get( uBaseLevel ) ) / log( 40.0f ) );
+	float scale = ( log( (float)Char.get( uBaseLevel ) ) / log( 40.0f ) );
 	if( scale < 0.35 )
 		scale = 0.35f;
 	else if( scale > 1.3 )

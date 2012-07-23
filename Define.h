@@ -8,5 +8,12 @@
 #define RENDER_VISIBLE
 #define TIMEREVENTTICK 10
 
+#ifdef WIN32
+	#undef GL_GLEXT_PROTOTYPES
+	#include "GL\glew.h"
+#else
+	#define GL_GLEXT_PROTOTYPES 1
+	#indlude "SDL/SDL_opengl.h"
+#endif
 
 #endif //YDEFINE_H

@@ -44,11 +44,9 @@ function keyname_by_code(keynum)
 end
 
 function Console:process(keynum, char)
+	print(keynum, char)
 	local keyname = keyname_by_code(keynum)
-	local func = nil
-	if keyname ~= nil then
-		func = self["key_" .. keyname]
-	end
+	local func = self["key_" .. keyname]
 	if type(func) == "function" then
 		func(self, char)
 	else

@@ -10,16 +10,6 @@
 
 #include "chipmunk/chipmunk.h"
 
-/*	Physics layers
- *
- * 	1 - Base
- * 	2 - Plant
- * 	4 - Entity
- *
- */
-
-
-
 struct Material {
 	cpFloat density;
 	Material() : density(50.0) {}

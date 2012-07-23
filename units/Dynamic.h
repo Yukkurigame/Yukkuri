@@ -35,6 +35,7 @@ public:
 protected:
 	virtual CUData* createUData();
 
+	cpShape* physShape;
 	cpVect force;
 
 	std::vector< enum unitType > FoodTypes;

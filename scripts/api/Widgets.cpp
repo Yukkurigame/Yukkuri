@@ -19,7 +19,7 @@ bool Widget::resize( lua_State* L )
 	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Width expected" );
 	luaL_argcheck( L, lua_isnumber( L, 2 ), 2, "Height expected" );
 
-	this->resize( lua_tonumber( L, 1 ), lua_tonumber( L, 2 ) );
+	this->resize( (float)lua_tonumber( L, 1 ), (float)lua_tonumber( L, 2 ) );
 
 	lua_pop( L, 2 );
 

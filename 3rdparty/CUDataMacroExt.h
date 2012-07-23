@@ -10,6 +10,8 @@
  *
  */
 
+#include "hacks.h" // typeof
+
 //////////////////////////////////////////////////////////////////////////
 // Macros for declaration of execution method
 #define EXEC_METHOD_DECL(FIELD)											\

@@ -10,9 +10,9 @@
 #include "3rdparty/CUDataTemplates.h"
 
 #include "api.h"
-#include "api/UnitManager.h"
-#include "api/Interface.h"
-#include "api/ThreadManager.h"
+#include "api/UnitManagerApi.h"
+#include "api/InterfaceApi.h"
+#include "api/ThreadManagerApi.h"
 #include "api/CameraApi.h"
 #include "api/BindingsApi.h"
 

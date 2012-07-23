@@ -37,8 +37,8 @@ public:
 
 	float getX( ){ return PosX; }
 	float getY( ){ return PosY; }
-	int getHeight( ){ return Height; }
-	int getWidth( ){ return Width; }
+	float getHeight( ){ return Height; }
+	float getWidth( ){ return Width; }
 
 	void resize( float w, float h );
 	virtual void updatePosition( );
@@ -84,8 +84,8 @@ protected:
 	bool visible;
 	Sprite* background;
 
-	int Width;
-	int Height;
+	float Width;
+	float Height;
 	float PosX;
 	float PosY;
 	float OffsetX;

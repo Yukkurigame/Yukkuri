@@ -181,12 +181,12 @@ void RenderManager::openglSetup( int wwidth, int wheight )
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
 
-	glGenBuffers( 1, &VBOHandle );
+	glGenBuffersARB( 1, &VBOHandle );
 
 	TextureAtlas::init( );
 
 	// Create blank texture
-	glGenTextures(1, &textures[0].atlas);
+	glGenTextures(1, &textures[0].atlas);		
 	glBindTexture(GL_TEXTURE_2D, textures[0].atlas);
 	//GIMP says it is white
 	char color[4] = { '\377','\377', '\377', '\377' };
@@ -307,7 +307,7 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 
 	if(centered)
 		sprite->setCentered();
-	sprite->resize( width, height );
+	sprite->resize( (float)width, (float)height );
 	sprite->setPosition( x, y, z );
 	sprite->setPicture(picture);
 

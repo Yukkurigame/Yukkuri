@@ -136,10 +136,10 @@ void DayTime::update( const UINT& dt )
 
 	glUseProgram( sfield->shader );
 	if( Time > 4 && Time < 8 ){
-		float p = (Time - 4.0) / 4.0;
-		glUniform4f( colorLight, p, p, 0.0, 0.25 * sin( M_PI * ( 1.0 - p )) );
+		float p = (Time - 4.0f) / 4.0f;
+		glUniform4f( colorLight, p, p, 0.0f, 0.25f * (float)sin( M_PI * ( 1.0f - p )) );
 	}else{
-		glUniform4f( colorLight, 0.0, 0.0, 0.0, 0.0 );
+		glUniform4f( colorLight, 0.0f, 0.0f, 0.0f, 0.0f );
 	}
 	glUseProgram( 0 );
 }

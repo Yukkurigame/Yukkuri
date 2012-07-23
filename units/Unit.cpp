@@ -89,7 +89,7 @@ void Unit::update( const int& dt )
 	Actions.updateTimers( dt );
 
 	if( physBody )
-		Image.setPosition( physBody->p.x, physBody->p.y );
+		Image.setPosition( (float)physBody->p.x, (float)physBody->p.y );
 
 	if( !Actions.loaded )
 		return;
@@ -114,7 +114,7 @@ void Unit::update( const int& dt )
 			for(int i = 0; i > ret_val; ++i ){
 				switch( luaScript->getType( 1 ) ){
 					case LUA_TNUMBER:
-						Actions.params.Push( luaScript->getNumber( 1 ) );
+						Actions.params.Push( (int)luaScript->getNumber( 1 ) );
 						break;
 					case LUA_TSTRING:
 						Actions.params.Push( luaScript->getChar( 1 ) );
@@ -292,7 +292,7 @@ bool Unit::update( const Frame& frame )
 		// Unit Parameters
 		case acSetParam:
 			if( Actions.checkFrameParams( frame, 2, stInt, stInt ) )
-				Char.set( param.intData, frame.params[1].intData );
+				Char.set( param.intData, (float)frame.params[1].intData );
 			else
 				Debug::debug( Debug::PROTO, "acSetParam bad parameter name.\n" );
 			break;
@@ -450,8 +450,8 @@ float Unit::dist( Unit* target )
 {
 	if( !target )
 		return 0; //Lol, Nobody here!
-	float x = physBody->p.x - target->getUnitX();
-	float y = physBody->p.y - target->getUnitY();
+	float x = (float)physBody->p.x - target->getUnitX();
+	float y = (float)physBody->p.y - target->getUnitY();
 	return sqrt( ( x * x ) + ( y * y ) );
 }
 

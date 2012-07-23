@@ -6,7 +6,7 @@
  */
 
 #include "interface/Interface.h"
-#include "scripts/api/Interface.h"
+#include "scripts/api/InterfaceApi.h"
 
 #include "types.h"
 #include "safestring.h"

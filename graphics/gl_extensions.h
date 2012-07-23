@@ -12,8 +12,6 @@
 
 #include "Define.h"
 
-#include "SDL/SDL_opengl.h"
-
 #ifdef LOCAL_EXTENSIONS
 
 #ifdef GL_ARB_vertex_buffer_object
@@ -46,7 +44,7 @@
 #endif
 
 #ifdef GL_ARB_shader_objects
-	// Saders, ftgg.
+	// Shaders, ftgg.
 	extern PFNGLCREATEPROGRAMOBJECTARBPROC  glCreateProgramObjectARB;
 	extern PFNGLDELETEOBJECTARBPROC			glDeleteObjectARB;
 	extern PFNGLUSEPROGRAMOBJECTARBPROC		glUseProgramObjectARB;
@@ -59,8 +57,9 @@
 	extern PFNGLLINKPROGRAMARBPROC			glLinkProgramARB;
 	extern PFNGLGETUNIFORMLOCATIONARBPROC	glGetUniformLocationARB;
 	extern PFNGLUNIFORM4FARBPROC			glUniform4fARB;
-	extern PFNGLUNIFORM1IARBPROC			glUniform1fARB;
+	extern PFNGLUNIFORM1IARBPROC			glUniform1iARB;
 	extern PFNGLUNIFORMMATRIX4FVARBPROC		glUniformMatrix4fvARB;
+
 #endif
 
 #endif

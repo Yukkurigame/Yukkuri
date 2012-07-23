@@ -7,7 +7,7 @@
 #ifndef GRAPHICSTYPES_H_
 #define GRAPHICSTYPES_H_
 
-#include "SDL/SDL_opengl.h"
+#include "Define.h"
 #include "basic_types.h"
 
 #include <string>
@@ -98,7 +98,7 @@ struct TextureProxy
 
 	TextureProxy( ) : rows(), cols(), id(), image() {}
 
-	inline bool operator < ( const TextureProxy& t ) {
+	inline bool operator < ( const TextureProxy & t ) {
 		return abs < t.abs;
 	}
 
@@ -244,10 +244,10 @@ struct Sprite
 	inline void clearFixed()			{ flags &= ~4; shader = 0; }
 
 
-	Sprite(){
+	Sprite() : rect(), vertices(), coordinates(), clr(){
 		tex = NULL;
 		picture = atlas = texid = 0;
-		flags = 0b1; // visible only
+		flags = 1; // visible only
 		shader = 0;
 	}
 

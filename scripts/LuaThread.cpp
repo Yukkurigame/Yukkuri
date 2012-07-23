@@ -29,7 +29,7 @@ static std::string getDebugInfo( lua_State* L )
 	//FIXME: it's cruve.
 	char d[65];
 	lua_getinfo(L, ">S", &ar);
-	sprintf(d, "%s line %d", ar.short_src, ar.linedefined );
+	snprintf(d, 65, "%s line %d", ar.short_src, ar.linedefined );
 	return (std::string)d;
 }
 
@@ -97,7 +97,7 @@ LuaRegRef threadsManager::NewThread( lua_State* L )
 	threads.push_back( thread );
 
 	char dbg[75];
-	sprintf( dbg, "Lua thread 0x%p created, master_thread: 0x%p, id: %d.\n", NL, L, thread->ThreadId);
+	snprintf( dbg, 75, "Lua thread 0x%p created, master_thread: 0x%p, id: %d.\n", NL, L, thread->ThreadId);
 	Debug::debug( Debug::SCRIPT, dbg);
 
 	return thread->refKey;

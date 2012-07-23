@@ -145,28 +145,30 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, s
 	glEnable(GL_TEXTURE_2D);
 	for ( unsigned int i = 0; i < textures.size(); i++ ){
 		TextureProxy* t = textures.at(i);
-		glBindTexture( GL_TEXTURE_2D, t->texture->tex );
-		glBegin(GL_QUADS);
-		{
-			// Position in original texture
-			float x = static_cast<float>(t->offset.x) / static_cast<float>(t->texture->w);
-			float y = static_cast<float>(t->offset.y) / static_cast<float>(t->texture->h);
-			float dx = static_cast<float>(t->abs.width) / static_cast<float>(t->texture->w);
-			float dy = static_cast<float>(t->abs.height) / static_cast<float>(t->texture->h);
-			//Bottom-left vertex
-			glTexCoord2f(x, y);
-			glVertex2f(t->abs.x, t->abs.y);
-			//Bottom-right vertex
-			glTexCoord2f(x + dx, y);
-			glVertex2f(t->abs.x + t->abs.width, t->abs.y);
-			//Top-right vertex
-			glTexCoord2f(x + dx, y + dy);
-			glVertex2f(t->abs.x + t->abs.width, t->abs.y + t->abs.height);
-			//Top-left vertex
-			glTexCoord2f(x, y + dy);
-			glVertex2f(t->abs.x, t->abs.y + t->abs.height);
+		if( t->texture ){
+			glBindTexture( GL_TEXTURE_2D, t->texture->tex );
+			glBegin(GL_QUADS);
+			{
+				// Position in original texture
+				float x = static_cast<float>(t->offset.x) / static_cast<float>(t->texture->w);
+				float y = static_cast<float>(t->offset.y) / static_cast<float>(t->texture->h);
+				float dx = static_cast<float>(t->abs.width) / static_cast<float>(t->texture->w);
+				float dy = static_cast<float>(t->abs.height) / static_cast<float>(t->texture->h);
+				//Bottom-left vertex
+				glTexCoord2f(x, y);
+				glVertex2i(t->abs.x, t->abs.y);
+				//Bottom-right vertex
+				glTexCoord2f(x + dx, y);
+				glVertex2i(t->abs.x + t->abs.width, t->abs.y);
+				//Top-right vertex
+				glTexCoord2f(x + dx, y + dy);
+				glVertex2i(t->abs.x + t->abs.width, t->abs.y + t->abs.height);
+				//Top-left vertex
+				glTexCoord2f(x, y + dy);
+				glVertex2i(t->abs.x, t->abs.y + t->abs.height);
+			}
+			glEnd();
 		}
-		glEnd();
 
 #ifdef DEBUG_DRAW_ATLAS_RECTANGLES
 		glDisable(GL_TEXTURE_2D);

@@ -52,8 +52,8 @@ public:
 	void setUnitType( enum unitType type );
 	virtual void setUnitPos( float x, float y );
 	void setUnitSize( float size );
-	inline void setUnitX( float x ) { setUnitPos(x, physBody->p.y); }
-	inline void setUnitY( float y ) { setUnitPos(physBody->p.x, y); }
+	inline void setUnitX( float x ) { setUnitPos( x, (float)physBody->p.y ); }
+	inline void setUnitY( float y ) { setUnitPos( (float)physBody->p.x, y ); }
 	inline void setUnitParameter( enum character param, float value ){ Char.set( param, value ); }
 	inline void setUnitParameter( enum character_float param, float value ){ Char.set( param, value ); }
 
@@ -71,8 +71,8 @@ public:
 	GET_PARAM( std::string, Name, UnitName )
 	GET_PARAM( std::string, TypeName, Type )
 	GET_PARAM( enum unitType, Type, UnitType )
-	GET_PARAM( const float, X, physBody->p.x )
-	GET_PARAM( const float, Y, physBody->p.y )
+	GET_PARAM( const float, X, (const float)physBody->p.x )
+	GET_PARAM( const float, Y, (const float)physBody->p.y )
 	GET_PARAM( float, Size, Image.getSize() )
 	GET_PARAM( double*, pX, &(physBody->p.x) )
 	GET_PARAM( double*, pY, &(physBody->p.y) )

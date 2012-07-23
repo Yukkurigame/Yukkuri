@@ -70,7 +70,7 @@ bool Widget::load( std::string id )
 	else
 		VAlign = TOP;
 
-	int z = 0;
+	float z = 0;
 	cfg->getValue("depth", baseID, z );
 	setZ( z );
 
@@ -83,7 +83,7 @@ bool Widget::load( std::string id )
 		cfg->getValue( "picture", baseID, picture );
 		cfg->getValue( "bgcolor", baseID, bgcolor );
 		if( imgname != "" || bgcolor.size() ){
-			background = RenderManager::CreateGLSprite( PosX, PosY, getZ(), Width, Height,
+			background = RenderManager::CreateGLSprite( PosX, PosY, getZ(), (int)Width, (int)Height,
 					RenderManager::GetTextureNumberById( imgname ), picture );
 			background->setFixed();
 			if( bgcolor.size() ){
@@ -110,7 +110,7 @@ void Widget::resize( float w, float h )
 	if( h >= 0 )
 		Height = h;
 	if( background )
-		background->resize( Width, Height );
+		background->resize( (float)Width, (float)Height );
 }
 
 void Widget::updatePosition( )
@@ -124,9 +124,9 @@ void Widget::updatePosition( )
 		starty = Parent->getY( ) + height;
 	}else{
 		startx = 0;
-		starty = conf.windowHeight;
-		width = conf.windowWidth;
-		height = conf.windowHeight;
+		starty = (float)conf.windowHeight;
+		width = (float)conf.windowWidth;
+		height = (float)conf.windowHeight;
 	}
 	switch(Align){
 		case CENTER:
@@ -215,7 +215,9 @@ void Widget::toggleVisibility( )
 		visible = false;
 	else
 		visible = true;
-	if( this->background && this->background->isVisible() != visible )
+	// FIXME: 1>yukkuri\interface\widgets\widget.cpp(218): warning C4800: 'unsigned char' : 
+	//          forcing value to bool 'true' or 'false' (performance warning)
+	if( this->background && (bool)this->background->isVisible() != visible )
 		this->background->toggleVisibility( );
 	for( int i = 0, end = Children.size(); i < end; ++i ){
 		Children[i]->toggleVisibility();

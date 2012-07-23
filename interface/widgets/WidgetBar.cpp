@@ -9,6 +9,8 @@
 #include "graphics/Render.h"
 #include "scripts/LuaConfig.h"
 
+#include "safestring.h"
+
 
 WidgetBar::WidgetBar()
 {
@@ -59,7 +61,7 @@ bool WidgetBar::load( std::string id )
 	color.set( vcolor[0], vcolor[1], vcolor[2] );
 
 	if( BarWidth <= 0 )
-		BarWidth = Width;
+		BarWidth = (float)Width;
 	createBar( imgname, picture, barheight, color );
 	updatePosition();
 
@@ -70,12 +72,12 @@ bool WidgetBar::load( std::string id )
 
 void WidgetBar::createBar( std::string name, int picture, int height, color4u clr )
 {
-	Height -= height + BarY;
-	BarSprite = RenderManager::CreateGLSprite( PosX + BarX, PosY + BarY, getZ(), BarWidth, height );
+	Height -= height + (int)BarY;
+	BarSprite = RenderManager::CreateGLSprite( PosX + BarX, PosY + BarY, getZ(),(int)BarWidth, height );
 	BarSprite->setFixed();
 	if( name != "" ){
 		TopSprite = RenderManager::CreateGLSprite( PosX + TopX, PosY + TopY, getZ() + 0.1f,
-						Width, Height, RenderManager::GetTextureNumberById(name), picture );
+						(int)Width, (int)Height, RenderManager::GetTextureNumberById(name), picture );
 		TopSprite->setFixed();
 	}
 	if( BarSprite ){
@@ -152,9 +154,11 @@ void WidgetBar::Update( )
 void WidgetBar::toggleVisibility( )
 {
 	WidgetText::toggleVisibility( );
-	if( BarSprite && BarSprite->isVisible() != visible )
+	// FIXME: 1>yukkuri\interface\widgets\widgetbar.cpp(157): warning C4800: 'unsigned char' : 
+	//          forcing value to bool 'true' or 'false' (performance warning)
+	if( BarSprite && (bool)BarSprite->isVisible() != visible )
 		BarSprite->toggleVisibility( );
-	if( TopSprite && TopSprite->isVisible() != visible )
+	if( TopSprite && (bool)TopSprite->isVisible() != visible )
 		TopSprite->toggleVisibility( );
 }
 

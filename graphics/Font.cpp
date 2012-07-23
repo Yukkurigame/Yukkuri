@@ -146,7 +146,7 @@ bool font_data::load( const char * fname, unsigned int height ) {
 	// Draw new line into atlas;
 	Texture* tex = print( cols, rows );
 	int namelen = strlen( face->family_name ) + strlen( face->style_name ) + 7;
-	char name[namelen];
+	char* name = new char[namelen];
 	snprintf( name, namelen - 1, "%s %s %3d", face->family_name, face->style_name, height );
 	// Add texture to render manager
 	TextureAtlas::addTexture( name, tex, sw, sh, cols, rows, 0, lastLine );
@@ -157,6 +157,8 @@ bool font_data::load( const char * fname, unsigned int height ) {
 
 	// Get texture id for font
 	texture = RenderManager::GetTextureNumberById( name );
+
+	delete name;
 
 	return true;
 }
@@ -174,8 +176,7 @@ void font_data::size( int* w, int* h, const char* str )
 	nlines = swidth = lineheight = 0;
 	textlen = strlen( str );
 
-	char* text = (char*)malloc( sizeof(char)*textlen + 1 );
-	strcpy( text, str );
+	char* text = strdup( str );
 
 	char* token;
 	token = strtok( text, "\n" );

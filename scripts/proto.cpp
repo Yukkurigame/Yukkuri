@@ -209,8 +209,8 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 									}else{
 										if( lua_isnumber( L, -1 ) ){
 											frame.param_types[params_added] = stInt;
-											frame.params[params_added].intData = lua_tonumber( L, -1 );
-										}else if( lua_isstring( L, -1 )){
+											frame.params[params_added].intData = (int)lua_tonumber( L, -1 );
+										}else if( lua_isstring( L, -1 ) ){
 											frame.param_types[params_added] = stString;
 											frame.params[params_added].stringData = lua_tostring( L, -1 );
 										}else if( lua_isfunction( L, -1 ) ){

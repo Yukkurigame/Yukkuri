@@ -9,7 +9,6 @@
 #include "Define.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
 
 namespace Paths {
@@ -19,7 +18,10 @@ namespace Paths {
 
 #ifndef WIN32
 	#include <libgen.h>
+	#include <unistd.h>
 #else
+	#include <windows.h>
+	#include <direct.h>
 	char* dirname(char* path){
 		char* buf = new char[MAX_PATH];
 		_splitpath(buf, NULL, path, NULL, NULL);
@@ -50,7 +52,7 @@ void Paths::init(  )
 	change_dir( path_app );
 
 	GetCurrentDirectory( MAX_PATH, path_app );
-	strcat( path_app, '\\' );
+	strcat( path_app, "\\" );
 
 #elif defined(__APPLE__)
 	uint32_t size = sizeof(temp_path);

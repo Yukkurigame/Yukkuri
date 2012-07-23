@@ -81,409 +81,415 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="basic_types.h">
+    <ClInclude Include="src\basic_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BindFunctions.h">
+    <ClInclude Include="src\BindFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Bindings.h">
+    <ClInclude Include="src\Bindings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="config.h">
+    <ClInclude Include="src\config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="daytime.h">
+    <ClInclude Include="src\daytime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="debug.h">
+    <ClInclude Include="src\debug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Define.h">
+    <ClInclude Include="src\Define.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="engine.h">
+    <ClInclude Include="src\engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hacks.h">
+    <ClInclude Include="src\hacks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="safestring.h">
+    <ClInclude Include="src\safestring.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="types.h">
+    <ClInclude Include="src\types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="utf.h">
+    <ClInclude Include="src\utf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="yukkuri.h">
+    <ClInclude Include="src\yukkuri.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\Animation.h">
+    <ClInclude Include="src\graphics\Animation.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\AnimationDefines.h">
+    <ClInclude Include="src\graphics\AnimationDefines.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\Camera.h">
+    <ClInclude Include="src\graphics\Camera.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\Font.h">
+    <ClInclude Include="src\graphics\Font.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\render\Atlas.h">
+    <ClInclude Include="src\graphics\render\Atlas.h">
       <Filter>Header Files\graphics\render</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\render\ElasticBox.h">
+    <ClInclude Include="src\graphics\render\ElasticBox.h">
       <Filter>Header Files\graphics\render</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\render\GLHelpers.h">
+    <ClInclude Include="src\graphics\render\GLHelpers.h">
       <Filter>Header Files\graphics\render</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\render\GLTextures.h">
+    <ClInclude Include="src\graphics\render\GLTextures.h">
       <Filter>Header Files\graphics\render</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\render\TextureArray.h">
+    <ClInclude Include="src\graphics\render\TextureArray.h">
       <Filter>Header Files\graphics\render</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\gl_extensions.h">
+    <ClInclude Include="src\graphics\gl_extensions.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\gl_shader.h">
+    <ClInclude Include="src\graphics\gl_shader.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\GraphicsTypes.h">
+    <ClInclude Include="src\graphics\GraphicsTypes.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\pngfuncs.h">
+    <ClInclude Include="src\graphics\pngfuncs.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\Render.h">
+    <ClInclude Include="src\graphics\Render.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\Text.h">
+    <ClInclude Include="src\graphics\Text.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="interface\Interface.h">
+    <ClInclude Include="src\interface\Interface.h">
       <Filter>Header Files\interface</Filter>
     </ClInclude>
-    <ClInclude Include="interface\widgets\Widget.h">
+    <ClInclude Include="src\interface\widgets\Widget.h">
       <Filter>Header Files\interface\widgets</Filter>
     </ClInclude>
-    <ClInclude Include="interface\widgets\WidgetBar.h">
+    <ClInclude Include="src\interface\widgets\WidgetBar.h">
       <Filter>Header Files\interface\widgets</Filter>
     </ClInclude>
-    <ClInclude Include="interface\widgets\WidgetText.h">
+    <ClInclude Include="src\interface\widgets\WidgetText.h">
       <Filter>Header Files\interface\widgets</Filter>
     </ClInclude>
-    <ClInclude Include="map\Map.h">
+    <ClInclude Include="src\map\Map.h">
       <Filter>Header Files\map</Filter>
     </ClInclude>
-    <ClInclude Include="map\Region.h">
+    <ClInclude Include="src\map\Region.h">
       <Filter>Header Files\map</Filter>
     </ClInclude>
-    <ClInclude Include="map\Tiles.h">
+    <ClInclude Include="src\map\Tiles.h">
       <Filter>Header Files\map</Filter>
     </ClInclude>
-    <ClInclude Include="map\Waypoint.h">
+    <ClInclude Include="src\map\Waypoint.h">
       <Filter>Header Files\map</Filter>
     </ClInclude>
-    <ClInclude Include="physics\physics.h">
+    <ClInclude Include="src\physics\physics.h">
       <Filter>Header Files\physics</Filter>
     </ClInclude>
-    <ClInclude Include="3rdparty\CUData.h">
+    <ClInclude Include="src\3rdparty\CUData.h">
       <Filter>Header Files\3rdparty</Filter>
     </ClInclude>
-    <ClInclude Include="3rdparty\CUDataMacro.h">
+    <ClInclude Include="src\3rdparty\CUDataMacro.h">
       <Filter>Header Files\3rdparty</Filter>
     </ClInclude>
-    <ClInclude Include="3rdparty\CUDataMacroExt.h">
+    <ClInclude Include="src\3rdparty\CUDataMacroExt.h">
       <Filter>Header Files\3rdparty</Filter>
     </ClInclude>
-    <ClInclude Include="3rdparty\CUDataTemplates.h">
+    <ClInclude Include="src\3rdparty\CUDataTemplates.h">
       <Filter>Header Files\3rdparty</Filter>
     </ClInclude>
-    <ClInclude Include="3rdparty\CUDataUser.h">
+    <ClInclude Include="src\3rdparty\CUDataUser.h">
       <Filter>Header Files\3rdparty</Filter>
     </ClInclude>
-    <ClInclude Include="3rdparty\LuaPusher.h">
+    <ClInclude Include="src\3rdparty\LuaPusher.h">
       <Filter>Header Files\3rdparty</Filter>
     </ClInclude>
-    <ClInclude Include="3rdparty\TypeList.h">
+    <ClInclude Include="src\3rdparty\TypeList.h">
       <Filter>Header Files\3rdparty</Filter>
     </ClInclude>
-    <ClInclude Include="3rdparty\timer\InternalTimerEvent.h">
+    <ClInclude Include="src\3rdparty\timer\InternalTimerEvent.h">
       <Filter>Header Files\3rdparty\timer</Filter>
     </ClInclude>
-    <ClInclude Include="3rdparty\timer\ITimerEventPerformer.h">
+    <ClInclude Include="src\3rdparty\timer\ITimerEventPerformer.h">
       <Filter>Header Files\3rdparty\timer</Filter>
     </ClInclude>
-    <ClInclude Include="3rdparty\timer\TimerEvent.h">
+    <ClInclude Include="src\3rdparty\timer\TimerEvent.h">
       <Filter>Header Files\3rdparty\timer</Filter>
     </ClInclude>
-    <ClInclude Include="3rdparty\timer\TimerManager.h">
+    <ClInclude Include="src\3rdparty\timer\TimerManager.h">
       <Filter>Header Files\3rdparty\timer</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\api\BindingsApi.h">
+    <ClInclude Include="src\scripts\api\BindingsApi.h">
       <Filter>Header Files\scripts\api</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\api\CameraApi.h">
+    <ClInclude Include="src\scripts\api\CameraApi.h">
       <Filter>Header Files\scripts\api</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\api.h">
+    <ClInclude Include="src\scripts\api.h">
       <Filter>Header Files\scripts</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\CUDataBind.h">
+    <ClInclude Include="src\scripts\CUDataBind.h">
       <Filter>Header Files\scripts</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Lua.h">
+    <ClInclude Include="src\scripts\Lua.h">
       <Filter>Header Files\scripts</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\LuaConfig.h">
+    <ClInclude Include="src\scripts\LuaConfig.h">
       <Filter>Header Files\scripts</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\LuaScript.h">
+    <ClInclude Include="src\scripts\LuaScript.h">
       <Filter>Header Files\scripts</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\LuaScriptConfig.h">
+    <ClInclude Include="src\scripts\LuaScriptConfig.h">
       <Filter>Header Files\scripts</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\LuaThread.h">
+    <ClInclude Include="src\scripts\LuaThread.h">
       <Filter>Header Files\scripts</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\proto.h">
+    <ClInclude Include="src\scripts\proto.h">
       <Filter>Header Files\scripts</Filter>
     </ClInclude>
-    <ClInclude Include="units\ActionTimer.h">
+    <ClInclude Include="src\units\ActionTimer.h">
       <Filter>Header Files\units</Filter>
     </ClInclude>
-    <ClInclude Include="units\Corpse.h">
+    <ClInclude Include="src\units\Corpse.h">
       <Filter>Header Files\units</Filter>
     </ClInclude>
-    <ClInclude Include="units\Dynamic.h">
+    <ClInclude Include="src\units\Dynamic.h">
       <Filter>Header Files\units</Filter>
     </ClInclude>
-    <ClInclude Include="units\Entity.h">
+    <ClInclude Include="src\units\Entity.h">
       <Filter>Header Files\units</Filter>
     </ClInclude>
-    <ClInclude Include="units\Plant.h">
+    <ClInclude Include="src\units\Plant.h">
       <Filter>Header Files\units</Filter>
     </ClInclude>
-    <ClInclude Include="units\Player.h">
+    <ClInclude Include="src\units\Player.h">
       <Filter>Header Files\units</Filter>
     </ClInclude>
-    <ClInclude Include="units\ProtoStack.h">
+    <ClInclude Include="src\units\ProtoStack.h">
       <Filter>Header Files\units</Filter>
     </ClInclude>
-    <ClInclude Include="units\Prototypes.h">
+    <ClInclude Include="src\units\Prototypes.h">
       <Filter>Header Files\units</Filter>
     </ClInclude>
-    <ClInclude Include="units\Unit.h">
+    <ClInclude Include="src\units\Unit.h">
       <Filter>Header Files\units</Filter>
     </ClInclude>
-    <ClInclude Include="units\unitmanager.h">
+    <ClInclude Include="src\units\unitmanager.h">
       <Filter>Header Files\units</Filter>
     </ClInclude>
-    <ClInclude Include="units\YOBA.h">
+    <ClInclude Include="src\units\YOBA.h">
       <Filter>Header Files\units</Filter>
     </ClInclude>
-    <ClInclude Include="graphics\sdl_graphics.h">
+    <ClInclude Include="src\graphics\sdl_graphics.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\api\ThreadManagerApi.h">
+    <ClInclude Include="src\scripts\api\ThreadManagerApi.h">
       <Filter>Header Files\scripts\api</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\api\UnitManagerApi.h">
+    <ClInclude Include="src\scripts\api\UnitManagerApi.h">
       <Filter>Header Files\scripts\api</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\api\InterfaceApi.h">
+    <ClInclude Include="src\scripts\api\InterfaceApi.h">
       <Filter>Header Files\scripts\api</Filter>
+    </ClInclude>
+    <ClInclude Include="src\misc.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BindFunctions.cpp">
+    <ClCompile Include="src\BindFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Bindings.cpp">
+    <ClCompile Include="src\Bindings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="config.cpp">
+    <ClCompile Include="src\config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="daytime.cpp">
+    <ClCompile Include="src\daytime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine.cpp">
+    <ClCompile Include="src\engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="utf.cpp">
+    <ClCompile Include="src\utf.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="yukkuri.cpp">
+    <ClCompile Include="src\yukkuri.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="units\unitmanager.cpp">
+    <ClCompile Include="src\units\unitmanager.cpp">
       <Filter>Source Files\units</Filter>
     </ClCompile>
-    <ClCompile Include="units\Unit.cpp">
+    <ClCompile Include="src\units\Unit.cpp">
       <Filter>Source Files\units</Filter>
     </ClCompile>
-    <ClCompile Include="units\ProtoStack.cpp">
+    <ClCompile Include="src\units\ProtoStack.cpp">
       <Filter>Source Files\units</Filter>
     </ClCompile>
-    <ClCompile Include="units\Prototypes.cpp">
+    <ClCompile Include="src\units\Prototypes.cpp">
       <Filter>Source Files\units</Filter>
     </ClCompile>
-    <ClCompile Include="units\Player.cpp">
+    <ClCompile Include="src\units\Player.cpp">
       <Filter>Source Files\units</Filter>
     </ClCompile>
-    <ClCompile Include="units\Plant.cpp">
+    <ClCompile Include="src\units\Plant.cpp">
       <Filter>Source Files\units</Filter>
     </ClCompile>
-    <ClCompile Include="units\Entity.cpp">
+    <ClCompile Include="src\units\Entity.cpp">
       <Filter>Source Files\units</Filter>
     </ClCompile>
-    <ClCompile Include="units\Dynamic.cpp">
+    <ClCompile Include="src\units\Dynamic.cpp">
       <Filter>Source Files\units</Filter>
     </ClCompile>
-    <ClCompile Include="units\Corpse.cpp">
+    <ClCompile Include="src\units\Corpse.cpp">
       <Filter>Source Files\units</Filter>
     </ClCompile>
-    <ClCompile Include="units\ActionTimer.cpp">
+    <ClCompile Include="src\units\ActionTimer.cpp">
       <Filter>Source Files\units</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\proto.cpp">
+    <ClCompile Include="src\scripts\proto.cpp">
       <Filter>Source Files\scripts</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\LuaThread.cpp">
+    <ClCompile Include="src\scripts\LuaThread.cpp">
       <Filter>Source Files\scripts</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\LuaScript.cpp">
+    <ClCompile Include="src\scripts\LuaScript.cpp">
       <Filter>Source Files\scripts</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\LuaRegister.cpp">
+    <ClCompile Include="src\scripts\LuaRegister.cpp">
       <Filter>Source Files\scripts</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\LuaConfig.cpp">
+    <ClCompile Include="src\scripts\LuaConfig.cpp">
       <Filter>Source Files\scripts</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\Lua.cpp">
+    <ClCompile Include="src\scripts\Lua.cpp">
       <Filter>Source Files\scripts</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\api.cpp">
+    <ClCompile Include="src\scripts\api.cpp">
       <Filter>Source Files\scripts</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\api\Widgets.cpp">
+    <ClCompile Include="src\scripts\api\Widgets.cpp">
       <Filter>Source Files\scripts\api</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\api\Units.cpp">
+    <ClCompile Include="src\scripts\api\Units.cpp">
       <Filter>Source Files\scripts\api</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\api\CameraApi.cpp">
+    <ClCompile Include="src\scripts\api\CameraApi.cpp">
       <Filter>Source Files\scripts\api</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\api\BindingsApi.cpp">
+    <ClCompile Include="src\scripts\api\BindingsApi.cpp">
       <Filter>Source Files\scripts\api</Filter>
     </ClCompile>
-    <ClCompile Include="physics\physics.cpp">
+    <ClCompile Include="src\physics\physics.cpp">
       <Filter>Source Files\physics</Filter>
     </ClCompile>
-    <ClCompile Include="3rdparty\CUData.cpp">
+    <ClCompile Include="src\3rdparty\CUData.cpp">
       <Filter>Source Files\3rdparty</Filter>
     </ClCompile>
-    <ClCompile Include="3rdparty\CUDataTemplates.cpp">
+    <ClCompile Include="src\3rdparty\CUDataTemplates.cpp">
       <Filter>Source Files\3rdparty</Filter>
     </ClCompile>
-    <ClCompile Include="3rdparty\CUDataUser.cpp">
+    <ClCompile Include="src\3rdparty\CUDataUser.cpp">
       <Filter>Source Files\3rdparty</Filter>
     </ClCompile>
-    <ClCompile Include="3rdparty\LuaPusher.cpp">
+    <ClCompile Include="src\3rdparty\LuaPusher.cpp">
       <Filter>Source Files\3rdparty</Filter>
     </ClCompile>
-    <ClCompile Include="3rdparty\timer\TimerManager.cpp">
+    <ClCompile Include="src\3rdparty\timer\TimerManager.cpp">
       <Filter>Source Files\3rdparty\timer</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\Animation.cpp">
+    <ClCompile Include="src\graphics\Animation.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\AnimationDefines.cpp">
+    <ClCompile Include="src\graphics\AnimationDefines.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\Camera.cpp">
+    <ClCompile Include="src\graphics\Camera.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\Font.cpp">
+    <ClCompile Include="src\graphics\Font.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\gl_extensions.cpp">
+    <ClCompile Include="src\graphics\gl_extensions.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\gl_shader.cpp">
+    <ClCompile Include="src\graphics\gl_shader.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\GraphicsTypes.cpp">
+    <ClCompile Include="src\graphics\GraphicsTypes.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\pngfuncs.c">
+    <ClCompile Include="src\graphics\pngfuncs.c">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\Render.cpp">
+    <ClCompile Include="src\graphics\Render.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\sdl_graphics.cpp">
+    <ClCompile Include="src\graphics\sdl_graphics.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\Text.cpp">
+    <ClCompile Include="src\graphics\Text.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\render\Atlas.cpp">
+    <ClCompile Include="src\graphics\render\Atlas.cpp">
       <Filter>Source Files\graphics\render</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\render\ElasticBox.cpp">
+    <ClCompile Include="src\graphics\render\ElasticBox.cpp">
       <Filter>Source Files\graphics\render</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\render\GLHelpers.cpp">
+    <ClCompile Include="src\graphics\render\GLHelpers.cpp">
       <Filter>Source Files\graphics\render</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\render\GLTextures.cpp">
+    <ClCompile Include="src\graphics\render\GLTextures.cpp">
       <Filter>Source Files\graphics\render</Filter>
     </ClCompile>
-    <ClCompile Include="graphics\render\TextureArray.cpp">
+    <ClCompile Include="src\graphics\render\TextureArray.cpp">
       <Filter>Source Files\graphics\render</Filter>
     </ClCompile>
-    <ClCompile Include="interface\Interface.cpp">
+    <ClCompile Include="src\interface\Interface.cpp">
       <Filter>Source Files\interface</Filter>
     </ClCompile>
-    <ClCompile Include="interface\widgets\Widget.cpp">
+    <ClCompile Include="src\interface\widgets\Widget.cpp">
       <Filter>Source Files\interface\widgets</Filter>
     </ClCompile>
-    <ClCompile Include="interface\widgets\WidgetBar.cpp">
+    <ClCompile Include="src\interface\widgets\WidgetBar.cpp">
       <Filter>Source Files\interface\widgets</Filter>
     </ClCompile>
-    <ClCompile Include="interface\widgets\WidgetText.cpp">
+    <ClCompile Include="src\interface\widgets\WidgetText.cpp">
       <Filter>Source Files\interface\widgets</Filter>
     </ClCompile>
-    <ClCompile Include="map\Map.cpp">
+    <ClCompile Include="src\map\Map.cpp">
       <Filter>Source Files\map</Filter>
     </ClCompile>
-    <ClCompile Include="map\Region.cpp">
+    <ClCompile Include="src\map\Region.cpp">
       <Filter>Source Files\map</Filter>
     </ClCompile>
-    <ClCompile Include="map\Tiles.cpp">
+    <ClCompile Include="src\map\Tiles.cpp">
       <Filter>Source Files\map</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\api\InterfaceApi.cpp">
+    <ClCompile Include="src\scripts\api\InterfaceApi.cpp">
       <Filter>Source Files\scripts\api</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\api\ThreadManagerApi.cpp">
+    <ClCompile Include="src\scripts\api\ThreadManagerApi.cpp">
       <Filter>Source Files\scripts\api</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\api\UnitManagerApi.cpp">
+    <ClCompile Include="src\scripts\api\UnitManagerApi.cpp">
       <Filter>Source Files\scripts\api</Filter>
+    </ClCompile>
+    <ClCompile Include="src\misc.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

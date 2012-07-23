@@ -2,6 +2,7 @@
 include Makefile.in
 
 OBJDIR= obj/
+OUTDIR= bin/
 VPATH= src/
 PROGNAME= Yukkuri
 SCRIPTSAPIDIR= api/

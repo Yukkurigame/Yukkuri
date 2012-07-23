@@ -53,6 +53,8 @@ public:
 	LuaMain( );
 	~LuaMain( );
 
+	bool init( );
+
 	static lua_State* getState() { return Lst; }
 
 	void RegisterApi( lua_State* L );

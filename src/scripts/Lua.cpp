@@ -34,10 +34,6 @@ LuaStackChecker::~LuaStackChecker( )
 
 LuaMain::LuaMain()
 {
-	if( Lst == NULL ){
-		Lst = luaL_newstate();
-		luaL_openlibs(Lst);
-	}
 	count++;
 }
 
@@ -52,6 +48,16 @@ LuaMain::~LuaMain()
 	}
 }
 
+bool LuaMain::init( )
+{
+	if( Lst == NULL ){
+		Lst = luaL_newstate();
+		luaL_openlibs( Lst );
+		RegisterApi( Lst );
+		return true;
+	}
+	return false;
+}
 
 
 bool LuaMain::OpenFile( std::string name )

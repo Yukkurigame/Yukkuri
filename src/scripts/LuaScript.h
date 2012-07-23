@@ -14,7 +14,7 @@ class LuaScript: public LuaMain
 {
 public:
 	LuaScript();
-	bool Init();
+
 	bool OpenFile( std::string name );
 
 	LuaRegRef AddToRegistry();

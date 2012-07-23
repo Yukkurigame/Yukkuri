@@ -24,11 +24,6 @@ LuaScript::LuaScript( )
 {
 }
 
-bool LuaScript::Init()
-{
-	return true;
-}
-
 
 bool LuaScript::OpenFile( std::string name )
 {

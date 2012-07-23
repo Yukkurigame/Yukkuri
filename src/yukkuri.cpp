@@ -15,6 +15,7 @@
 #include "physics/physics.h"
 #include "Bindings.h"
 #include "scripts/proto.h"
+#include "misc.h"
 
 #include "debug.h"
 using namespace Debug;
@@ -31,13 +32,12 @@ bool Yukkuri::Init()
 {
 	extern LuaScript* luaScript;
 
+	Paths::init();
+
 	// Load key names for register in api
 	Bindings::init();
 
-	// Register lua api
-	luaScript->RegisterApi( luaScript->getState() );
-
-	if( !luaScript->Init( ) || !luaScript->OpenFile( "init" ) ){
+	if( !luaScript->init( ) || !luaScript->OpenFile( "init" ) ){
 		debug( MAIN, "Lua loading failed.\n" );
 		return false;
 	}

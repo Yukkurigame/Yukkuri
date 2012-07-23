@@ -7,6 +7,7 @@
 #ifndef SDL_GRAPHICS_H_
 #define SDL_GRAPHICS_H_
 
+#include "Define.h"
 #include "SDL/SDL.h"
 
 

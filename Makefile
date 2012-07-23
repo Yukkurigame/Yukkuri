@@ -1,13 +1,10 @@
 
-rm=/bin/rm -f
-CC= g++
-#VPATH= 
-DEFS= $(shell sdl-config --cflags)
-PROGNAME= Yukkuri
-INCLUDES=  -I. -Iunits -Igraphics -Iinterface -I/usr/include/freetype2
-LIBS= $(shell sdl-config --libs) -lpng -lSDL_image -lGL -lfreetype -llua -L./libs -dynamic -lchipmunk
+include Makefile.in
+
 OBJDIR= obj/
-SCRIPTSAPIDIR = api/
+VPATH= src/
+PROGNAME= Yukkuri
+SCRIPTSAPIDIR= api/
 SCRIPTSDIR= scripts/
 UNITSDIR= units/
 PHYSICSDIR= physics/
@@ -18,10 +15,6 @@ MAPDIR = map/
 3RDPARTYDIR= 3rdparty/
 
 
-DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1 -DGL_GLEXT_PROTOTYPES=1
-CFLAGS= -O0 -pg -g -Wall $(DEFINES)
-
-
 UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp ActionTimer.cpp Unit.cpp Plant.cpp \
 		 Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp
 PHYSICS = physics.cpp
@@ -29,7 +22,7 @@ RENDER = Atlas.cpp ElasticBox.cpp GLHelpers.cpp GLTextures.cpp TextureArray.cpp
 GRAPHICS = GraphicsTypes.cpp Font.cpp Text.cpp sdl_graphics.cpp gl_extensions.cpp gl_shader.cpp \
 		   Animation.cpp AnimationDefines.cpp Camera.cpp Render.cpp pngfuncs.c \
 		   $(addprefix render/, $(RENDER))
-SCRIPTSAPI = UnitManager.cpp Interface.cpp Widgets.cpp ThreadManager.cpp CameraApi.cpp \
+SCRIPTSAPI = UnitManagerApi.cpp InterfaceApi.cpp Widgets.cpp ThreadManagerApi.cpp CameraApi.cpp \
 			 BindingsApi.cpp Units.cpp
 SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp proto.cpp \
 		  api.cpp $(addprefix $(SCRIPTSAPIDIR), $(SCRIPTSAPI))
@@ -39,7 +32,7 @@ MAP = Tiles.cpp Region.cpp Map.cpp
 3RDPARTY = CUData.cpp CUDataUser.cpp CUDataTemplates.cpp LuaPusher.cpp timer/TimerManager.cpp
 
 
-SRCS =   main.cpp yukkuri.cpp config.cpp engine.cpp Bindings.cpp BindFunctions.cpp \
+SRCS =   main.cpp yukkuri.cpp config.cpp engine.cpp misc.cpp Bindings.cpp BindFunctions.cpp \
          $(addprefix $(SCRIPTSDIR), $(SCRIPTS)) \
          $(addprefix $(PHYSICSDIR), $(PHYSICS)) \
          $(addprefix $(UNITSDIR), $(UNITS)) \
@@ -53,7 +46,7 @@ OBJ = $(SRCS:.cpp=.o)
 OBJS = $(addprefix $(OBJDIR), $(OBJ:.c=.o))
 
 
-UNIQHEADERS = $(SCRIPTSDIR)LuaScriptConfig.h $(UNITSDIR)/YOBA.h $(MAPDIR)/Waypoint.h \
+UNIQHEADERS = $(SCRIPTSDIR)LuaScriptConfig.h $(UNITSDIR)YOBA.h $(MAPDIR)Waypoint.h \
          	$(addprefix $(3RDPARTYDIR), TypeList.h timer/InternalTimerEvent.h \
          	timer/InternalTimerEvent.h timer/TimerEvent.h timer/ITimerEventPerformer.h ) \
          	Define.h debug.h hacks.h safestring.h basic_types.h types.h 
@@ -88,8 +81,8 @@ all: $(PROGNAME)
 
 rebuild: cleanprog all
 
-$(PROGNAME) : | $(OBJDIR) $(GCH) $(OBJS)
-	$(CC) $(CFLAGS)  -o $(PROGNAME) $(OBJS) $(LIBS)
+$(PROGNAME) : | $(OBJDIR) $(GCH) $(OBJS)	
+	$(CC) $(CFLAGS)  -o $(OUTDIR)$(PROGNAME) $(OBJS) $(LIBS)
 
 $(OBJDIR):
 	mkdir -p $(addprefix $(OBJDIR), $(SCRIPTSDIR) $(SCRIPTSDIR)$(SCRIPTSAPIDIR) $(UNITSDIR) \

@@ -169,12 +169,10 @@ bool font_data::load( const char * fname, unsigned int height ) {
 void font_data::size( int* w, int* h, const char* str )
 {
 	int swidth;
-	int textlen;
 	int lineheight;
 	int nlines;
 
 	nlines = swidth = lineheight = 0;
-	textlen = strlen( str );
 
 	char* text = strdup( str );
 

@@ -102,15 +102,12 @@ void Text::setPosition( float x, float y, float z )
 
 void Text::setText(const char* str)
 {
-	int textlen;
 	float lineheight;
 
 	if( !font )
 		return;
 
 	clear();
-
-	textlen = strlen( str );
 
 	char* text = strdup( str );
 
@@ -139,7 +136,7 @@ void Text::setText(const char* str)
 	Height = (int)(Lines * lineheight);
 	free(text);
 
-	// FIXME: 1>yukkuri\graphics\text.cpp(140): warning C4800: 'unsigned char' : 
+	// FIXME: 1>yukkuri\graphics\text.cpp(140): warning C4800: 'unsigned char' :
 	//          forcing value to bool 'true' or 'false' (performance warning)
 	setVisible( (bool)isVisible() );
 	setFixed( (bool)isFixed() );

@@ -10,5 +10,13 @@ Requirements:
     libpng
     freetype2
     lua5.1
+    Chipmunk-Physics (static linking, for build only)
+    GLEW (windows version only)
 You need to have development version of this packages for successfully build.
-If you have troubles with headers try to add your paths in Makefile.
+If you have troubles with headers try to use your paths in Makefile.
+
+Windows builds:
+    Visual studio solution included for build from source code.
+    All required libraries for linking may be found in source repository.
+    Libraries is not part of project and distributed under their licenses.
+    There are two libraries builds avaliable: for release and debug builds.

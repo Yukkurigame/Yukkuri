@@ -1,16 +1,7 @@
 
-<<<<<<< HEAD
-rm=/bin/rm -f
-CC= g++
-#VPATH= 
-DEFS= $(shell sdl-config --cflags)
-PROGNAME= Yukkuri
-INCLUDES=  -I. -Iunits -Igraphics -Iinterface -I/usr/include/freetype2
-LIBS= $(shell sdl-config --libs) -lpng -lSDL_image -lGL -lfreetype -llua -L./libs -dynamic -lchipmunk-dev
-=======
 include Makefile.in
 
->>>>>>> 7cd0bb1fdcc98f2bbfc40709cf297c18cc47baff
+
 OBJDIR= obj/
 OUTDIR= bin/
 VPATH= src/

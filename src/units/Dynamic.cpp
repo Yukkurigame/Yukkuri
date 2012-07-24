@@ -30,6 +30,7 @@ DynamicUnit::DynamicUnit()
 	currentTile = -1;
 	force.x = 0;
 	force.y = 0;
+	scopeShape = NULL;
 }
 
 DynamicUnit::~DynamicUnit()
@@ -48,6 +49,15 @@ bool DynamicUnit::Create( int id, std::string proto )
 	cpShape* shape = cpCircleShapeNew( physBody, phys.radius, cpvzero );
 	physShape = cpSpaceAddShape( Phys::space, shape );
 	physBody->position_func = call_updateAnimOnMovement;
+
+	cpVect scopepoints[4] = { {300, 150}, {300, -150}, {-300, 150}, {-300, -150} };
+	cpVect scopepos[4];
+	cpConvexHull( 4, scopepoints, scopepos, NULL, 0.0 );
+
+	cpShape* scope = cpPolyShapeNew( physBody, 4, scopepos, cpvzero );
+	scopeShape = cpSpaceAddShape( Phys::space, scope );
+	cpShapeSetSensor( scopeShape, cpTrue );
+
 
 	return true;
 }

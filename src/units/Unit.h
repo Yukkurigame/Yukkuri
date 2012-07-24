@@ -89,7 +89,7 @@ protected:
 	ActionTimer* actionTimers;
 
 	cpBody* physBody;
-
+	cpShape* physShape;
 
 	float Z;
 	PhysObject phys;

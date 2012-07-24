@@ -8,6 +8,7 @@ actions = {
 		frames = {
 			{ constants.acLoadParam, constants.uParamHP, "hp" },
 			{ constants.acCopyParam, constants.uStateHP, constants.uParamHP },
+			{ constants.acPhysicsSetLayer, 7 },
 		},
 	},
 	{

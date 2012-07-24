@@ -43,7 +43,6 @@ int Paths::change_dir( const char* path )
 void Paths::init(  )
 {
 	char* temp_path = new char[ MAX_PATH ];
-	path_app = new char[ MAX_PATH ];
 
 #ifdef WIN32
 	// application

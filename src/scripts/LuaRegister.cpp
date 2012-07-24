@@ -141,10 +141,13 @@ void LuaMain::RegisterApi( lua_State* L )
 		FIELD(acLoadParam)
 		FIELD(acLoadParamBunch)
 
+		// Physics objects
+		FIELD(acSetUnitPhysics)
+		FIELD(acSetPhysicsLayer)
+
 		// Misc commands
 		FIELD(acMove)
 		FIELD(acSetUnitSize)
-		FIELD(acSetUnitPhysics)
 		FIELD(acSetColor)
 		FIELD(acDAddFood)
 		FIELD(acEAddPathTarget)

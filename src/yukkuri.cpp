@@ -12,7 +12,6 @@
 #include "daytime.h"
 #include "map/Region.h"
 #include "map/Map.h"
-#include "physics/physics.h"
 #include "Bindings.h"
 #include "scripts/proto.h"
 #include "misc.h"
@@ -51,9 +50,7 @@ bool Yukkuri::AdditionalInit()
 
 	debug( MAIN, "Additional Init\n" );
 
-	// Create physics space;
-	Phys::space = cpSpaceNew();
-
+	UnitManager::init( );
 	Region::init();
 	Map::init( );
 
@@ -135,9 +132,6 @@ void Yukkuri::End()
 	Map::clean( );
 	Region::clean( );
 	DayTime::clean();
-
-	// Free physics engine
-	cpSpaceFree( Phys::space );
 
 	threadsManager::CleanThreads( );
 

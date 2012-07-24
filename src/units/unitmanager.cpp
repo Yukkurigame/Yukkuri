@@ -5,6 +5,7 @@
 #include "Entity.h"
 #include "Player.h"
 
+#include "units/physics/physics.h"
 #include "graphics/Camera.h"
 #include "scripts/Lua.h"
 
@@ -50,6 +51,7 @@ namespace {
 void UnitManager::init()
 {
 	player = NULL;
+	Phys::init();
 }
 
 void UnitManager::clean()
@@ -59,6 +61,8 @@ void UnitManager::clean()
 		DeleteUnit( it->second );
 	}
 	Units.clear();
+
+	Phys::clean();
 }
 /**
  * Build a unit according to criteria passed to the function and call

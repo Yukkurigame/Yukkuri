@@ -19,6 +19,7 @@
  */
 
 
+
 struct Material {
 	cpFloat density;
 	Material() : density(50.0) {}
@@ -49,6 +50,8 @@ struct PhysObject {
 namespace Phys
 {
 	extern cpSpace* space;
+	void init();
+	void clean();
 }
 
 

@@ -4,9 +4,9 @@
  *  Created on: 30.06.2010
  */
 
-#include "widgets/Widget.h"
+#include "interface/widgets/Widget.h"
 
-#include "Render.h"
+#include "graphics/Render.h"
 #include "scripts/LuaConfig.h"
 #include "config.h"
 
@@ -215,7 +215,7 @@ void Widget::toggleVisibility( )
 		visible = false;
 	else
 		visible = true;
-	// FIXME: 1>yukkuri\interface\widgets\widget.cpp(218): warning C4800: 'unsigned char' : 
+	// FIXME: 1>yukkuri\interface\widgets\widget.cpp(218): warning C4800: 'unsigned char' :
 	//          forcing value to bool 'true' or 'false' (performance warning)
 	if( this->background && (bool)this->background->isVisible() != visible )
 		this->background->toggleVisibility( );

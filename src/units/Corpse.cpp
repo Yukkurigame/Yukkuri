@@ -4,8 +4,8 @@
  *  Created on: 23.08.2010
  */
 
-#include "Corpse.h"
-#include "Render.h"
+#include "units/Corpse.h"
+#include "graphics/Render.h"
 
 Corpse::Corpse( )
 {
@@ -19,7 +19,7 @@ Corpse::~Corpse( )
 
 bool Corpse::Create( int id, std::string proto )
 {
-	if( !Unit::Create( id, proto ) )
+	if( !Plant::Create( id, proto ) )
 		return false;
 	TextureInfo* t = Image.getSprite()->tex;
 	if( t->rows > 1 || t->cols > 1 ){

@@ -8,7 +8,7 @@
 #ifndef BARWIDGET_H_
 #define BARWIDGET_H_
 
-#include "widgets/WidgetText.h"
+#include "interface/widgets/WidgetText.h"
 
 class WidgetBar: public WidgetText
 {

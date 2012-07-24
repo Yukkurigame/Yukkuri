@@ -6,7 +6,7 @@
  */
 
 #include "scripts/api/CameraApi.h"
-#include "Camera.h"
+#include "graphics/Camera.h"
 #include "units/unitmanager.h"
 #include "units/Unit.h"
 #include "types.h"

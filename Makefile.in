@@ -2,7 +2,7 @@
 rm=/bin/rm -f
 CC= g++
 DEFS= $(shell sdl-config --cflags)
-INCLUDES= -I. -Isrc/ -Isrc/units -Isrc/graphics -Isrc/interface -I/usr/include/freetype2
+INCLUDES= -I. -Isrc/ -I/usr/include/freetype2
 LIBS= $(shell sdl-config --libs) -lpng -lSDL_image -lGL -lfreetype -llua -L./libs -lchipmunk
 DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1 -DGL_GLEXT_PROTOTYPES=1
 CFLAGS= -O0 -pg -g -Wall $(DEFINES)

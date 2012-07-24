@@ -5,7 +5,7 @@
  *
  */
 
-#include "widgets/WidgetBar.h"
+#include "interface/widgets/WidgetBar.h"
 #include "graphics/Render.h"
 #include "scripts/LuaConfig.h"
 
@@ -154,7 +154,7 @@ void WidgetBar::Update( )
 void WidgetBar::toggleVisibility( )
 {
 	WidgetText::toggleVisibility( );
-	// FIXME: 1>yukkuri\interface\widgets\widgetbar.cpp(157): warning C4800: 'unsigned char' : 
+	// FIXME: 1>yukkuri\interface\widgets\widgetbar.cpp(157): warning C4800: 'unsigned char' :
 	//          forcing value to bool 'true' or 'false' (performance warning)
 	if( BarSprite && (bool)BarSprite->isVisible() != visible )
 		BarSprite->toggleVisibility( );

@@ -9,7 +9,7 @@ PROGNAME= Yukkuri
 SCRIPTSAPIDIR= api/
 SCRIPTSDIR= scripts/
 UNITSDIR= units/
-PHYSICSDIR= physics/
+PHYSICSDIR= $(UNITSDIR)physics/
 GRAPHICSDIR= graphics/
 WIDGETSDIR= widgets/
 INTERFACEDIR= interface/
@@ -19,7 +19,7 @@ MAPDIR = map/
 
 UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp ActionTimer.cpp Unit.cpp Plant.cpp \
 		 Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp
-PHYSICS = physics.cpp
+PHYSICS = physics.cpp handlers.cpp
 RENDER = Atlas.cpp ElasticBox.cpp GLHelpers.cpp GLTextures.cpp TextureArray.cpp
 GRAPHICS = GraphicsTypes.cpp Font.cpp Text.cpp sdl_graphics.cpp gl_extensions.cpp gl_shader.cpp \
 		   Animation.cpp AnimationDefines.cpp Camera.cpp Render.cpp pngfuncs.c \

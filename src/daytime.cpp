@@ -1,14 +1,16 @@
 
 #include "graphics/gl_extensions.h"
 
-#include "daytime.h"
-#include "Render.h"
+
+#include "graphics/Render.h"
 #include "graphics/gl_shader.h"
-#include "Interface.h"
-#include "unitmanager.h"
-#include "config.h"
+#include "interface/Interface.h"
+#include "units/unitmanager.h"
 #include "3rdparty/timer/TimerManager.h"
 #include "3rdparty/timer/InternalTimerEvent.h"
+
+#include "daytime.h"
+#include "config.h"
 
 #include <math.h>
 

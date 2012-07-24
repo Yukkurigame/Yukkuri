@@ -8,9 +8,9 @@
 #include "BindFunctions.h"
 
 #include "yukkuri.h"
-#include "unitmanager.h"
-#include "Player.h"
-#include "sdl_graphics.h"
+#include "units/unitmanager.h"
+#include "units/Player.h"
+#include "graphics/sdl_graphics.h"
 
 #include "debug.h"
 

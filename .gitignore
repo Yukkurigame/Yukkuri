@@ -1,5 +1,6 @@
 *.o
 *~
+bin/gmon.out
 Yukkuri
 obj/
 .cproject

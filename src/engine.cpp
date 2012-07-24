@@ -5,7 +5,7 @@
 #include "graphics/Render.h"
 #include "graphics/sdl_graphics.h"
 
-#include "physics/physics.h"
+#include "units/physics/physics.h"
 
 #include "Bindings.h"
 

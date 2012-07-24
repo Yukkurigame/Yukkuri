@@ -6,9 +6,13 @@
 #include "Plant.h"
 
 
-Plant::Plant( )
+bool Plant::Create( int id, std::string proto )
 {
-
+	if( !Unit::Create( id, proto ) )
+		return false;
+	cpShape* shape = cpCircleShapeNew( physBody, phys.radius, cpvzero );
+	setShape( shape );
+	return true;
 }
 
 void Plant::hit( float damage )

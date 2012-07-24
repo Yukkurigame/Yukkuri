@@ -5,7 +5,7 @@
  *
  */
 
-#include "widgets/WidgetText.h"
+#include "interface/widgets/WidgetText.h"
 #include "graphics/Render.h"
 #include "scripts/LuaConfig.h"
 

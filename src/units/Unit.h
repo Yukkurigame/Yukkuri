@@ -3,11 +3,11 @@
 
 #include <string>
 
-#include "Animation.h"
-#include "ActionTimer.h"
-#include "Prototypes.h"
-#include "YOBA.h"
-#include "physics/physics.h"
+#include "graphics/Animation.h"
+#include "units/ActionTimer.h"
+#include "units/Prototypes.h"
+#include "units/YOBA.h"
+#include "units/physics/physics.h"
 #include "3rdparty/CUDataUser.h"
 
 class CUData;
@@ -27,6 +27,11 @@ public:
 	virtual ~Unit();
 
 	virtual bool Create( int id, std::string proto );
+
+	void setShape( cpShape* s ){
+		physShape = cpSpaceAddShape( Phys::space, s );
+		physShape->collision_type = 1 << UnitType;
+	}
 
 	inline unsigned char isDeleted()	{ return flags & 1; }
 	inline void setDeleted()				{ flags |= 1; }

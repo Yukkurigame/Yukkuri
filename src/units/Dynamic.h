@@ -2,9 +2,13 @@
 #define DYNAMIC_UNIT_H
 
 #include "Unit.h"
+#include "basic_types.h"
+
 #include <vector>
 
+
 void call_updateAnimOnMovement(cpBody* body, cpFloat dt);
+
 
 
 class DynamicUnit: public Unit
@@ -31,6 +35,8 @@ public:
 	void attack( );
 	void attackUnit( Unit* victim );
 	void hit( float damage );
+
+	list< Unit* > Collisions;
 
 protected:
 	virtual CUData* createUData();

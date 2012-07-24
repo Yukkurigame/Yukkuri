@@ -12,7 +12,7 @@
 class Plant: public Unit
 {
 public:
-	Plant();
+	virtual bool Create( int id, std::string proto );
 
 	void hit( float damage );
 

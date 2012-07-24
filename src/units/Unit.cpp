@@ -41,6 +41,10 @@ Unit::~Unit()
 		actionTimers = timer->next;
 		delete timer, timer = NULL;
 	}
+	if( physShape ){
+		cpSpaceRemoveShape( Phys::space, physShape );
+		cpShapeFree( physShape );
+	}
 	if( physBody ){
 		cpSpaceRemoveBody( Phys::space, physBody );
 		cpBodyFree( physBody );
@@ -69,7 +73,8 @@ bool Unit::Create( int id, std::string proto )
 		Actions.setAction( "init" );
 		delete pm;
 	}
-	cpSpaceAddBody( Phys::space, physBody );
+	physBody = cpSpaceAddBody( Phys::space, physBody );
+
 	//physBody->velocity_func = call_velocity_func;
 
 	return true;

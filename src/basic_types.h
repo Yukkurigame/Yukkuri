@@ -68,4 +68,62 @@ struct rect2i
 	}
 };
 
+
+// Basic linked list
+template< typename T >
+struct listElement
+{
+	T data;
+	listElement* next;
+	listElement( T d, listElement* l ) : data(d), next(l) {};
+};
+
+
+template< typename T >
+struct list
+{
+	listElement<T>* head;
+	list( ) : head(0) {};
+	~list( ){
+		listElement<T>* t = 0;
+		while( head != 0 ){
+			t = head;
+			head = head->next;
+			delete t;
+		}
+	};
+	void push( T data ){
+		head = new listElement<T>( data, head );
+	}
+	void remove( T data ){
+		listElement<T>* t = head;
+		listElement<T>* prev = 0;
+		while( t != 0 ){
+			if( t->data == data )
+				break;
+			prev = t;
+			t = t->next;
+		}
+		if( t != 0 ){
+			if( prev != 0 )
+				prev->next = t->next;
+			else // One element
+				head = 0;
+			delete t;
+			t = 0;
+		}
+	}
+	int count( ){
+		int c = 0;
+		listElement<T>* t = head;
+		while( t != 0 ){
+			++c;
+			t = t->next;
+		}
+		return c;
+	}
+};
+
+
+
 #endif /* BASIC_TYPES_H_ */

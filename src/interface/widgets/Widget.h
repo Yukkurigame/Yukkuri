@@ -7,7 +7,7 @@
 #ifndef WIDGETS_H_
 #define WIDGETS_H_
 
-#include "GraphicsTypes.h"
+#include "graphics/GraphicsTypes.h"
 #include <vector>
 
 #include "3rdparty/CUDataUser.h"

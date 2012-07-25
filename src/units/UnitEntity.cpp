@@ -1,7 +1,7 @@
 
-#include "Entity.h"
-#include "Corpse.h"
-#include "unitmanager.h"
+#include "units/UnitEntity.h"
+#include "units/UnitCorpse.h"
+#include "units/unitmanager.h"
 
 
 Entity::Entity()
@@ -27,7 +27,7 @@ bool Entity::update( const Frame& frame )
 			addTarget( );
 			break;
 		default:
-			return DynamicUnit::update( frame );
+			return UnitDynamic::update( frame );
 			break;
 	}
 	return true;
@@ -46,7 +46,7 @@ bool Entity::update( const Frame& frame )
 
 void Entity::takeAction( )
 {
-	DynamicUnit::takeAction( );
+	UnitDynamic::takeAction( );
 	if( Attacked && !Attacked->isDeleted() ){
 		if( dist(Attacked) < getUnitSize( ) * 100 ){
 			attackUnit( Attacked );

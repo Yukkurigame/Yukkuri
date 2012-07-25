@@ -2,6 +2,11 @@
 
 parent = "unit_dynamic"
 
+physics = {
+	shape = constants.potCircle,
+	static = true,
+}
+
 actions = {
 	{
 		name = "init",
@@ -9,6 +14,7 @@ actions = {
 			{ constants.acSuper },
 			{ constants.acLoadParam, constants.uChrNutritive, "nutritive" },
 			{ constants.acSetFlag, constants.ufEdible },
+			{ constants.acSetUnitPhysics, constants.pptRadius, 10 },
 		},
 	}
 }

@@ -7,13 +7,11 @@
 #ifndef PLANTS_H_
 #define PLANTS_H_
 
-#include "Unit.h"
+#include "units/UnitStatic.h"
 
-class Plant: public Unit
+class Plant: public UnitStatic
 {
 public:
-	virtual bool Create( int id, std::string proto );
-
 	void hit( float damage );
 
 protected:

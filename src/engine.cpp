@@ -146,8 +146,7 @@ void CEngine::Start()
 
 	UpdateInterval = 1.0f / conf.maxFrameRate;
 	MaxCycles = conf.maxFrameRate / conf.minFrameRate;
-	//inputInterval;
-	//inputTicks;
+
 
 	// Main loop.
 	while( !EndLoop ){
@@ -175,7 +174,10 @@ void CEngine::Start()
 			inputTicks = 0;
 		}
 
+
+		// Process physics
 		cpSpaceStep( Phys::space, ElapsedTicks );
+
 
 		if( Minimized ){
 			// Release some system resources if the app. is minimized.

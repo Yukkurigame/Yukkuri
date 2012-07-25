@@ -28,7 +28,7 @@ struct Material {
 
 enum  PhysObectType { potNone = 0, potCircle, potQuad, potRectangle, potPolygon, potLast };
 
-enum PhysParamType { pptMat, pptType, pptRadius, pptSides };
+enum PhysParamType { pptMat, pptRadius, pptSides };
 
 
 

@@ -6,7 +6,7 @@
  */
 
 #include "units/physics/handlers.h"
-#include "units/Dynamic.h"
+#include "units/UnitDynamic.h"
 
 
 int DynamiUint_begin( cpArbiter* arb, cpSpace* space, void* unused )
@@ -14,7 +14,7 @@ int DynamiUint_begin( cpArbiter* arb, cpSpace* space, void* unused )
 	cpShape *a, *b;
 	cpArbiterGetShapes(arb, &a, &b);
 
-	DynamicUnit* ua = reinterpret_cast<DynamicUnit*>(a->body->data);
+	UnitDynamic* ua = reinterpret_cast<UnitDynamic*>(a->body->data);
 	Unit* ub = reinterpret_cast<Unit*>(b->body->data);
 
 	if( ua && ub )
@@ -29,7 +29,7 @@ void DynamiUint_separate( cpArbiter* arb, cpSpace* space, void* unused )
 	cpShape *a, *b;
 	cpArbiterGetShapes(arb, &a, &b);
 
-	DynamicUnit* ua = reinterpret_cast<DynamicUnit*>(a->body->data);
+	UnitDynamic* ua = reinterpret_cast<UnitDynamic*>(a->body->data);
 	Unit* ub = reinterpret_cast<Unit*>(b->body->data);
 
 	if( ua && ub )

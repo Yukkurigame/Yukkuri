@@ -58,7 +58,7 @@ bool WidgetBar::load( std::string id )
 		if( i >= vcolor.size() )
 			vcolor.push_back(0);
 	}
-	color.set( vcolor[0], vcolor[1], vcolor[2] );
+	color.set( (unsigned)vcolor[0], (unsigned)vcolor[1], (unsigned)vcolor[2] );
 
 	if( BarWidth <= 0 )
 		BarWidth = (float)Width;

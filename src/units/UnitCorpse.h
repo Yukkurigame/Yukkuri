@@ -7,9 +7,9 @@
 #ifndef CORPSE_H_
 #define CORPSE_H_
 
-#include "Plant.h"
+#include "UnitStatic.h"
 
-class Corpse: public Plant
+class Corpse: public UnitStatic
 {
 public:
 	Corpse();

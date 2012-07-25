@@ -1,9 +1,9 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "Dynamic.h"
+#include "UnitDynamic.h"
 
-class Player : public DynamicUnit
+class Player : public UnitDynamic
 {
 public:
 	Player();
@@ -11,7 +11,6 @@ public:
 	void die( );
 
 	void moveUnit( short axis, signed int val );
-	bool update( const Frame& f );
 
 
 protected:

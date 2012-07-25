@@ -108,6 +108,6 @@ void Paths::init(  )
 	#error Unsupported platform.
 #endif // WIN32
 
-	delete temp_path;
+	delete[] temp_path;
 }
 

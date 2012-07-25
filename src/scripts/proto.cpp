@@ -129,6 +129,18 @@ Proto* ProtoManager::GetProtoByName( std::string name )
 
 void ProtoManager::LoadTable(lua_State* L, Proto* proto)
 {
+	// Load physics
+	// Стек: env
+	lua_getfield( L, -1, "physics" );	// Стек: env actions
+	if( lua_istable(L, -1) ){
+		getValueByName( L, "shape", proto->physicsType );
+		getValueByName( L, "static", proto->statical );
+	}else{
+		proto->physicsType = 0;
+		proto->statical = true;
+	}
+	lua_pop(L, 1);						// Стек: env
+
 	LoadActions( L, proto );
 }
 

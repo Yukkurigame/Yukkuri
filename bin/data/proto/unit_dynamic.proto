@@ -2,6 +2,11 @@
 
 parent = "unit"
 
+physics = {
+	shape = constants.potCircle,
+	static = false,
+}
+
 actions = {
 	{
 		name = "init",
@@ -11,10 +16,4 @@ actions = {
 			{ constants.acPhysicsSetLayer, 7 },
 		},
 	},
-	{
-		name = "idle",
-		frames = {
-			{ constants.acMove },
-		}
-	}
 }

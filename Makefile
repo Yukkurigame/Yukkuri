@@ -17,8 +17,8 @@ MAPDIR = map/
 3RDPARTYDIR= 3rdparty/
 
 
-UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp ActionTimer.cpp Unit.cpp Plant.cpp \
-		 Corpse.cpp Dynamic.cpp Entity.cpp Player.cpp
+UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp ActionTimer.cpp Unit.cpp \
+		 UnitStatic.cpp UnitDynamic.cpp UnitEntity.cpp UnitCorpse.cpp UnitPlayer.cpp
 PHYSICS = physics.cpp handlers.cpp
 RENDER = Atlas.cpp ElasticBox.cpp GLHelpers.cpp GLTextures.cpp TextureArray.cpp
 GRAPHICS = GraphicsTypes.cpp Font.cpp Text.cpp sdl_graphics.cpp gl_extensions.cpp gl_shader.cpp \

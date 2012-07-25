@@ -1,6 +1,11 @@
 
 parent = "unit_dynamic"
 
+physics = {
+	shape = constants.potCircle,
+	static = false,
+}
+
 actions = {
 	{
 		name = "init",
@@ -13,7 +18,6 @@ actions = {
 			{ constants.acSetParam, constants.uStateExp, 20 },
 			{ constants.acSetParam, constants.uBaseLevel, 1 },
 			{ constants.acSetParam, constants.uBaseAge, 0 },
-			{ constants.acSetUnitPhysics, constants.pptType, constants.potCircle },
 			{ constants.acSetUnitPhysics, constants.pptRadius, 30 },
 			{ constants.acSetUnitSize, 35 },
 			{ constants.acDAddFood, constants.utPlant },

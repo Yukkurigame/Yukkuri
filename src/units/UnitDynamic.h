@@ -4,18 +4,16 @@
 #include "Unit.h"
 #include "basic_types.h"
 
-#include <vector>
-
 
 void call_updateAnimOnMovement(cpBody* body, cpFloat dt);
 
 
 
-class DynamicUnit: public Unit
+class UnitDynamic: public Unit
 {
 public:
-	DynamicUnit();
-	~DynamicUnit();
+	UnitDynamic();
+	~UnitDynamic();
 	void moveUnit( signed int x, signed int y );
 	void eat( );
 	void eat( Unit* Victim );
@@ -24,7 +22,6 @@ public:
 	virtual void die( );
 
 	virtual bool update( const Frame& f );
-	virtual void updatePhysics( );
 	void updateAnimOnMovement( cpBody* body, cpFloat dt );
 
 	void takeAction( );
@@ -44,7 +41,7 @@ protected:
 	cpShape* scopeShape;
 	cpVect force;
 
-	std::vector< enum unitType > FoodTypes;
+	list< enum unitType > FoodTypes;
 	Unit* Attacked;
 	cpFloat TotalDistance;
 	const static int m_animdistance = 20;

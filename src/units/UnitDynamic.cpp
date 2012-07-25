@@ -1,6 +1,6 @@
 
-#include "Dynamic.h"
-#include "Corpse.h"
+#include "UnitDynamic.h"
+#include "UnitCorpse.h"
 
 #include "unitmanager.h"
 
@@ -14,16 +14,15 @@
 #include <math.h>
 #include "map/Map.h"
 
-#include "chipmunk/chipmunk_unsafe.h"
 
 
 void call_updateAnimOnMovement(cpBody* body, cpFloat dt)
 {
-	((DynamicUnit* )body->data)->updateAnimOnMovement( body, dt );
+	((UnitDynamic* )body->data)->updateAnimOnMovement( body, dt );
 }
 
 
-DynamicUnit::DynamicUnit()
+UnitDynamic::UnitDynamic()
 {
 	TotalDistance = 0;
 	Attacked = NULL;
@@ -33,7 +32,7 @@ DynamicUnit::DynamicUnit()
 	scopeShape = NULL;
 }
 
-DynamicUnit::~DynamicUnit()
+UnitDynamic::~UnitDynamic()
 {
 	if( scopeShape ){
 		cpSpaceRemoveShape( Phys::space, scopeShape );
@@ -41,16 +40,12 @@ DynamicUnit::~DynamicUnit()
 	}
 }
 
-bool DynamicUnit::Create( int id, std::string proto )
+bool UnitDynamic::Create( int id, std::string proto )
 {
 	if( !Unit::Create( id, proto ) )
 		return false;
 
 	physBody->position_func = call_updateAnimOnMovement;
-
-
-	cpShape* shape = cpCircleShapeNew( physBody, phys.radius, cpvzero );
-	setShape( shape );
 
 	cpVect scopepoints[4] = { {300, 150}, {300, -150}, {-300, 150}, {-300, -150} };
 	cpVect scopepos[4];
@@ -70,7 +65,7 @@ bool DynamicUnit::Create( int id, std::string proto )
 	@return Boolean value represents a Collision (true)
 	@remark
 **/
-void DynamicUnit::moveUnit( signed int x, signed int y )
+void UnitDynamic::moveUnit( signed int x, signed int y )
 {
 	/*if( x != 0 || y != 0 ){
 		float zone = 1.0;
@@ -154,16 +149,16 @@ void DynamicUnit::moveUnit( signed int x, signed int y )
 }
 
 
-void DynamicUnit::eat( )
+void UnitDynamic::eat( )
 {
 	Unit* victim = NULL;
-	victim = UnitManager::closer( this, &FoodTypes );
+	//victim = UnitManager::closer( this, &FoodTypes );
 	if( victim )
 		eat( victim );
 }
 
 
-void DynamicUnit::eat( Unit* victim )
+void UnitDynamic::eat( Unit* victim )
 {
 	//TODO: пересмотреть надо бы
 	if( !victim->isEdible( ) )
@@ -196,18 +191,18 @@ void DynamicUnit::eat( Unit* victim )
 	}
 }
 
-void DynamicUnit::die( )
+void UnitDynamic::die( )
 {
 	Corpse* corpse;
 	corpse = dynamic_cast<Corpse*>( UnitManager::CreateUnit( utCorpse, getUnitX(), getUnitY() ) );
 	if( corpse ){
 		LuaConfig* cfg = new LuaConfig;
 		std::vector<int> bcolor;
-		cfg->getValue( "bloodcolor", UnitName, Type, bcolor );
+		cfg->getValue( "bloodcolor", UnitName, TypeName, bcolor );
 		if( bcolor.size() >= 3 )
-			corpse->setBloodColor( bcolor[0], bcolor[1], bcolor[2] );
+			corpse->setBloodColor( (unsigned)bcolor[0], (unsigned)bcolor[1], (unsigned)bcolor[2] );
 		else if( bcolor.size() >= 1 )
-			corpse->setBloodColor( bcolor[0] );
+			corpse->setBloodColor( (unsigned)bcolor[0] );
 		corpse->setUnitParameter( uParamHP, getUnitParameter( uParamHP ) * getUnitParameter( uParamFed ) / 100 );
 		corpse->setUnitSize( Image.getSize() );
 		delete cfg;
@@ -223,14 +218,14 @@ void DynamicUnit::die( )
 }
 
 
-bool DynamicUnit::update( const Frame& frame )
+bool UnitDynamic::update( const Frame& frame )
 {
 	switch(frame.command){
 		case acDAddFood:
 			if( Actions.checkFrameParams( frame, 1, stInt ) ){
 				int type = frame.params[0].intData;
 				if( type > 0 && type < utLast )
-					FoodTypes.push_back( (enum unitType)type );
+					FoodTypes.push( (enum unitType)type );
 			}
 			break;
 		default:
@@ -239,7 +234,7 @@ bool DynamicUnit::update( const Frame& frame )
 	return true;
 }
 
-void DynamicUnit::takeAction( )
+void UnitDynamic::takeAction( )
 {
 	Char.tire();
 	if( Attacked ){
@@ -249,7 +244,7 @@ void DynamicUnit::takeAction( )
 	}
 }
 
-void DynamicUnit::grow( )
+void UnitDynamic::grow( )
 {
 	Unit::grow();
 	float scale = ( log( (float)Char.get( uBaseLevel ) ) / log( 40.0f ) );
@@ -261,18 +256,7 @@ void DynamicUnit::grow( )
 }
 
 
-void DynamicUnit::updatePhysics( ){
-	Unit::updatePhysics( );
-	switch(phys.type){
-		case potCircle:
-			cpCircleShapeSetRadius( physShape, phys.radius );
-			break;
-		default:
-			break;
-	}
-}
-
-void DynamicUnit::updateAnimOnMovement( cpBody* body, cpFloat dt )
+void UnitDynamic::updateAnimOnMovement( cpBody* body, cpFloat dt )
 {
 	cpVect oldpos = body->p;
 	cpBodyUpdatePosition( body, dt );
@@ -298,7 +282,7 @@ void DynamicUnit::updateAnimOnMovement( cpBody* body, cpFloat dt )
 	}
 }
 
-void DynamicUnit::attack( )
+void UnitDynamic::attack( )
 {
 	Unit* victim = NULL;
 	victim = UnitManager::closer( this, utEntity, 120.0 );
@@ -306,18 +290,18 @@ void DynamicUnit::attack( )
 		this->attackUnit( victim );
 }
 
-void DynamicUnit::attackUnit( Unit* victim )
+void UnitDynamic::attackUnit( Unit* victim )
 {
 	if( victim == this || !victim )
 		return;
 	Char.tire( 0.1f );
-	DynamicUnit* dvictim = dynamic_cast<DynamicUnit*>(victim);
+	UnitDynamic* dvictim = dynamic_cast<UnitDynamic*>(victim);
 	if( dvictim && dvictim->Attacker() != this )
 		dvictim->Attacker( this );
 	victim->hit( Char.getDamage() );
 }
 
-void DynamicUnit::hit( float damage )
+void UnitDynamic::hit( float damage )
 {
 	Actions.saveState( true );
 	Actions.setAction( "hit" );

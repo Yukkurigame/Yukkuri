@@ -91,7 +91,8 @@ bool Widget::load( std::string id )
 					if( i >= bgcolor.size() )
 						bgcolor.push_back( i < 3 ? 0 : 255 );
 				}
-				background->clr.set( bgcolor[0], bgcolor[1], bgcolor[2], bgcolor[3] );
+				background->clr.set( (unsigned)bgcolor[0], (unsigned)bgcolor[1],
+									(unsigned)bgcolor[2], (unsigned)bgcolor[3] );
 			}
 		}
 	}

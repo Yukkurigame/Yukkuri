@@ -1,9 +1,9 @@
 
-#include "unitmanager.h"
-#include "Plant.h"
-#include "Corpse.h"
-#include "Entity.h"
-#include "Player.h"
+#include "units/unitmanager.h"
+#include "units/UnitStatic.h"
+#include "units/UnitCorpse.h"
+#include "units/UnitEntity.h"
+#include "units/UnitPlayer.h"
 
 #include "units/physics/physics.h"
 #include "graphics/Camera.h"
@@ -79,7 +79,7 @@ Unit* UnitManager::CreateUnit( enum unitType type, float x, float y, const char*
 			temp = new Entity();
 			break;
 		case utPlant:
-			temp = new Plant();
+			temp = new UnitStatic();
 			break;
 		case utCorpse:
 			temp = new Corpse();

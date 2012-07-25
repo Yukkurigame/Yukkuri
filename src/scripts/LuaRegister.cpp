@@ -92,7 +92,6 @@ void LuaMain::RegisterApi( lua_State* L )
 		FIELD(potPolygon)
 		// Physics objects parameters types
 		FIELD(pptMat)
-		FIELD(pptType)
 		FIELD(pptRadius)
 		FIELD(pptSides)
 

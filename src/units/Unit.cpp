@@ -2,13 +2,15 @@
 #include "Unit.h"
 #include "unitmanager.h" //FUUUUUUUUUUUUU~
 
-#include "hacks.h"
-#include "safestring.h"
-#include <cmath>
-
 #include "scripts/LuaConfig.h"
 #include "scripts/proto.h"
 #include "3rdparty/timer/TimerManager.h"
+
+#include "hacks.h"
+#include "safestring.h"
+
+#include "chipmunk/chipmunk_unsafe.h"
+#include <cmath>
 
 
 void call_velocity_func(cpBody *body, cpVect gravity, cpFloat damping, cpFloat dt)
@@ -23,12 +25,11 @@ Unit::Unit()
 	Z = 1;
 	DT = 0;
 	UnitName = "";
-	Type = "";
+	TypeName = "";
 	flags = 0;
 	actionTimers = NULL;
 	physShape = NULL;
-	physBody = cpBodyNew( 1.0, 1.0 );
-	physBody->data = this;
+	physBody = NULL;
 }
 
 
@@ -46,7 +47,8 @@ Unit::~Unit()
 		cpShapeFree( physShape );
 	}
 	if( physBody ){
-		cpSpaceRemoveBody( Phys::space, physBody );
+		if( !cpBodyIsStatic(physBody) )
+			cpSpaceRemoveBody( Phys::space, physBody );
 		cpBodyFree( physBody );
 	}
 }
@@ -56,24 +58,70 @@ bool Unit::Create( int id, std::string proto )
 {
 	UnitId = id;
 
-	if( !setUnitName( Type ) )
+	if( !setUnitName( TypeName ) )
 		return false;
 
-	if( !Image.init( UnitName, Type ) )
+	if( !Image.init( UnitName, TypeName ) )
 		return false;
 
 	if( proto == "" ){
 		LuaConfig* cfg = new LuaConfig;
-		cfg->getValue( "proto", UnitName, Type, proto );
+		cfg->getValue( "proto", UnitName, TypeName, proto );
 		delete cfg;
 	}
-	if( proto != "" ){
+	if( proto == "" ){
+		Debug::debug( Debug::UNIT, "Unit with blank prototype, creation failed. UID: "
+						+ citoa(UnitId) + ".\n" );
+		return false;
+	}
+
+	{
 		ProtoManager* pm = new ProtoManager;
 		Actions.setProto( pm->GetProtoByName( proto ) );
 		Actions.setAction( "init" );
 		delete pm;
+		if( !Actions.loaded ){
+				Debug::debug( Debug::UNIT, "Unit with invalid prototype '" + proto +
+					"'. Creation failed. UID: " + citoa(UnitId) + ".\n" );
+				return false;
+		}
 	}
-	physBody = cpSpaceAddBody( Phys::space, physBody );
+
+	// Create physics
+
+	if( Actions.proto->statical ){
+		physBody = cpBodyNewStatic();
+	}else{
+		physBody = cpBodyNew( 1.0, 1.0 );
+		physBody = cpSpaceAddBody( Phys::space, physBody );
+	}
+	physBody->data = this;
+
+
+
+	if( Actions.proto->physicsType >= 0 && Actions.proto->physicsType < potLast )
+		phys.type = (enum PhysObectType)Actions.proto->physicsType;
+	else{
+		Debug::debug( Debug::UNIT, "Bad physics object type: "
+				+ citoa( Actions.proto->physicsType ) + ".\n" );
+		phys.type = potNone;
+	}
+
+	cpShape* shape = NULL;
+	switch( phys.type ){
+		case potCircle:
+			shape = cpCircleShapeNew( physBody, phys.radius, cpvzero );
+			break;
+		case potQuad:
+			shape = cpBoxShapeNew( physBody, phys.sides.x, phys.sides.y );
+			break;
+		default:
+			break;
+	}
+	if( shape != NULL ){
+		physShape = cpSpaceAddShape( Phys::space, shape );
+		physShape->collision_type = UnitType;
+	}
 
 	//physBody->velocity_func = call_velocity_func;
 
@@ -315,10 +363,10 @@ bool Unit::update( const Frame& frame )
 				break;
 			LuaConfig* cfg = new LuaConfig;
 			if( param.intData < uCharIntLast )
-				cfg->getValue( frame.params[1].stringData, UnitName, Type,
+				cfg->getValue( frame.params[1].stringData, UnitName, TypeName,
 								Char.getRef( (enum character)param.intData ) );
 			else
-				cfg->getValue( frame.params[1].stringData, UnitName, Type,
+				cfg->getValue( frame.params[1].stringData, UnitName, TypeName,
 								Char.getRef( (enum character_float)param.intData ) );
 			delete cfg;
 			break;
@@ -336,10 +384,10 @@ bool Unit::update( const Frame& frame )
 				}
 				int psparam = Actions.params.PopInt();
 				if( psparam < uCharIntLast )
-					cfg->getValue( Actions.params.PopString(), UnitName, Type,
+					cfg->getValue( Actions.params.PopString(), UnitName, TypeName,
 							Char.getRef( (enum character)psparam ) );
 				else
-					cfg->getValue( Actions.params.PopString(), UnitName, Type,
+					cfg->getValue( Actions.params.PopString(), UnitName, TypeName,
 							Char.getRef( (enum character_float)psparam ) );
 			}
 			delete cfg;
@@ -353,12 +401,6 @@ bool Unit::update( const Frame& frame )
 				int firstparam = frame.params[1].intData;
 				switch(param.intData){
 					case pptMat:
-						break;
-					case pptType:
-						if( firstparam >= 0 && firstparam < potLast )
-							phys.type = (enum PhysObectType)firstparam;
-						else
-							Debug::debug( Debug::UNIT, "acSetUnitPhysics: bad physics object type." );
 						break;
 					case pptRadius:
 						phys.radius = firstparam;
@@ -405,6 +447,8 @@ void Unit::updatePhysics( )
 	cpFloat moment;
 	switch(phys.type){
 		case potCircle:
+			if( physShape )
+				cpCircleShapeSetRadius( physShape, phys.radius );
 			moment = cpMomentForCircle( phys.mass, 0, phys.radius, cpvzero );
 			break;
 		default:
@@ -412,6 +456,8 @@ void Unit::updatePhysics( )
 			break;
 	}
 	cpBodySetMoment( physBody, moment );
+	if( cpBodyIsStatic(physBody) )
+		cpSpaceReindexShape( Phys::space, physShape );
 }
 
 
@@ -420,13 +466,13 @@ void Unit::setUnitType( enum unitType type )
 	UnitType = type;
 	switch( type ){
 		case utPlant:
-			Type = "plant";
+			TypeName = "plant";
 			break;
 		case utCorpse:
-			Type = "corpse";
+			TypeName = "corpse";
 			break;
 		default:
-			Type = "entity";
+			TypeName = "entity";
 			break;
 	}
 }

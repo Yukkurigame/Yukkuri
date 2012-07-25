@@ -51,13 +51,13 @@ void Phys::init()
 	// Create physics space;
 	space = cpSpaceNew();
 
-	cpSpaceAddCollisionHandler( space, 1 << utLast, 1 << utPlant,
+	cpSpaceAddCollisionHandler( space, utLast, utPlant,
 			DynamiUint_begin, NULL, NULL, DynamiUint_separate, NULL );
-	cpSpaceAddCollisionHandler( space, 1 << utLast, 1 << utEntity,
+	cpSpaceAddCollisionHandler( space, utLast, utEntity,
 		DynamiUint_begin, NULL, NULL, DynamiUint_separate, NULL );
-	cpSpaceAddCollisionHandler( space, 1 << utLast, 1 << utPlayer,
+	cpSpaceAddCollisionHandler( space, utLast, utPlayer,
 			DynamiUint_begin, NULL, NULL, DynamiUint_separate, NULL );
-	cpSpaceAddCollisionHandler( space, 1 << utLast, 1 << utCorpse,
+	cpSpaceAddCollisionHandler( space, utLast, utCorpse,
 				DynamiUint_begin, NULL, NULL, DynamiUint_separate, NULL );
 }
 

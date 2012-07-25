@@ -158,7 +158,7 @@ bool font_data::load( const char * fname, unsigned int height ) {
 	// Get texture id for font
 	texture = RenderManager::GetTextureNumberById( name );
 
-	delete name;
+	delete[] name;
 
 	return true;
 }

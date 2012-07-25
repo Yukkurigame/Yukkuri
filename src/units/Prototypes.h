@@ -82,6 +82,10 @@ struct Proto
 	std::string name;
 	Proto* parent;
 
+	int physicsType;
+	bool statical;
+
+
 	std::map< std::string, Action > Actions;
 
 	Proto() : id(-1) { parent = NULL; };

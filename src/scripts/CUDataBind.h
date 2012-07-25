@@ -44,11 +44,10 @@
 // Includes of declarations of all types in typelist
 /* Units */
 #include "units/Unit.h"
-#include "units/Dynamic.h"
-#include "units/Entity.h"
-#include "units/Plant.h"
-#include "units/Corpse.h"
-#include "units/Player.h"
+#include "units/UnitDynamic.h"
+#include "units/UnitEntity.h"
+#include "units/UnitCorpse.h"
+#include "units/UnitPlayer.h"
 
 /* Widgets */
 #include "interface/widgets/Widget.h"
@@ -56,7 +55,7 @@
 #include "interface/widgets/WidgetBar.h"
 
 // Typelist with all types, that can be passed to lua as userdata
-typedef TYPELIST_9( Unit, DynamicUnit, Entity, Plant, Corpse, Player, Widget, WidgetText, WidgetBar ) ClassesList;
+typedef TYPELIST_9( Unit, UnitStatic, UnitDynamic, Entity, Corpse, Player, Widget, WidgetText, WidgetBar ) ClassesList;
 
 
 
@@ -64,9 +63,9 @@ typedef TYPELIST_9( Unit, DynamicUnit, Entity, Plant, Corpse, Player, Widget, Wi
 
 // 2. For each type, it's needed to explicitly declare functions for userdata creation.
 UDATA_CREATOR_FUNC_DECL(Unit);
-UDATA_CREATOR_FUNC_DECL(DynamicUnit);
+UDATA_CREATOR_FUNC_DECL(UnitStatic);
+UDATA_CREATOR_FUNC_DECL(UnitDynamic);
 UDATA_CREATOR_FUNC_DECL(Entity);
-UDATA_CREATOR_FUNC_DECL(Plant);
 UDATA_CREATOR_FUNC_DECL(Corpse);
 UDATA_CREATOR_FUNC_DECL(Player);
 
@@ -87,9 +86,9 @@ void RegisterAllTypeMetatables(lua_State* L)
 
 	// Make RegisterTypeMetatable calls for each type
 	RegisterTypeMetatable<Unit>(L);
-	RegisterTypeMetatable<DynamicUnit>(L);
+	RegisterTypeMetatable<UnitStatic>(L);
+	RegisterTypeMetatable<UnitDynamic>(L);
 	RegisterTypeMetatable<Entity>(L);
-	RegisterTypeMetatable<Plant>(L);
 	RegisterTypeMetatable<Corpse>(L);
 	RegisterTypeMetatable<Player>(L);
 
@@ -118,9 +117,9 @@ void RegisterAllTypeMetatables(lua_State* L)
 		GETTERF_METHOD_DECL(UnitSize)					\
 		EXEC_METHOD_DECL(color)
 
+#define DECL_UNITSTATIC_METH
 #define DECL_UNITDYNAMIC_METH
 #define DECL_UNITENTITY_METH
-#define DECL_UNITPLANT_METH
 #define DECL_UNITCORPSE_METH
 #define DECL_UNITPLAYER_METH
 
@@ -149,7 +148,6 @@ void RegisterAllTypeMetatables(lua_State* L)
 DECL_UNIT_METH
 DECL_UNITDYNAMIC_METH
 DECL_UNITENTITY_METH
-DECL_UNITPLANT_METH
 DECL_UNITCORPSE_METH
 DECL_UNITPLAYER_METH
 DECL_WIDGET_METH
@@ -173,16 +171,16 @@ DECL_WIDGETBAR_METH
 		GETTER_METHOD_ENTRY(ID, UnitSize)		\
 		EXEC_METHOD_ENTRY(ID, color)
 
+#define UNITSTATIC_METH_ENTRY(ID)				\
+		UNIT_METH_ENTRY(ID)
 #define UNITDYNAMIC_METH_ENTRY(ID)				\
 		UNIT_METH_ENTRY(ID)
 #define UNITENTITY_METH_ENTRY(ID)				\
-		UNIT_METH_ENTRY(ID)
-#define UNITPLANT_METH_ENTRY(ID)				\
-		UNIT_METH_ENTRY(ID)
+		UNITDYNAMIC_METH_ENTRY(ID)
 #define UNITCORPSE_METH_ENTRY(ID)				\
-		UNIT_METH_ENTRY(ID)
+		UNITSTATIC_METH_ENTRY(ID)
 #define UNITPLAYER_METH_ENTRY(ID)				\
-		UNIT_METH_ENTRY(ID)
+		UNITDYNAMIC_METH_ENTRY(ID)
 
 // Widgets
 #define WIDGET_METH_ENTRY(ID)					\
@@ -220,17 +218,17 @@ static const struct luaL_reg ud_meta[TL::Length<ClassesList>::value][METAMETHODS
 	},
 	{
 		STD_METHODS(1),
-		UNITDYNAMIC_METH_ENTRY(1)
+		UNITSTATIC_METH_ENTRY(1)
 		END
 	},
 	{
 		STD_METHODS(2),
-		UNITENTITY_METH_ENTRY(2)
+		UNITDYNAMIC_METH_ENTRY(2)
 		END
 	},
 	{
 		STD_METHODS(3),
-		UNITPLANT_METH_ENTRY(3)
+		UNITENTITY_METH_ENTRY(3)
 		END
 	},
 	{

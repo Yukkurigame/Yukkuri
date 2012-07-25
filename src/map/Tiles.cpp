@@ -169,14 +169,14 @@ MapChunk::MapChunk( signed int x, signed int y )
 			col = 0;
 			row++;
 		}
-	}	
+	}
 	Texture tex;
 	tex.w = ChunkManager.chunkSize.x;
 	tex.h = ChunkManager.chunkSize.y;
 	tex.tex = 0;
 	TextureArray::drawToNewGLTexture( &tex.tex, ChunkManager.chunkSize.x, ChunkManager.chunkSize.y, sprites, ChunkManager.chunkTilesCount );
 	GLHelpers::UpdateTexture( ChunkManager.atlas, &tex, (int)atlasPos.x, (int)atlasPos.y );
-	delete sprites;
+	delete[] sprites;
 }
 
 

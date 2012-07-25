@@ -28,11 +28,6 @@ public:
 
 	virtual bool Create( int id, std::string proto );
 
-	void setShape( cpShape* s ){
-		physShape = cpSpaceAddShape( Phys::space, s );
-		physShape->collision_type = 1 << UnitType;
-	}
-
 	inline unsigned char isDeleted()	{ return flags & 1; }
 	inline void setDeleted()				{ flags |= 1; }
 	inline void clearDeleted()			{ flags &= ~1; } // WHY?
@@ -74,7 +69,7 @@ public:
 	GET_PARAM( unsigned int, Id, UnitId )
 
 	GET_PARAM( std::string, Name, UnitName )
-	GET_PARAM( std::string, TypeName, Type )
+	GET_PARAM( std::string, TypeName, TypeName )
 	GET_PARAM( enum unitType, Type, UnitType )
 	GET_PARAM( const float, X, (const float)physBody->p.x )
 	GET_PARAM( const float, Y, (const float)physBody->p.y )
@@ -83,7 +78,9 @@ public:
 	GET_PARAM( double*, pY, &(physBody->p.y) )
 #undef GET_PARAM
 
-	virtual void hit( float ) {};
+	virtual void hit( float damage ) {
+		Char.recieveDamage( damage );
+	};
 
 	// Function bindings
 	int color( lua_State* L );
@@ -104,7 +101,7 @@ protected:
 	ActionManager Actions;
 	std::string UnitName;
 	enum unitType UnitType;
-	std::string Type;
+	std::string TypeName;
 
 	unsigned int flags;		// 1 - deleted
 							// 2 - isEdible

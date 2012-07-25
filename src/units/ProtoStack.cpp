@@ -8,6 +8,7 @@
 #include "ProtoStack.h"
 #include <stdarg.h>
 #include <cstring>
+#include <cstdlib>
 
 #include "safestring.h"
 #include "debug.h"
@@ -23,8 +24,10 @@ StackElement::StackElement()
 
 StackElement::~StackElement()
 {
-	if ( this->type == stString )
-		delete[] this->data.stringData, this->data.stringData = NULL;
+	if ( this->type == stString ){
+		free((void*)this->data.stringData);
+		this->data.stringData = NULL;
+	}
 }
 
 

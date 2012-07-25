@@ -1,5 +1,5 @@
 
-#include "Player.h"
+#include "UnitPlayer.h"
 #include "config.h"
 
 
@@ -14,7 +14,7 @@ Player::Player()
 void Player::die( )
 {
 	if( conf.playerDies ){
-		DynamicUnit::die( );
+		UnitDynamic::die( );
 	}
 }
 
@@ -28,17 +28,4 @@ void Player::moveUnit( short axis, signed int val )
 	cpBodyApplyImpulse( physBody, force, cpvzero );
 	if( force.x == 0 && force.y == 0 )
 		Image.setDefault();
-}
-
-bool Player::update( const Frame& frame )
-{
-	switch( frame.command ){
-		case acMove:
-			//DynamicUnit::moveUnit( moveX, moveY );
-			break;
-		default:
-			return DynamicUnit::update( frame );
-			break;
-	}
-	return true;
 }

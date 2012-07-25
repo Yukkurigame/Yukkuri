@@ -79,7 +79,7 @@ bool WidgetText::load( std::string id )
 		if( i >= vcolor.size() )
 			vcolor.push_back(0);
 	}
-	setFontColor( vcolor[0], vcolor[1], vcolor[2] );
+	setFontColor( (unsigned)vcolor[0], (unsigned)vcolor[1], (unsigned)vcolor[2] );
 
 	if( !Widget::load( id ) )
 		return false;

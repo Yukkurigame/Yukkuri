@@ -1,12 +1,12 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
-#include "Dynamic.h"
+#include "units/UnitDynamic.h"
 #include "map/Waypoint.h"
 #include <queue>
 
 
-class Entity: public DynamicUnit
+class Entity: public UnitDynamic
 {
 public:
 	Entity( );

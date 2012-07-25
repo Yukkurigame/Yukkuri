@@ -4,7 +4,7 @@
  *  Created on: 23.08.2010
  */
 
-#include "units/Corpse.h"
+#include "units/UnitCorpse.h"
 #include "graphics/Render.h"
 
 Corpse::Corpse( )
@@ -19,7 +19,7 @@ Corpse::~Corpse( )
 
 bool Corpse::Create( int id, std::string proto )
 {
-	if( !Plant::Create( id, proto ) )
+	if( !UnitStatic::Create( id, proto ) )
 		return false;
 	TextureInfo* t = Image.getSprite()->tex;
 	if( t->rows > 1 || t->cols > 1 ){
@@ -31,7 +31,7 @@ bool Corpse::Create( int id, std::string proto )
 
 void Corpse::setUnitPos( float x, float y )
 {
-	Plant::setUnitPos( x, y );
+	UnitStatic::setUnitPos( x, y );
 	if( blood ){
 		blood->setPosition( getUnitX() - Image.getWidth() / 4, getUnitY(), Z - 0.1f );
 		blood->resize( Image.getWidth() * getUnitSize(), Image.getHeight() * getUnitSize() );

@@ -1,7 +1,7 @@
 -- Lua side of readline completion for REPL
 -- By Patrick Rapin; adapted by Reuben Thomas; Fixes by Sir Anthony
 
-require "data/shared/p-rlcompleter_c"
+require("data/shared/p-rlcompleter_c")
 
 -- The list of Lua keywords
 local keywords = {

@@ -33,6 +33,8 @@ struct MainConfig
 	std::string protoPath;
 	std::string shadersPath;
 
+	float _tileAngle;
+
 	MainConfig();
 
 	bool load();

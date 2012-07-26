@@ -7,6 +7,7 @@
 #include "config.h"
 #include "scripts/LuaConfig.h"
 #include <cstring>
+#include <math.h>
 
 MainConfig conf;
 
@@ -49,6 +50,13 @@ bool MainConfig::load( )
 	lc->getValue( "player_dies" , id, config, playerDies );
 
 	delete lc;
+
+	float right = (float)(mapTileSize >> 2);
+	float bottom = (float)(mapTileSize >> 1);
+
+	float tile_side = sqrt( right * right + bottom * bottom );
+
+	_tileAngle = asin( right / tile_side );
 
 	return true;
 };

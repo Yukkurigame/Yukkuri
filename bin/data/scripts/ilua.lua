@@ -37,7 +37,7 @@ local jstack = {}
 
 local output = ''
 
-local readline = pcall(reqire, "data/scripts/3rdparty/rlcompleter")
+local readline = pcall(require, "data/scripts/3rdparty/rlcompleter")
 
 local function oprint(...)
 	for i, v in ipairs(arg) do

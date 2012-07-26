@@ -25,7 +25,7 @@ GRAPHICS = GraphicsTypes.cpp Font.cpp Text.cpp sdl_graphics.cpp gl_extensions.cp
 		   Animation.cpp AnimationDefines.cpp Camera.cpp Render.cpp pngfuncs.c \
 		   $(addprefix render/, $(RENDER))
 SCRIPTSAPI = UnitManagerApi.cpp InterfaceApi.cpp Widgets.cpp ThreadManagerApi.cpp CameraApi.cpp \
-			 BindingsApi.cpp Units.cpp
+			 BindingsApi.cpp Units.cpp PathsApi.cpp
 SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp proto.cpp \
 		  api.cpp $(addprefix $(SCRIPTSAPIDIR), $(SCRIPTSAPI))
 WIDGETS = Widget.cpp WidgetText.cpp WidgetBar.cpp
@@ -51,7 +51,8 @@ OBJS = $(addprefix $(OBJDIR), $(OBJ:.c=.o))
 UNIQHEADERS = $(SCRIPTSDIR)LuaScriptConfig.h $(UNITSDIR)YOBA.h $(MAPDIR)Waypoint.h \
          	$(addprefix $(3RDPARTYDIR), TypeList.h timer/InternalTimerEvent.h \
          	timer/InternalTimerEvent.h timer/TimerEvent.h timer/ITimerEventPerformer.h ) \
-         	Define.h debug.h hacks.h safestring.h basic_types.h types.h 
+         	Define.h debug.h hacks.h safestring.h basic_types.h types.h
+
 
 HEADERS = $(OBJS:.o=.h) $(addprefix $(OBJDIR), $(UNIQHEADERS))
  

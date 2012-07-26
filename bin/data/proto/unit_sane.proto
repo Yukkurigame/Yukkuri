@@ -30,8 +30,9 @@ actions = {
 		name = "idle",
 		frames = {
 			{ constants.acMove },
+			{ constants.acDUnitGrow, skip = 200000 },
 			{ constants.acRestoreState },
-			{ constants.acSetAction },
+			{ constants.acSetAction, dur = 100 },
 		}
 	},
 	{

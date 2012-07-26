@@ -310,6 +310,13 @@ struct Sprite
 		vertices.lb.z = vertices.lt.z = vertices.rt.z = vertices.rb.z = z;
 	}
 
+	void setPosition( s3f lb, s3f lt, s3f rt, s3f rb ){
+		vertices.lb = lb;
+		vertices.lt = lt;
+		vertices.rt = rt;
+		vertices.rb = rb;
+	}
+
 	void toggleVisibility( ){
 		if( isVisible() )
 			clearVisible();

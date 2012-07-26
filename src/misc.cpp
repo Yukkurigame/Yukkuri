@@ -11,8 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-namespace Paths {
-	char* path_app = NULL;
+namespace {
+	char* path_app;
 }
 
 
@@ -23,11 +23,17 @@ namespace Paths {
 	#include <windows.h>
 	#include <direct.h>
 	char* dirname(char* path){
-		char* buf = new char[MAX_PATH];
-		_splitpath(buf, NULL, path, NULL, NULL);
+		_splitpath(path, NULL, path, NULL, NULL);
 		return buf;
 	}
 #endif
+
+
+const char* Paths::app( )
+{
+	return path_app;
+}
+
 
 
 int Paths::change_dir( const char* path )
@@ -42,11 +48,11 @@ int Paths::change_dir( const char* path )
 
 void Paths::init(  )
 {
-	char* temp_path = new char[ MAX_PATH ];
+	path_app = new char[ MAX_PATH ];
 
 #ifdef WIN32
 	// application
-	GetModuleFileName( GetModuleHandle(0), temp_path, MAX_PATH );
+	GetModuleFileName( GetModuleHandle(0), path_app, MAX_PATH );
 	path_app = dirname( path_app );
 	change_dir( path_app );
 
@@ -54,10 +60,10 @@ void Paths::init(  )
 	strcat( path_app, "\\" );
 
 #elif defined(__APPLE__)
-	uint32_t size = sizeof(temp_path);
-	if (_NSGetExecutablePath(temp_path, &size) == 0){
-		printf( "\nexecutable path is %s\n", temp_path );
-		path_app = dirname( temp_path );
+	uint32_t size = sizeof(path_app);
+	if (_NSGetExecutablePath(path_app, &size) == 0){
+		printf( "\nexecutable path is %s\n", path_app );
+		path_app = dirname( path_app );
 		path_app[ strlen(path_app) - 1 ] = 0;
 		strcat( path_app, "/" );
 		printf( "working path will be %s\n", path_app );
@@ -68,10 +74,10 @@ void Paths::init(  )
 
 #elif defined(__linux__)
 	// TODO: Метод  только для linux. Поменять для других *nix-систем.
-	ssize_t count = readlink("/proc/self/exe", temp_path, MAX_PATH );
+	ssize_t count = readlink("/proc/self/exe", path_app, MAX_PATH );
 	if( count > 0 ){
-		temp_path[count] = 0;
-		path_app = dirname( temp_path );
+		path_app[count] = 0;
+		path_app = dirname( path_app );
 		change_dir( path_app );
 		strcat( path_app, "/" );
 		printf( "path_app: %s\n", path_app );
@@ -80,8 +86,8 @@ void Paths::init(  )
 		exit( EXIT_FAILURE );
 	}
 #elif defined(__FreeBSD__)
-	memset( temp_path, 0, MAX_PATH );
-	bool res = readlink( "/proc/curproc/file", temp_path, MAX_PATH ) > 0;
+	memset( path_app, 0, MAX_PATH );
+	bool res = readlink( "/proc/curproc/file", path_app, MAX_PATH ) > 0;
 
 	if( !res ){
 		puts( "readlink failed. Trying to use sysctl" );
@@ -91,12 +97,12 @@ void Paths::init(  )
 		mib[2] = KERN_PROC_PATHNAME;
 		mib[3] = -1;
 		size_t cb = MAX_PATH;
-		res = sysctl(mib, 4, temp_path, &cb, NULL, 0) == 0;
+		res = sysctl(mib, 4, path_app, &cb, NULL, 0) == 0;
 	}
 
 	if( res ){
-		printf( "executable path: %s\n", temp_path );
-		path_app = dirname( temp_path );
+		printf( "executable path: %s\n", path_app );
+		path_app = dirname( path_app );
 		strcat( path_app, "/" );
 		change_dir(path_app);
 		printf( "path_app: %s\n", path_app );
@@ -108,6 +114,5 @@ void Paths::init(  )
 	#error Unsupported platform.
 #endif // WIN32
 
-	delete[] temp_path;
 }
 

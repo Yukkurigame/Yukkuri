@@ -35,7 +35,7 @@ enum ActionCommand
 	// Unit physics
 	acSetUnitPhysics, acSetPhysicsLayer,
 	// Dynamic unit
-	acMove, acDAddFood,
+	acMove, acDAddFood, acDUnitGrow,
 	// Entity
 	acEAddPathTarget,
 };

@@ -15,11 +15,14 @@
 #include "api/ThreadManagerApi.h"
 #include "api/CameraApi.h"
 #include "api/BindingsApi.h"
+#include "api/PathsApi.h"
 
-#include "Bindings.h"
 #include "units/Prototypes.h"
 #include "units/Unit.h"
 #include "units/YOBA.h"
+
+#include "Bindings.h"
+#include "misc.h"
 
 
 
@@ -42,12 +45,18 @@ void LuaMain::RegisterApi( lua_State* L )
 
 
 
+#define REGAPI(name, api) luaL_register( L, name, api::methods );
+
 	// Libraries
-	luaL_register( L, "UnitManager", UMApi::methods );
-	luaL_register( L, "Interface", IfaceApi::methods );
-	luaL_register( L, "Thread", ThreadApi::methods );
-	luaL_register( L, "Camera", CameraApi::methods );
-	luaL_register( L, "Input", BindingsApi::methods );
+	REGAPI( "Interface", IfaceApi )
+	REGAPI( "UnitManager", UMApi )
+	REGAPI( "Input", BindingsApi )
+	REGAPI( "Thread", ThreadApi )
+	REGAPI( "Camera", CameraApi )
+	REGAPI( "Paths", PathsApi )
+
+#undef REGAPI
+
 
 
 	// Регистрируем константные названия для клавиш.
@@ -149,6 +158,7 @@ void LuaMain::RegisterApi( lua_State* L )
 		FIELD(acSetUnitSize)
 		FIELD(acSetColor)
 		FIELD(acDAddFood)
+		FIELD(acDUnitGrow)
 		FIELD(acEAddPathTarget)
 
 		// Unit base parameters

@@ -6,13 +6,17 @@
 
 #include "scripts/LuaConfig.h"
 #include "graphics/AnimationDefines.h"
+#include "graphics/Render.h"
+
+#include "map/Map.h"
+#include "config.h"
 
 #include <stdlib.h>
 #include <math.h>
 #include <iostream>
 #include <string>
-#include <math.h>
-#include "map/Map.h"
+
+extern MainConfig conf;
 
 
 
@@ -30,6 +34,7 @@ UnitDynamic::UnitDynamic()
 	force.x = 0;
 	force.y = 0;
 	scopeShape = NULL;
+	vis = NULL;
 }
 
 UnitDynamic::~UnitDynamic()
@@ -38,6 +43,8 @@ UnitDynamic::~UnitDynamic()
 		cpSpaceRemoveShape( Phys::space, scopeShape );
 		cpShapeFree( scopeShape );
 	}
+	if( vis )
+		RenderManager::FreeGLSprite( vis );
 }
 
 bool UnitDynamic::Create( int id, std::string proto )
@@ -47,14 +54,15 @@ bool UnitDynamic::Create( int id, std::string proto )
 
 	physBody->position_func = call_updateAnimOnMovement;
 
-	cpVect scopepoints[4] = { {300, 150}, {300, -150}, {-300, 150}, {-300, -150} };
-	cpVect scopepos[4];
-	cpConvexHull( 4, scopepoints, scopepos, NULL, 0.0 );
+	cpVect scopepos[4] = { {-400.0 * cos(conf._tileAngle), 0}, {0, 400.0 * sin(conf._tileAngle) },
+							{400 * cos(conf._tileAngle), 0}, {0, -400.0 * sin(conf._tileAngle) }  };
+	//cpVect scopepos[4];
+	//cpConvexHull( 4, scopepoints, scopepos, NULL, 0.0 );
 
 	cpShape* scope = cpPolyShapeNew( physBody, 4, scopepos, cpvzero );
 	scopeShape = cpSpaceAddShape( Phys::space, scope );
 	cpShapeSetSensor( scopeShape, cpTrue );
-	scopeShape->collision_type = 1 << utLast;
+	scopeShape->collision_type = utLast;
 
 	return true;
 }
@@ -218,6 +226,22 @@ void UnitDynamic::die( )
 }
 
 
+void UnitDynamic::update( const int& dt )
+{
+	Unit::update( dt );
+	if( vis != NULL ){
+		cpVect lb = cpPolyShapeGetVert( scopeShape, 0 );
+		cpVect lt = cpPolyShapeGetVert( scopeShape, 1 );
+		cpVect rt = cpPolyShapeGetVert( scopeShape, 2 );
+		cpVect rb = cpPolyShapeGetVert( scopeShape, 3 );
+		vis->setPosition( s3f(physBody->p.x + lb.x, physBody->p.y + lb.y, 1.0),
+				s3f(physBody->p.x + lt.x, physBody->p.y + lt.y, 1.0),
+				s3f(physBody->p.x + rt.x, physBody->p.y + rt.y, 1.0),
+				s3f(physBody->p.x + rb.x, physBody->p.y + rb.y, 1.0));
+	}
+}
+
+
 bool UnitDynamic::update( const Frame& frame )
 {
 	switch(frame.command){
@@ -228,6 +252,17 @@ bool UnitDynamic::update( const Frame& frame )
 					FoodTypes.push( (enum unitType)type );
 			}
 			break;
+		case acDUnitGrow:
+		{
+			Char.grow();
+			float scale = ( log( (float)Char.get( uBaseLevel ) ) / log( 40.0f ) );
+			if( scale < 0.35 )
+				scale = 0.35f;
+			else if( scale > 1.3 )
+				scale = 1.3f;
+			setUnitSize( scale );
+			break;
+		}
 		default:
 			return Unit::update( frame );
 	}
@@ -260,7 +295,9 @@ void UnitDynamic::updateAnimOnMovement( cpBody* body, cpFloat dt )
 {
 	cpVect oldpos = body->p;
 	cpBodyUpdatePosition( body, dt );
-	TotalDistance += cpvdist( oldpos, body->p );
+	cpFloat distance = cpvdist( oldpos, body->p );
+	TotalDistance += distance;
+	Char.tire( distance / 200 );
 	if( !cpveql( body->v, cpvzero ) ) { //FUUU
 		if( body->v.x < 0 && body->v.y > 0 )
 			Image.setAnimation(AnimDef::leftup);
@@ -281,6 +318,26 @@ void UnitDynamic::updateAnimOnMovement( cpBody* body, cpFloat dt )
 		Image.setFrame( Image.getCount() ? ( static_cast<int>(TotalDistance) / m_animdistance) % Image.getCount() : 0 );
 	}
 }
+
+
+void UnitDynamic::setScope()
+{
+	if( vis == NULL ){
+		vis = RenderManager::CreateGLSprite( 0, 0, 1, 600, 300 );
+		vis->clr.set( 255, 255, 0, 127 );
+	}
+	vis->setVisible();
+}
+
+
+void UnitDynamic::clearScope()
+{
+	if( vis != NULL ){
+		RenderManager::FreeGLSprite( vis );
+		vis = NULL;
+	}
+}
+
 
 void UnitDynamic::attack( )
 {

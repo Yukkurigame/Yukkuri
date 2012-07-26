@@ -9,7 +9,9 @@
 #define MISC_H_
 
 namespace Paths {
-	extern char* path_app;
+
+	const char* app();
+
 
 	int change_dir( const char* path );
 	void init( );

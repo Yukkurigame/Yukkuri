@@ -5,7 +5,7 @@
 #include "graphics/Render.h"
 #include "graphics/gl_shader.h"
 #include "interface/Interface.h"
-#include "units/unitmanager.h"
+//#include "units/unitmanager.h"
 #include "3rdparty/timer/TimerManager.h"
 #include "3rdparty/timer/InternalTimerEvent.h"
 
@@ -90,7 +90,7 @@ void DayTime::update( const UINT& dt )
 			if( !Updated ){
 				Day++;
 				night = BASE_NIGHT + MOON_MOD * ( ( Day % 29 ) / 29 );
-				UnitManager::grow();
+				//UnitManager::grow();
 				Updated = true;
 			}
 		}else{

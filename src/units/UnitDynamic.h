@@ -21,8 +21,13 @@ public:
 	virtual bool Create( int id, std::string proto );
 	virtual void die( );
 
+	void update( const int& dt );
 	virtual bool update( const Frame& f );
 	void updateAnimOnMovement( cpBody* body, cpFloat dt );
+
+	inline bool isScope(){ return vis != NULL; }
+	void setScope();
+	void clearScope();
 
 	void takeAction( );
 	void grow( );
@@ -40,6 +45,7 @@ protected:
 
 	cpShape* scopeShape;
 	cpVect force;
+	Sprite* vis;
 
 	list< enum unitType > FoodTypes;
 	Unit* Attacked;

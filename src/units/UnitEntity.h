@@ -33,9 +33,9 @@ public:
 		return true;
 	}
 
-	inline unsigned char isMoving()	{ return flags & 4; }
-	inline void setMoving()			{ flags |= 4; }
-	inline void clearMoving()		{ flags &= ~4; }
+	inline unsigned char isMoving()	{ return flags & ufMoving; }
+	inline void setMoving()			{ flags |= ufMoving; }
+	inline void clearMoving()		{ flags &= ~ufMoving; }
 
 
 protected:

@@ -28,15 +28,17 @@ public:
 
 	virtual bool Create( int id, std::string proto );
 
-	inline unsigned char isDeleted()	{ return flags & 1; }
-	inline void setDeleted()				{ flags |= 1; }
-	inline void clearDeleted()			{ flags &= ~1; } // WHY?
-	inline unsigned char isEdible()	{ return flags & 2; }
-	inline void setEdible()				{ flags |= 2; }
-	inline void clearEdible()			{ flags &= ~2; }
+	inline unsigned char isDeleted()	{ return flags & ufDeleted; }
+	inline void setDeleted()				{ flags |= ufDeleted; }
+	inline void clearDeleted()			{ flags &= ~ufDeleted; } // WHY?
+	inline unsigned char isEdible()	{ return flags & ufEdible; }
+	inline void setEdible()				{ flags |= ufEdible; }
+	inline void clearEdible()			{ flags &= ~ufEdible; }
 
-	void update( const int& );
 
+	// Called once per pass
+	virtual void update( const int& );
+	// Called for each action frame until break
 	virtual bool update( const Frame& f );
 	virtual void updatePhysics( );
 	virtual void velocityFunc( ) { };

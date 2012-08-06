@@ -90,7 +90,6 @@ void DayTime::update( const UINT& dt )
 			if( !Updated ){
 				Day++;
 				night = BASE_NIGHT + MOON_MOD * ( ( Day % 29 ) / 29 );
-				//UnitManager::grow();
 				Updated = true;
 			}
 		}else{

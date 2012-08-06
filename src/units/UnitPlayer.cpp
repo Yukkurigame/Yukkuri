@@ -11,6 +11,25 @@ Player::Player()
 	force.y = 0;
 }
 
+
+void Player::attack( )
+{
+	Unit* victim = NULL;
+	victim = closest( utEntity, 120.0 );
+	if( victim )
+		this->attackUnit( victim );
+}
+
+
+void Player::eat( )
+{
+	Unit* victim = NULL;
+	victim = closest( &FoodTypes, 300 );
+	if( victim )
+		UnitDynamic::eat( victim );
+}
+
+
 void Player::die( )
 {
 	if( conf.playerDies ){
@@ -29,3 +48,4 @@ void Player::moveUnit( short axis, signed int val )
 	if( force.x == 0 && force.y == 0 )
 		Image.setDefault();
 }
+

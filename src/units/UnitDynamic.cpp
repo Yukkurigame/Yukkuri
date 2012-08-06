@@ -157,21 +157,8 @@ void UnitDynamic::moveUnit( signed int x, signed int y )
 }
 
 
-void UnitDynamic::eat( )
-{
-	Unit* victim = NULL;
-	//victim = UnitManager::closer( this, &FoodTypes );
-	if( victim )
-		eat( victim );
-}
-
-
 void UnitDynamic::eat( Unit* victim )
 {
-	//TODO: пересмотреть надо бы
-	if( !victim->isEdible( ) )
-		return;
-
 	float dmg = Char.getDamage();
 	victim->hit( dmg );
 	if( Char.state.fed >= 80 && Char.state.fed < 100 && Char.state.hp < Char.params.hp ){
@@ -269,6 +256,7 @@ bool UnitDynamic::update( const Frame& frame )
 	return true;
 }
 
+
 void UnitDynamic::takeAction( )
 {
 	Char.tire();
@@ -279,17 +267,53 @@ void UnitDynamic::takeAction( )
 	}
 }
 
-void UnitDynamic::grow( )
+
+Unit* UnitDynamic::closest( enum unitType type, float limit)
 {
-	Unit::grow();
-	float scale = ( log( (float)Char.get( uBaseLevel ) ) / log( 40.0f ) );
-	if( scale < 0.35 )
-		scale = 0.35f;
-	else if( scale > 1.3 )
-		scale = 1.3f;
-	setUnitSize( scale );
+	Unit* ret = NULL;
+	float distance = 9000;
+	limit *= getUnitSize();
+	listElement< Unit* >* tmp = Collisions.head;
+	while( tmp != NULL ){
+		if( tmp->data && tmp->data->getUnitType() == type ){
+			float dis = this->dist( tmp->data );
+			if( dis < limit && dis < distance ){
+				distance = dis;
+				ret = tmp->data;
+			}
+		}
+		tmp = tmp->next;
+	}
+
+	return ret;
 }
 
+Unit* UnitDynamic::closest( list< enum unitType >* types, float limit )
+{
+	Unit* ret = NULL;
+	float distance = 9000;
+	limit += phys.radius;
+	listElement< Unit* >* tmp = Collisions.head;
+	listElement< enum unitType >* le;
+	while( tmp != NULL ){
+		if( tmp->data ){
+			le = types->head;
+			while( le != NULL ){
+				if( tmp->data->getUnitType() == le->data ){
+					float dis = this->dist( tmp->data );
+					if( dis < limit && dis < distance ){
+						distance = dis;
+						ret = tmp->data;
+					}
+				}
+				le = le->next;
+			}
+		}
+		tmp = tmp->next;
+	}
+
+	return ret;
+}
 
 void UnitDynamic::updateAnimOnMovement( cpBody* body, cpFloat dt )
 {
@@ -339,14 +363,6 @@ void UnitDynamic::clearScope()
 }
 
 
-void UnitDynamic::attack( )
-{
-	Unit* victim = NULL;
-	victim = UnitManager::closer( this, utEntity, 120.0 );
-	if( victim )
-		this->attackUnit( victim );
-}
-
 void UnitDynamic::attackUnit( Unit* victim )
 {
 	if( victim == this || !victim )
@@ -357,6 +373,7 @@ void UnitDynamic::attackUnit( Unit* victim )
 		dvictim->Attacker( this );
 	victim->hit( Char.getDamage() );
 }
+
 
 void UnitDynamic::hit( float damage )
 {

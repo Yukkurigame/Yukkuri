@@ -9,6 +9,8 @@
 #include "units/YOBA.h"
 #include "units/physics/physics.h"
 #include "3rdparty/CUDataUser.h"
+#include "basic_types.h"
+
 
 class CUData;
 
@@ -45,8 +47,6 @@ public:
 	virtual void die( ) { setDeleted(); };
 	virtual void moveUnit( signed int x, signed int y, const int& dt ) {};
 	virtual void moveUnit( short axis, signed int val ) {};
-	virtual void grow() { Char.grow(); }
-
 
 	float dist( Unit* );
 

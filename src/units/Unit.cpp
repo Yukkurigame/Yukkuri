@@ -456,7 +456,7 @@ void Unit::updatePhysics( )
 			break;
 	}
 	cpBodySetMoment( physBody, moment );
-	if( cpBodyIsStatic(physBody) )
+	if( cpBodyIsStatic(physBody) && phys.type != potNone )
 		cpSpaceReindexShape( Phys::space, physShape );
 }
 
@@ -493,8 +493,8 @@ void Unit::setUnitPos( float x, float y )
 	cpVect v = {x, y};
 	cpBodySetPos( physBody, v );
 	Image.setPosition( x, y, Z );
-
 }
+
 
 float Unit::dist( Unit* target )
 {

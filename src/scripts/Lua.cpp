@@ -158,8 +158,8 @@ int LuaMain::execFunction( std::string function )
 {
 	int cnum;
 	int szadd = 0;
-	char* funcname = (char*)malloc( sizeof(char) * function.length() );
-	char* subfuncname = (char*)malloc( sizeof(char) * function.length() );
+	char* funcname = (char*)malloc( (unsigned)(sizeof(char) * function.length()) );
+	char* subfuncname = (char*)malloc( (unsigned)(sizeof(char) * function.length()) );
 	char delimetr = '\0';
 
 	//FIXME: needs refactoring

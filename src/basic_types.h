@@ -108,7 +108,7 @@ struct list
 			if( prev != 0 )
 				prev->next = t->next;
 			else // One element
-				head = 0;
+				head = t->next;
 			delete t;
 			t = 0;
 		}

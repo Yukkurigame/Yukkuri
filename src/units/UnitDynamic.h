@@ -15,7 +15,6 @@ public:
 	UnitDynamic();
 	~UnitDynamic();
 	void moveUnit( signed int x, signed int y );
-	void eat( );
 	void eat( Unit* Victim );
 
 	virtual bool Create( int id, std::string proto );
@@ -30,11 +29,12 @@ public:
 	void clearScope();
 
 	void takeAction( );
-	void grow( );
+
+	Unit* closest( enum unitType type, float limit = 100.0 );
+	Unit* closest( list< enum unitType >* types, float limit = 100.0 );
 
 	Unit* Attacker( ) { return Attacked; }
 	void Attacker( Unit* a ) { Attacked = a; }
-	void attack( );
 	void attackUnit( Unit* victim );
 	void hit( float damage );
 

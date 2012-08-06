@@ -1,9 +1,7 @@
 #ifndef UNITMANAGER_H
 #define UNITMANAGER_H
 
-#include <map>
 #include <vector>
-#include <string>
 
 #include "Unit.h"
 
@@ -23,11 +21,6 @@ namespace UnitManager
 	int GetUnitVecSize();
 
 	void tick( const int& );
-
-	Unit* closer( Unit* u, enum unitType type, float limit = 100.0 );
-	Unit* closer( Unit* u, std::vector< enum unitType >* types, float limit = 100.0 );
-	void grow( ); //FUUUUU
-
 
 };
 

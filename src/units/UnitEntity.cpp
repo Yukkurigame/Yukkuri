@@ -67,26 +67,31 @@ void Entity::move( )
 	if( target == NULL && !nextTarget() ){
 		Image.setFrame(0);
 		clearMoving();
-		if( physBody ){
+		if( physBody )
 			cpBodySetVel( physBody, cpvzero );
-			cpBodySetForce( physBody, force );
-		}
 		return;
 	}
 	force.x = 0;
 	force.y = 0;
 	int nx = static_cast<int>(target->x - getUnitX());
 	int ny = static_cast<int>(target->y - getUnitY());
-	if( abs(nx) > 1 )
+	if( abs(nx) > phys.radius * 2 )
 		force.x = nx / abs(nx);
-	if( abs(ny) > 1 )
+	if( abs(ny) > phys.radius * 2 )
 		force.y = ny / abs(ny);
 	if( force.x == 0 && force.y == 0){
 		nextTarget();
+		cpBodySetVel( physBody, cpvzero );
 		return;
 	}
 	setMoving();
-	//cpBodySetVel( physBody, cpvzero );
-	cpBodySetForce( physBody, force );
-
+	if( physBody->v.x / abs(physBody->v.x) )
+		force.x *= phys.mass / 100;
+	else
+		force.x = 0;
+	if( physBody->v.y / abs(physBody->v.y) )
+		force.y *= phys.mass / 100;
+	else
+		force.y = 0;
+	cpBodyApplyImpulse( physBody, force, cpvzero );
 }

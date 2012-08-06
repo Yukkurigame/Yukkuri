@@ -13,6 +13,10 @@
 #include "debug.h"
 #include "hacks.h"
 
+#include <map>
+#include <vector>
+
+
 namespace {
 	static unsigned int LastId = 1;
 
@@ -160,57 +164,6 @@ int UnitManager::GetUnitVecSize()
 }
 
 
-Unit* UnitManager::closer( Unit* u, enum unitType type, float limit )
-{
-	//FIXME: quick and dirty
-	if( u == NULL )
-		return NULL;
-	Unit* ret = NULL;
-	float distance = 9000;
-	limit *= u->getUnitSize();
-	Unit* tmp = NULL;
-	FOREACHIT( Units ){
-		tmp = it->second;
-		if( tmp != NULL && tmp != u && tmp->getUnitType() == type ){
-			float dist = u->dist( tmp );
-			if( dist < limit && dist < distance ){
-				distance = dist;
-				ret = tmp;
-			}
-		}
-	}
-
-	return ret;
-}
-
-
-Unit* UnitManager::closer( Unit* u, std::vector< enum unitType >* types, float limit )
-{
-	//FIXME: quick and dirty
-	if( u == NULL )
-		return NULL;
-	Unit* ret = NULL;
-	float distance = 9000;
-	limit *= u->getUnitSize();
-	Unit* tmp = NULL;
-	FOREACHIT( Units ){
-		tmp = it->second;
-		if( tmp != NULL && tmp != u ){
-			FOREACHP( tit, types ){
-				if( tmp->getUnitType() == (*tit) ){
-					float dist = u->dist( tmp );
-					if( dist < limit && dist < distance ){
-						distance = dist;
-						ret = tmp;
-					}
-				}
-			}
-		}
-	}
-	return ret;
-}
-
-
 void UnitManager::tick( const int& dt )
 {
 	Unit* u;
@@ -222,14 +175,6 @@ void UnitManager::tick( const int& dt )
 			u->update( dt );
 	}
 	BatchRemove();
-}
-
-
-void UnitManager::grow( )
-{
-	FOREACHIT( Units ){
-		it->second->grow();
-	}
 }
 
 

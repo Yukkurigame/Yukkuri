@@ -11,6 +11,7 @@
 #define YOBA_H_
 
 #include <math.h>
+#include <stdlib.h>
 
 enum character {
 	// Base
@@ -209,7 +210,7 @@ struct CharBuild {
 
 	inline void grow(){
 		++age;
-		state.exp += 10 * level;
+		set( uStateExp,  state.exp + log(10 * level) );
 	}
 
 	inline void recieveDamage( float dmg ){
@@ -229,7 +230,7 @@ struct CharBuild {
 			state.hp = state.hp / params.hp;
 			state.exp -= params.exp;
 			params.hp += 10 * level;
-			params.exp += log( level / 40.0f );
+			params.exp += abs(100 * log( level / 40.0f ));
 			state.hp = params.hp * state.hp;
 		}
 	}

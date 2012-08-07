@@ -7,7 +7,7 @@ function Spawner.new()
 	g = {}
 	setmetatable(g, Spawner)
 	g.items = {}
-	g.max_spawn = 0 -- configs:get( 'max_spawn', 'config_general', 'config' )
+	g.max_spawn = configs:get( 'max_spawn', 'config_general', 'config' )
 	g.max_edibles = configs:get( 'max_edibles', 'config_general', 'config' )
 	g.width = configs:get( 'windows_width', 'config_general', 'config' )
 	g.halfWidth = g.width / 2

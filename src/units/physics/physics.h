@@ -21,8 +21,8 @@
 
 
 struct Material {
-	cpFloat density;
-	Material() : density(50.0) {}
+	cpFloat density;  // kg/m^3
+	Material() : density(2000.0) {}
 };
 
 
@@ -35,12 +35,14 @@ enum PhysParamType { pptMat, pptRadius, pptSides };
 struct PhysObject {
 	Material mat;
 	enum  PhysObectType type;
-	cpFloat mass;	// For quick calculation
-	cpFloat radius; // For circles
-	cpVect sides;	// For rectangles
-	cpFloat scaleFactor;
+	cpFloat mass;	// kg, For quick calculation
+	cpFloat radius; // mm, For circles
+	cpVect sides;	// mm, For rectangles
+	cpFloat scale_factor;
+	//cpVect frictionForce; // N
 
-	PhysObject() : type(potCircle), mass(1.0), radius(1.0), sides(), scaleFactor(1.0) {}
+	PhysObject() : type(potCircle), mass(1.0), radius(1.0), sides(), scale_factor(1.0) {}
+				   // frictionForce() {}
 
 	void calc_mass( );
 	void scale( cpFloat factor );
@@ -50,6 +52,8 @@ struct PhysObject {
 namespace Phys
 {
 	extern cpSpace* space;
+	extern float friction;
+	extern float g;
 	void init();
 	void clean();
 }

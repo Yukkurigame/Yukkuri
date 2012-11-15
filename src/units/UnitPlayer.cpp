@@ -37,15 +37,20 @@ void Player::die( )
 	}
 }
 
+bool Player::calculateForce( ){
+	if(force == cpvzero && physBody->v == cpvzero ){
+		clearMoving();
+	}else
+		setMoving();
+	return isMoving();
+}
+
 void Player::moveUnit( short axis, signed int val )
 {
 	if( axis )
-		force.x = phys.mass / 2 * val;
+		force.x = val;
 	else
-		force.y = phys.mass / 2 * val;
-	cpBodySetVel( physBody, cpvzero );
-	cpBodyApplyImpulse( physBody, force, cpvzero );
-	if( force.x == 0 && force.y == 0 )
-		Image.setDefault();
+		force.y = val;
+	calculateForce();
 }
 

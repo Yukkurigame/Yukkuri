@@ -13,6 +13,7 @@ public:
 	void die( );
 
 	void moveUnit( short axis, signed int val );
+	bool calculateForce( );
 
 
 protected:

@@ -33,11 +33,6 @@ public:
 		return true;
 	}
 
-	inline unsigned char isMoving()	{ return flags & ufMoving; }
-	inline void setMoving()			{ flags |= ufMoving; }
-	inline void clearMoving()		{ flags &= ~ufMoving; }
-
-
 protected:
 	virtual CUData* createUData();
 

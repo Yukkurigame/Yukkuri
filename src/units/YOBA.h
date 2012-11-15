@@ -43,7 +43,7 @@ struct Attributes {
 };
 
 struct Characteristics {
-	float speed;
+	float speed;	// Max speed in m/s
 	float damage;
 	float defence;
 	float nutritive;
@@ -60,7 +60,7 @@ struct Parameters
 {
 	float hp;
 	float exp;
-	float fed;
+	float fed; // percents
 	Parameters() : hp(1.0), exp(20.0), fed(100.0) {}
 
 };

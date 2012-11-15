@@ -14,7 +14,7 @@ class UnitDynamic: public Unit
 public:
 	UnitDynamic();
 	~UnitDynamic();
-	void moveUnit( signed int x, signed int y );
+
 	void eat( Unit* Victim );
 
 	virtual bool Create( int id, std::string proto );
@@ -23,6 +23,10 @@ public:
 	void update( const int& dt );
 	virtual bool update( const Frame& f );
 	void updateAnimOnMovement( cpBody* body, cpFloat dt );
+
+	bool moveUnit( signed int x, signed int y );
+	virtual bool calculateForce( );
+	void applyForce( );
 
 	inline bool isScope(){ return vis != NULL; }
 	void setScope();
@@ -38,6 +42,11 @@ public:
 	void attackUnit( Unit* victim );
 	void hit( float damage );
 
+	// Flags for moving
+	inline unsigned char isMoving()	{ return flags & ufMoving; }
+	inline void setMoving()			{ flags |= ufMoving; }
+	inline void clearMoving()		{ flags &= ~ufMoving; }
+
 	list< Unit* > Collisions;
 
 protected:
@@ -46,6 +55,7 @@ protected:
 	cpShape* scopeShape;
 	cpVect force;
 	Sprite* vis;
+	s2i target;
 
 	list< enum unitType > FoodTypes;
 	Unit* Attacked;

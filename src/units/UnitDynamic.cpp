@@ -47,6 +47,7 @@ UnitDynamic::~UnitDynamic()
 		RenderManager::FreeGLSprite( vis );
 }
 
+
 bool UnitDynamic::Create( int id, std::string proto )
 {
 	if( !Unit::Create( id, proto ) )
@@ -67,93 +68,53 @@ bool UnitDynamic::Create( int id, std::string proto )
 	return true;
 }
 
-
-
-/** Move the unit according to the eight cardinal directions.
-	@return Boolean value represents a Collision (true)
-	@remark
+/** Set unit's desire location.
 **/
-void UnitDynamic::moveUnit( signed int x, signed int y )
+bool UnitDynamic::moveUnit( signed int x, signed int y )
 {
-	/*if( x != 0 || y != 0 ){
-		float zone = 1.0;
-		float l = sqrt( static_cast<float>(x * x  +  y * y) );
-		float speed = fabs( Char.chars.speed * Char.params.fed ) * zone * ( DT / 100000.0f ) / l;
-		float dx = speed * x; // / l;
-		float dy = speed * y; // / l;
-		*/
-		/* //MapTile* currentTile = map.GetTile( X , Y );
-		if( currentTile && !currentTile->Type->passability ){
-			//FIXME: Bad
-			int x, y, px, py;
-			MapTile* nextTile;
-			float df = 9000;
-			x = y = 1;
-			px = static_cast<int>(X);
-			py = static_cast<int>(Y);
-			map.toMapCoordinates( &px, &py );
-			for( int i = -1; i < 2; ++i ){
-				for( int j = -1; j < 2; ++j ){
-					if( !i && !j )
-						continue;
-					nextTile = map.GetTile( px + i, py + j );
-					if( !nextTile || !nextTile->Type->passability )
-						continue;
-					//Если стоять в центре следующего тайла, то не сработает.
-					float f = sqrt( pow( static_cast<float>(nextTile->RealX) - X, 2 ) +
-									pow( static_cast<float>(nextTile->RealY) - Y, 2 ) );
-					if( f < df ){
-						df = f;
-						x = i;
-						y = j;
-					}
-				}
-			}
-			currentTile = map.GetTile( px + x, py + y );
-			if( currentTile ){
-				dx = ( static_cast<float>(currentTile->RealX) - X ) / 4.0f;
-				dy = ( static_cast<float>(currentTile->RealY) - Y ) / 4.0f;
-				if( dx && dx < 0.01 && dx > -0.01 )
-					dx = 0.3f * ( dx < 0 ? -1 : 1 );
-				if( dy && dy < 0.01 && dy > -0.01 )
-					dy = 0.3f * ( dy < 0 ? -1 : 1 );
-			}
-		}else{
-			currentTile = map.GetTile( X + dx * x, Y + dy * y );
-			if( currentTile )
-				zone = currentTile->Type->passability;
-			if( !zone )
-				zone = -0.5;
-		}*/
-		/*dx *= zone;
-		dy *= zone;
-		float distance = sqrt( dx * dx + dy * dy );
-		TotalDistance += distance;
-		if( dx || dy ) { //FUUU
-			if( dx < 0 && dy > 0 )
-				Image.setAnimation(AnimDef::leftup);
-			else if( dx < 0 && dy < 0 )
-				Image.setAnimation(AnimDef::leftdown);
-			else if( dx > 0 && dy > 0 )
-				Image.setAnimation(AnimDef::rightup);
-			else if( dx > 0 && dy < 0 )
-				Image.setAnimation(AnimDef::rightdown);
-			else if( dy > 0 )
-				Image.setAnimation(AnimDef::up);
-			else if( dy < 0 )
-				Image.setAnimation(AnimDef::down);
-			else if( dx < 0 )
-				Image.setAnimation(AnimDef::left);
-			else if( dx > 0 )
-				Image.setAnimation(AnimDef::right);
-			Image.setFrame( Image.getCount() ? ( static_cast<int>(TotalDistance) / m_animdistance) % Image.getCount() : 0 );
-		}
-		unitX += dx;
-		unitY += dy;
-		Image.setPosition(unitX, unitY);
-		Char.tire( distance / 200 );
+	this->target.x = x;
+	this->target.y = x;
+	return calculateForce();
+}
 
-	}*/
+bool UnitDynamic::calculateForce( )
+{
+	force = cpvzero;
+	int nx = target.x - static_cast<int>(getUnitX());
+	int ny = target.y - static_cast<int>(getUnitY());
+	if( abs(nx) > phys.radius * 3 )
+		force.x = nx / abs(nx);
+	if( abs(ny) > phys.radius * 3 )
+		force.y = ny / abs(ny);
+	if( force == cpvzero && physBody->v == cpvzero ){
+		//cpBodyResetForces( physBody );
+		//cpBodySetVel( physBody, cpvzero );
+		clearMoving();
+		return false;
+	}
+	setMoving();
+	return true;
+}
+
+void UnitDynamic::applyForce( )
+{
+	cpVect mforce = cpvzero;
+	cpVect direction;
+	// Maximum velocity
+	cpFloat p = (Char.chars.speed / 100.0) * cpfclamp(Char.state.fed, 1.0, 100.0) / 100.0;
+	physBody->v_limit = p;
+	// Velocity delta
+	cpVect velocity = cpv(
+			p - physBody->v.x,
+			p - physBody->v.y
+	);
+	// Max force
+	mforce.x = force.x * velocity.x * phys.mass;
+	mforce.y = force.y * velocity.y * phys.mass;
+	direction = cpvsub(mforce, physBody->f);
+	//printf("x: (%f %f), y: (%f %f) \n", physBody->f.x, mforce.x, physBody->f.y, mforce.y);
+	//printf("p: %f x: %f, y: %f \n", p, physBody->v.x, physBody->v.y);
+	cpBodyApplyForce( physBody, direction, cpvzero );
 }
 
 
@@ -216,6 +177,8 @@ void UnitDynamic::die( )
 void UnitDynamic::update( const int& dt )
 {
 	Unit::update( dt );
+	if( isMoving() && this->calculateForce() )
+		applyForce( );
 	if( vis != NULL ){
 		cpVect lb = cpPolyShapeGetVert( scopeShape, 0 );
 		cpVect lt = cpPolyShapeGetVert( scopeShape, 1 );

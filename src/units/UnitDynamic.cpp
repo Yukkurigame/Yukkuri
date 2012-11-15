@@ -98,23 +98,22 @@ bool UnitDynamic::calculateForce( )
 
 void UnitDynamic::applyForce( )
 {
-	cpVect mforce = cpvzero;
-	cpVect direction;
-	// Maximum velocity
-	cpFloat p = (Char.chars.speed / 100.0) * cpfclamp(Char.state.fed, 1.0, 100.0) / 100.0;
-	physBody->v_limit = p;
-	// Velocity delta
-	cpVect velocity = cpv(
-			p - physBody->v.x,
-			p - physBody->v.y
-	);
+	// Total force delta
+	cpVect dforce;
 	// Max force
-	mforce.x = force.x * velocity.x * phys.mass;
-	mforce.y = force.y * velocity.y * phys.mass;
-	direction = cpvsub(mforce, physBody->f);
-	//printf("x: (%f %f), y: (%f %f) \n", physBody->f.x, mforce.x, physBody->f.y, mforce.y);
-	//printf("p: %f x: %f, y: %f \n", p, physBody->v.x, physBody->v.y);
-	cpBodyApplyForce( physBody, direction, cpvzero );
+	cpVect mforce = cpvzero;
+	// Max velocity
+	cpVect mvel = cpvmult(
+		cpv(1.0, 1.0),
+		(Char.chars.speed / 1000.0) * cpfclamp(Char.state.fed, 1.0, 100.0) / 100.0
+	);
+	// Velocity delta
+	cpVect dvel = cpvsub( mvel, cpvmult( physBody->v, Phys::space->damping ) );
+	mforce.x = force.x * dvel.x * phys.mass;
+	mforce.y = force.y * dvel.y * phys.mass;
+	dforce = cpvsub( mforce, physBody->f );
+	//physBody->v_limit = p;
+	cpBodyApplyForce( physBody, dforce, cpvzero );
 }
 
 
@@ -303,6 +302,8 @@ void UnitDynamic::updateAnimOnMovement( cpBody* body, cpFloat dt )
 		else if( body->v.x > 0 )
 			Image.setAnimation(AnimDef::right);
 		Image.setFrame( Image.getCount() ? ( static_cast<int>(TotalDistance) / m_animdistance) % Image.getCount() : 0 );
+	}else{
+		Image.setFrame( 0 );
 	}
 }
 

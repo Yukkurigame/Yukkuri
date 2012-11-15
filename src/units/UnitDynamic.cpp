@@ -102,9 +102,11 @@ void UnitDynamic::applyForce( )
 	cpVect dforce;
 	// Max force
 	cpVect mforce = cpvzero;
+	// Use half of speed when both forces applied
+	cpFloat add = (0.5 * abs(force.x) * abs(force.y));
 	// Max velocity
 	cpVect mvel = cpvmult(
-		cpv(1.0, 1.0),
+		cpv(1.0 - add, (1.0 - add) / 2),
 		(Char.chars.speed / 1000.0) * cpfclamp(Char.state.fed, 1.0, 100.0) / 100.0
 	);
 	// Velocity delta

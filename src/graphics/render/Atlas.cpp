@@ -22,11 +22,11 @@
 #include "hacks.h"
 
 
-
+std::vector < TextureProxy* > internalTextures;
 
 namespace {
 
-	std::vector < TextureProxy* > internalTextures;
+
 
 	int minAtlasSize;
 	int maxAtlasSize;
@@ -115,10 +115,11 @@ bool TextureAtlas::buildRelativeMap( float width, float height ){
 
 	// Build relative map
 	for( unsigned int i = 0; i < internalTextures.size(); i++ ){
-		internalTextures[i]->atlas.x = static_cast<float>(internalTextures[i]->abs.x) * texelW;
-		internalTextures[i]->atlas.y = static_cast<float>(internalTextures[i]->abs.y) * texelH;
-		internalTextures[i]->atlas.width = static_cast<float>(internalTextures[i]->abs.width) * texelW;
-		internalTextures[i]->atlas.height = static_cast<float>(internalTextures[i]->abs.height) * texelH;
+		TextureProxy* tex = internalTextures[i];
+		tex->atlas.x = static_cast<float>(tex->abs.x) * texelW;
+		tex->atlas.y = static_cast<float>(tex->abs.y) * texelH;
+		tex->atlas.width = static_cast<float>(tex->abs.width) * texelW;
+		tex->atlas.height = static_cast<float>(tex->abs.height) * texelH;
 	}
 
 	return true;
@@ -134,7 +135,7 @@ bool TextureAtlas::build( GLuint* ahandle, int width, int height )
 
 inline bool compareTextureProxies( TextureProxy* t1, TextureProxy* t2 )
 {
-	return (t2->abs.width * t2->abs.height - t1->abs.width * t1->abs.height) > 0;
+	return (t2->abs.width * t2->abs.height - t1->abs.width * t1->abs.height) < 0;
 }
 
 

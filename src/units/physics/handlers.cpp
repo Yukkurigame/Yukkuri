@@ -14,12 +14,12 @@ int DynamiUint_begin( cpArbiter* arb, cpSpace* space, void* unused )
 	cpShape *a, *b;
 	cpArbiterGetShapes(arb, &a, &b);
 
-	UnitDynamic* ua = reinterpret_cast<UnitDynamic*>(a->body->data);
-	Unit* ub = reinterpret_cast<Unit*>(b->body->data);
-
-	if( ua && ub )
-		ua->Collisions.push( ub );
-
+	if( a && b ){
+		UnitDynamic* ua = reinterpret_cast<UnitDynamic*>(a->body->data);
+		Unit* ub = reinterpret_cast<Unit*>(b->body->data);
+		if( ua && ub )
+			ua->Collisions.push( ub );
+	}
 	return 0;
 }
 
@@ -29,11 +29,11 @@ void DynamiUint_separate( cpArbiter* arb, cpSpace* space, void* unused )
 	cpShape *a, *b;
 	cpArbiterGetShapes(arb, &a, &b);
 
-	UnitDynamic* ua = reinterpret_cast<UnitDynamic*>(a->body->data);
-	Unit* ub = reinterpret_cast<Unit*>(b->body->data);
-
-	if( ua && ub )
-		ua->Collisions.remove( ub );
-
+	if( a && b ){
+		UnitDynamic* ua = reinterpret_cast<UnitDynamic*>(a->body->data);
+		Unit* ub = reinterpret_cast<Unit*>(b->body->data);
+		if( ua && ub )
+			ua->Collisions.remove( ub );
+	}
 }
 

@@ -8,7 +8,7 @@ function Widget.create(id)
 	if w:load(id) then
 		return w
 	end
-	Debug(2, "Widget " .. id .. " creation failed")
+	Debug.print(Debug.INTERFACE, "Widget " .. id .. " creation failed.")
 	return nil
 end
 
@@ -21,7 +21,7 @@ function Widget.createFromExits(id)
 		w.name = name
 		return w
 	end
-	Debug(2, "Widget creation from " .. id .. " failed")
+	Debug.print(Debug.INTERFACE, "Widget creation from " .. id .. " failed.")
 	return nil
 end
 

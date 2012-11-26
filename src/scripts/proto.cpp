@@ -58,7 +58,7 @@ int ProtoManager::LoadPrototype( std::string name )
 	p->id = -1;
 	std::string path = conf.protoPath + name + ".proto";
 
-	Debug::debug( Debug::CONFIG, "Loading proto: " + name + ".\n");
+	Debug::debug( Debug::PROTO, "Loading proto: " + name + ".\n");
 
 	// Файл протоипа будет выполнен в защищенном окружении, чтобы не запороть что-нить глобальное.
 	// Окружение создается как здесь: http://community.livejournal.com/ru_lua/402.html
@@ -71,7 +71,7 @@ int ProtoManager::LoadPrototype( std::string name )
 
 	if( luaL_loadfile( Lst, path.c_str()) ){
 		// Стек: env err
-		Debug::debug( Debug::CONFIG, "While trying to load proto '" + name + "' (" +
+		Debug::debug( Debug::PROTO, "While trying to load proto '" + name + "' (" +
 				path + "): " + lua_tostring( Lst, -1 ) + ".\n");
 		lua_pop( Lst, 2 );	// Стек:
 		return 0;
@@ -82,8 +82,8 @@ int ProtoManager::LoadPrototype( std::string name )
 
 	if( lua_pcall( Lst, 0, 0, 0 ) ){
 		// Какая-то ошибка выполнения файла
-		Debug::debug( Debug::CONFIG, std::string(lua_tostring( Lst, -1 )) + ".\n" ); // Стек: env err
-		Debug::debug( Debug::CONFIG, "Unable to load proto '" + name + "'.\n" );
+		Debug::debug( Debug::PROTO, "While trying to execute proto file: " + std::string(lua_tostring( Lst, -1 )) + ".\n" ); // Стек: env err
+		Debug::debug( Debug::PROTO, "Unable to load proto '" + name + "'.\n" );
 		lua_pop( Lst, 2 );	// Стек:
 
 		return 0;
@@ -244,7 +244,7 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 									conditions.push( &a->frames[j] );
 								else if( command == acEnd ){
 									if( conditions.empty() )
-										Debug::debug( Debug::CONFIG, "Unexpected acEnd command at frame " + citoa(j) +
+										Debug::debug( Debug::PROTO, "Unexpected acEnd command at frame " + citoa(j) +
 											" in action '" + a->name + "' of proto '" + proto->name + "'. Skipping.\n");
 									else{
 										conditions.top()->condition_end = j;
@@ -262,7 +262,7 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 								}
 
 							}else{
-								Debug::debug( Debug::CONFIG,
+								Debug::debug( Debug::PROTO,
 									"In proto '" + proto->name + "', action '" + a->name + "' " +
 									"frame " + citoa(j) + " - " + lua_typename(L, lua_type(L, -1)) +
 									": Frame loading canceled (not a table).\n");
@@ -273,14 +273,14 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 
 						while( !conditions.empty() ){
 							Frame* f = conditions.top();
-							Debug::debug( Debug::CONFIG,
+							Debug::debug( Debug::PROTO,
 									"End of " + citoa(f->command) + " condition expected. In proto '" + proto->name +
 									"', action '" + a->name + "'.\n");
 							f->condition_end = a->framesCount;
 							conditions.pop();
 						}
 					}else{
-						Debug::debug( Debug::CONFIG, "There are no frames in action '" +
+						Debug::debug( Debug::PROTO, "There are no frames in action '" +
 								a->name + "' of proto '" + proto->name + "'. Skipping.\n");
 						a->framesCount = 0;
 					}
@@ -288,7 +288,7 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 					// Стек: env actions key actions[key] frames
 
 				}else{ // if (lua_istable(L, -1))	frames
-					Debug::debug( Debug::CONFIG, "Action '" + a->name + "' in proto '" +
+					Debug::debug( Debug::PROTO, "Action '" + a->name + "' in proto '" +
 							proto->name + "' have no frames table. Skipping.\n");
 					a->framesCount = 0;
 				}
@@ -296,7 +296,7 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 				// Стек: env animations key animations[key] frames
 				lua_pop(L, 1);	// Стек: env actions key actions[key]
 			}else{
-				Debug::debug( Debug::CONFIG, "In proto '" + proto->name + "' actions[" +
+				Debug::debug( Debug::PROTO, "In proto '" + proto->name + "' actions[" +
 						citoa(i) + "] is " + lua_typename(L, lua_type(L, -1)) );
 			}
 

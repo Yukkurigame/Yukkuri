@@ -7,6 +7,7 @@
 
 #include "misc.h"
 #include "Define.h"
+#include "debug.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -62,11 +63,11 @@ void Paths::init(  )
 #elif defined(__APPLE__)
 	uint32_t size = sizeof(path_app);
 	if (_NSGetExecutablePath(path_app, &size) == 0){
-		printf( "\nexecutable path is %s\n", path_app );
+		Debug( Debug::OS, "Executable path is " + path_app + "\n" );
 		path_app = dirname( path_app );
 		path_app[ strlen(path_app) - 1 ] = 0;
 		strcat( path_app, "/" );
-		printf( "working path will be %s\n", path_app );
+		Debug( Debug::OS, "Working path will be " + path_app + "\n" );
 		change_dir( path_app );
 	}else{
 		printf( "buffer too small; need size %u\n", size );
@@ -80,9 +81,9 @@ void Paths::init(  )
 		path_app = dirname( path_app );
 		change_dir( path_app );
 		strcat( path_app, "/" );
-		printf( "path_app: %s\n", path_app );
+		Debug::debug( Debug::OS, std::string("path_app: ") + path_app + "\n" );
 	}else{
-		printf( "Error getting application path" );
+		Debug::debug( Debug::OS, "Error getting application path.\n" );
 		exit( EXIT_FAILURE );
 	}
 #elif defined(__FreeBSD__)
@@ -101,11 +102,11 @@ void Paths::init(  )
 	}
 
 	if( res ){
-		printf( "executable path: %s\n", path_app );
+		Debug( Debug::OS, "Executable path is " + path_app + "\n" );
 		path_app = dirname( path_app );
 		strcat( path_app, "/" );
 		change_dir(path_app);
-		printf( "path_app: %s\n", path_app );
+		Debug( Debug::OS, "path_app: " + path_app + "\n" );
 	}else{
 		printf( "Error getting application path" );
 		exit(EXIT_FAILURE);

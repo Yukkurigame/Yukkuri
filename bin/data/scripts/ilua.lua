@@ -276,7 +276,7 @@ function ilua:start()
 	self:import()
 	-- set input to stream
 	if not readline then
-		Debug(2, "No readline module. No interactive console.")
+		Debug.print(Debug.OS, "No readline module. No interactive console.")
 	else
 		rlcompleter.set_input_source(1)
 	end

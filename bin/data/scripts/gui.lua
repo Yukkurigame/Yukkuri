@@ -18,7 +18,7 @@ function GUI:addWidgetByName(name)
 		if v.name == name then id = k end
 	end
 	if id == nil then
-		Debug( 6, "Widget with name " .. name .. " not found." )
+		Debug.print(Debug.INTERFACE, "Widget with name " .. name .. " not found.")
 		return
 	end
 	self:addWidget(id)

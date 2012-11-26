@@ -13,11 +13,11 @@ function Configs.new()
 end
 
 function Configs:load( filename )
-	Debug(4, "Load " .. filename)
+	Debug.print(Debug.CONFIG, "Load " .. filename)
 	local file, err = io.open(filename, "r")
 	--- no print on assert. wtf?
 	if file == nil then
-		Debug(4, err .. ' in ' .. filename)
+		Debug.print(Debug.CONFIG, err .. ' in ' .. filename)
 		return false
 	end
 	local filedata = file:read("*all")
@@ -26,10 +26,10 @@ function Configs:load( filename )
 	local records = 0
 	local success = 0
 	for i,j in ipairs(data) do
-		records = records + 1 
+		records = records + 1
 		repeat
 			if j.type == nil then
-				Debug(4, "Config has no type.")
+				Debug.print(Debug.CONFIG, "Config has no type.")
 				break
 			end
 			ctype = string.lower(j.type)
@@ -37,24 +37,24 @@ function Configs:load( filename )
 				self.configs[ctype] = {}
 			end
 			if j.id == nil then
-				Debug(4, "Error in " .. filename ..  ": no id given. Skipped.")
+				Debug.print(Debug.CONFIG, "Error in " .. filename ..  ": no id given. Skipped.")
 				break
 			end
 			local id = string.lower(j.id)
 			if self.configs[ctype][id] ~= nil then
-				Debug(4, "Config with id " .. id .. " already loaded. Skipped.\n")
+				Debug.print(Debug.CONFIG, "Config with id " .. id .. " already loaded. Skipped.")
 				break
 			end
 			self.configs[ctype][id] = j
 			if self.configs_id[id] ~= nil then
-				Debug(4, "Config with id " .. id .. " already exists. Collision occured.\n")
+				Debug.print(Debug.CONFIG, "Config with id " .. id .. " already exists. Collision occured.")
 			end
 			self.configs_id[id] = j
 			success = success + 1
 		until true
 	end
 	if success ~= records then
-		Debug( 4, filename .. ": loaded " .. success .. " from " .. records .. " records." )
+		Debug.print(Debug.CONFIG, filename .. ": loaded " .. success .. " from " .. records .. " records.")
 	end
 	return true
 end
@@ -66,7 +66,7 @@ function Configs:loadAll( type )
 	end
 	listing = readdir(path)
 	if listing == nil then
-		Debug(4, "Bad directory " .. path)
+		Debug.print(Debug.CONFIG, "Bad directory " .. path)
 		return
 	end
 	files = 0
@@ -79,18 +79,18 @@ function Configs:loadAll( type )
 			end
 		end
 	end
-	Debug(4, "Loaded " .. success .. " from " .. files .. " " .. type .. " files")
+	Debug.print(Debug.CONFIG, "Loaded " .. success .. " from " .. files .. " " .. type .. " files.")
 end
 
 function Configs:get( value, subconfig, config )
 	ctype = string.lower(config)
 	if self.configs[ctype] == nil then
-		Debug(4, "Config " .. ctype .. " does not exist")
+		Debug.print(Debug.CONFIG, "Config " .. ctype .. " does not exist.")
 		return
 	end
 	csubtype = string.lower(subconfig)
 	if self.configs[ctype][csubtype] == nil then
-		Debug(4, "Subconfig " .. csubtype .. " not exists in config " .. ctype)
+		Debug.print(Debug.CONFIG, "Subconfig " .. csubtype .. " not exists in config " .. ctype)
 		return
 	end
 	ret = self.configs[ctype][csubtype][value]
@@ -100,7 +100,7 @@ end
 function Configs:getById( value, id )
 	ret = self.configs_id[id]
 	if ret == nil then
-		Debug(4, "Config with id " .. id .. " does not exists.")
+		Debug.print(Debug.CONFIG, "Config with id " .. id .. " does not exists.")
 	else
 		ret = ret[value]
 	end
@@ -111,7 +111,7 @@ function Configs:getSubconfigs( config )
 	t = {}
 	cname = string.lower(config)
 	if self.configs[cname] == nil then
-		Debug(4, "Config " .. cname .. " does not exist")
+		Debug.print(Debug.CONFIG, "Config " .. cname .. " does not exist.")
 	else
 		for i,j in pairs(self.configs[cname]) do
 			table.insert(t, j)
@@ -124,7 +124,7 @@ function Configs:getSubconfigsList( config )
 	t = {}
 	cname = string.lower(config)
 	if self.configs[cname] == nil then
-		Debug(4, "Config " .. cname .. " does not exist")
+		Debug.print(Debug.CONFIG, "Config " .. cname .. " does not exist.")
 	else
 		for i,j in pairs(self.configs[cname]) do
 			table.insert(t, i)
@@ -137,7 +137,7 @@ function Configs:getSubconfigsLength( config )
 	len = 0
 	cname = string.lower(config)
 	if self.configs[cname] == nil then
-		Debug(4, "Config " .. cname .. " does not exist")
+		Debug.print(Debug.CONFIG, "Config " .. cname .. " does not exist.")
 	else
 		--- Я не смог в #
 		for i in pairs(self.configs[cname]) do
@@ -151,7 +151,7 @@ function Configs:getOneFromSeveral( field, config )
 	local ctype = string.lower(config)
 	local config = self.configs[ctype]
 	if config == nil then
-		Debug(4, "Config " .. ctype .. " does not exist")
+		Debug.print(Debug.CONFIG, "Config " .. ctype .. " does not exist.")
 		return
 	end
 

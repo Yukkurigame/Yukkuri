@@ -102,7 +102,7 @@ bool CEngine::Init()
 	debug( MAIN, "Load sprites.\n" );
 
 	if( !RenderManager::LoadTextures( ) ){
-		debug( MAIN, "Sprites loading failed." );
+		debug( MAIN, "Sprites loading failed.\n" );
 		return false;
 	}
 

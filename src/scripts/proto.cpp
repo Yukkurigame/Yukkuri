@@ -225,6 +225,12 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 										}else if( lua_isstring( L, -1 ) ){
 											frame.param_types[params_added] = stString;
 											frame.params[params_added].stringData = lua_tostring( L, -1 );
+										}else if( lua_istable( L, -1 ) ){
+											frame.param_types[params_added] = stTable;
+											// This will remove table from stack.
+											RegObject( L, &(frame.params[params_added].intData), -1 );
+											// We need to add one value for lua_next
+											lua_pushnil( L );
 										}else if( lua_isfunction( L, -1 ) ){
 											frame.param_types[params_added] = stFunction;
 											// This will remove function from stack.

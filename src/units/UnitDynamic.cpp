@@ -107,7 +107,8 @@ void UnitDynamic::applyForce( )
 	// Max velocity
 	cpVect mvel = cpvmult(
 		cpv(1.0 - add, (1.0 - add) / 2),
-		(Char.chars.speed / 1000.0) * cpfclamp(Char.state.fed, 1.0, 100.0) / 100.0
+		//FIXME: Magic value must be function of time delta
+		(Char.chars.speed / 3000.0) * cpfclamp(Char.state.fed / 100.0, 0.1, 1.0)
 	);
 	// Velocity delta
 	cpVect dvel = cpvsub( mvel, cpvmult( physBody->v, Phys::space->damping ) );

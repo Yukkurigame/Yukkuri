@@ -21,6 +21,8 @@ enum ActionCommand
 	acNone = 0,
 	acPush, acPushInt, acPushFloat, acPushString,
 	acSuper, acRestoreState, acSetAction, acSetTimer,
+	acBindEvent, acEmitEvent,
+	// All between acCondition and acEnd must be used as condition.
 	acCondition,
 	// Comparison between parameter and number
 	acIfParamEqual, acIfParamLess, acIfParamMore,

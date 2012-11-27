@@ -192,8 +192,9 @@ bool ActionManager::checkFrameParams( const Frame& fr, int num, enum StackElemen
 	for( int i = 0; i < num; i++ ){
 		const StackElementType& el = fr.param_types[i];
 		if( !( el == setp ||
-			( setp == stIntOrNone && (el == stInt || el == stNone) ) ||
-			( setp == stStringOrNone && (el == stString || el == stNone) ) ) ){
+			( setp == stIntOrNone    && (el == stInt    || el == stNone) ) ||
+			( setp == stStringOrNone && (el == stString || el == stNone) ) ||
+			( setp == stTableOrNone  && (el == stTable  || el == stNone) )  ) ){
 			Debug::debug( Debug::PROTO, "Wrong set of parameters of frame with action " +
 					citoa( fr.command ) + ".\n" );
 			return false;

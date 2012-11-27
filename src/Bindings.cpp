@@ -264,7 +264,7 @@ void Bindings::bindLuaFunction( int key, LuaRegRef func )
 	BindFunction& bfunct = BindedFunctions[key];
 	bfunct.type = LUAFUNC;
 	if( bfunct.luaref != func ){
-		luaScript->ReleaseProc( &bfunct.luaref );
+		luaScript->ReleaseObject( &bfunct.luaref );
 		bfunct.luaref = func;
 	}
 }

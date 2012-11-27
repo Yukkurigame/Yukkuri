@@ -61,7 +61,13 @@ void LuaScript::RegProc( lua_State* L, LuaRegRef* procref, int n )
 {
 	luaL_argcheck(L, lua_isfunction(L, n) || lua_isnil(L, n), n, "Function or nil expected");
 
-	ReleaseProc(procref);
+	RegObject( L, procref, n );
+}
+
+// Помещает в procref ссылку реестра луа на объект, находящийся в стеке под номером n
+void LuaScript::RegObject( lua_State* L, LuaRegRef* procref, int n )
+{
+	ReleaseObject(procref);
 
 	if(!lua_isnil(L, n))
 	{
@@ -69,12 +75,12 @@ void LuaScript::RegProc( lua_State* L, LuaRegRef* procref, int n )
 		// Сейчас же просто забирается одно верхнее значение со стека, это может быть и не функция
 		lua_xmove( L, Lst, 1 );
 		*procref = AddToRegistry();
-		ReserveProc(*procref);
+		ReserveObject(*procref);
 	}
 }
 
 // Увеличивает счетчик количества использований ссылки на реестр
-void LuaScript::ReserveProc( LuaRegRef procref )
+void LuaScript::ReserveObject( LuaRegRef procref )
 {
 	if( procref == LUA_NOREF )
 		return;
@@ -89,7 +95,7 @@ void LuaScript::ReserveProc( LuaRegRef procref )
 
 // Уменьшает счетчик количества использований ссылки на реестр.
 // Если счетчик достигает 0, объект из реестра удаляется.
-void LuaScript::ReleaseProc( LuaRegRef* procref )
+void LuaScript::ReleaseObject( LuaRegRef* procref )
 {
 	LuaStackChecker sc( Lst, __FILE__, __LINE__ );
 
@@ -102,7 +108,7 @@ void LuaScript::ReleaseProc( LuaRegRef* procref )
 
 	assert(it->second > 0);
 	if(it->second <= 0){
-		Debug::debug( Debug::SCRIPT, "LuaScript::ReleaseProc: procref " +
+		Debug::debug( Debug::SCRIPT, "LuaScript::ReleaseObject: procref " +
 				citoa(*procref) + " references count is " + citoa(it->second) + ".\n" );
 		it->second = 1;
 	}

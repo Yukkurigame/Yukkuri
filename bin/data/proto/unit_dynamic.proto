@@ -1,4 +1,5 @@
 
+require("data/scripts/events/unit_dynamic")
 
 parent = "unit"
 
@@ -14,6 +15,7 @@ actions = {
 			{ constants.acLoadParam, constants.uParamHP, "hp" },
 			{ constants.acCopyParam, constants.uStateHP, constants.uParamHP },
 			{ constants.acPhysicsSetLayer, 7 },
+			{ constants.acBindEvent, UnitDynamic.call, UnitDynamic },
 		},
 	},
 }

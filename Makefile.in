@@ -1,8 +1,16 @@
 
+ifndef _ARCH
+  _ARCH := $(shell uname -m)
+  ifeq ($(_ARCH), x86_64)
+    ARCH_SUFFIX=64
+  endif  
+endif
+
+
 rm=/bin/rm -f
 CC= g++
 DEFS= $(shell sdl-config --cflags)
 INCLUDES= -I. -Isrc/ -I/usr/include/freetype2
-LIBS= $(shell sdl-config --libs) -lpng -lSDL_image -lGL -lfreetype -llua -L./libs -lchipmunk
+LIBS= $(shell sdl-config --libs) -lpng -lSDL_image -lGL -lfreetype -llua -L./libs -lchipmunk$(ARCH_SUFFIX)
 DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1 -DGL_GLEXT_PROTOTYPES=1
 CFLAGS= -O0 -g -Wall $(DEFINES)

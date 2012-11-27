@@ -22,8 +22,9 @@ public:
 	void GetFromRegistry( lua_State* L, LuaRegRef r );
 
 	void RegProc( lua_State* L, LuaRegRef* procref, int n );
-	void ReserveProc( LuaRegRef procref );
-	void ReleaseProc( LuaRegRef* procref );
+	void RegObject( lua_State* L, LuaRegRef* procref, int n );
+	void ReserveObject( LuaRegRef procref );
+	void ReleaseObject( LuaRegRef* procref );
 
 	int ExecChunk( UINT args = 0 );
 	int ExecChunkFromReg( LuaRegRef r, UINT args = 0 );

@@ -17,9 +17,13 @@ class CUData;
 
 enum unitType { utStatic = 0, utPlayer, utEntity, utPlant, utCorpse, utLast };
 enum unitFlag { ufDeleted = 1, ufEdible = 2, ufMoving = 4, ufLast };
+enum unitInteraction {  };
 
-// Wrapper for velocity_func
-void call_velocity_func(cpBody *body, cpVect gravity, cpFloat damping, cpFloat dt);
+struct UEvent {
+	LuaRegRef function;
+	LuaRegRef self;
+};
+
 
 
 class Unit : public CUDataUser
@@ -43,10 +47,14 @@ public:
 	// Called for each action frame until break
 	virtual bool update( const Frame& f );
 	virtual void updatePhysics( );
-	virtual void velocityFunc( ) { };
 	virtual void die( ) { setDeleted(); };
 	virtual void moveUnit( signed int x, signed int y, const int& dt ) {};
 	virtual void moveUnit( short axis, signed int val ) {};
+
+	int emitEvent( const char* name );
+
+	//virtual void interact( enum unitInteraction action );
+	//virtual void interact( enum unitInteraction action, Unit* target, );
 
 	float dist( Unit* );
 
@@ -104,6 +112,8 @@ protected:
 	std::string UnitName;
 	enum unitType UnitType;
 	std::string TypeName;
+
+	UEvent events;
 
 	unsigned int flags;		// 1 - deleted
 							// 2 - isEdible

@@ -13,12 +13,6 @@
 #include <cmath>
 
 
-void call_velocity_func(cpBody *body, cpVect gravity, cpFloat damping, cpFloat dt)
-{
-	( (Unit*)body->data )->velocityFunc();
-}
-
-
 Unit::Unit()
 {
 	UnitId = 0;
@@ -30,6 +24,7 @@ Unit::Unit()
 	actionTimers = NULL;
 	physShape = NULL;
 	physBody = NULL;
+	events.function = events.self = LUA_NOREF;
 }
 
 
@@ -257,6 +252,28 @@ bool Unit::update( const Frame& frame )
 				}
 			}
 			break;
+		case acBindEvent:
+			if( Actions.checkFrameParams( frame, 2, stFunction, stTableOrNone ) ){
+				this->events.function = param.intData;
+				this->events.self = frame.params[1].intData;
+			}
+			break;
+		case acEmitEvent:
+			extern LuaScript* luaScript;
+			if( Actions.checkFrameParams( frame, 1, stString ) && this->events.function != LUA_NOREF ){
+				int ret_val = emitEvent(param.stringData);
+				for(int i = 0; i < ret_val; ++i ){
+					switch( luaScript->getType( 1 ) ){
+						case LUA_TNUMBER:
+							Actions.params.Push( (int)luaScript->getNumber( 1 ) );
+							break;
+						case LUA_TSTRING:
+							Actions.params.Push( luaScript->getChar( 1 ) );
+							break;
+					}
+				}
+			}
+			break;
 
 		// Action parameters stack
 		case acPushInt:
@@ -439,6 +456,27 @@ bool Unit::update( const Frame& frame )
 #undef PARAMCOND
 #undef PARAMSCOND
 #undef CHECKFLAG
+
+
+int Unit::emitEvent( const char* name )
+{
+	extern LuaScript* luaScript;
+	int argcount = 2;
+	if( events.self != LUA_NOREF ){
+		luaScript->GetFromRegistry( luaScript->getState(), events.self );
+		++argcount;
+	}
+	this->pushUData( luaScript->getState() );
+	luaScript->push( name );
+	int ret_val = luaScript->ExecChunkFromReg( events.function, argcount );
+	if( ret_val == -1 )
+		Debug::debug( Debug::PROTO,
+			"An error occurred while executing a local event function '" + std::string(name) +
+			"'. obj id  " + citoa(UnitId) + ", proto_name '" + Actions.proto->name +
+			"', action '" + Actions.action->name  + "', frame " + citoa(Actions.frame) +
+			": " + luaScript->getString( -1 ) + ".\n" );
+	return ret_val;
+}
 
 
 void Unit::updatePhysics( )

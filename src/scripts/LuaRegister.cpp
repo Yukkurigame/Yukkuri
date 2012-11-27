@@ -39,11 +39,7 @@ void LuaMain::RegisterApi( lua_State* L )
 	lua_register( L, "readdir", &scriptApi::ReadDirectory );
 	lua_register( L, "getcwd", &scriptApi::GetCWD );
 
-	lua_register( L, "Debug", &scriptApi::Debug );
-
 	lua_register( L, "LoadMapRegion", &scriptApi::LoadMapRegion );
-
-
 
 #define REGAPI(name, api) luaL_register( L, name, api::methods );
 
@@ -83,6 +79,24 @@ void LuaMain::RegisterApi( lua_State* L )
 #define FIELD(name) \
 	lua_pushinteger( L, name ); lua_setfield( L, -2, #name );
 
+	lua_newtable( L );	//  Стек: таблица
+	{
+		using namespace Debug;
+		lua_pushcfunction(L, &scriptApi::Debug), lua_setfield(L, -2, "print");
+		FIELD(NONE)
+		FIELD(MAIN)
+		FIELD(OS)
+		FIELD(CONFIG)
+		FIELD(GRAPHICS)
+		FIELD(INPUT)
+		FIELD(SCRIPT)
+		FIELD(PROTO)
+		FIELD(UNIT)
+		FIELD(INTERFACE)
+		FIELD(MAP)
+	}
+	lua_setglobal(L, "Debug");
+
 	// Различные именованые константы
 	lua_newtable(L);		// Стек: таблица
 	{
@@ -121,6 +135,8 @@ void LuaMain::RegisterApi( lua_State* L )
 		FIELD(acRestoreState)
 		FIELD(acSetAction)
 		FIELD(acSetTimer)
+		FIELD(acBindEvent)
+		FIELD(acEmitEvent)
 
 		// Conditions
 		FIELD(acCondition)

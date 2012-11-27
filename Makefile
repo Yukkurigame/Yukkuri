@@ -6,6 +6,7 @@ OBJDIR= obj/
 OUTDIR= bin/
 VPATH= src/
 PROGNAME= Yukkuri
+COREDIR= core/
 SCRIPTSAPIDIR= api/
 SCRIPTSDIR= scripts/
 UNITSDIR= units/
@@ -17,6 +18,7 @@ MAPDIR = map/
 3RDPARTYDIR= 3rdparty/
 
 
+CORE = yukkuri.cpp
 UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp ActionTimer.cpp Unit.cpp \
 		 UnitStatic.cpp UnitDynamic.cpp UnitEntity.cpp UnitCorpse.cpp UnitPlayer.cpp
 PHYSICS = physics.cpp handlers.cpp
@@ -34,7 +36,8 @@ MAP = Tiles.cpp Region.cpp Map.cpp
 3RDPARTY = CUData.cpp CUDataUser.cpp CUDataTemplates.cpp LuaPusher.cpp timer/TimerManager.cpp
 
 
-SRCS =   main.cpp yukkuri.cpp config.cpp engine.cpp misc.cpp Bindings.cpp BindFunctions.cpp \
+SRCS =   main.cpp config.cpp misc.cpp Bindings.cpp BindFunctions.cpp \
+         $(addprefix $(COREDIR), $(CORE)) \
          $(addprefix $(SCRIPTSDIR), $(SCRIPTS)) \
          $(addprefix $(PHYSICSDIR), $(PHYSICS)) \
          $(addprefix $(UNITSDIR), $(UNITS)) \
@@ -45,8 +48,11 @@ SRCS =   main.cpp yukkuri.cpp config.cpp engine.cpp misc.cpp Bindings.cpp BindFu
          daytime.cpp utf.cpp
 
 OBJ = $(SRCS:.cpp=.o)
-OBJS = $(addprefix $(OBJDIR), $(OBJ:.c=.o))
+OBJECTS = $(addprefix $(OBJDIR), $(OBJ:.c=.o)) 
 
+UNICSOURCES = $(addprefix $(COREDIR), game.cpp graphics.cpp input.cpp)
+
+OBJS = $(addprefix $(OBJDIR), $(UNICSOURCES:.cpp=.o)) $(OBJECTS)
 
 UNIQHEADERS = $(SCRIPTSDIR)LuaScriptConfig.h $(UNITSDIR)YOBA.h $(MAPDIR)Waypoint.h \
          	$(addprefix $(3RDPARTYDIR), TypeList.h timer/InternalTimerEvent.h \
@@ -54,7 +60,7 @@ UNIQHEADERS = $(SCRIPTSDIR)LuaScriptConfig.h $(UNITSDIR)YOBA.h $(MAPDIR)Waypoint
          	Define.h debug.h hacks.h safestring.h basic_types.h types.h
 
 
-HEADERS = $(OBJS:.o=.h) $(addprefix $(OBJDIR), $(UNIQHEADERS))
+HEADERS = $(OBJECTS:.o=.h) $(addprefix $(OBJDIR), $(UNIQHEADERS))
  
  
 GCHOLD = $(HEADERS:.h=.h.gch)
@@ -88,9 +94,9 @@ $(PROGNAME) : | $(OBJDIR) $(GCH) $(OBJS)
 	$(CC) $(CFLAGS)  -o $(OUTDIR)$(PROGNAME) $(OBJS) $(LIBS)
 
 $(OBJDIR):
-	mkdir -p $(addprefix $(OBJDIR), $(SCRIPTSDIR) $(SCRIPTSDIR)$(SCRIPTSAPIDIR) $(UNITSDIR) \
-	 $(GRAPHICSDIR) $(GRAPHICSDIR)render/ $(INTERFACEDIR) $(INTERFACEDIR)$(WIDGETSDIR) \
-	 $(MAPDIR) $(3RDPARTYDIR) $(3RDPARTYDIR)timer $(PHYSICSDIR))
+	mkdir -p $(addprefix $(OBJDIR), $(COREDIR) $(SCRIPTSDIR) $(SCRIPTSDIR)$(SCRIPTSAPIDIR) \
+	 $(UNITSDIR) $(GRAPHICSDIR) $(GRAPHICSDIR)render/ $(INTERFACEDIR) \
+	 $(INTERFACEDIR)$(WIDGETSDIR) $(MAPDIR) $(3RDPARTYDIR) $(3RDPARTYDIR)timer $(PHYSICSDIR))
 
 
 clean: cleanheaders cleanobjs cleanprog cleandirs

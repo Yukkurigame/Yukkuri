@@ -7,14 +7,12 @@
 
 #include "BindFunctions.h"
 
-#include "yukkuri.h"
+#include "core/yukkuri.h"
 #include "units/unitmanager.h"
 #include "units/UnitPlayer.h"
 #include "graphics/sdl_graphics.h"
 
 #include "debug.h"
-
-extern Yukkuri Engine;
 
 
 static const BindCFunction func_refs[Binds::bndLast] = {
@@ -98,6 +96,6 @@ void Binds::screenshot( short down )
 
 void Binds::exit( short down )
 {
-	Engine.Quit();
+	Yukkuri::End();
 }
 

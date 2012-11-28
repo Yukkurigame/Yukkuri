@@ -25,7 +25,7 @@ PHYSICS = physics.cpp handlers.cpp
 RENDER = Atlas.cpp ElasticBox.cpp GLHelpers.cpp GLTextures.cpp TextureArray.cpp
 GRAPHICS = GraphicsTypes.cpp Font.cpp Text.cpp sdl_graphics.cpp gl_extensions.cpp gl_shader.cpp \
 		   Animation.cpp AnimationDefines.cpp Camera.cpp Render.cpp pngfuncs.c \
-		   $(addprefix render/, $(RENDER))
+		   daytime.cpp $(addprefix render/, $(RENDER))
 SCRIPTSAPI = UnitManagerApi.cpp InterfaceApi.cpp Widgets.cpp ThreadManagerApi.cpp CameraApi.cpp \
 			 BindingsApi.cpp Units.cpp PathsApi.cpp
 SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp proto.cpp \
@@ -45,7 +45,7 @@ SRCS =   main.cpp config.cpp misc.cpp Bindings.cpp BindFunctions.cpp \
          $(addprefix $(INTERFACEDIR), $(INTERFACE)) \
          $(addprefix $(MAPDIR), $(MAP)) \
          $(addprefix $(3RDPARTYDIR), $(3RDPARTY)) \
-         daytime.cpp utf.cpp
+         utf.cpp
 
 OBJ = $(SRCS:.cpp=.o)
 OBJECTS = $(addprefix $(OBJDIR), $(OBJ:.c=.o)) 
@@ -108,7 +108,7 @@ cleanobjs:
 	$(rm) $(OBJS)
 
 cleanprog:
-	$(rm) $(PROGNAME)
+	$(rm) $(OUTDIR)$(PROGNAME)
 
 cleandirs:
 	$(rm) -r $(OBJDIR)

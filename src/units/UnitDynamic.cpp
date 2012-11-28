@@ -96,7 +96,7 @@ bool UnitDynamic::calculateForce( )
 	return true;
 }
 
-void UnitDynamic::applyForce( )
+void UnitDynamic::applyForce( const int& dt )
 {
 	// Total force delta
 	cpVect dforce;
@@ -108,7 +108,7 @@ void UnitDynamic::applyForce( )
 	cpVect mvel = cpvmult(
 		cpv(1.0 - add, (1.0 - add) / 2),
 		//FIXME: Magic value must be function of time delta
-		(Char.chars.speed / 3000.0) * cpfclamp(Char.state.fed / 100.0, 0.1, 1.0)
+		(Char.chars.speed / (dt * dt * 100.0)) * cpfclamp(Char.state.fed / 100.0, 0.1, 1.0)
 	);
 	// Velocity delta
 	cpVect dvel = cpvsub( mvel, cpvmult( physBody->v, Phys::space->damping ) );
@@ -179,8 +179,8 @@ void UnitDynamic::die( )
 void UnitDynamic::update( const int& dt )
 {
 	Unit::update( dt );
-	if( isMoving() && this->calculateForce() )
-		applyForce( );
+	if( isMoving() && this->calculateForce( ) )
+		applyForce( dt );
 	if( vis != NULL ){
 		cpVect lb = cpPolyShapeGetVert( scopeShape, 0 );
 		cpVect lt = cpPolyShapeGetVert( scopeShape, 1 );

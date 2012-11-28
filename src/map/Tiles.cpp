@@ -13,6 +13,7 @@
 #include "graphics/render/ElasticBox.h"
 #include "graphics/render/Atlas.h"
 #include "graphics/Render.h"
+#include "graphics/gl_shader.h"
 
 #include "config.h"
 #include "debug.h"
@@ -145,6 +146,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 		return;
 	sprite = RenderManager::CreateGLSprite( (float)realPos.x, (float)realPos.y, 0,
 			ChunkManager.chunkSize.x, ChunkManager.chunkSize.y, ChunkManager.texture, picture );
+	sprite->shader = Shaders::getProgram( "lighting" );
 	tiles = (MapTile*)malloc( (unsigned)sizeof(MapTile) * ChunkManager.chunkTilesCount );
 	unsigned int row = 0;
 	unsigned int col = 0;

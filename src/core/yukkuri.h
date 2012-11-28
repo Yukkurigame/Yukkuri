@@ -43,8 +43,6 @@ namespace Yukkuri
 
 	// Screen Core
 	float getFPS();
-	int getScreenW();
-	int getScreenH();
 
 	// Parameters
 	static struct YGame {
@@ -54,6 +52,9 @@ namespace Yukkuri
 		const char* title;
 		enum GameState state;
 	} Window;
+
+	inline int getScreenW() { return Window.width; };
+	inline int getScreenH() { return Window.height; };
 };
 
 #endif //YUKKURI_H

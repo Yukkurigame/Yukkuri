@@ -240,9 +240,8 @@ struct Sprite
 	inline void clearCentered()			{ flags &= ~2; }
 
 	inline unsigned char isFixed()		{ return flags & 4; }
-		void setFixed();				// Needs shader placing
+	void setFixed();					// Needs shader placing
 	inline void clearFixed()			{ flags &= ~4; shader = 0; }
-
 
 	Sprite() : rect(), vertices(), coordinates(), clr(){
 		tex = NULL;

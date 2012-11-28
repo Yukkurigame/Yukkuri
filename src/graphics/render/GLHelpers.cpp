@@ -12,7 +12,7 @@
 #include "debug.h"
 
 
-#define BUFFER_OFFSET(i) ((char*)NULL + (i))
+#define BUFFER_OFFSET(i) ((char*)NULL + (int)(i))
 
 
 /*	This function creates new opengl texture. If texture is exists it will be cleared.
@@ -109,11 +109,12 @@ void GLHelpers::DrawVBO( GLuint& VBOHandle, int vboc,
 	glBindBuffer( GL_ARRAY_BUFFER, VBOHandle );
 
 	// VBO + GL_STREAM_DRAW == +10 fps
-	glBufferData( GL_ARRAY_BUFFER, sizeof(VertexV2FT2FC4UI) * vboc, vertices, GL_STREAM_DRAW );
+	int vertex_size = sizeof(VertexV2FT2FC4UI);
+	glBufferData( GL_ARRAY_BUFFER, vertex_size * vboc, vertices, GL_STREAM_DRAW );
 
-	glVertexPointer( 3, GL_FLOAT, sizeof(VertexV2FT2FC4UI), 0 );
-	glTexCoordPointer( 2, GL_FLOAT, sizeof(VertexV2FT2FC4UI), BUFFER_OFFSET(sizeof(s3f)) );
-	glColorPointer( 4, GL_UNSIGNED_BYTE, sizeof(VertexV2FT2FC4UI), BUFFER_OFFSET(sizeof(s3f) + sizeof(s2f)) );
+	glVertexPointer( 3, GL_FLOAT, vertex_size, 0 );
+	glTexCoordPointer( 2, GL_FLOAT, vertex_size, BUFFER_OFFSET(sizeof(s3f)) );
+	glColorPointer( 4, GL_UNSIGNED_BYTE, vertex_size, BUFFER_OFFSET(sizeof(s3f) + sizeof(s2f)) );
 
 	GLuint aprog = 0;
 
@@ -255,7 +256,7 @@ bool GLHelpers::UpdateGLTextureFromTexture(
 	// Update subimage form pixbuffer
 	glBindTexture( GL_TEXTURE_2D, basetex );
 	glTexSubImage2D( GL_TEXTURE_2D, 0, (GLint)offset.x, (GLint)offset.y, w, h, GL_RGBA,
-					 GL_UNSIGNED_BYTE, BUFFER_OFFSET(bufferofset) );
+					GL_UNSIGNED_BYTE, BUFFER_OFFSET(bufferofset) );
 
 	// Unbind buffer
 	glBindBuffer( GL_PIXEL_UNPACK_BUFFER_ARB, 0 );

@@ -13,7 +13,7 @@
 
 namespace Interface
 {
-
+	void init( );
 	void clean();
 
 	void LoadAllWidgets();

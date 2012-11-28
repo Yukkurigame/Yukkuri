@@ -174,9 +174,9 @@ void RenderManager::openglSetup( int wwidth, int wheight )
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
 
-	glOrtho(0.0, wwidth, 0.0, wheight, -10.0, 1.0);
+	//glOrtho(0.0, wwidth, 0.0, wheight, -10.0, 1.0);
 	//glOrtho(-wwidth*1.5, wwidth*1.5, -wheight*1.5, wheight*1.5, -10.0, 1.0);
-	//glOrtho(-wwidth*2, wwidth*2, -wheight*2, wheight*2, -10.0, 1.0);
+	glOrtho(-wwidth*2, wwidth*2, -wheight*2, wheight*2, -30.0, 30.0);
 
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
@@ -186,7 +186,7 @@ void RenderManager::openglSetup( int wwidth, int wheight )
 	TextureAtlas::init( );
 
 	// Create blank texture
-	glGenTextures(1, &textures[0].atlas);		
+	glGenTextures(1, &textures[0].atlas);
 	glBindTexture(GL_TEXTURE_2D, textures[0].atlas);
 	//GIMP says it is white
 	char color[4] = { '\377','\377', '\377', '\377' };

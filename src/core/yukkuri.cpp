@@ -15,7 +15,6 @@
 #include "units/unitmanager.h"
 #include "Bindings.h"
 #include "config.h"
-#include "daytime.h"
 #include "debug.h"
 #include "misc.h"
 
@@ -27,11 +26,13 @@ namespace {
 
 float currentFPS;
 
+// Gcc bug
+extern LuaScript* luaScript;
+extern MainConfig conf;
+
 
 bool Yukkuri::Init()
 {
-	extern LuaScript* luaScript;
-	extern MainConfig conf;
 	Window.title = NULL;
 	Window.minimized = false;
 	Window.state = gsLoading;
@@ -61,26 +62,18 @@ bool Yukkuri::Init()
 
 bool Yukkuri::AdditionalInit()
 {
-	extern LuaScript* luaScript;
-
 	Debug::debug( Debug::MAIN, "Additional Init\n" );
 
 	UnitManager::init( );
-	Region::init();
+	Region::init( );
 	Map::init( );
-
-	DayTime::init();
 
 	if( !luaScript->OpenFile( "start" ) ){
 		Debug::debug( Debug::SCRIPT, "Starting lua failed.\n" );
 		return false;
 	}
 
-	DayTime::loadInterface();
-
-	Widget* w = Interface::GetWidget( "fps", NULL );
-	if( w )
-		w->bindValue( &(currentFPS) );
+	Interface::init( );
 
 	return true;
 }
@@ -119,7 +112,6 @@ void Yukkuri::Clean()
 	// Clear other
 	Map::clean( );
 	Region::clean( );
-	DayTime::clean();
 
 	threadsManager::CleanThreads( );
 

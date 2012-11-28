@@ -100,7 +100,7 @@ GLuint SDLGraphics::CreateGlTexture( SDL_Surface* surface )
 SDL_Surface* SDLGraphics::LoadImage( const char* name )
 {
 	SDL_Surface* pImg = NULL;
-	char* path = (char*)malloc( conf.imagePath.size( ) + strlen( name ) + 1 );
+	char* path = (char*)malloc( (unsigned int)conf.imagePath.size( ) + strlen( name ) + 1 );
 	strcpy( path, conf.imagePath.c_str() );
 	strcat( path, name );
 	pImg = OpenImage( path );

@@ -36,12 +36,12 @@ namespace Debug
 	#ifdef DEBUG
 		if( level > NONE && level < LAST ){
 #ifdef NAMED_DBG_MESSAGE
-				printf("%s: %*s", dbg_names[level], (MAX_DBG_LABEL - strlen(dbg_names[level])) + txt.length(), txt.c_str());
+				printf("%s: %*s", dbg_names[level], (int)(MAX_DBG_LABEL - strlen(dbg_names[level]) + txt.length()), txt.c_str());
 #else
 				printf("%*d: %s", MAX_DBG_LABEL, level, txt.c_str());
 #endif
 		}else{
-			printf("%*s", MAX_DBG_LABEL + txt.length(),  txt.c_str());
+			printf("%*s", (int)(MAX_DBG_LABEL + txt.length()),  txt.c_str());
 		}
 	#endif
 	};

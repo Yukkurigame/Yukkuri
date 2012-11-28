@@ -26,7 +26,7 @@ public:
 
 	bool moveUnit( signed int x, signed int y );
 	virtual bool calculateForce( );
-	void applyForce( );
+	void applyForce( const int& dt );
 
 	inline bool isScope(){ return vis != NULL; }
 	void setScope();

@@ -9,6 +9,7 @@
 
 #include "graphics/GraphicsTypes.h"
 #include "graphics/gl_shader.h"
+#include "graphics/daytime.h"
 
 void Sprite::setFixed()
 {

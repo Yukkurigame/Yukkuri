@@ -11,6 +11,7 @@
 
 MainConfig conf;
 
+
 MainConfig::MainConfig()
 {
 		memset( this, 0, (unsigned)sizeof(this) );

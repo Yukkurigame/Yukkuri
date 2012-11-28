@@ -4,8 +4,9 @@
  *  Created on: 29.03.2012
  *
  */
-#include "Animation.h"
-#include "Render.h"
+#include "graphics/Animation.h"
+#include "graphics/Render.h"
+#include "graphics/gl_shader.h"
 #include "scripts/LuaConfig.h"
 
 #include "hacks.h"
@@ -66,6 +67,7 @@ bool Animation::init(  std::string subconfig, std::string config)
 							RenderManager::GetTextureNumberById( image ), picture);
 	sprite->setCentered();
 	sprite->setPicture( picture );
+	sprite->shader = Shaders::getProgram( "lighting" );
 	count = 0;
 
 

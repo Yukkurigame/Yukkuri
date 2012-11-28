@@ -8,6 +8,7 @@
 #include "widgets/WidgetText.h"
 #include "widgets/WidgetBar.h"
 #include "scripts/LuaConfig.h"
+#include "graphics/daytime.h"
 
 #include "hacks.h"
 #include "debug.h"
@@ -25,6 +26,16 @@ namespace
 
 }
 
+extern float currentFPS;
+
+
+void Interface::init( )
+{
+	Widget* w = Interface::GetWidget( "fps", NULL );
+	if( w )
+		w->bindValue( &(currentFPS) );
+	DayTime::loadInterface();
+}
 
 
 void Interface::clean( )

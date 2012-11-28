@@ -16,6 +16,7 @@
 long sdl_time = 0;
 long last_timerevent_tick = 0;
 
+
 // Private variables
 namespace {
 	int FPS_tick_counter;
@@ -23,14 +24,14 @@ namespace {
 	long last_tick;
 }
 
+// Gcc bug
+extern MainConfig conf;
+extern float currentFPS;
 
 
 /** The main loop. **/
 void Yukkuri::Start()
 {
-	extern MainConfig conf;
-	extern float currentFPS;
-
 	Window.state = gsRunning;
 
 	last_tick = 0;
@@ -117,6 +118,5 @@ void Yukkuri::End( )
 
 float Yukkuri::getFPS()
 {
-	extern float currentFPS;
 	return currentFPS;
 }

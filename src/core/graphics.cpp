@@ -10,6 +10,7 @@
 #include "core/yukkuri.h"
 #include "graphics/Render.h"
 #include "graphics/sdl_graphics.h"
+#include "graphics/daytime.h"
 #include "map/Map.h"
 #include "config.h"
 #include "debug.h"
@@ -17,10 +18,11 @@
 #include "SDL/SDL.h"
 
 
+extern MainConfig conf;
+
+
 bool Yukkuri::InitGraphics( )
 {
-	extern MainConfig conf;
-
 	Debug::debug( Debug::MAIN, "Initializing SDL...	" );
 	// Register SDL_Quit to be called at exit; makes sure things are cleaned up when we quit.
 	atexit( SDL_Quit );
@@ -69,12 +71,15 @@ bool Yukkuri::InitGraphics( )
 		return false;
 	}
 
+	DayTime::init();
+
 	return true;
 }
 
 void Yukkuri::CleanGraphics()
 {
 	RenderManager::clean();
+	DayTime::clean();
 	SDL_Quit();
 }
 
@@ -101,15 +106,4 @@ void Yukkuri::SetTitle( const char* title )
 const char* Yukkuri::GetTitle()
 {
 	return Window.title;
-}
-
-
-int Yukkuri::getScreenW()
-{
-	return Window.width;
-}
-
-int Yukkuri::getScreenH()
-{
-	return Window.height;
 }

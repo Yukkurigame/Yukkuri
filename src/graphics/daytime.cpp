@@ -17,11 +17,11 @@
 
 #define RADIANS ( M_PI / 180.0 )
 #define DAY_PERIOD 200
-#define SUN_POSITION 500
+#define SUN_POSITION 10
 #define SUN_HEIGHT 30
-#define LATITUDE 30.0
+#define LATITUDE 10.0
 #define LONGITUDE 130.0
-#define GTM_DELTA 12
+#define GTM_DELTA 11
 #define LTSM ( LONGITUDE - 15.0 * GTM_DELTA )
 /*
 #define BASE_NIGHT 128
@@ -43,9 +43,6 @@ namespace{
 	int Day;
 	float Time;
 	bool Updated;
-	Sprite* sfield;
-	//GLint colorLight = -1;
-	//UINT night = BASE_NIGHT;
 	light LightSun;
 
 	struct ProcessShader {
@@ -102,17 +99,14 @@ void calculate_sunpos( float time, GLfloat sun[4] )
 			sin(delta) * sin(LATITUDE * RADIANS) +
 			cos(delta) * cos(LATITUDE * RADIANS) * cos(HRA));
 	float Azimuth = acos(
-			( sin(delta) - sin(Elevation) * sin(LATITUDE * RADIANS) ) /
-			( cos(Elevation) * cos(LATITUDE * RADIANS) ) );
-
-	printf("%f %f:%f\n", time, Elevation / RADIANS, Azimuth / RADIANS);
-
+			( sin(delta) * cos(LATITUDE * RADIANS) - cos(delta) * sin(LATITUDE * RADIANS) * cos(HRA) ) /
+			cos(Elevation));
+	if( HRA > 0 )
+		Azimuth = 2 * M_PI - Azimuth;
 	sun[0] = SUN_POSITION * cos(Elevation) * sin(Azimuth);
 	sun[1] = SUN_POSITION * sin(Elevation) * sin(Azimuth);
 	sun[2] = SUN_HEIGHT * sin(Elevation);
 	sun[3] = 0.0;
-
-	sfield->setPosition(sun[0], sun[1], 1.0);
 }
 
 
@@ -121,7 +115,6 @@ void DayTime::init()
 {
 	Day = 1;
 	Time = 10.0;
-	//sfield = NULL;
 	memset( &LightSun.position[0], 0, (unsigned)sizeof(GLfloat) * 4 );
 	addShader( Shaders::getProgram( "lighting" ) );
 }
@@ -167,19 +160,6 @@ bool DayTime::removeShader( GLint id )
 
 void DayTime::loadInterface()
 {
-	sfield = RenderManager::CreateGLSprite(1, 1, 1, 50, 50 );
-	sfield->clr.set( 0, 0, 0, 255 );
-	/*
-	sfield = RenderManager::CreateGLSprite(0, 0, 4, conf.windowWidth, conf.windowHeight );
-	sfield->setFixed();
-	sfield->clr.set( 0, 0, 0, 0 );
-	// Load daytime shader and get uniform vars.
-	sfield->shader = Shaders::getProgram( "daytime" );
-	colorLight = glGetUniformLocation( sfield->shader, "colorLight" );
-	glUseProgram( sfield->shader );
-	glUniform4f( colorLight, 1.0, 1.0, 0.0, 0.0 );
-	glUseProgram( 0 );
-	*/
 	text = Interface::GetWidget( "time", NULL );
 	DayTimer.Start();
 }
@@ -189,12 +169,9 @@ void DayTime::update( const UINT& dt )
 	float hours = 24.0f * dt / (conf.dayLength * 10000.0f);
 	Time = fmod( Time + hours , 24.0f );
 	if( Time > 22 || Time < 2){
-		//if( sfield->clr.a != night )
-		//	sfield->clr.a = night;
 		if ( Time < 2 ){
 			if( !Updated ){
 				Day++;
-		//		night = BASE_NIGHT + MOON_MOD * ( ( Day % 29 ) / 29 );
 				Updated = true;
 			}
 		}else{
@@ -204,30 +181,26 @@ void DayTime::update( const UINT& dt )
 		if(text)
 			text->setText("Midnight");
 	}else if( Time > 18 ){
-		//float p = (Time - 18) / 4.0f;
-		//sfield->clr.a = static_cast<int>( night * p );
-		//sfield->clr.a = std::min( night, static_cast<UINT>( 255 * p ) );
-		if(Time > 20.0){
+		if(text)
+			text->setText("Evening");
+		/*if(Time > 20.0){
 			if(text)
 				text->setText("Twilight");
 		}else{
 			if(text)
 				text->setText("Evening");
-		}
+		}*/
 	}else if( Time < 6 ){
-		//float p = 1 - (Time - 2) / 4.0f;
-		//sfield->clr.a = std::min( night , static_cast<UINT>( 256 * p ) );
-		//sfield->clr.a = static_cast<int>( night * p );
-		if( Time > 4 ){
+		if(text)
+			text->setText("Night");
+		/*if( Time > 4 ){
 			if(text)
 				text->setText("Dawn");
 		}else{
 			if(text)
 				text->setText("Night");
-		}
+		}*/
 	}else{
-		//if( sfield->clr.a != 0 )
-		//	sfield->clr.a = 0;
 		if( Time < 11 ){
 			if(text)
 				text->setText("Morning");
@@ -248,16 +221,6 @@ void DayTime::update( const UINT& dt )
 		head->data->setUp();
 		head = head->next;
 	}
-	/*
-	glUseProgram( sfield->shader );
-	if( Time > 4 && Time < 8 ){
-		float p = (Time - 4.0f) / 4.0f;
-		glUniform4f( colorLight, p, p, 0.0f, 0.25f * (float)sin( M_PI * ( 1.0f - p )) );
-	}else{
-		glUniform4f( colorLight, 0.0f, 0.0f, 0.0f, 0.0f );
-	}
-	glUseProgram( 0 );
-	*/
 }
 
 

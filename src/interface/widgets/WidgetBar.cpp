@@ -96,7 +96,7 @@ void WidgetBar::setBarValue( float value )
 	{//Output text;
 		char str[25];
 		snprintf( str, 25, "%.0f/%.0f", value, BarMaxValue );
-		setText( str );
+		setWidgetText( str );
 	}
 	if( value < 0 )
 		value = 0;
@@ -115,7 +115,7 @@ void WidgetBar::setBarSize( float val )
 	{//Output text;
 		char str[25];
 		snprintf( str, 25, "%.0f/%.0f", BarValue, BarMaxValue );
-		setText( str );
+		setWidgetText( str );
 	}
 	if( BarSprite )
 		BarSprite->resize( BarWidth * BarValue / BarMaxValue, -1 );
@@ -141,9 +141,9 @@ bool WidgetBar::bindBarMaxValue( float* val )
 
 void WidgetBar::Update( )
 {
-	if( fBinded != NULL ){
-		if( (*fBinded) != BarValue )
-			setBarValue( *fBinded );
+	if( Binded.type == tiFloat && Binded.ptr ){
+		if( *(float*)Binded.ptr != BarValue )
+			setBarValue( *(float*)Binded.ptr );
 	}
 	if( BindedMaxValue != NULL ){
 		if( (*BindedMaxValue) != BarMaxValue )

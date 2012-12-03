@@ -22,29 +22,28 @@ public:
 	void updatePosition( );
 
 	void setFontColor( unsigned int r, unsigned int g, unsigned int b );
-	void setText( std::string text );
 	void setTextPosition( float x, float y );
 	float getTextX( ){ return TextX; }
 	float getTextY( ){ return TextY; }
 
-	inline int getLineHeight( ){ return (int)TextSprite.getLineHeight(); }
-	inline void  setLineHeight( float lh ){ TextSprite.setLineHeight( lh ); }
-
-	inline int getLineSize( ){ return TextSprite.getLineSize(); }
-	inline int getLines( ){ return (int)(Height / TextSprite.getLineSize()); }
-
-
 	void Update();
 
 	void toggleVisibility( );
+
+	// Bindings
+	inline int getLineHeight( ){ return (int)TextSprite.getLineHeight(); }
+	inline void setLineHeight( float lh ){ TextSprite.setLineHeight( lh ); }
+	inline int getLineSize( ){ return TextSprite.getLineSize(); }
+	inline int getLines( ){ return (int)(Height / TextSprite.getLineSize()); }
+
+	inline void setCursor( unsigned int pos ) { TextSprite.setCursorPosition( pos ); }
+	inline int getCursor( ) { return TextSprite.getCursorPosition(); };
 	inline unsigned char isCursorVisible()	{ return TextSprite.isCursorVisible(); }
 	inline void setCursorVisible()			{ TextSprite.setCursorVisible(); }
 	inline void clearCursorVisible()		{ TextSprite.clearCursorVisible(); }
 
-	bool setText( lua_State* L );
-
-	inline void setCursor( unsigned int pos ) { TextSprite.setCursorPosition( pos ); }
-	inline int getCursor( ) { return TextSprite.getCursorPosition(); };
+	void setWidgetText( std::string text );
+	inline std::string getWidgetText( ) { return TextContent; }
 
 
 protected:
@@ -59,8 +58,7 @@ private:
 	std::string TextContent;
 	std::string FontName;
 	int FontSize;
-	int iBindedCache;
-	float fBindedCache;
+	double BindedCache;
 
 };
 

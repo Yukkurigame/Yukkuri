@@ -8,6 +8,11 @@
 #ifndef BASIC_TYPES_H_
 #define BASIC_TYPES_H_
 
+// TODO: find all same structures and group in one.
+enum type_identifier {
+	tiNone = 0, tiInt, tiFloat, tiString,
+};
+
 
 struct s2i
 {

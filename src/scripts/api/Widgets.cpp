@@ -36,10 +36,11 @@ bool Widget::toggle( lua_State* L )
 bool Widget::bindParam( lua_State* L )
 {
 	luaL_argcheck( L, lua_isnumber( L, 1 ) || lua_isuserdata( L, 1 ), 1, "Object expected" );
-	luaL_argcheck( L, lua_isstring( L, 2 ), 2, "Parameter name expected" );
+	luaL_argcheck( L, lua_isnumber( L, 2 ), 2, "Parameter name expected" );
 
 	Unit* u = NULL;
 	int paramname;
+
 
 	if( lua_isnumber( L, 1 ) ){
 		UINT id = static_cast<UINT>( lua_tointeger(L, 1) );
@@ -56,11 +57,17 @@ bool Widget::bindParam( lua_State* L )
 	}else if( paramname <= 0 ){
 		Debug::debug( Debug::INTERFACE, "Bad bind parameter.\n" );
 	}else{
+		void* param = NULL;
+		enum type_identifier type = tiNone;
 		// FIXME: binded values point to wrong memory when unit dies.
-		if( paramname < uCharIntLast )
-			this->bindValue( u->getUnitpParameter( (enum character)paramname ) );
-		else
-			this->bindValue( u->getUnitpParameter( (enum character_float)paramname ) );
+		if( paramname < uCharIntLast ){
+			param = u->getUnitpParameter( (enum character)paramname );
+			type = tiInt;
+		}else{
+			param = u->getUnitpParameter( (enum character_float)paramname );
+			type = tiFloat;
+		}
+		this->bindValue( type, param );
 		return true;
 	}
 
@@ -76,17 +83,19 @@ LuaRet Widget::getChildren( lua_State* L )
 	Widget* child = NULL;
 	LuaRet r(1);
 
-	FOREACHIT( this->Children ){
-		child = *it;
-		lua_pushstring( L, child->getName().c_str() );
-		lua_pushinteger( L, child->getId() );
+	listElement<Widget*>* l = Children.head;
+	while( l != NULL ){
+		child = l->data;
+		lua_pushstring( L, child->getWidgetName().c_str() );
+		lua_pushinteger( L, child->getWidgetId() );
 		lua_settable( L, top );
+		l = l->next;
 	}
 	return r;
 
 }
 
-
+/*
 bool WidgetText::setText( lua_State* L )
 {
 	luaL_argcheck( L, lua_isstring( L, 1 ), 1, "Text expected" );
@@ -95,10 +104,11 @@ bool WidgetText::setText( lua_State* L )
 
 	lua_pop( L, 1 );
 
-	this->setText( text );
+	this->setWidgetText( text );
 
 	return true;
 }
+*/
 
 
 bool WidgetBar::bindBarMaxValue( lua_State* L )

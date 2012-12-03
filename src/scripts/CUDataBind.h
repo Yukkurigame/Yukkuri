@@ -129,13 +129,23 @@ void RegisterAllTypeMetatables(lua_State* L)
 
 // Widgets
 #define DECL_WIDGET_METH								\
+		GETTERF_METHOD_DECL(WidgetId)					\
+		GETTERF_METHOD_DECL(WidgetType)					\
+		GETTERF_METHOD_DECL(WidgetWidth)				\
+		GETTERF_METHOD_DECL(WidgetHeight)				\
+		GETTERF_METHOD_DECL(WidgetRealX)				\
+		GETTERF_METHOD_DECL(WidgetRealY)				\
+		GETTERF_METHOD_DECL(ChildrenCount)				\
+		GETSETF_METHOD_DECL(WidgetName)					\
+		GETSETF_METHOD_DECL(WidgetX)					\
+		GETSETF_METHOD_DECL(WidgetY)					\
 		EXEC_METHOD_DECL(resize)						\
 		EXEC_METHOD_DECL(toggle)						\
 		EXEC_METHOD_DECL(bindParam)						\
 		EXEC_NAMED_METHOD_DECL(children, getChildren)
 
 #define DECL_WIDGETTEXT_METH							\
-		EXEC_METHOD_DECL(setText)						\
+		GETSETF_METHOD_DECL(WidgetText)					\
 		GETTERF_METHOD_DECL(Lines)						\
 		GETTERF_METHOD_DECL(LineSize)					\
 		GETSETF_METHOD_DECL(LineHeight)					\
@@ -191,6 +201,16 @@ DECL_WIDGETBAR_METH
 
 // Widgets
 #define WIDGET_METH_ENTRY(ID)					\
+		GETTER_METHOD_ENTRY(ID, WidgetId)		\
+		GETTER_METHOD_ENTRY(ID, WidgetType)		\
+		GETTER_METHOD_ENTRY(ID, WidgetWidth)	\
+		GETTER_METHOD_ENTRY(ID, WidgetHeight)	\
+		GETTER_METHOD_ENTRY(ID, WidgetRealX)	\
+		GETTER_METHOD_ENTRY(ID, WidgetRealY)	\
+		GETTER_METHOD_ENTRY(ID, ChildrenCount)	\
+		GETSET_METHOD_ENTRY(ID, WidgetName)		\
+		GETSET_METHOD_ENTRY(ID, WidgetX)		\
+		GETSET_METHOD_ENTRY(ID, WidgetY)		\
 		EXEC_METHOD_ENTRY(ID, resize)			\
 		EXEC_METHOD_ENTRY(ID, toggle)			\
 		EXEC_METHOD_ENTRY(ID, bindParam)		\
@@ -199,7 +219,7 @@ DECL_WIDGETBAR_METH
 
 #define WIDGETTEXT_METH_ENTRY(ID)				\
 		WIDGET_METH_ENTRY(ID)					\
-		EXEC_METHOD_ENTRY(ID, setText)			\
+		GETSET_METHOD_ENTRY(ID, WidgetText)		\
 		GETTER_METHOD_ENTRY(ID, Lines)			\
 		GETTER_METHOD_ENTRY(ID, LineSize)		\
 		GETSET_METHOD_ENTRY(ID, LineHeight)		\

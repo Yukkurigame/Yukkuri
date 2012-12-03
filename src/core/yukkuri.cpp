@@ -82,7 +82,7 @@ void Yukkuri::Think( const int& ElapsedTime )
 {
 	// Do time-based calculations
 	UnitManager::tick( ElapsedTime );
-	Interface::Update( );
+	//Interface::Update( );
 }
 
 

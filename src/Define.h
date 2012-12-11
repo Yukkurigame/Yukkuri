@@ -12,6 +12,7 @@
 	#define MAX_PATH 4096
 #endif
 
+// FIXME: MOVE TO GRAPHICS
 #ifdef WIN32
 	#undef GL_GLEXT_PROTOTYPES
 	#include "GL\glew.h"

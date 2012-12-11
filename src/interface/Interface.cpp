@@ -139,10 +139,7 @@ Widget* Interface::LoadWidget( std::string id )
 	conf->getValue("children", id, childs);
 	FOREACHIT( childs ){
 		Widget* cld = LoadWidget( *it );
-		if(cld){
-			w->addChild(cld);
-			cld->setParent(w);
-		}
+		w->addChild(cld);
 	}
 
 	delete conf;
@@ -164,7 +161,7 @@ Widget* Interface::GetWidget( unsigned int id )
 Widget* Interface::GetWidget( std::string name, Widget* parent )
 {
 	if( parent != NULL )
-		return parent->getChildren(name);
+		return parent->getChild( name );
 	FOREACHIT( widgets ){
 		if( (*it)->getParent() == NULL && (*it)->getWidgetName() == name )
 			return (*it);

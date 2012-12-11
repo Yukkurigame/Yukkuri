@@ -9,7 +9,7 @@
 
 #include "core/yukkuri.h"
 #include "graphics/Render.h"
-#include "graphics/sdl_graphics.h"
+#include "graphics/utils/sdl_graphics.h"
 #include "graphics/daytime.h"
 #include "map/Map.h"
 #include "config.h"

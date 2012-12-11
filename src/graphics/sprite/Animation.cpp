@@ -4,9 +4,9 @@
  *  Created on: 29.03.2012
  *
  */
-#include "graphics/Animation.h"
+#include "graphics/sprite/Animation.h"
 #include "graphics/Render.h"
-#include "graphics/gl_shader.h"
+#include "graphics/utils/gl_shader.h"
 #include "scripts/LuaConfig.h"
 
 #include "hacks.h"

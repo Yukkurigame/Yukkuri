@@ -3,7 +3,7 @@
 
 
 #include "graphics/Render.h"
-#include "graphics/gl_shader.h"
+#include "graphics/utils/gl_shader.h"
 #include "interface/Interface.h"
 #include "interface/widgets/WidgetText.h"
 //#include "units/unitmanager.h"

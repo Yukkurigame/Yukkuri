@@ -6,6 +6,7 @@
  */
 
 #include "graphics/render/GLHelpers.h"
+#include "graphics/utils/VBOArray.h"
 #include "graphics/gl_extensions.h"
 
 
@@ -96,8 +97,8 @@ bool GLHelpers::ClearView( )
  * 	vbostructure - linked list of vbo description
  * 	vertices - array of vertices, coordinates and color
  */
-void GLHelpers::DrawVBO( GLuint& VBOHandle, int vboc,
-		VBOStructureHandle* vbostructure, VertexV2FT2FC4UI* vertices )
+void GLHelpers::DrawVBO( GLuint& VBOHandle, /* int vboc, */
+		VBOStructureHandle* vbostructure /*, VertexV2FT2FC4UI* vertices */ )
 {
 	VBOStructureHandle* temp = NULL;
 
@@ -109,8 +110,10 @@ void GLHelpers::DrawVBO( GLuint& VBOHandle, int vboc,
 	glBindBuffer( GL_ARRAY_BUFFER, VBOHandle );
 
 	// VBO + GL_STREAM_DRAW == +10 fps
-	int vertex_size = sizeof(VertexV2FT2FC4UI);
-	glBufferData( GL_ARRAY_BUFFER, vertex_size * vboc, vertices, GL_STREAM_DRAW );
+	int vertex_size =  sizeof(VertexV2FT2FC4UI);
+	VertexV2FT2FC4UI* head = VBOArray::head();
+	int size = VBOArray::size();
+	glBufferData( GL_ARRAY_BUFFER, size, head, GL_STREAM_DRAW );
 
 	glVertexPointer( 3, GL_FLOAT, vertex_size, 0 );
 	glTexCoordPointer( 2, GL_FLOAT, vertex_size, BUFFER_OFFSET(sizeof(s3f)) );
@@ -125,7 +128,8 @@ void GLHelpers::DrawVBO( GLuint& VBOHandle, int vboc,
 			glUseProgram( vbostructure->shader );
 			aprog = vbostructure->shader;
 		}
-		glDrawArrays(GL_QUADS, vbostructure->start, vbostructure->count);
+		glDrawElements( vbostructure->type, vbostructure->count, GL_UNSIGNED_INT, vbostructure->indexes );
+		//glDrawArrays(GL_QUADS, vbostructure->indexes, vbostructure->count);
 		//Clean vbos
 		temp = vbostructure;
 		vbostructure = vbostructure->next;

@@ -5,8 +5,8 @@
  *
  */
 
-#include "graphics/AnimationDefines.h"
-#include "graphics/Animation.h"
+#include "graphics/sprite/AnimationDefines.h"
+#include "graphics/sprite/Animation.h"
 
 #define ANIM( name ) name = Animation::getAnimationId(#name);
 

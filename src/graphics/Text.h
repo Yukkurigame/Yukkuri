@@ -10,6 +10,7 @@
 
 #include <vector>
 #include "graphics/Font.h"
+#include "graphics/sprite/Sprite.h"
 #include "graphics/GraphicsTypes.h"
 
 
@@ -23,7 +24,7 @@ public:
 
 	inline int width(){ return Width; }
 	inline int height(){ return Height; }
-	inline int getLines( ){ return Lines; }	
+	inline int getLines( ){ return Lines; }
 	inline int getLineSize( ){ return (int)((float)font->cellHeight * lineHeight); }
 	inline float getLineHeight( ){ return lineHeight; }
 

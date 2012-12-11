@@ -23,9 +23,10 @@ UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp ActionTimer.cpp Unit.cpp 
 		 UnitStatic.cpp UnitDynamic.cpp UnitEntity.cpp UnitCorpse.cpp UnitPlayer.cpp
 PHYSICS = physics.cpp handlers.cpp
 RENDER = Atlas.cpp ElasticBox.cpp GLHelpers.cpp GLTextures.cpp TextureArray.cpp
-GRAPHICS = GraphicsTypes.cpp Font.cpp Text.cpp sdl_graphics.cpp gl_extensions.cpp gl_shader.cpp \
-		   Animation.cpp AnimationDefines.cpp Camera.cpp Render.cpp pngfuncs.c \
-		   daytime.cpp $(addprefix render/, $(RENDER))
+SPRITE = Sprite.cpp Animation.cpp AnimationDefines.cpp Brush.cpp
+GRAPHUTILS = gl_shader.cpp pngfuncs.c sdl_graphics.cpp VBOArray.cpp
+GRAPHICS = Camera.cpp daytime.cpp Font.cpp gl_extensions.cpp Render.cpp Text.cpp \
+		   $(addprefix render/, $(RENDER)) $(addprefix sprite/, $(SPRITE)) $(addprefix utils/, $(GRAPHUTILS))
 SCRIPTSAPI = UnitManagerApi.cpp InterfaceApi.cpp Widgets.cpp ThreadManagerApi.cpp CameraApi.cpp \
 			 BindingsApi.cpp Units.cpp PathsApi.cpp
 SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp proto.cpp \
@@ -95,8 +96,9 @@ $(PROGNAME) : | $(OBJDIR) $(GCH) $(OBJS)
 
 $(OBJDIR):
 	mkdir -p $(addprefix $(OBJDIR), $(COREDIR) $(SCRIPTSDIR) $(SCRIPTSDIR)$(SCRIPTSAPIDIR) \
-	 $(UNITSDIR) $(GRAPHICSDIR) $(GRAPHICSDIR)render/ $(INTERFACEDIR) \
-	 $(INTERFACEDIR)$(WIDGETSDIR) $(MAPDIR) $(3RDPARTYDIR) $(3RDPARTYDIR)timer $(PHYSICSDIR))
+	 $(GRAPHICSDIR) $(GRAPHICSDIR)render/ $(GRAPHICSDIR)sprite/ $(GRAPHICSDIR)utils/  \
+	 $(UNITSDIR) $(INTERFACEDIR) $(INTERFACEDIR)$(WIDGETSDIR) $(MAPDIR) $(3RDPARTYDIR) \
+	 $(3RDPARTYDIR)timer $(PHYSICSDIR))
 
 
 clean: cleanheaders cleanobjs cleanprog cleandirs

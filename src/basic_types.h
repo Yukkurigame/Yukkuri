@@ -38,12 +38,23 @@ struct s3f
 	float y;
 	float z;
 	s3f() : x(), y(), z() {}
+	s3f( s3f* c ) : x(c->x), y(c->y), z(c->z) {}
 	s3f( float X, float Y, float Z ) : x(X), y(Y), z(Z) {}
+	void operator-=(const s3f& b){
+		x -= b.x; y -= b.y; z -= b.z;
+	}
 	s3f operator-(const s3f& b){
 		s3f result = *this;
 		result.x -= b.x;
 		result.y -= b.y;
 		result.z -= b.z;
+		return result;
+	}
+	s3f operator+(const s3f& b){
+		s3f result = *this;
+		result.x += b.x;
+		result.y += b.y;
+		result.z += b.z;
 		return result;
 	}
 };
@@ -97,8 +108,38 @@ struct list
 			delete t;
 		}
 	};
+	void insert( T data, listElement<T>* prev ){
+		if( prev == 0 )
+			push( data );
+		else
+			prev->next = new listElement<T>( data, prev->next );
+	}
 	void push( T data ){
 		head = new listElement<T>( data, head );
+	}
+	void remove( listElement<T>* t, listElement<T>* prev ){
+		if(!t)
+			return;
+		if( !prev ) // element is head
+			head = t->next;
+		else
+			prev->next = t->next;
+		delete t;
+		t = 0;
+	}
+	void remove( listElement<T>* element ){
+		listElement<T>* t = head;
+		listElement<T>* prev = 0;
+		if( !element )
+			return;
+		while( t != 0 ){
+			if( t == element ){
+				remove( t, prev );
+				break;
+			}
+			prev = t;
+			t = t->next;
+		}
 	}
 	void remove( T data ){
 		listElement<T>* t = head;
@@ -109,14 +150,7 @@ struct list
 			prev = t;
 			t = t->next;
 		}
-		if( t != 0 ){
-			if( prev != 0 )
-				prev->next = t->next;
-			else // One element
-				head = t->next;
-			delete t;
-			t = 0;
-		}
+		remove( t, prev );
 	}
 	int count( ){
 		int c = 0;

@@ -80,9 +80,9 @@ void WidgetBar::createBar( std::string name, int picture, int height, color4u cl
 						(int)Width, (int)Height, RenderManager::GetTextureNumberById(name), picture );
 		TopSprite->setFixed();
 	}
-	if( BarSprite ){
+	/*if( BarSprite ){
 		BarSprite->clr.set( clr.r, clr.g, clr.b, clr.a );
-	}
+	}*/
 	//setTextPosition( getTextX(), getTextY() - Height );
 	setBarValue(1);
 	setBarSize(1);

@@ -20,9 +20,10 @@ struct s4ub
 	GLubyte g;
 	GLubyte b;
 	GLubyte a;
-	s4ub() : r(), g(), b(), a() {}
+	s4ub() : r(255), g(255), b(255), a(255) {}
 };
 
+/*
 
 struct coord2farr
 {
@@ -53,6 +54,7 @@ struct vertex3farr
 	vertex3farr() {};
 };
 
+*/
 
 struct color4u
 {
@@ -72,6 +74,30 @@ struct color4u
 	void set( unsigned int cr, unsigned int cg, unsigned int cb ) { r = cr; g = cg; b = cb; }
 	void set( unsigned int cr, unsigned int cg, unsigned int cb, unsigned int ca ) { r = cr; g = cg; b = cb; a = ca; }
 	void set( color4u* c ) { if( !c ) return; r = c->r; g = c->g; b = c->b; a = c->a; }
+};
+
+
+struct VertexV2FT2FC4UI
+{
+	s3f verticles;
+	s2f coordinates;
+	s4ub color;
+	VertexV2FT2FC4UI(s3f p, s2f t, color4u* c){
+		verticles = p;
+		coordinates = t;
+		color.r = c->r;
+		color.g = c->g;
+		color.b = c->b;
+		color.a = c->a;
+	}
+	void set( s3f* p, s2f* t, color4u* c ){
+		verticles = *p;
+		coordinates = *t;
+		color.r = c->r;
+		color.g = c->g;
+		color.b = c->b;
+		color.a = c->a;
+	}
 };
 
 
@@ -102,6 +128,10 @@ struct TextureProxy
 		return abs < t.abs;
 	}
 
+};
+
+enum quad_corners {
+	qcRT=0, qcRB, qcLT, qcLB, qcLAST
 };
 
 
@@ -145,185 +175,101 @@ struct TextureInfo
 			tpos.y = pos.y + row * sheight;
 		}
 	}
-	inline coord2farr getSubTexture( int pic ){
+/*	inline coord2farr getSubTexture( int pic ){
 		coord2farr rect;
 		getSubTexture( pic, rect );
 		return rect;
 	}
-	inline void getSubTexture( int pic, coord2farr& rect ){
+*/
+	inline void getSubTexture( int pic, VertexV2FT2FC4UI* rect, int count ){
 		int row = pic / cols;
 		int col = pic - row * cols;
-		getSubTexture( col, row, rect );
+		getSubTexture( col, row, rect, count );
 	}
-	inline void getSubTexture( int col, int row, coord2farr& rect ){
-		if( cols < 1 && rows < 1 ){
+	inline void getSubTexture( int col, int row, VertexV2FT2FC4UI* rect, int count ){
+		if( count < qcLAST )
+			return;
+		float x = 0;
+		float y = 0;
+		float w = 1.0;
+		float h = 1.0;
+		if( cols > 0 || rows > 0 ){
+		/*if( cols < 1 && rows < 1 ){
+			x
 			rect.lb.x = rect.lt.x = 0;
 			rect.lb.y = rect.rb.y = 0;
 			rect.rb.x = rect.rt.x = 1.0;
 			rect.lt.y = rect.rt.y = 1.0;
-		}else{
+		}else{*/
 			col %= cols;
 			row %= rows;
-			float x = pos.x + col * twidth;
-			float y = pos.y + row * theight;
-			rect.lb.x = rect.lt.x = x;
-			rect.lb.y = rect.rb.y = y;
-			rect.rb.x = rect.rt.x = x + twidth;
-			rect.lt.y = rect.rt.y = y + theight;
+			x = pos.x + col * twidth;
+			y = pos.y + row * theight;
+			w = twidth;
+			h = theight;
 		}
+		for( int i=0; i < qcLAST; ++i ){
+			s2f& coords = rect[i].coordinates;
+			switch(i){
+				case qcRT:
+					coords = s2f(x + w, y + h);
+					break;
+				case qcRB:
+					coords = s2f(x + w, y);
+					break;
+				case qcLT:
+					coords = s2f(x, y + h);
+					break;
+				case qcLB:
+					coords = s2f(x, y);
+					break;
+			}
+		}
+		/*
+		rect.lb.x = rect.lt.x = x;
+		rect.lb.y = rect.rb.y = y;
+		rect.rb.x = rect.rt.x = x + twidth;
+		rect.lt.y = rect.rt.y = y + theight;
+		*/
+
 	}
 };
 
 
-struct VertexV2FT2FC4UI
-{
-	s3f verticles;
-	s2f coordinates;
-	s4ub color;
-	VertexV2FT2FC4UI(s3f p, s2f t, color4u* c){
-		verticles = p;
-		coordinates = t;
-		color.r = c->r;
-		color.g = c->g;
-		color.b = c->b;
-		color.a = c->a;
-	}
-	void set( s3f* p, s2f* t, color4u* c ){
-		verticles = *p;
-		coordinates = *t;
-		color.r = c->r;
-		color.g = c->g;
-		color.b = c->b;
-		color.a = c->a;
-	}
-};
 
 
 struct VBOStructureHandle
 {
-	int start;
+	GLuint* indexes;
 	int count;
+	GLuint type;
 	GLuint atlas;
 	GLuint shader;
 	VBOStructureHandle* next;
-	VBOStructureHandle(int tex, int shd, int s){
+	VBOStructureHandle( unsigned int t, int tex, int shd ){
+		type = t;
 		atlas = tex;
 		shader = shd;
-		start = s;
-		count = 1;
+		indexes = NULL;
+		count = 0;
 		next = NULL;
 	}
+	~VBOStructureHandle( ){
+		if( indexes )
+			free(indexes);
+	}
+	void set_indexes( int first, int c ){
+		int new_count = count + c;
+		indexes = (GLuint*)realloc( indexes, sizeof(GLuint) * new_count );
+		for( int i = 0; i < c; ++i )
+			indexes[i + count] = first + i;
+		count = new_count;
+	}
 };
 
 
-struct Sprite
-{
-	unsigned int texid;
-	unsigned int picture;
-	GLuint atlas;		// Texture atlas, same as in tex probably
-	unsigned int flags; // 1 - visible
-						// 2 - centred
-						// 4 - fixed
-	GLuint shader;
-	rect2f rect;
-	TextureInfo* tex;
-	vertex3farr vertices;
-	coord2farr coordinates;
-	color4u clr;
 
-	inline unsigned char isVisible()	{ return flags & 1; }
-	inline void setVisible()			{ flags |= 1; }
-	inline void clearVisible()			{ flags &= ~1; }
 
-	inline unsigned char isCentered()	{ return flags & 2; }
-	inline void setCentered()			{ flags |= 2; }
-	inline void clearCentered()			{ flags &= ~2; }
-
-	inline unsigned char isFixed()		{ return flags & 4; }
-	void setFixed();					// Needs shader placing
-	inline void clearFixed()			{ flags &= ~4; shader = 0; }
-
-	Sprite() : rect(), vertices(), coordinates(), clr(){
-		tex = NULL;
-		picture = atlas = texid = 0;
-		flags = 1; // visible only
-		shader = 0;
-	}
-
-	void setPicture( int pic ){
-		picture = pic;
-		if( texid && tex ){
-			tex->getSubTexture(pic, coordinates);
-		}else{
-			coordinates.lb.x = coordinates.lt.x = 0;
-			coordinates.lb.y = coordinates.rb.y = 0;
-			coordinates.rb.x = coordinates.rt.x = 1.0;
-			coordinates.lt.y = coordinates.rt.y = 1.0;
-		}
-	}
-
-	void resize( float w, float h ){
-		if( w >= 0 ){
-			vertices.rb.x = vertices.rt.x = vertices.lb.x + w;
-			rect.width = w;
-		}
-		if( h >= 0 ){
-			vertices.rt.y = vertices.lt.y = vertices.lb.y + h;
-			rect.height = h;
-		}
-	}
-
-	void move( float dx, float dy, float dz ){
-		// move x
-		vertices.lb.x = (vertices.lt.x += dx);
-		vertices.rb.x = (vertices.rt.x += dx);
-		// move y
-		vertices.lb.y = (vertices.rb.y += dy);
-		vertices.lt.y =	(vertices.rt.y += dy);
-		// move z
-		vertices.lb.z = vertices.lt.z = vertices.rt.z = (vertices.rb.z += dz);
-	}
-
-	void setPosition( float x, float y ){
-		float width = vertices.rb.x - vertices.lb.x;
-		float height = vertices.rt.y - vertices.lb.y; // FIXME: lb is rb?
-		rect.x = x;
-		rect.y = y;
-		if( isCentered() ){
-			float halfwidth = width/2;
-			float halfheight = height/2;
-			vertices.lb.x = vertices.lt.x = x - halfwidth;
-			vertices.lb.y = vertices.rb.y = y - halfheight;
-			vertices.rb.x = vertices.rt.x = x + halfwidth;
-			vertices.lt.y = vertices.rt.y = y + halfheight;
-		}else{
-			vertices.lb.x = vertices.lt.x = x;
-			vertices.lb.y = vertices.rb.y = y;
-			vertices.rb.x = vertices.rt.x = x + width;
-			vertices.lt.y = vertices.rt.y = y + height;
-		}
-	}
-
-	void setPosition( float x, float y, float z ){
-		setPosition( x, y );
-		vertices.lb.z = vertices.lt.z = vertices.rt.z = vertices.rb.z = z;
-	}
-
-	void setPosition( s3f lb, s3f lt, s3f rt, s3f rb ){
-		vertices.lb = lb;
-		vertices.lt = lt;
-		vertices.rt = rt;
-		vertices.rb = rb;
-	}
-
-	void toggleVisibility( ){
-		if( isVisible() )
-			clearVisible();
-		else
-			setVisible();
-	}
-
-};
 
 
 #endif /* GRAPHICSTYPES_H_ */

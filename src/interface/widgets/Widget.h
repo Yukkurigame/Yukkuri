@@ -8,7 +8,7 @@
 #define WIDGETS_H_
 
 #include "basic_types.h"
-#include "graphics/GraphicsTypes.h"
+#include "graphics/sprite/Sprite.h"
 #include "3rdparty/CUDataUser.h"
 #include "3rdparty/timer/ITimerEventPerformer.h"
 
@@ -66,15 +66,16 @@ public:
 	virtual void setParent( Widget* p );
 	inline Widget* getParent( ) { return Parent; }
 
-	Widget* getChildren( std::string name );
-	inline void addChild( Widget* child ){ Children.push( child ); }
+	Widget* getChild( std::string name );
+	void addChild( Widget* child );
+	void removeChild( Widget* child );
 
 	bool bindValue( enum type_identifier type, void* val );
 
 	void setBackground( int texture, int picture );
 	inline void setBackgroundColor( int r, int g, int b, int a ){
-		if( background != NULL )
-			background->clr.set( r, g, b, a );
+		//if( background != NULL )
+			//background->clr.set( r, g, b, a );
 	}
 
 
@@ -108,10 +109,12 @@ public:
 	GET_PARAM( float, RealY, PosY )
 	//GET_PARAM( float, RealZ, PosZ )
 	//SET_PARAM( float, RealZ, PosZ )
-	GET_SET_PARAM( std::string, Name, Name )
+	//GET_SET_PARAM( std::string, Name, Name )
 	GET_SET_PARAM( float, X, OffsetX )
 	GET_SET_PARAM( float, Y, OffsetY )
 
+	std::string getWidgetName() { return Name; }
+	void setWidgetName( std::string _var ) { Name = _var; }
 
 #undef GET_PARAM
 #undef SET_PARAM
@@ -137,6 +140,7 @@ protected:
 	//std::string* SBinded;
 
 	std::string baseID;
+	std::string Name;
 
 	struct {
 		void* ptr;
@@ -148,7 +152,6 @@ protected:
 
 private:
 	unsigned int ID;
-	std::string Name;
 	wType Type;
 	// TODO: Aligns must be one flag
 	int Align;

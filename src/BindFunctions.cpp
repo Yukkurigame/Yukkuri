@@ -10,7 +10,7 @@
 #include "core/yukkuri.h"
 #include "units/unitmanager.h"
 #include "units/UnitPlayer.h"
-#include "graphics/sdl_graphics.h"
+#include "graphics/utils/sdl_graphics.h"
 
 #include "debug.h"
 

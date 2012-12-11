@@ -72,7 +72,7 @@ bool Widget::load( std::string id )
 	std::string align;
 	std::string valign;
 
-	if( !(	this->create( id ) &&
+	if( !( this->create( id ) &&
 			cfg->getValue( "name", id, Name ) ) )
 		return false;
 
@@ -219,17 +219,41 @@ void Widget::setParent( Widget* p )
 }
 
 
-Widget* Widget::getChildren( std::string name )
+Widget* Widget::getChild( std::string name )
 {
 	listElement<Widget*>* l = Children.head;
 	while( l != NULL ){
-		if( l->data->getWidgetName() == name )
+		Widget* w = l->data;
+		if( w->getWidgetName() == name )
 			return l->data;
 		l = l->next;
 	}
 	return NULL;
 }
 
+void Widget::addChild( Widget* child )
+{
+	if( child == NULL )
+		return;
+	Children.push( child );
+	Widget* cp = child->getParent();
+	if( cp != NULL )
+		cp->removeChild( child );
+	child->setParent( this );
+}
+
+void Widget::removeChild( Widget* child )
+{
+	if( child == NULL )
+		return;
+	listElement< Widget* >* lelem = Children.head;
+	while( lelem != NULL ){
+		if( lelem->data == child )
+			break;
+		lelem = lelem->next;
+	}
+	Children.remove( lelem );
+}
 
 bool Widget::bindValue( enum type_identifier type, void* val )
 {

@@ -13,7 +13,7 @@
 #include "graphics/render/ElasticBox.h"
 #include "graphics/render/Atlas.h"
 #include "graphics/Render.h"
-#include "graphics/gl_shader.h"
+#include "graphics/utils/gl_shader.h"
 
 #include "config.h"
 #include "debug.h"

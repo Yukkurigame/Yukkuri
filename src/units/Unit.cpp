@@ -442,9 +442,9 @@ bool Unit::update( const Frame& frame )
 				setUnitSize( static_cast<float>(param.intData) / 100 );
 			break;
 		case acSetColor:
-			if( Actions.checkFrameParams( frame, 4, stInt, stInt, stInt, stInt ) )
-				Image.getSprite()->clr.set( frame.params[0].intData, frame.params[1].intData,
-						frame.params[2].intData, frame.params[3].intData );
+			//if( Actions.checkFrameParams( frame, 4, stInt, stInt, stInt, stInt ) )
+				//Image.getSprite()->clr.set( frame.params[0].intData, frame.params[1].intData,
+				//		frame.params[2].intData, frame.params[3].intData );
 			break;
 
 		default:

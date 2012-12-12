@@ -3,8 +3,9 @@
 
 
 #include "graphics/Render.h"
-#include "graphics/gl_shader.h"
+#include "graphics/utils/gl_shader.h"
 #include "interface/Interface.h"
+#include "interface/widgets/WidgetText.h"
 //#include "units/unitmanager.h"
 #include "3rdparty/timer/TimerManager.h"
 #include "3rdparty/timer/InternalTimerEvent.h"
@@ -39,7 +40,7 @@ struct light {
 
 namespace{
 
-	Widget*	text;
+	WidgetText*	text;
 	int Day;
 	float Time;
 	bool Updated;
@@ -72,7 +73,7 @@ namespace{
 		virtual ~Caller(){ };
 
 		void Start(){
-			Timer::AddInternalTimerEvent( this, 1, DAY_PERIOD, 0, true, false );
+			Timer::AddInternalTimerEvent( this, 1, DAY_PERIOD, 0, true, true );
 		}
 
 		void OnTimer( InternalTimerEvent& ev ){
@@ -122,6 +123,7 @@ void DayTime::init()
 void DayTime::clean()
 {
 	//RenderManager::FreeGLSprite( sfield );
+	// TODO: cleaning.
 }
 
 bool DayTime::addShader( GLint id )
@@ -160,7 +162,7 @@ bool DayTime::removeShader( GLint id )
 
 void DayTime::loadInterface()
 {
-	text = Interface::GetWidget( "time", NULL );
+	text = reinterpret_cast<WidgetText*>(Interface::GetWidget( "time", NULL ));
 	DayTimer.Start();
 }
 
@@ -179,10 +181,10 @@ void DayTime::update( const UINT& dt )
 				Updated = false;
 		}
 		if(text)
-			text->setText("Midnight");
+			text->setWidgetText("Midnight");
 	}else if( Time > 18 ){
 		if(text)
-			text->setText("Evening");
+			text->setWidgetText("Evening");
 		/*if(Time > 20.0){
 			if(text)
 				text->setText("Twilight");
@@ -192,7 +194,7 @@ void DayTime::update( const UINT& dt )
 		}*/
 	}else if( Time < 6 ){
 		if(text)
-			text->setText("Night");
+			text->setWidgetText("Night");
 		/*if( Time > 4 ){
 			if(text)
 				text->setText("Dawn");
@@ -203,13 +205,13 @@ void DayTime::update( const UINT& dt )
 	}else{
 		if( Time < 11 ){
 			if(text)
-				text->setText("Morning");
+				text->setWidgetText("Morning");
 		}else if( Time > 14 ){
 			if(text)
-				text->setText("Afternoon");
+				text->setWidgetText("Afternoon");
 		}else{
 			if(text)
-				text->setText("Noon");
+				text->setWidgetText("Noon");
 		}
 	}
 

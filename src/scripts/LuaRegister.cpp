@@ -17,6 +17,8 @@
 #include "api/BindingsApi.h"
 #include "api/PathsApi.h"
 
+#include "interface/widgets/Widget.h"
+
 #include "units/Prototypes.h"
 #include "units/Unit.h"
 #include "units/YOBA.h"
@@ -176,6 +178,20 @@ void LuaMain::RegisterApi( lua_State* L )
 		FIELD(acDAddFood)
 		FIELD(acDUnitGrow)
 		FIELD(acEAddPathTarget)
+
+		// Widgets
+		FIELD(wtNone)
+		FIELD(wtBlank)
+		FIELD(wtText)
+		FIELD(wtBar)
+		FIELD(wtConsole)
+		// Widgets align
+		FIELD(waLEFT)
+		FIELD(waCENTER)
+		FIELD(waRIGHT)
+		FIELD(waTOP)
+		FIELD(waMIDDLE)
+		FIELD(waBOTTOM)
 
 		// Unit base parameters
 		FIELD(uBaseLevel)

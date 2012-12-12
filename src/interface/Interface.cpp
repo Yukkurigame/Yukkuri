@@ -12,6 +12,7 @@
 
 #include "hacks.h"
 #include "debug.h"
+#include "safestring.h"
 
 
 namespace
@@ -24,6 +25,28 @@ namespace
 		//FIXME: why this function is empty?
 	}
 
+	Widget* NewWidget( std::string id, enum wType type ){
+		Widget* w = NULL;
+		switch( type ){
+			default:
+				debug( Debug::INTERFACE, "Widget with id " + id + " have bad type " + citoa(type) + ".\n" );
+				type = wtNone;
+				// No break. Create blank widget by default.
+			case wtBlank:
+				w = new Widget( );
+				break;
+			case wtText:
+				w = new WidgetText( );
+				break;
+			case wtBar:
+				w = new WidgetBar( );
+				break;
+		}
+		if( w != NULL )
+			w->setType( type );
+		return w;
+	}
+
 }
 
 extern float currentFPS;
@@ -33,7 +56,7 @@ void Interface::init( )
 {
 	Widget* w = Interface::GetWidget( "fps", NULL );
 	if( w )
-		w->bindValue( &(currentFPS) );
+		w->bindValue( tiFloat, &(currentFPS) );
 	DayTime::loadInterface();
 }
 
@@ -48,6 +71,19 @@ void Interface::clean( )
 }
 
 
+Widget* Interface::CreateWidget( std::string id, enum wType type )
+{
+	Widget* w;
+	debug( Debug::INTERFACE, "Creating widget " + id + "\n" );
+	w = NewWidget(id, type);
+	if( w != NULL ){
+		w->setId( LastWidgetId++ );
+		widgets.push_back(w);
+	}
+	return w;
+}
+
+
 void Interface::LoadAllWidgets( )
 {
 	std::vector< std::string > v;
@@ -58,6 +94,7 @@ void Interface::LoadAllWidgets( )
 	}
 	delete lc;
 }
+
 
 Widget* Interface::LoadWidget( std::string id )
 {
@@ -73,23 +110,20 @@ Widget* Interface::LoadWidget( std::string id )
 		//return w;
 	//}
 
-	std::string type;
-	conf->getValue( "type", id, type );
-
-	if( type == "Widget" ){
-		w = new Widget( );
-		w->setType( wtBlank );
-	}else if( type == "TextWidget" ){
-		w = new WidgetText( );
-		w->setType( wtText );
-	}else if( type == "BarWidget" ){
-		w = new WidgetBar( );
-		w->setType( wtBar );
-	}else{
-		debug( Debug::INTERFACE, "Widget with id " + id + " have bad type " + type + ".\n" );
-		w = new Widget( );
-		w->setType( wtNone );
+	std::string stype;
+	enum wType type = wtNone;
+	conf->getValue( "type", id, stype );
+	if( stype == "Widget" ){
+		type = wtBlank;
+	}else if( stype == "TextWidget" ){
+		type = wtText;
+	}else if( stype == "BarWidget" ){
+		type = wtBar;
 	}
+
+	w = NewWidget( id, type );
+	if( w == NULL )
+		return w;
 
 	if( !w->load( id ) ){
 		delete w;
@@ -105,10 +139,7 @@ Widget* Interface::LoadWidget( std::string id )
 	conf->getValue("children", id, childs);
 	FOREACHIT( childs ){
 		Widget* cld = LoadWidget( *it );
-		if(cld){
-			w->addChild(cld);
-			cld->setParent(w);
-		}
+		w->addChild(cld);
 	}
 
 	delete conf;
@@ -120,7 +151,7 @@ Widget* Interface::GetWidget( unsigned int id )
 {
 	if( id > 1 && id < LastWidgetId  ){
 		FOREACHIT( widgets ){
-			if( (*it)->getId( ) == id )
+			if( (*it)->getWidgetId( ) == id )
 				return (*it);
 		}
 	}
@@ -130,9 +161,9 @@ Widget* Interface::GetWidget( unsigned int id )
 Widget* Interface::GetWidget( std::string name, Widget* parent )
 {
 	if( parent != NULL )
-		return parent->getChildren(name);
+		return parent->getChild( name );
 	FOREACHIT( widgets ){
-		if( (*it)->getParent() == NULL && (*it)->getName() == name )
+		if( (*it)->getParent() == NULL && (*it)->getWidgetName() == name )
 			return (*it);
 	}
 	return NULL;

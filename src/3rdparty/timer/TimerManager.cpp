@@ -11,6 +11,7 @@
 #include "3rdparty/timer/TimerEvent.h"
 #include "3rdparty/timer/InternalTimerEvent.h"
 #include "scripts/LuaThread.h"
+#include "core/yukkuri.h"
 
 #include <list>
 #include "hacks.h"
@@ -19,7 +20,6 @@
 extern long sdl_time;
 extern long last_timerevent_tick;
 
-#define PAUSE 0
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -255,7 +255,9 @@ void Timer::ProcessTimerEvents()
 
 	TimerEvent* first = NULL;
 
-	if( nbPausableEvents && PAUSE )
+	bool paused = (Yukkuri::Window.state == gsPaused);
+
+	if( nbPausableEvents && paused )
 	{
 		// К execTime каждого приостановленного события добавится shift
 		UINT shift = sdl_time - last_timerevent_tick;
@@ -286,13 +288,14 @@ void Timer::ProcessTimerEvents()
 		}
 	}
 
+
 	while( !timerEvents.empty() ){
 		first = *(timerEvents.begin());	// Указатель на ближайшее событие
 
 		if (first->execTime > sdl_time)
 			break;							// Время еще не пришло
 
-		assert( ( !first->IsPausable() && PAUSE ) || !PAUSE );
+		assert( ( !first->IsPausable() && paused ) || !paused );
 
 		first->ExecEvent();
 

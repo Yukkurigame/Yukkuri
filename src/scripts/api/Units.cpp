@@ -11,8 +11,9 @@ int Unit::color( lua_State* L )
 {
 	// TODO: rewrite
 
-	color4u& clr = Image.getSprite()->clr;
 	int top = lua_gettop(L);
+	/*
+	color4u& clr = Image.getSprite()->clr;
 
 	if( top == 0 ){
 		lua_newtable(L);
@@ -33,6 +34,7 @@ int Unit::color( lua_State* L )
 	}else{
 		Debug::debug( Debug::SCRIPT, "Color: bad arguments count" );
 	}
+	*/
 
 	lua_pop( L, top );
 

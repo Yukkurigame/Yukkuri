@@ -20,8 +20,7 @@ WidgetText::WidgetText( )
 	TextY = 0;
 	TextAlign = wtNone;
 	TextContent = "";
-	fBindedCache = 0.00123f;
-	iBindedCache = 123000;
+	BindedCache = 0.00123f;
 }
 
 
@@ -57,23 +56,23 @@ bool WidgetText::load( std::string id )
 	delete cfg;
 
 	if( talign == "Center" )
-		TextAlign = CENTER;
+		TextAlign = waCENTER;
 	else if( talign == "Right" )
-		TextAlign = RIGHT;
+		TextAlign = waRIGHT;
 	else
-		TextAlign = LEFT;
+		TextAlign = waLEFT;
 	if( tvalign == "Middle" )
-		TextVAlign = MIDDLE;
+		TextVAlign = waMIDDLE;
 	else if( tvalign == "Bottom" )
-		TextVAlign = BOTTOM;
+		TextVAlign = waBOTTOM;
 	else
-		TextVAlign = TOP;
+		TextVAlign = waTOP;
 
 	TextSprite.setPosition( TextX, TextX, getZ() );
 	TextSprite.setFont( font, fontsize );
 	TextSprite.setFixed( true );
 	TextSprite.setLineHeight( lineheight );
-	setText( "" );
+	setWidgetText( "" );
 
 	for( unsigned int i=0; i < 3; ++i ){
 		if( i >= vcolor.size() )
@@ -99,25 +98,25 @@ void WidgetText::updatePosition( )
 	Widget::updatePosition( );
 	posx = posy = 0;
 	switch(TextAlign){
-		case CENTER:
+		case waCENTER:
 			posx = PosX + this->Width * 0.5f - width * 0.5f + TextX;
 			break;
-		case RIGHT:
+		case waRIGHT:
 			posx = PosX + this->Width - width + TextX;
 			break;
-		case LEFT:
+		case waLEFT:
 		default:
 			posx = PosX + TextX;
 			break;
 	}
 	switch(TextVAlign){
-			case CENTER:
+			case waCENTER:
 				posy = PosY - height * 0.5f + this->Height * 0.5f + TextY;
 				break;
-			case BOTTOM:
+			case waBOTTOM:
 				posy = PosY + TextY;
 				break;
-			case TOP:
+			case waTOP:
 			default:
 				posy = PosY + this->Height -
 				TextSprite.getLineSize() + TextY;
@@ -131,7 +130,7 @@ void WidgetText::setFontColor( unsigned int r, unsigned int g, unsigned int b )
 	TextSprite.setColor( r, g, b );
 }
 
-void WidgetText::setText( std::string text )
+void WidgetText::setWidgetText( std::string text )
 {
 	float w, h;
 	if( TextContent == text )
@@ -157,17 +156,29 @@ void WidgetText::setTextPosition( float x, float y )
 
 void WidgetText::Update( )
 {
-	if( fBinded && (*fBinded) != fBindedCache ){
-		fBindedCache = (*fBinded);
-		char d[6];
-		snprintf(d, 6, "%.0f", fBindedCache);
-		setText( d );
-	}else if( iBinded && (*iBinded) != iBindedCache ){
-		iBindedCache = (*iBinded);
-		char d[6];
-		snprintf(d, 6, "%.0i", iBindedCache);
-		setText( d );
+	if( Binded.ptr == NULL )
+		return;
+	char d[6];
+	const char* format;
+	switch( Binded.type ){
+		case tiInt:
+			if( *(int*)Binded.ptr == BindedCache )
+				return;
+			BindedCache = *(int*)Binded.ptr;
+			format = "%.0f";
+			break;
+		case tiFloat:
+			if( *(float*)Binded.ptr == BindedCache )
+				return;
+			BindedCache = *(float*)Binded.ptr;
+			format = "%.0f";
+			break;
+		default:
+			Debug::debug( Debug::INTERFACE, "Binded variable type not supported.\n");
+			return;
 	}
+	snprintf(d, 6, format, BindedCache);
+	setWidgetText( d );
 }
 
 void WidgetText::toggleVisibility( )

@@ -30,8 +30,27 @@ int IfaceApi::loadWidget( lua_State* L )
 	if( !w ){
 		lua_pushnil( L );
 	}else{
-		lua_pushinteger( L, w->getId( ) );
+		lua_pushinteger( L, w->getWidgetId( ) );
 	}
+	return 1;
+}
+
+int IfaceApi::createWidget( lua_State* L )
+{
+	std::string wname;
+	enum wType type;
+
+	luaL_argcheck( L, lua_isstring( L, 1 ), 1, "Widget name not given." );
+	luaL_argcheck( L, lua_isnumber( L, 2 ), 2, "Widget type not given." );
+
+	wname = lua_tostring( L, 1 );
+	type = (enum wType)lua_tointeger( L, 2 );
+	Widget* w = Interface::CreateWidget( wname, type );
+	lua_pop( L, lua_gettop( L ) );
+	if( !w )
+		lua_pushnil( L );
+	else
+		return w->pushUData(L);
 	return 1;
 }
 

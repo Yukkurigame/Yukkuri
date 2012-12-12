@@ -5,9 +5,9 @@
  */
 #include "Render.h"
 #include "graphics/gl_extensions.h"
-#include "graphics/gl_shader.h"
-#include "graphics/sdl_graphics.h"
-#include "graphics/AnimationDefines.h"
+#include "graphics/utils/gl_shader.h"
+#include "graphics/utils/sdl_graphics.h"
+#include "graphics/sprite/AnimationDefines.h"
 #include "graphics/Camera.h"
 #include "graphics/Text.h"
 #include "graphics/render/Atlas.h"
@@ -327,8 +327,8 @@ Sprite* RenderManager::CreateGLSprite( Sprite* osprite )
 	if( osprite == NULL )
 		return NULL;
 
-	Sprite* sprite = new Sprite();
-	sprite->texid = osprite->texid;
+	Sprite* sprite = new Sprite(osprite);
+	/*sprite->texid = osprite->texid;
 	sprite->atlas = osprite->atlas;
 	sprite->tex = osprite->tex;
 
@@ -336,6 +336,7 @@ Sprite* RenderManager::CreateGLSprite( Sprite* osprite )
 	sprite->resize( osprite->rect.width, osprite->rect.height );
 	sprite->setPosition( osprite->rect.x, osprite->rect.y, osprite->vertices.lb.z );
 	sprite->setPicture( osprite->picture);
+	*/
 
 	GLSprites.push_back( sprite );
 
@@ -399,9 +400,9 @@ void RenderManager::DrawGLScene()
 
 	//VBOStructureHandle* temp = NULL;
 	int count = 0;
-	VBOStructureHandle* vbostructure = TextureArray::prepareVBO( &count, GLSprites, verticles );
+	VBOStructureHandle* vbostructure = TextureArray::prepareVBO( /*&count,*/ GLSprites /*, verticles*/ );
 
-	GLHelpers::DrawVBO( VBOHandle, count, vbostructure, verticles );
+	GLHelpers::DrawVBO( VBOHandle, /*count, */ vbostructure /*, verticles */ );
 
 	//TestDrawAtlas(-2500, -1000, 10);
 

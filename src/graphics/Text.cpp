@@ -146,7 +146,7 @@ void Text::setColor( int r, int g, int b )
 {
 	color.set( r, g, b );
 	ITER_SPRITES{
-		(*it)->clr.set( r, g, b, 255 );
+		//(*it)->clr.set( r, g, b, 255 );
 	}
 }
 
@@ -181,7 +181,7 @@ void Text::addSprite( int x, int y, Char* c )
 	Sprite* s = RenderManager::CreateGLSprite( position.x + static_cast<float>(x),
 		position.y - static_cast<float>(y), position.z, font->cellWidth,
 		font->cellHeight, font->texture, c->pic );
-	s->clr.set( &color );
+	//s->clr.set( &color );
 	sprites.push_back(s);
 }
 
@@ -207,7 +207,9 @@ void Text::setCursorPosition( unsigned int pos )
 	}else{
 		next = sprites[pos];
 	}
-	if(next)
-		cursor->setPosition( next->vertices.lb.x - cursorBearing, next->vertices.lb.y );
+	if(next){
+		s3f* lb = next->brush.lb();
+		cursor->setPosition( lb->x - cursorBearing, lb->y );
+	}
 	cursor->setVisible();
 }

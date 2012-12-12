@@ -5,7 +5,7 @@
 #include "unitmanager.h"
 
 #include "scripts/LuaConfig.h"
-#include "graphics/AnimationDefines.h"
+#include "graphics/sprite/AnimationDefines.h"
 #include "graphics/Render.h"
 
 #include "map/Map.h"
@@ -185,10 +185,11 @@ void UnitDynamic::update( const int& dt )
 		cpVect lt = cpPolyShapeGetVert( scopeShape, 1 );
 		cpVect rt = cpPolyShapeGetVert( scopeShape, 2 );
 		cpVect rb = cpPolyShapeGetVert( scopeShape, 3 );
-		vis->setPosition( s3f(physBody->p.x + lb.x, physBody->p.y + lb.y, 1.0),
-				s3f(physBody->p.x + lt.x, physBody->p.y + lt.y, 1.0),
-				s3f(physBody->p.x + rt.x, physBody->p.y + rt.y, 1.0),
-				s3f(physBody->p.x + rb.x, physBody->p.y + rb.y, 1.0));
+		vis->brush.set_quad( s3f(lb.x, lb.y, 1.0),
+				s3f(lt.x, lt.y, 1.0),
+				s3f(rt.x, rt.y, 1.0),
+				s3f(rb.x, rb.y, 1.0));
+		vis->brush.set_position( physBody->p.x, physBody->p.y, 1.0 );
 	}
 }
 
@@ -314,7 +315,7 @@ void UnitDynamic::setScope()
 {
 	if( vis == NULL ){
 		vis = RenderManager::CreateGLSprite( 0, 0, 1, 600, 300 );
-		vis->clr.set( 255, 255, 0, 127 );
+		//vis->clr.set( 255, 255, 0, 127 );
 	}
 	vis->setVisible();
 }

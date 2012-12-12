@@ -6,7 +6,7 @@
  */
 #include "graphics/gl_extensions.h"
 
-#include "graphics/gl_shader.h"
+#include "graphics/utils/gl_shader.h"
 #include <stdio.h>
 #include <map>
 

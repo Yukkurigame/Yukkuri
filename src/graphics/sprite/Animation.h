@@ -9,7 +9,7 @@
 #define ANIMATION_H_
 
 #include <string>
-#include "GraphicsTypes.h"
+#include "graphics/sprite/Sprite.h"
 
 
 struct AnimationFrames

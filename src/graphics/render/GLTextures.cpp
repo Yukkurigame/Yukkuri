@@ -7,7 +7,7 @@
 
 
 #include "graphics/render/GLTextures.h"
-#include "graphics/sdl_graphics.h"
+#include "graphics/utils/sdl_graphics.h"
 #include <map>
 
 #include "hacks.h"

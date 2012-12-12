@@ -7,7 +7,7 @@
 #ifndef RENDER_H_
 #define RENDER_H_
 
-#include "GraphicsTypes.h"
+#include "graphics/sprite/Sprite.h"
 
 #include <string>
 #include <vector>

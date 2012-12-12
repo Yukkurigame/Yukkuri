@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "graphics/Animation.h"
+#include "graphics/sprite/Animation.h"
 #include "units/ActionTimer.h"
 #include "units/Prototypes.h"
 #include "units/YOBA.h"

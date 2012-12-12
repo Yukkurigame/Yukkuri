@@ -19,8 +19,12 @@ public:
 
 	void setUnitPos( float x, float y );
 
-	void setBloodColor( int c ) { if( blood ) blood->clr.set( c ); }
-	void setBloodColor( int r, int g, int b ) { if( blood ) blood->clr.set( r, g, b ); }
+	void setBloodColor( int c ) {
+		//if( blood ) blood->clr.set( c );
+	}
+	void setBloodColor( int r, int g, int b ) {
+		//if( blood ) blood->clr.set( r, g, b );
+	}
 
 protected:
 	virtual CUData* createUData();

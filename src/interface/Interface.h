@@ -16,8 +16,10 @@ namespace Interface
 	void init( );
 	void clean();
 
+	Widget* CreateWidget( std::string id, enum wType type );
+
 	void LoadAllWidgets();
-	Widget* LoadWidget( std::string name );
+	Widget* LoadWidget( std::string id );
 
 	Widget* GetWidget( unsigned int id );
 	Widget* GetWidget( std::string name, Widget* parent );

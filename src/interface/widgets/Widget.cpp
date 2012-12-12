@@ -13,8 +13,27 @@
 #include "debug.h"
 #include "hacks.h"
 
+#include "3rdparty/timer/TimerManager.h"
 
-Widget::Widget()
+
+void Widget::WCaller::start( )
+{
+	event_id = Timer::AddInternalTimerEvent( this, 1, UPDATE_PERIOD, 0, true, false );
+}
+
+void Widget::WCaller::stop( )
+{
+	if(event_id < 0)
+		return;
+	if( Timer::DeleteTimerEventById( event_id ) )
+		event_id = -1;
+	else
+		Debug::debug( Debug::INTERFACE, "Cannot delete timer event.\n" );
+}
+
+
+
+Widget::Widget() : Timer(this)
 {
 	ID = 0;
 	Type = wtNone;
@@ -27,17 +46,25 @@ Widget::Widget()
 	visible = true;
 	Parent = NULL;
 	background = NULL;
-	iBinded = NULL;
-	fBinded = NULL;
+	Binded.ptr = NULL;
+	Binded.type = tiNone;
 }
+
 
 Widget::~Widget()
 {
 	RenderManager::FreeGLSprite( background );
 	Parent = NULL;
 	//FIXME: parent dies but children overcomes this.
-	Children.clear();
 }
+
+
+bool Widget::create( std::string id )
+{
+	baseID = id;
+	return true;
+}
+
 
 bool Widget::load( std::string id )
 {
@@ -45,10 +72,10 @@ bool Widget::load( std::string id )
 	std::string align;
 	std::string valign;
 
-	baseID = id;
-
-	if( ! cfg->getValue( "name", baseID, Name ))
+	if( !( this->create( id ) &&
+			cfg->getValue( "name", id, Name ) ) )
 		return false;
+
 	cfg->getValue( "x", baseID, OffsetX );
 	cfg->getValue( "y", baseID, OffsetY );
 	cfg->getValue( "width", baseID, Width );
@@ -57,25 +84,27 @@ bool Widget::load( std::string id )
 	cfg->getValue( "valign", baseID, valign );
 
 	if( align == "Center" )
-		Align = CENTER;
+		Align = waCENTER;
 	else if( align == "Right" )
-		Align = RIGHT;
+		Align = waRIGHT;
 	else
-		Align = LEFT;
+		Align = waLEFT;
 
 	if( valign == "Middle" )
-		VAlign = MIDDLE;
+		VAlign = waMIDDLE;
 	else if( valign == "Bottom" )
-		VAlign = BOTTOM;
+		VAlign = waBOTTOM;
 	else
-		VAlign = TOP;
+		VAlign = waTOP;
+
 
 	float z = 0;
 	cfg->getValue("depth", baseID, z );
-	setZ( z );
+	setWidgetRealZ( z );
 
 	updatePosition( );
-	if( Type != wtNone ){
+
+	{
 		std::string imgname;
 		int picture = 0;
 		std::vector< int > bgcolor;
@@ -83,15 +112,13 @@ bool Widget::load( std::string id )
 		cfg->getValue( "picture", baseID, picture );
 		cfg->getValue( "bgcolor", baseID, bgcolor );
 		if( imgname != "" || bgcolor.size() ){
-			background = RenderManager::CreateGLSprite( PosX, PosY, getZ(), (int)Width, (int)Height,
-					RenderManager::GetTextureNumberById( imgname ), picture );
-			background->setFixed();
+			setBackground( RenderManager::GetTextureNumberById( imgname ), picture );
 			if( bgcolor.size() ){
 				for( unsigned int i=0; i < 4; ++i ){
 					if( i >= bgcolor.size() )
 						bgcolor.push_back( i < 3 ? 0 : 255 );
 				}
-				background->clr.set( (unsigned)bgcolor[0], (unsigned)bgcolor[1],
+				setBackgroundColor( (unsigned)bgcolor[0], (unsigned)bgcolor[1],
 									(unsigned)bgcolor[2], (unsigned)bgcolor[3] );
 			}
 		}
@@ -101,6 +128,19 @@ bool Widget::load( std::string id )
 
 	return true;
 }
+
+
+void Widget::setBackground( int texture, int picture )
+{
+	if( Type == wtNone ) // No background for null widget
+		return;
+	if( background )
+		RenderManager::FreeGLSprite( background );
+	background = RenderManager::CreateGLSprite( PosX, PosY, getZ(), (int)Width, (int)Height,
+							texture, picture );
+	background->setFixed();
+}
+
 
 void Widget::resize( float w, float h )
 {
@@ -114,15 +154,16 @@ void Widget::resize( float w, float h )
 		background->resize( (float)Width, (float)Height );
 }
 
+
 void Widget::updatePosition( )
 {
 	extern MainConfig conf;
 	float posx, posy, startx, starty, width, height;
 	if(Parent){
-		width = Parent->getWidth( );
-		height = Parent->getHeight( );
-		startx = Parent->getX( );
-		starty = Parent->getY( ) + height;
+		width = Parent->getWidgetWidth( );
+		height = Parent->getWidgetHeight( );
+		startx = Parent->getWidgetRealX( );
+		starty = Parent->getWidgetRealY( ) + height;
 	}else{
 		startx = 0;
 		starty = (float)conf.windowHeight;
@@ -130,25 +171,25 @@ void Widget::updatePosition( )
 		height = (float)conf.windowHeight;
 	}
 	switch(Align){
-		case CENTER:
+		case waCENTER:
 			posx = startx + width * 0.5f - this->Width * 0.5f + OffsetX;
 			break;
-		case RIGHT:
+		case waRIGHT:
 			posx = startx + width - this->Width + OffsetX;
 			break;
-		case LEFT:
+		case waLEFT:
 		default:
 			posx = startx + OffsetX;
 			break;
 	}
 	switch(VAlign){
-		case CENTER:
+		case waCENTER:
 			posy = starty - height * 0.5f - this->Height * 0.5f - OffsetY;
 			break;
-		case BOTTOM:
+		case waBOTTOM:
 			posy = starty - height - OffsetY;
 			break;
-		case TOP:
+		case waTOP:
 		default:
 			posy = starty - this->Height - OffsetY;
 			break;
@@ -161,11 +202,13 @@ void Widget::updatePosition( )
 
 }
 
+
 float Widget::getZ( )
 {
 	extern MainConfig conf;
 	return PosZ + conf.widgetsPosZ;
 }
+
 
 void Widget::setParent( Widget* p )
 {
@@ -175,40 +218,57 @@ void Widget::setParent( Widget* p )
 	updatePosition();
 }
 
-void Widget::addChild( Widget* child )
-{
-	Children.push_back( child );
-}
 
-
-Widget* Widget::getChildren( std::string name )
+Widget* Widget::getChild( std::string name )
 {
-	FOREACHIT( Children ){
-		if( (*it)->getName() == name )
-			return *it;
+	listElement<Widget*>* l = Children.head;
+	while( l != NULL ){
+		Widget* w = l->data;
+		if( w->getWidgetName() == name )
+			return l->data;
+		l = l->next;
 	}
 	return NULL;
 }
 
-bool Widget::bindValue( int* val )
+void Widget::addChild( Widget* child )
 {
-	if( val ){
-		iBinded = val;
+	if( child == NULL )
+		return;
+	Children.push( child );
+	Widget* cp = child->getParent();
+	if( cp != NULL )
+		cp->removeChild( child );
+	child->setParent( this );
+}
+
+void Widget::removeChild( Widget* child )
+{
+	if( child == NULL )
+		return;
+	listElement< Widget* >* lelem = Children.head;
+	while( lelem != NULL ){
+		if( lelem->data == child )
+			break;
+		lelem = lelem->next;
+	}
+	Children.remove( lelem );
+}
+
+bool Widget::bindValue( enum type_identifier type, void* val )
+{
+	if( val != 0 ){
+		Binded.ptr = val;
+		Binded.type = type;
+		Timer.start();
 		return true;
 	}
-	iBinded = NULL;
+	Timer.stop();
+	Binded.ptr = NULL;
+	Binded.type = tiNone;
 	return false;
 }
 
-bool Widget::bindValue( float* val )
-{
-	if( val ){
-		fBinded = val;
-		return true;
-	}
-	fBinded = NULL;
-	return false;
-}
 
 void Widget::toggleVisibility( )
 {
@@ -220,8 +280,11 @@ void Widget::toggleVisibility( )
 	//          forcing value to bool 'true' or 'false' (performance warning)
 	if( this->background && (bool)this->background->isVisible() != visible )
 		this->background->toggleVisibility( );
-	for( int i = 0, end = Children.size(); i < end; ++i ){
-		Children[i]->toggleVisibility();
+
+	listElement<Widget*>* l = Children.head;
+	while( l != NULL ){
+		l->data->toggleVisibility();
+		l = l->next;
 	}
 }
 

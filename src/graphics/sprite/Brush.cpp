@@ -95,29 +95,15 @@ void GLBrush::scale( float x, float y )
 }
 
 
-void GLBrush::set_position( float x, float y, float z )
-{
-	move( x - vertex_origin.x, y - vertex_origin.y, z - vertex_origin.z );
-	/*s3f delta(  vertex_origin.x - x,
-				vertex_origin.y - y,
-				vertex_origin.z - z );
-	vertex_origin -= delta;
-	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
-	for( int i=0; i < points_count; ++i )
-		arr[i].verticles -= delta;
-	*/
-}
-
-
 void GLBrush::set_quad( s3f lb, s3f lt, s3f rt, s3f rb )
 {
 	if( points_count != 4 )
 		return;
 	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
-	arr[0].verticles = lt + vertex_origin;
-	arr[1].verticles = lb + vertex_origin;
-	arr[2].verticles = rt + vertex_origin;
-	arr[3].verticles = rb + vertex_origin;
+	arr[qcLT].verticles = lt + vertex_origin;
+	arr[qcLB].verticles = lb + vertex_origin;
+	arr[qcRT].verticles = rt + vertex_origin;
+	arr[qcRB].verticles = rb + vertex_origin;
 }
 
 

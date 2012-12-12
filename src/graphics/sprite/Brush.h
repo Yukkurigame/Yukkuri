@@ -26,9 +26,12 @@ struct GLBrush
 
 	void resize_verticles( int size );
 	void scale( float x, float y );
-	void set_position( float x, float y, float z );
 	void set_quad( s3f lb, s3f lt, s3f rt, s3f rb );
 	void move( float dx, float dy, float dz );
+
+	inline void set_position( float x, float y, float z ){
+		move( x - vertex_origin.x, y - vertex_origin.y, z - vertex_origin.z );
+	}
 
 	inline VertexV2FT2FC4UI* points(  ){
 		return VBOArray::pointer( point_index );

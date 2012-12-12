@@ -33,24 +33,39 @@ namespace {
 
 }
 
+
+
+inline void prepare_vbo( Sprite* s, VBOStructureHandle*& v, VBOStructureHandle*& first )
+{
+	if( s == NULL || !s->isVisible() )
+		return;
+
+	if( !v ){
+		first = v = new VBOStructureHandle( s->brush.type, s->atlas, s->shader );
+	}else if( v->type != prQUADS || s->atlas != v->atlas || s->shader != v->shader ){
+		v->next = new VBOStructureHandle( s->brush.type, s->atlas, s->shader );
+		v = v->next;
+	}
+
+	v->set_indexes( s->brush.point_index, s->brush.points_count );
+}
+
+
 /*	This function make vbo array from sprite array
  *	c - count of vbos handles to be returned
  *	sprites - vector of sprites
  *	verticles - vbo data array
  *	returns pointer to the first vbo info handler
  */
-VBOStructureHandle* TextureArray::prepareVBO( /*int* c,*/ std::vector< Sprite* >& sprites /*, VertexV2FT2FC4UI* verticles */ )
+VBOStructureHandle* TextureArray::prepareVBO( std::vector< Sprite* >& sprites )
 {
 	sort(sprites.begin(), sprites.end(), compareSprites);
-	//int count = 0;
-	Sprite* s;
-	//VBOHandlesCount = 0;
 	VBOStructureHandle* v = NULL;
 	VBOStructureHandle* first = NULL;
-	//int lastText = -1;
-	//memset( verticles, '0', sizeof( VertexV2FT2FC4UI ) * verticlesSize );
 	FOREACHIT( sprites ){
-		s = *(it);
+		Sprite* s = *(it);
+		prepare_vbo( s, v, first );
+		/*
 		if( s == NULL || !s->isVisible() )
 			continue;
 
@@ -59,24 +74,12 @@ VBOStructureHandle* TextureArray::prepareVBO( /*int* c,*/ std::vector< Sprite* >
 			first = v = new VBOStructureHandle( s->brush.type, s->atlas, s->shader );
 		}else if( v->type != prQUADS || s->atlas != v->atlas || s->shader != v->shader ){
 			v->next = new VBOStructureHandle( s->brush.type, s->atlas, s->shader );
-			//v->count = count - v->indexes;
 			v = v->next;
 		}
 
 		v->set_indexes( s->brush.point_index, s->brush.points_count );
-
-		// TODO: place VertexV2FT2FC4UI to sprite instead of verticles, coordinates and color
-		/*verticles[count++].set( &s->vertices.lb, &s->coordinates.lt, &s->clr );
-		verticles[count++].set( &s->vertices.rb, &s->coordinates.rt, &s->clr );
-		verticles[count++].set( &s->vertices.rt, &s->coordinates.rb, &s->clr );
-		verticles[count++].set( &s->vertices.lt, &s->coordinates.lb, &s->clr );
 		*/
 	}
-	//if( VBOHandlesCount )
-	//	VBOHandles[VBOHandlesCount - 1].count = count - VBOHandles[VBOHandlesCount - 1].start;
-	/*if( v != NULL)
-		v->count = count - v->indexes;
-	(*c) = count;*/
 	return first;
 }
 
@@ -88,13 +91,15 @@ VBOStructureHandle* TextureArray::prepareVBO( /*int* c,*/ std::vector< Sprite* >
  *	verticles - vbo data array
  *	returns pointer to the first vbo info handler
  */
-VBOStructureHandle* TextureArray::prepareVBO( /*int* c,*/ Sprite* sprites, unsigned int scount /*, VertexV2FT2FC4UI* verticles */ )
+VBOStructureHandle* TextureArray::prepareVBO( Sprite* sprites, unsigned int scount )
 {
 	//int count = 0;
 	VBOStructureHandle* v = NULL;
 	VBOStructureHandle* first = NULL;
 	for( unsigned int i = 0; i < scount; ++i ){
-		Sprite& s = sprites[i];
+		Sprite* s = &sprites[i];
+		prepare_vbo( s, v, first );
+		/*
 		if( !s.isVisible() )
 			continue;
 		// TODO: atlas instead of texture
@@ -102,22 +107,12 @@ VBOStructureHandle* TextureArray::prepareVBO( /*int* c,*/ Sprite* sprites, unsig
 			first = v = new VBOStructureHandle( s.brush.type, s.atlas, s.shader );
 		}else if( s.atlas != v->atlas || s.shader != v->shader ){
 			v->next = new VBOStructureHandle( s.brush.type, s.atlas, s.shader );
-			//v->count = count - v->indexes;
 			v = v->next;
 		}
 
 		v->set_indexes( s.brush.point_index, s.brush.points_count );
-
-		/*
-		verticles[count++].set( &s.vertices.lb, &s.coordinates.lt, &s.clr );
-		verticles[count++].set( &s.vertices.rb, &s.coordinates.rt, &s.clr );
-		verticles[count++].set( &s.vertices.rt, &s.coordinates.rb, &s.clr );
-		verticles[count++].set( &s.vertices.lt, &s.coordinates.lb, &s.clr );
 		*/
 	}
-/*	if( v != NULL)
-		v->count = count - v->indexes;
-	(*c) = count;*/
 	return first;
 }
 
@@ -204,12 +199,10 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, S
 		!GLHelpers::SetUpView( width, height, 1 ) )
 		return false;
 
-	/*VertexV2FT2FC4UI* vertices = (VertexV2FT2FC4UI*)malloc( (unsigned)sizeof(VertexV2FT2FC4UI) * count * 4 );
-	int vboc = 0; */
-	VBOStructureHandle* vbostructure = prepareVBO( /*&vboc, */  sprites, count /*, vertices */ );
+	VBOStructureHandle* vbostructure = prepareVBO( sprites, count );
 
 	glGenBuffers(1, &VBOHandle);
-	GLHelpers::DrawVBO( VBOHandle, /*vboc, */ vbostructure /*, vertices */ );
+	GLHelpers::DrawVBO( VBOHandle, vbostructure );
 	glDeleteBuffers( 1, &VBOHandle );
 
 	/* free( vertices ); */

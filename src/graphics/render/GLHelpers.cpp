@@ -120,10 +120,14 @@ void GLHelpers::DrawVBO( GLuint& VBOHandle, /* int vboc, */
 	glColorPointer( 4, GL_UNSIGNED_BYTE, vertex_size, BUFFER_OFFSET(sizeof(s3f) + sizeof(s2f)) );
 
 	GLuint aprog = 0;
+	GLuint texture = 0;
 
 	while(vbostructure != NULL){
 		//glActiveTexture( GL_TEXTURE0 );
-		glBindTexture( GL_TEXTURE_2D, vbostructure->atlas );
+		if( texture != vbostructure->atlas ){
+			glBindTexture( GL_TEXTURE_2D, vbostructure->atlas );
+			texture = vbostructure->atlas;
+		}
 		if( aprog != vbostructure->shader ){
 			glUseProgram( vbostructure->shader );
 			aprog = vbostructure->shader;

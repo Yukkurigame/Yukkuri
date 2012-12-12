@@ -25,9 +25,6 @@ struct Sprite
 	rect2f rect;
 	TextureInfo* tex;
 	GLBrush brush;
-	//vertex3farr vertices;
-	//coord2farr coordinates;
-	//color4u clr;
 
 
 	inline unsigned char isVisible()	{ return flags & 1; }
@@ -50,7 +47,6 @@ struct Sprite
 	Sprite( Sprite* src ) : texid(src->texid), picture(src->picture),
 		atlas(src->atlas), flags(src->flags), shader(src->shader),
 		rect(src->rect), tex(src->tex), brush(src->brush) { }
-		//, coordinates(src->coordinates), clr(src->clr)
 
 	void setPicture( int pic );
 
@@ -62,25 +58,6 @@ struct Sprite
 
 	inline void setPosition( float x, float y, float z ){
 		brush.set_position( x, y, z );
-		/*
-		float width = vertices.rb.x - vertices.lb.x;
-		float height = vertices.rt.y - vertices.lb.y; // FIXME: lb is rb?
-		rect.x = x;
-		rect.y = y;
-		if( isCentered() ){
-			float halfwidth = width/2;
-			float halfheight = height/2;
-			vertices.lb.x = vertices.lt.x = x - halfwidth;
-			vertices.lb.y = vertices.rb.y = y - halfheight;
-			vertices.rb.x = vertices.rt.x = x + halfwidth;
-			vertices.lt.y = vertices.rt.y = y + halfheight;
-		}else{
-			vertices.lb.x = vertices.lt.x = x;
-			vertices.lb.y = vertices.rb.y = y;
-			vertices.rb.x = vertices.rt.x = x + width;
-			vertices.lt.y = vertices.rt.y = y + height;
-		}
-		*/
 	}
 
 	inline void setPosition( float x, float y ){

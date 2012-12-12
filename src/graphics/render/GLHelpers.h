@@ -26,6 +26,7 @@ namespace GLHelpers
 	bool BindTextureToFBO( GLuint ahandle, GLuint& FBOHandle );
 	bool UnbindFBO( GLuint& FBOHandle );
 	bool UpdateTexture( GLuint basetex, Texture* copysrc, int posx, int posy );
+	bool GenerateMipmap( GLuint ahandle );
 
 	// Pixel buffer object
 	bool UpdateGLTextureFromTexture( GLuint basetex, Texture* copysrc, const s2f& offset,

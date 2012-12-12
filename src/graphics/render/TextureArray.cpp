@@ -183,9 +183,10 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, s
 
 	}
 
+
 	// Reset FBO
-	GLHelpers::ClearView( );
-	return  GLHelpers::UnbindFBO( FBOHandle );
+	return  GLHelpers::ClearView( ) &&
+			GLHelpers::UnbindFBO( FBOHandle );
 }
 
 /* This function render sprites array into new opengl texture (or clear it).
@@ -216,8 +217,8 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, S
 	free( vertices );
 
 	// Reset FBO
-	GLHelpers::ClearView( );
-	return GLHelpers::UnbindFBO( FBOHandle );
+	return  GLHelpers::ClearView( ) &&
+			GLHelpers::UnbindFBO( FBOHandle );
 }
 
 

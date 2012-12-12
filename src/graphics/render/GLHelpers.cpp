@@ -211,6 +211,21 @@ bool GLHelpers::UpdateTexture( GLuint basetex, Texture* copysrc, int posx, int p
 }
 
 
+/*  This function generates mipmaps to textures.
+ *  ahandle - texture id
+ *  returns bool
+ *
+ *  Generates very blured textures. Use only for consoles.
+ */
+bool GLHelpers::GenerateMipmap( GLuint ahandle )
+{
+	glBindTexture( GL_TEXTURE_2D, ahandle );
+	glGenerateMipmapEXT( GL_TEXTURE_2D );
+	glBindTexture( GL_TEXTURE_2D, 0 );
+	return true;
+}
+
+
 /* This function copy texture part to base texture using PBO.
  * basetex - opengl id of base texture.
  * copysrc - texture structure with copy source.

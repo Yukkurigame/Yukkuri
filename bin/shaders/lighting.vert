@@ -1,4 +1,9 @@
 #version 120
+#extension GL_ARB_explicit_attrib_location : require
+
+layout(location = 0) in vec3 Position;
+//layout(location = 1) in vec2 in_texCoords;
+
 
 uniform sampler2D colorTexture;
 varying vec2 texCoords;
@@ -25,7 +30,7 @@ vec4 scene_ambient = vec4(0.4, 0.4, 0.4, 1.0);
 
 void main(void)
 {
-	// FIXME: inverse in glsl 1.4
+	//texCoords = in_texCoords;
 	texCoords = vec2(gl_MultiTexCoord0);
 	mat4 mvp = gl_ModelViewProjectionMatrix;
 	vec3 normalDirection = normalize(gl_Normal);
@@ -35,5 +40,5 @@ void main(void)
 		* max(0.0, dot(normalDirection, lightDirection));
 	color = max(sun_position, scene_ambient);
 	color = max(vec4(diffuseReflection, 1.0), scene_ambient);
-	gl_Position = mvp * gl_Vertex;
+	gl_Position = mvp * vec4(Position, 1.0); // gl_Vertex;
 }

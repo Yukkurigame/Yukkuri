@@ -20,15 +20,15 @@ namespace {
 
 	inline bool compareSprites( Sprite* s1, Sprite* s2 )
 	{
-		s3f* rt1 = s1->brush.rt();
-		s3f* rt2 = s2->brush.rt();
-		if( rt1->z == rt2->z ){
-			if( s1->rect.y == s2->rect.y ){
-				return ( s1->rect.x > s2->rect.x );
+		s3f* o1 = &s1->brush.vertex_origin;
+		s3f* o2 = &s2->brush.vertex_origin;
+		if( o1->z == o2->z ){
+			if( o1->y == o2->y ){
+				return ( o1->x > o2->x );
 			}
-			return ( s1->rect.y > s2->rect.y );
+			return ( o1->y > o2->y );
 		}
-		return ( rt1->z < rt2->z );
+		return ( o1->z < o2->z );
 	}
 
 }
@@ -57,7 +57,7 @@ VBOStructureHandle* TextureArray::prepareVBO( /*int* c,*/ std::vector< Sprite* >
 		// TODO: atlas instead of texture
 		if( !v ){
 			first = v = new VBOStructureHandle( s->brush.type, s->atlas, s->shader );
-		}else if( v->type != GL_QUADS || s->atlas != v->atlas || s->shader != v->shader ){
+		}else if( v->type != prQUADS || s->atlas != v->atlas || s->shader != v->shader ){
 			v->next = new VBOStructureHandle( s->brush.type, s->atlas, s->shader );
 			//v->count = count - v->indexes;
 			v = v->next;

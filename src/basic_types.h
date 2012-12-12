@@ -40,17 +40,20 @@ struct s3f
 	s3f() : x(), y(), z() {}
 	s3f( s3f* c ) : x(c->x), y(c->y), z(c->z) {}
 	s3f( float X, float Y, float Z ) : x(X), y(Y), z(Z) {}
-	void operator-=(const s3f& b){
+	void operator-=( const s3f& b ){
 		x -= b.x; y -= b.y; z -= b.z;
 	}
-	s3f operator-(const s3f& b){
+	void operator+=( const s3f& b ){
+		x += b.x; y += b.y; z += b.z;
+	}
+	s3f operator-( const s3f& b ){
 		s3f result = *this;
 		result.x -= b.x;
 		result.y -= b.y;
 		result.z -= b.z;
 		return result;
 	}
-	s3f operator+(const s3f& b){
+	s3f operator+( const s3f& b ){
 		s3f result = *this;
 		result.x += b.x;
 		result.y += b.y;

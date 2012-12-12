@@ -5,7 +5,7 @@
  */
 
 #include "api.h"
-#include "map/Region.h"
+
 
 #include <string>
 #include <cstring>
@@ -78,15 +78,3 @@ int scriptApi::Debug( lua_State* L )
 	lua_pop( L, lua_gettop( L ) );
 	return 0;
 }
-
-
-int scriptApi::LoadMapRegion(lua_State *L)
-{
-	std::string name;
-	luaL_argcheck( L, lua_isstring( L, 1 ), 1, "Parameter not given." );
-	name = lua_tostring( L, 1 );
-	Region::load( name );
-	return 0;
-}
-
-

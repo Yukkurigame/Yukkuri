@@ -13,13 +13,13 @@
 
 struct GLBrush
 {
-	GLuint type;
+	enum primitives type;
 	s3f vertex_origin;
 	int point_index;
 	//s3f* vertices;
 	signed int points_count;
 	int flags;
-	GLBrush( GLuint t, short centered );
+	GLBrush( enum primitives t, short centered );
 	~GLBrush( );
 
 	inline unsigned char isCentered()	{ return flags & 1; }

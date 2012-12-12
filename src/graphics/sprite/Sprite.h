@@ -40,7 +40,7 @@ struct Sprite
 	void setFixed();					// Needs shader placing
 	inline void clearFixed()			{ flags &= ~4; shader = 0; }
 
-	Sprite( short centered = 0 ) : rect(), brush(GL_QUADS, centered){
+	Sprite( short centered = 0 ) : rect(), brush( prQUADS, centered){
 		tex = NULL;
 		picture = atlas = texid = 0;
 		flags = 1; // visible only

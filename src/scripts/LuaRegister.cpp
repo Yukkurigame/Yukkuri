@@ -16,6 +16,7 @@
 #include "api/CameraApi.h"
 #include "api/BindingsApi.h"
 #include "api/PathsApi.h"
+#include "api/RegionApi.h"
 
 #include "interface/widgets/Widget.h"
 
@@ -41,7 +42,7 @@ void LuaMain::RegisterApi( lua_State* L )
 	lua_register( L, "readdir", &scriptApi::ReadDirectory );
 	lua_register( L, "getcwd", &scriptApi::GetCWD );
 
-	lua_register( L, "LoadMapRegion", &scriptApi::LoadMapRegion );
+	//lua_register( L, "LoadMapRegion", &scriptApi::LoadMapRegion );
 
 #define REGAPI(name, api) luaL_register( L, name, api::methods );
 
@@ -52,6 +53,7 @@ void LuaMain::RegisterApi( lua_State* L )
 	REGAPI( "Thread", ThreadApi )
 	REGAPI( "Camera", CameraApi )
 	REGAPI( "Paths", PathsApi )
+	REGAPI( "Map", RegionApi )
 
 #undef REGAPI
 

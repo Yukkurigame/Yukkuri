@@ -9,7 +9,7 @@
 #include <cstring>
 
 
-GLBrush::GLBrush( GLuint t, short centered ) : type(t), vertex_origin(), flags()
+GLBrush::GLBrush( enum primitives t, short centered ) : type(t), vertex_origin(), flags()
 {
 	//vertices = NULL;
 	point_index = 0;
@@ -17,7 +17,7 @@ GLBrush::GLBrush( GLuint t, short centered ) : type(t), vertex_origin(), flags()
 	if( centered )
 		flags |= 1;
 	switch(t){
-		case GL_QUADS:
+		case prQUADS:
 		{
 			resize_verticles(4);
 			VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
@@ -26,22 +26,25 @@ GLBrush::GLBrush( GLuint t, short centered ) : type(t), vertex_origin(), flags()
 				switch(i){
 					case qcRB:
 						if( centered )
-							vrt = s3f(1.0, 1.0, 1.0);
+							vrt = s3f(0.5, -0.5, 1.0);
 						else
 							vrt = s3f(1.0, 0.0, 1.0);
 						break;
 					case qcRT:
-						vrt = s3f(1.0, 1.0, 1.0);
+						if( centered )
+							vrt = s3f(0.5, 0.5, 1.0);
+						else
+							vrt = s3f(1.0, 1.0, 1.0);
 						break;
 					case qcLB:
 						if( centered )
-							vrt = s3f(-1.0, 1.0, 1.0);
+							vrt = s3f(-0.5, -0.5, 1.0);
 						else
 							vrt = s3f(0.0, 0.0, 1.0);
 						break;
 					case qcLT:
 						if( centered )
-							vrt = s3f(1.0, 1.0, 1.0);
+							vrt = s3f(-0.5, 0.5, 1.0);
 						else
 							vrt = s3f(0.0, 1.0, 1.0);
 						break;
@@ -83,28 +86,26 @@ void GLBrush::scale( float x, float y )
 {
 	if( points_count < 2 )
 		return;
-	if( isCentered() ){
-		x = x / 2.0;
-		y = y / 2.0;
-	}
 	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
 	for( int i=0; i < points_count; ++i ){
 		s3f* v = &arr[i].verticles;
-		v->x += (v->x - vertex_origin.x) * x;
-		v->y += (v->y - vertex_origin.y) * y;
+		v->x = vertex_origin.x + (v->x - vertex_origin.x) * x;
+		v->y = vertex_origin.y + (v->y - vertex_origin.y) * y;
 	}
 }
 
 
 void GLBrush::set_position( float x, float y, float z )
 {
-	s3f delta(  vertex_origin.x - x,
+	move( x - vertex_origin.x, y - vertex_origin.y, z - vertex_origin.z );
+	/*s3f delta(  vertex_origin.x - x,
 				vertex_origin.y - y,
 				vertex_origin.z - z );
 	vertex_origin -= delta;
 	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
 	for( int i=0; i < points_count; ++i )
 		arr[i].verticles -= delta;
+	*/
 }
 
 
@@ -122,14 +123,10 @@ void GLBrush::set_quad( s3f lb, s3f lt, s3f rt, s3f rb )
 
 void GLBrush::move( float dx, float dy, float dz )
 {
-	vertex_origin.x += dx;
-	vertex_origin.y += dy;
-	vertex_origin.z += dz;
+	s3f delta( dx, dy, dz );
+	vertex_origin += delta;
 	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
 	for( int i=0; i < points_count; ++i ){
-		s3f* v = &arr[i].verticles;
-		v->x += dx;
-		v->y += dy;
-		v->z += dz;
+		arr[i].verticles += delta;
 	}
 }

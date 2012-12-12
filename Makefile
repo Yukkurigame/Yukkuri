@@ -28,7 +28,7 @@ GRAPHUTILS = gl_shader.cpp pngfuncs.c sdl_graphics.cpp VBOArray.cpp
 GRAPHICS = Camera.cpp daytime.cpp Font.cpp gl_extensions.cpp Render.cpp Text.cpp \
 		   $(addprefix render/, $(RENDER)) $(addprefix sprite/, $(SPRITE)) $(addprefix utils/, $(GRAPHUTILS))
 SCRIPTSAPI = UnitManagerApi.cpp InterfaceApi.cpp Widgets.cpp ThreadManagerApi.cpp CameraApi.cpp \
-			 BindingsApi.cpp Units.cpp PathsApi.cpp
+			 BindingsApi.cpp Units.cpp PathsApi.cpp RegionApi.cpp
 SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp proto.cpp \
 		  api.cpp $(addprefix $(SCRIPTSAPIDIR), $(SCRIPTSAPI))
 WIDGETS = Widget.cpp WidgetText.cpp WidgetBar.cpp

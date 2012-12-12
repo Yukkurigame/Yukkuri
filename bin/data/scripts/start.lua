@@ -18,8 +18,9 @@ local player = UnitManager.createUnit(constants.utPlayer)
 Player = UnitManager.getPlayer()
 Camera.setTarget(player)
 
---[[
-LoadMapRegion('region_test2_881880')
+Map.active(true)
+Map.loadRegion('region_test2_881880')
+
 
 local plevel = Interface.getWidgetByName("plevel", stats)
 local pdays = Interface.getWidgetByName("pdays", stats)
@@ -47,8 +48,6 @@ if expbar then
 	expbar:bindBarMaxValue(player, constants.uParamExp)
 end
 
--- ]]--
-
 toggle_interface()
 
 
@@ -59,5 +58,4 @@ Thread.resume(Thread.newThread(function()
 		Thread.wait(500)
 	end
 end))
-
 

@@ -23,6 +23,18 @@ struct s4ub
 	s4ub() : r(255), g(255), b(255), a(255) {}
 };
 
+
+
+enum primitives {
+	prPOINTS = 0, prLINES, prLINELOOP, prTRIANGLES,
+	prTRIANGLESTRIP, prQUADS, prPOLYGON, prLAST
+};
+
+static const GLuint gl_methods[prLAST] = {
+	GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_TRIANGLES,
+	GL_TRIANGLE_STRIP, GL_TRIANGLES, GL_POLYGON
+};
+
 /*
 
 struct coord2farr
@@ -258,12 +270,14 @@ struct VBOStructureHandle
 {
 	GLuint* indexes;
 	int count;
-	GLuint type;
+	enum primitives type;
+	GLuint method;
 	GLuint atlas;
 	GLuint shader;
 	VBOStructureHandle* next;
-	VBOStructureHandle( unsigned int t, int tex, int shd ){
+	VBOStructureHandle( enum primitives t, int tex, int shd ){
 		type = t;
+		method = gl_methods[type];
 		atlas = tex;
 		shader = shd;
 		indexes = NULL;
@@ -278,10 +292,8 @@ struct VBOStructureHandle
 	// FIXME: QUADS TO TRIANGLES CONVERTION
 	void set_indexes( int first, int c ){
 		int quad_to_triangles = 0;
-		if( type == GL_QUADS ){
-			type = GL_TRIANGLES;
+		if( type == prQUADS )
 			quad_to_triangles = QUAD_TRIANGLES_POINTS;
-		}
 		int new_count = count + c + quad_to_triangles;
 		indexes = (GLuint*)realloc( indexes, (unsigned)sizeof(GLuint) * new_count );
 		for( int i = 0; i < c; ++i ){

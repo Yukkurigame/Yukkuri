@@ -16,8 +16,6 @@ namespace scriptApi
 
 	int Debug( lua_State* L );
 
-	int LoadMapRegion( lua_State* L );
-
 }
 
 #endif /* API_H_ */

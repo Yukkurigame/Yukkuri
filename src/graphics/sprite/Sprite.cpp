@@ -30,29 +30,6 @@ void Sprite::setPicture( int pic )
 	}else{
 		rect2f s(0.0, 0.0, 1.0, 1.0);
 		init_coords( points, &s );
-		/*for( int i=0; i < qcLAST; ++i ){
-			s2f& coords = points[i].coordinates;
-			switch(i){
-				case qcRT:
-					coords = s2f(1.0, 1.0);
-					break;
-				case qcRB:
-					coords = s2f(1.0, 0.0);
-					break;
-				case qcLT:
-					coords = s2f(0.0, 1.0);
-					break;
-				case qcLB:
-					coords = s2f(0.0, 1.0);
-					break;
-			}
-		}*/
-		/*
-			coordinates.lb.x = coordinates.lt.x = 0;
-			coordinates.lb.y = coordinates.rb.y = 0;
-			coordinates.rb.x = coordinates.rt.x = 1.0;
-			coordinates.lt.y = coordinates.rt.y = 1.0;
-		 */
 	}
 }
 

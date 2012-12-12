@@ -34,7 +34,6 @@ namespace {
 }
 
 
-
 inline void prepare_vbo( Sprite* s, VBOStructureHandle*& v, VBOStructureHandle*& first )
 {
 	if( s == NULL || !s->isVisible() )
@@ -65,20 +64,6 @@ VBOStructureHandle* TextureArray::prepareVBO( std::vector< Sprite* >& sprites )
 	FOREACHIT( sprites ){
 		Sprite* s = *(it);
 		prepare_vbo( s, v, first );
-		/*
-		if( s == NULL || !s->isVisible() )
-			continue;
-
-		// TODO: atlas instead of texture
-		if( !v ){
-			first = v = new VBOStructureHandle( s->brush.type, s->atlas, s->shader );
-		}else if( v->type != prQUADS || s->atlas != v->atlas || s->shader != v->shader ){
-			v->next = new VBOStructureHandle( s->brush.type, s->atlas, s->shader );
-			v = v->next;
-		}
-
-		v->set_indexes( s->brush.point_index, s->brush.points_count );
-		*/
 	}
 	return first;
 }
@@ -99,19 +84,6 @@ VBOStructureHandle* TextureArray::prepareVBO( Sprite* sprites, unsigned int scou
 	for( unsigned int i = 0; i < scount; ++i ){
 		Sprite* s = &sprites[i];
 		prepare_vbo( s, v, first );
-		/*
-		if( !s.isVisible() )
-			continue;
-		// TODO: atlas instead of texture
-		if( !v ){
-			first = v = new VBOStructureHandle( s.brush.type, s.atlas, s.shader );
-		}else if( s.atlas != v->atlas || s.shader != v->shader ){
-			v->next = new VBOStructureHandle( s.brush.type, s.atlas, s.shader );
-			v = v->next;
-		}
-
-		v->set_indexes( s.brush.point_index, s.brush.points_count );
-		*/
 	}
 	return first;
 }

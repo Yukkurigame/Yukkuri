@@ -28,6 +28,7 @@ struct GLBrush
 	void scale( float x, float y );
 	void set_quad( s3f lb, s3f lt, s3f rt, s3f rb );
 	void move( float dx, float dy, float dz );
+	void set_color( const s4ub& color );
 
 	inline void set_position( float x, float y, float z ){
 		move( x - vertex_origin.x, y - vertex_origin.y, z - vertex_origin.z );

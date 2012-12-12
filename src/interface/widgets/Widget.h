@@ -74,8 +74,10 @@ public:
 
 	void setBackground( int texture, int picture );
 	inline void setBackgroundColor( int r, int g, int b, int a ){
-		//if( background != NULL )
-			//background->clr.set( r, g, b, a );
+		if( background != NULL ){
+			s4ub c(r, g, b, a);
+			background->brush.set_color( c );
+		}
 	}
 
 

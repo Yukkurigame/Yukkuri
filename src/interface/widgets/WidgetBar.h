@@ -18,7 +18,7 @@ public:
 
 	bool load( std::string id );
 
-	void createBar( std::string name, int picture, int height, color4u clr );
+	void createBar( std::string name, int picture, int height, s4ub color );
 	void setBarValue( float val );
 
 	float getBarSize( ) { return BarMaxValue; }

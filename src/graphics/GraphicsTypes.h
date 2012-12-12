@@ -21,6 +21,10 @@ struct s4ub
 	GLubyte b;
 	GLubyte a;
 	s4ub() : r(255), g(255), b(255), a(255) {}
+	s4ub(unsigned int R, unsigned int G, unsigned int B, unsigned int A) : r(R), g(G), b(B), a(A) {}
+	inline void set( unsigned int cr, unsigned int cg, unsigned int cb, unsigned int ca ) {
+		r = cr; g = cg; b = cb; a = ca;
+	}
 };
 
 
@@ -66,7 +70,7 @@ struct vertex3farr
 	vertex3farr() {};
 };
 
-*/
+
 
 struct color4u
 {
@@ -87,28 +91,22 @@ struct color4u
 	void set( unsigned int cr, unsigned int cg, unsigned int cb, unsigned int ca ) { r = cr; g = cg; b = cb; a = ca; }
 	void set( color4u* c ) { if( !c ) return; r = c->r; g = c->g; b = c->b; a = c->a; }
 };
-
+*/
 
 struct VertexV2FT2FC4UI
 {
 	s3f verticles;
 	s2f coordinates;
 	s4ub color;
-	VertexV2FT2FC4UI(s3f p, s2f t, color4u* c){
+	VertexV2FT2FC4UI( s3f& p, s2f& t, s4ub& c ){
 		verticles = p;
 		coordinates = t;
-		color.r = c->r;
-		color.g = c->g;
-		color.b = c->b;
-		color.a = c->a;
+		color = c;
 	}
-	void set( s3f* p, s2f* t, color4u* c ){
+	void set( s3f* p, s2f* t, s4ub* c ){
 		verticles = *p;
 		coordinates = *t;
-		color.r = c->r;
-		color.g = c->g;
-		color.b = c->b;
-		color.a = c->a;
+		color = *c;
 	}
 };
 
@@ -211,12 +209,6 @@ struct TextureInfo
 			tpos.y = pos.y + row * sheight;
 		}
 	}
-/*	inline coord2farr getSubTexture( int pic ){
-		coord2farr rect;
-		getSubTexture( pic, rect );
-		return rect;
-	}
-*/
 	inline void getSubTexture( int pic, VertexV2FT2FC4UI* rect, int count ){
 		int row = pic / cols;
 		int col = pic - row * cols;
@@ -235,33 +227,9 @@ struct TextureInfo
 			s.height = theight;
 		}
 		init_coords( rect, &s );
-		/*
-		for( int i=0; i < qcLAST; ++i ){
-			s2f& coords = rect[i].coordinates;
-			switch(i){
-				case qcRT:
-					coords = s2f(x + w, y + h);
-					break;
-				case qcRB:
-					coords = s2f(x + w, y);
-					break;
-				case qcLT:
-					coords = s2f(x, y + h);
-					break;
-				case qcLB:
-					coords = s2f(x, y);
-					break;
-			}
-		}*/
-		/*
-		rect.lb.x = rect.lt.x = x;
-		rect.lb.y = rect.rb.y = y;
-		rect.rb.x = rect.rt.x = x + twidth;
-		rect.lt.y = rect.rt.y = y + theight;
-		*/
-
 	}
 };
+
 
 
 #define QUAD_TRIANGLES_POINTS 2

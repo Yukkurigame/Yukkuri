@@ -38,8 +38,8 @@ bool WidgetBar::load( std::string id )
 	std::string imgname;
 	int picture;
 	int barheight;
-	color4u color;
-	std::vector<int> vcolor;
+	s4ub color;
+	std::vector<unsigned int> vcolor;
 	LuaConfig* cfg = new LuaConfig;
 
 	//Order: topimgx, topimgy, barheight, r, g, b
@@ -54,11 +54,11 @@ bool WidgetBar::load( std::string id )
 	cfg->getValue( "barcovery", id, TopY );
 	cfg->getValue( "barcolor", id, vcolor );
 
-	for( unsigned int i=0; i < 3; ++i ){
+	for( unsigned int i=0; i < 4; ++i ){
 		if( i >= vcolor.size() )
-			vcolor.push_back(0);
+			vcolor.push_back( i == 3 ? 255 : 0 );
 	}
-	color.set( (unsigned)vcolor[0], (unsigned)vcolor[1], (unsigned)vcolor[2] );
+	color.set( vcolor[0], vcolor[1], vcolor[2], vcolor[3] );
 
 	if( BarWidth <= 0 )
 		BarWidth = (float)Width;
@@ -70,7 +70,7 @@ bool WidgetBar::load( std::string id )
 	return true;
 }
 
-void WidgetBar::createBar( std::string name, int picture, int height, color4u clr )
+void WidgetBar::createBar( std::string name, int picture, int height, s4ub color )
 {
 	Height -= height + (int)BarY;
 	BarSprite = RenderManager::CreateGLSprite( PosX + BarX, PosY + BarY, getZ(),(int)BarWidth, height );
@@ -80,9 +80,8 @@ void WidgetBar::createBar( std::string name, int picture, int height, color4u cl
 						(int)Width, (int)Height, RenderManager::GetTextureNumberById(name), picture );
 		TopSprite->setFixed();
 	}
-	/*if( BarSprite ){
-		BarSprite->clr.set( clr.r, clr.g, clr.b, clr.a );
-	}*/
+	if( BarSprite )
+		BarSprite->brush.set_color( color );
 	//setTextPosition( getTextX(), getTextY() - Height );
 	setBarValue(1);
 	setBarSize(1);

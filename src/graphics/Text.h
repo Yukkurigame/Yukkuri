@@ -54,7 +54,7 @@ private:
 	unsigned int flags;		// 1 - visible
 					// 2 - fixed
 	float lineHeight;
-	color4u color;
+	s4ub color;
 	s3f position;
 	font_data* font;
 

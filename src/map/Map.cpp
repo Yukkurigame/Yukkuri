@@ -21,6 +21,7 @@ namespace {
 	bool Updated;
 	float posX;
 	float posY;
+	int map_flags;
 
 	std::vector< MapChunk* > chunkVec;
 
@@ -59,6 +60,7 @@ bool Map::init( )
 	Updated = false;
 	posX = 0;
 	posY = 0;
+	map_flags = 0;
 	Defines.Init();
 	return true;
 }
@@ -70,6 +72,23 @@ void Map::clean()
 	}
 	chunkVec.clear( );
 }
+
+
+unsigned char Map::isActive()
+{
+	return map_flags & 1;
+}
+
+void Map::setActive()
+{
+	map_flags |= 1;
+}
+
+void Map::clearActive()
+{
+	map_flags &= ~1;
+}
+
 
 void Map::toChunkCoordinates( int& x, int& y)
 {
@@ -338,6 +357,8 @@ void Map::clear( )
 
 void Map::onDraw( )
 {
+	if( ! isActive() )
+		return;
 	if( Updated ){
 		//TODO: cleaning in thread
 		clear();

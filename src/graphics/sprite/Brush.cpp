@@ -9,11 +9,13 @@
 #include <cstring>
 
 
-GLBrush::GLBrush( GLuint t ) : type(t), vertex_origin()
+GLBrush::GLBrush( GLuint t, short centered ) : type(t), vertex_origin(), flags()
 {
 	//vertices = NULL;
 	point_index = 0;
 	points_count = 0;
+	if( centered )
+		flags |= 1;
 	switch(t){
 		case GL_QUADS:
 		{
@@ -22,24 +24,29 @@ GLBrush::GLBrush( GLuint t ) : type(t), vertex_origin()
 			for( int i=0; i < 4; ++i ){
 				s3f& vrt = arr[i].verticles;
 				switch(i){
+					case qcRB:
+						if( centered )
+							vrt = s3f(1.0, 1.0, 1.0);
+						else
+							vrt = s3f(1.0, 0.0, 1.0);
+						break;
 					case qcRT:
 						vrt = s3f(1.0, 1.0, 1.0);
 						break;
-					case qcRB:
-						vrt = s3f(1.0, -1.0, 1.0);
+					case qcLB:
+						if( centered )
+							vrt = s3f(-1.0, 1.0, 1.0);
+						else
+							vrt = s3f(0.0, 0.0, 1.0);
 						break;
 					case qcLT:
-						vrt = s3f(-1.0, 1.0, 1.0);
-						break;
-					case qcLB:
-						vrt = s3f(-1.0, -1.0, 1.0);
+						if( centered )
+							vrt = s3f(1.0, 1.0, 1.0);
+						else
+							vrt = s3f(0.0, 1.0, 1.0);
 						break;
 				}
 			}
-			// lt.y // rt.x // rt.y // rb.y
-			// vertices[0].y = vertices[2].x = vertices[2].y = vertices[3].x =  1;
-			// lt.x // lb.x // lb.y // rb.y
-			//vertices[0].x = vertices[1].x = vertices[1].y = vertices[3].y = -1;
 			break;
 		}
 		default:
@@ -47,7 +54,82 @@ GLBrush::GLBrush( GLuint t ) : type(t), vertex_origin()
 	}
 }
 
+
 GLBrush::~GLBrush( )
 {
 	VBOArray::freeSpace( point_index, points_count );
+}
+
+
+
+void GLBrush::resize_verticles( int size )
+{
+	VBOArray::freeSpace( point_index, points_count );
+	points_count = size;
+	if( points_count < 1 )
+		return;
+	point_index = VBOArray::getSpace( points_count );
+	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
+	for( int i = 0; i < size; ++i ){
+		arr->verticles = s3f();
+		arr->coordinates = s2f();
+		arr->color = s4ub();
+		arr++;
+	}
+}
+
+
+void GLBrush::scale( float x, float y )
+{
+	if( points_count < 2 )
+		return;
+	if( isCentered() ){
+		x = x / 2.0;
+		y = y / 2.0;
+	}
+	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
+	for( int i=0; i < points_count; ++i ){
+		s3f* v = &arr[i].verticles;
+		v->x += (v->x - vertex_origin.x) * x;
+		v->y += (v->y - vertex_origin.y) * y;
+	}
+}
+
+
+void GLBrush::set_position( float x, float y, float z )
+{
+	s3f delta(  vertex_origin.x - x,
+				vertex_origin.y - y,
+				vertex_origin.z - z );
+	vertex_origin -= delta;
+	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
+	for( int i=0; i < points_count; ++i )
+		arr[i].verticles -= delta;
+}
+
+
+void GLBrush::set_quad( s3f lb, s3f lt, s3f rt, s3f rb )
+{
+	if( points_count != 4 )
+		return;
+	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
+	arr[0].verticles = lt + vertex_origin;
+	arr[1].verticles = lb + vertex_origin;
+	arr[2].verticles = rt + vertex_origin;
+	arr[3].verticles = rb + vertex_origin;
+}
+
+
+void GLBrush::move( float dx, float dy, float dz )
+{
+	vertex_origin.x += dx;
+	vertex_origin.y += dy;
+	vertex_origin.z += dz;
+	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
+	for( int i=0; i < points_count; ++i ){
+		s3f* v = &arr[i].verticles;
+		v->x += dx;
+		v->y += dy;
+		v->z += dz;
+	}
 }

@@ -28,7 +28,9 @@ void Sprite::setPicture( int pic )
 	if( texid && tex ){
 		tex->getSubTexture(pic, points, brush.points_count);
 	}else{
-		for( int i=0; i < qcLAST; ++i ){
+		rect2f s(0.0, 0.0, 1.0, 1.0);
+		init_coords( points, &s );
+		/*for( int i=0; i < qcLAST; ++i ){
 			s2f& coords = points[i].coordinates;
 			switch(i){
 				case qcRT:
@@ -44,7 +46,7 @@ void Sprite::setPicture( int pic )
 					coords = s2f(0.0, 1.0);
 					break;
 			}
-		}
+		}*/
 		/*
 			coordinates.lb.x = coordinates.lt.x = 0;
 			coordinates.lb.y = coordinates.rb.y = 0;

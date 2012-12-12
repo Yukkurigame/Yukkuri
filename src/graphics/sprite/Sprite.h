@@ -34,15 +34,13 @@ struct Sprite
 	inline void setVisible()			{ flags |= 1; }
 	inline void clearVisible()			{ flags &= ~1; }
 
-	inline unsigned char isCentered()	{ return flags & 2; }
-	inline void setCentered()			{ flags |= 2; }
-	inline void clearCentered()			{ flags &= ~2; }
+	inline unsigned char isCentered()	{ return brush.isCentered(); }
 
 	inline unsigned char isFixed()		{ return flags & 4; }
 	void setFixed();					// Needs shader placing
 	inline void clearFixed()			{ flags &= ~4; shader = 0; }
 
-	Sprite() : rect(), brush(GL_QUADS){ // vertices(), coordinates(), clr()
+	Sprite( short centered = 0 ) : rect(), brush(GL_QUADS, centered){
 		tex = NULL;
 		picture = atlas = texid = 0;
 		flags = 1; // visible only

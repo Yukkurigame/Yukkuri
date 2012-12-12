@@ -115,6 +115,8 @@ void GLHelpers::DrawVBO( GLuint& VBOHandle, /* int vboc, */
 	int size = VBOArray::size();
 	glBufferData( GL_ARRAY_BUFFER, size, head, GL_STREAM_DRAW );
 
+	int s = sizeof(s3f);
+	int s2 = sizeof(s3f) + sizeof(s2f);
 	glVertexPointer( 3, GL_FLOAT, vertex_size, 0 );
 	glTexCoordPointer( 2, GL_FLOAT, vertex_size, BUFFER_OFFSET(sizeof(s3f)) );
 	glColorPointer( 4, GL_UNSIGNED_BYTE, vertex_size, BUFFER_OFFSET(sizeof(s3f) + sizeof(s2f)) );

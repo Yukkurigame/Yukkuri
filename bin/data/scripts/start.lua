@@ -11,13 +11,14 @@ console:toggle()
 
 Input.set("bindings_game")
 
+
 local stats = Interface.loadWidget("widget_stats_98072")
 
 local player = UnitManager.createUnit(constants.utPlayer)
 Player = UnitManager.getPlayer()
 Camera.setTarget(player)
 
-
+--[[
 LoadMapRegion('region_test2_881880')
 
 local plevel = Interface.getWidgetByName("plevel", stats)
@@ -46,7 +47,10 @@ if expbar then
 	expbar:bindBarMaxValue(player, constants.uParamExp)
 end
 
+-- ]]--
+
 toggle_interface()
+
 
 Thread.resume(Thread.newThread(function()
 	local spawner = require("data/scripts/spawner"):new()
@@ -55,3 +59,5 @@ Thread.resume(Thread.newThread(function()
 		Thread.wait(500)
 	end
 end))
+
+

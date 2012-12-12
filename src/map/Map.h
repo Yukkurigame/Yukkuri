@@ -43,6 +43,10 @@ namespace Map
 	bool init( );
 	void clean( );
 
+	unsigned char isActive( );
+	void setActive( );
+	void clearActive( );
+
 	void toChunkCoordinates( int& x, int& y);
 	void fromChunkCoordinates( s2i& pos );
 

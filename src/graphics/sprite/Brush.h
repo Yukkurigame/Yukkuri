@@ -18,75 +18,17 @@ struct GLBrush
 	int point_index;
 	//s3f* vertices;
 	signed int points_count;
-	GLBrush( GLuint t );
+	int flags;
+	GLBrush( GLuint t, short centered );
 	~GLBrush( );
 
-	void resize_verticles( int size ){
-		VBOArray::freeSpace( point_index, points_count );
-		points_count = size;
-		point_index = VBOArray::getSpace( points_count );
-		if( points_count < 1 )
-			return;
-		VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
-		for( int i = 0; i < size; ++i ){
-			arr->verticles = s3f();
-			arr->coordinates = s2f();
-			arr->color = s4ub();
-			arr++;
-		}
-		/*vertices = (s3f*)realloc( vertices, sizeof(s3f)*size );
-		if( size > vertices_count ){
-			for( int i = vertices_count + 1; i < size; ++i )
-				vertices[vertices_count] = vertex_origin;
-		}
-		vertices_count = size;
-		return vertices;
-		*/
-	}
+	inline unsigned char isCentered()	{ return flags & 1; }
 
-	void scale( float x, float y ){
-		if( points_count < 2 )
-			return;
-		VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
-		for( int i=0; i < points_count; ++i ){
-			s3f* v = &arr[i].verticles;
-			v->x += (v->x - vertex_origin.x) * x;
-			v->y += (v->y - vertex_origin.y) * y;
-		}
-	}
-
-	void set_position( float x, float y, float z ){
-		s3f delta(  vertex_origin.x - x,
-					vertex_origin.y - y,
-					vertex_origin.z - z );
-		vertex_origin -= delta;
-		VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
-		for( int i=0; i < points_count; ++i )
-			arr[i].verticles -= delta;
-	}
-
-	void set_quad( s3f lb, s3f lt, s3f rt, s3f rb ){
-		if( points_count != 4 )
-			return;
-		VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
-		arr[0].verticles = lt + vertex_origin;
-		arr[1].verticles = lb + vertex_origin;
-		arr[2].verticles = rt + vertex_origin;
-		arr[3].verticles = rb + vertex_origin;
-	}
-
-	inline void move( float dx, float dy, float dz ){
-		vertex_origin.x += dx;
-		vertex_origin.y += dy;
-		vertex_origin.z += dz;
-		VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
-		for( int i=0; i < points_count; ++i ){
-			s3f* v = &arr[i].verticles;
-			v->x += dx;
-			v->y += dy;
-			v->z += dz;
-		}
-	}
+	void resize_verticles( int size );
+	void scale( float x, float y );
+	void set_position( float x, float y, float z );
+	void set_quad( s3f lb, s3f lt, s3f rt, s3f rb );
+	void move( float dx, float dy, float dz );
 
 	inline VertexV2FT2FC4UI* points(  ){
 		return VBOArray::pointer( point_index );
@@ -102,10 +44,10 @@ struct GLBrush
 		return &arr[index].verticles;	\
 	}
 
-	CORNER(lt, 0);
-	CORNER(lb, 1);
-	CORNER(rt, 2);
-	CORNER(rb, 3);
+	CORNER(lt, qcLT);
+	CORNER(lb, qcLB);
+	CORNER(rt, qcRT);
+	CORNER(rb, qcRB);
 
 #undef CORNER
 };

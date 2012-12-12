@@ -240,6 +240,7 @@ int RenderManager::PushTexture( TextureProxy* proxy, GLuint atlas )
 	return texturesCount++;
 }
 
+
 void RenderManager::PushTextures( std::vector < TextureProxy* >& tarray, GLuint atlas )
 {
 	int tcount = tarray.size();
@@ -265,6 +266,7 @@ int RenderManager::GetTextureNumberById( std::string id )
 	}
 	return 0;
 }
+
 
 TextureInfo* RenderManager::GetTextureByNumber( unsigned int number )
 {
@@ -292,21 +294,18 @@ TextureInfo* RenderManager::GetTextureByNumber( unsigned int number )
 Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int height,
 				unsigned int texture_id, int picture, short centered )
 {
-	Sprite* sprite = new Sprite();
+	Sprite* sprite = new Sprite( centered );
 	sprite->texid = texture_id;
 
 	if( texture_id < 0 || texture_id >= texturesCount ){
 		Debug::debug( Debug::GRAPHICS, "Bad texture id passed.\n" );
 		sprite->tex = NULL;
 		sprite->atlas = 0;
-
 	}else{
 		sprite->tex = &textures[texture_id];
 		sprite->atlas = sprite->tex->atlas;
 	}
 
-	if(centered)
-		sprite->setCentered();
 	sprite->resize( (float)width, (float)height );
 	sprite->setPosition( x, y, z );
 	sprite->setPicture(picture);
@@ -399,7 +398,7 @@ void RenderManager::DrawGLScene()
 	MoveGlScene();
 
 	//VBOStructureHandle* temp = NULL;
-	int count = 0;
+	//int count = 0;
 	VBOStructureHandle* vbostructure = TextureArray::prepareVBO( /*&count,*/ GLSprites /*, verticles*/ );
 
 	GLHelpers::DrawVBO( VBOHandle, /*count, */ vbostructure /*, verticles */ );

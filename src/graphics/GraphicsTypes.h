@@ -135,6 +135,30 @@ enum quad_corners {
 };
 
 
+inline void init_coords( VertexV2FT2FC4UI* points, const rect2f* rect )
+{
+	// Textures are inverted in gl space, so invert it in render space back
+	// FIXME: just make some glPerspective, lol
+	for( int i=0; i < qcLAST; ++i ){
+		s2f& coords = points[i].coordinates;
+		switch(i){
+			case qcRB:
+				coords = s2f(rect->x + rect->width, rect->y + rect->height);
+				break;
+			case qcRT:
+				coords = s2f(rect->x + rect->width, rect->y);
+				break;
+			case qcLB:
+				coords = s2f(rect->x, rect->y + rect->height);
+				break;
+			case qcLT:
+				coords = s2f(rect->x, rect->y);
+				break;
+		}
+	}
+}
+
+
 struct TextureInfo
 {
 	int rows;
@@ -189,25 +213,17 @@ struct TextureInfo
 	inline void getSubTexture( int col, int row, VertexV2FT2FC4UI* rect, int count ){
 		if( count < qcLAST )
 			return;
-		float x = 0;
-		float y = 0;
-		float w = 1.0;
-		float h = 1.0;
+		rect2f s(0.0, 0.0, 1.0, 1.0);
 		if( cols > 0 || rows > 0 ){
-		/*if( cols < 1 && rows < 1 ){
-			x
-			rect.lb.x = rect.lt.x = 0;
-			rect.lb.y = rect.rb.y = 0;
-			rect.rb.x = rect.rt.x = 1.0;
-			rect.lt.y = rect.rt.y = 1.0;
-		}else{*/
 			col %= cols;
 			row %= rows;
-			x = pos.x + col * twidth;
-			y = pos.y + row * theight;
-			w = twidth;
-			h = theight;
+			s.x = pos.x + col * twidth;
+			s.y = pos.y + row * theight;
+			s.width = twidth;
+			s.height = theight;
 		}
+		init_coords( rect, &s );
+		/*
 		for( int i=0; i < qcLAST; ++i ){
 			s2f& coords = rect[i].coordinates;
 			switch(i){
@@ -224,7 +240,7 @@ struct TextureInfo
 					coords = s2f(x, y);
 					break;
 			}
-		}
+		}*/
 		/*
 		rect.lb.x = rect.lt.x = x;
 		rect.lb.y = rect.rb.y = y;
@@ -236,7 +252,7 @@ struct TextureInfo
 };
 
 
-
+#define QUAD_TRIANGLES_POINTS 2
 
 struct VBOStructureHandle
 {
@@ -258,11 +274,23 @@ struct VBOStructureHandle
 		if( indexes )
 			free(indexes);
 	}
+
+	// FIXME: QUADS TO TRIANGLES CONVERTION
 	void set_indexes( int first, int c ){
-		int new_count = count + c;
-		indexes = (GLuint*)realloc( indexes, sizeof(GLuint) * new_count );
-		for( int i = 0; i < c; ++i )
+		int quad_to_triangles = 0;
+		if( type == GL_QUADS ){
+			type = GL_TRIANGLES;
+			quad_to_triangles = QUAD_TRIANGLES_POINTS;
+		}
+		int new_count = count + c + quad_to_triangles;
+		indexes = (GLuint*)realloc( indexes, (unsigned)sizeof(GLuint) * new_count );
+		for( int i = 0; i < c; ++i ){
 			indexes[i + count] = first + i;
+		}
+		if( quad_to_triangles ){
+			indexes[c + count] = indexes[c + count - 2];
+			indexes[c + count + 1] = indexes[c + count - 3];
+		}
 		count = new_count;
 	}
 };

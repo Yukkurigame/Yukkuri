@@ -15,6 +15,7 @@
 
 Unit::Unit()
 {
+	UnitType = utEntity;
 	UnitId = 0;
 	Z = 1;
 	DT = 0;
@@ -444,7 +445,7 @@ bool Unit::update( const Frame& frame )
 		case acSetColor:
 			if( Actions.checkFrameParams( frame, 4, stInt, stInt, stInt, stInt ) ){
 				s4ub color( frame.params[0].intData, frame.params[1].intData,
-						  frame.params[2].intData, frame.params[3].intData);
+						frame.params[2].intData, frame.params[3].intData);
 				Image.getSprite()->brush.set_color( color );
 			}
 			break;

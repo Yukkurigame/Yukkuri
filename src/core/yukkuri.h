@@ -3,6 +3,7 @@
 
 enum GameState { gsNone, gsLoading, gsRunning, gsPaused, gsEnd };
 
+
 namespace Yukkuri
 {
 	bool Init( );

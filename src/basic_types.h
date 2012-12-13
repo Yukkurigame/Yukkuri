@@ -13,6 +13,10 @@ enum type_identifier {
 	tiNone = 0, tiInt, tiFloat, tiString,
 };
 
+enum GameCoreBindPoints {
+	gdbFIRST = 0, gbpFPS, gbpLAST
+};
+
 
 struct s2i
 {
@@ -120,6 +124,15 @@ struct list
 	void push( T data ){
 		head = new listElement<T>( data, head );
 	}
+	void clear( ){
+		listElement<T>* t = head;
+		if( !t )
+			return;
+		while( t->next != 0 ){
+			remove( t->next, t );
+		}
+		remove( t, 0);
+	}
 	void remove( listElement<T>* t, listElement<T>* prev ){
 		if(!t)
 			return;
@@ -163,6 +176,15 @@ struct list
 			t = t->next;
 		}
 		return c;
+	}
+	listElement<T>* find( T data ){
+		listElement<T>* t = head;
+		while( t != 0 ){
+			if( t->data == data )
+				return t;
+			t = t->next;
+		}
+		return 0;
 	}
 };
 

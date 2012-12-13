@@ -9,10 +9,20 @@
 #include "interface/widgets/Widget.h"
 #include "interface/widgets/WidgetBar.h"
 #include "units/unitmanager.h"
+#include "basic_types.h"
 
 #include "scripts/Lua.h"
 
 #include "hacks.h"
+
+extern float currentFPS;
+
+
+bool Widget::load( lua_State* L )
+{
+	return true;
+}
+
 
 bool Widget::resize( lua_State* L )
 {
@@ -35,14 +45,16 @@ bool Widget::toggle( lua_State* L )
 
 bool Widget::bindParam( lua_State* L )
 {
-	luaL_argcheck( L, lua_isnumber( L, 1 ) || lua_isuserdata( L, 1 ), 1, "Object expected" );
+	luaL_argcheck( L, lua_isnil( L, 1 ) || lua_isnumber( L, 1 ) || lua_isuserdata( L, 1 ), 1, "Object expected" );
 	luaL_argcheck( L, lua_isnumber( L, 2 ), 2, "Parameter name expected" );
 
 	Unit* u = NULL;
+	bool core = false;
 	int paramname;
 
-
-	if( lua_isnumber( L, 1 ) ){
+	if( lua_isnil( L, 1 ) ){
+		core = true;
+	}else if( lua_isnumber( L, 1 ) ){
 		UINT id = static_cast<UINT>( lua_tointeger(L, 1) );
 		u = UnitManager::GetUnit( id );
 	}else
@@ -52,10 +64,25 @@ bool Widget::bindParam( lua_State* L )
 
 	lua_pop( L, 2 );
 
+	if( paramname <= 0 ){
+		Debug::debug( Debug::INTERFACE, "Bad bind parameter.\n" );
+		return false;
+	}
+
+	if( core ){
+		switch(paramname){
+			case gbpFPS:
+				this->bindValue( tiFloat, &(currentFPS) );
+				break;
+			default:
+				Debug::debug( Debug::INTERFACE, "Bad bind parameter.\n" );
+				break;
+		}
+		return true;
+	}
+
 	if( !u ){
 		Debug::debug( Debug::INTERFACE, "Bind object not found.\n" );
-	}else if( paramname <= 0 ){
-		Debug::debug( Debug::INTERFACE, "Bad bind parameter.\n" );
 	}else{
 		void* param = NULL;
 		enum type_identifier type = tiNone;
@@ -94,21 +121,6 @@ LuaRet Widget::getChildren( lua_State* L )
 	return r;
 
 }
-
-/*
-bool WidgetText::setText( lua_State* L )
-{
-	luaL_argcheck( L, lua_isstring( L, 1 ), 1, "Text expected" );
-
-	std::string text = lua_tostring( L, 1 );
-
-	lua_pop( L, 1 );
-
-	this->setWidgetText( text );
-
-	return true;
-}
-*/
 
 
 bool WidgetBar::bindBarMaxValue( lua_State* L )

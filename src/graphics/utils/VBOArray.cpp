@@ -74,6 +74,18 @@ namespace {
 }
 
 
+void VBOArray::clean( )
+{
+	listElement<free_block*>* t = free_space.head;
+	while( t != NULL ){
+		delete t->data;
+		t = t->next;
+	}
+	free_space.clear();
+	free( array );
+}
+
+
 int VBOArray::getSpace( unsigned int size )
 {
 	if( array == NULL ){

@@ -1,6 +1,8 @@
 
 
-Interface.loadWidget("widget_fps_428624")
+local fps = Interface.getWidget(Interface.loadWidget("widget_fps_428624"))
+fps:bindParam(nil, constants.gbpFPS)
+
 Interface.loadWidget("widget_time_493245")
 
 

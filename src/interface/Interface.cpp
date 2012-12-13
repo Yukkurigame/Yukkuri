@@ -42,21 +42,20 @@ namespace
 				w = new WidgetBar( );
 				break;
 		}
-		if( w != NULL )
-			w->setType( type );
+		if( w != NULL ){
+			if( w->create( id ) )
+				w->setType( type );
+			else
+				delete w, w = NULL;
+		}
 		return w;
 	}
 
 }
 
-extern float currentFPS;
-
 
 void Interface::init( )
 {
-	Widget* w = Interface::GetWidget( "fps", NULL );
-	if( w )
-		w->bindValue( tiFloat, &(currentFPS) );
 	DayTime::loadInterface();
 }
 
@@ -149,7 +148,7 @@ Widget* Interface::LoadWidget( std::string id )
 
 Widget* Interface::GetWidget( unsigned int id )
 {
-	if( id > 1 && id < LastWidgetId  ){
+	if( id > 0 && id < LastWidgetId  ){
 		FOREACHIT( widgets ){
 			if( (*it)->getWidgetId( ) == id )
 				return (*it);

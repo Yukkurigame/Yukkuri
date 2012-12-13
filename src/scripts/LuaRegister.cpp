@@ -27,7 +27,7 @@
 #include "Bindings.h"
 #include "misc.h"
 
-
+#include "basic_types.h"
 
 #include "debug.h"
 
@@ -104,6 +104,9 @@ void LuaMain::RegisterApi( lua_State* L )
 	// Различные именованые константы
 	lua_newtable(L);		// Стек: таблица
 	{
+		// Core bind points
+		FIELD(gbpFPS)
+
 		// Unit Types
 		FIELD(utStatic)
 		FIELD(utPlayer)

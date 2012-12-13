@@ -39,10 +39,13 @@ Widget::Widget() : Timer(this)
 	Type = wtNone;
 	Width = 0;
 	Height = 0;
+	OffsetX = 0;
+	OffsetY = 0;
 	PosX = 0;
 	PosY = 0;
 	PosZ = 0;
-	Align = wtNone;
+	VAlign = waTOP;
+	Align = waCENTER;
 	visible = true;
 	Parent = NULL;
 	background = NULL;
@@ -72,8 +75,7 @@ bool Widget::load( std::string id )
 	std::string align;
 	std::string valign;
 
-	if( !( this->create( id ) &&
-			cfg->getValue( "name", id, Name ) ) )
+	if( !cfg->getValue( "name", id, Name ) )
 		return false;
 
 	cfg->getValue( "x", baseID, OffsetX );

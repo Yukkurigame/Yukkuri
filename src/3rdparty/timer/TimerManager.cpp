@@ -12,9 +12,11 @@
 #include "3rdparty/timer/InternalTimerEvent.h"
 #include "scripts/LuaThread.h"
 #include "core/yukkuri.h"
+#include "basic_types.h"
 
 #include <list>
 #include "hacks.h"
+#include "safestring.h"
 #include "assert.h"
 
 extern long sdl_time;
@@ -34,6 +36,7 @@ namespace {
 	//////////////////////////////////////////////////////////////////////////
 	// Список событий
 	std::list <TimerEvent*> timerEvents;
+	list< TimerEvent* > suspendedEvents;
 	UINT nbPausableEvents = 0;
 
 	// События в списке всегда отсортированы так, что в начале находятся
@@ -140,6 +143,56 @@ int Timer::AddInternalTimerEvent( ITimerEventPerformer* performer, UINT dt, UINT
 
 	return te->id;
 }
+
+
+bool Timer::SuspendTimerEvent( UINT id )
+{
+	TimerEvent* t = NULL;
+	TEvIter tit = timerEvents.end();
+	FOREACHIT( timerEvents ){
+		if( (*it)->id == id ){
+			t = *it;
+			tit = it;
+			break;
+		}
+	}
+	if( tit == timerEvents.end() ){
+		Debug::debug( Debug::MAIN, "Timer event " + citoa(id) + " not found.\n" );
+		return false;
+	}
+
+	timerEvents.erase( tit );
+	if( t->IsPausable() ){
+		assert(nbPausableEvents);
+		nbPausableEvents--;
+	}
+
+	suspendedEvents.push( t );
+
+	return true;
+}
+
+
+bool Timer::ResumeTimerEvent( UINT id )
+{
+	listElement< TimerEvent* >* h = suspendedEvents.head;
+	while( h != NULL ){
+		if( h->data->id == id )
+			break;
+		h = h->next;
+	}
+
+	if( h == NULL || h->data == NULL ){
+		Debug::debug( Debug::MAIN, "Timer event " + citoa(id) + " not suspended.\n" );
+		return false;
+	}
+
+	AddTimerEvent( h->data );
+	suspendedEvents.remove( h );
+
+	return true;
+}
+
 
 bool Timer::UpdateEventById( UINT id, UINT dt )
 {

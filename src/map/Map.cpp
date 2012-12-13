@@ -1,6 +1,7 @@
 
 #include "map/Map.h"
 #include "graphics/Camera.h"
+#include "3rdparty/timer/TimerManager.h"
 
 #include "config.h"
 #include "hacks.h"
@@ -15,6 +16,8 @@ extern MainConfig conf;
 extern MapChunkManager ChunkManager;
 
 
+#define MAP_UPADTE_PERIOD 300
+
 
 namespace {
 
@@ -24,6 +27,31 @@ namespace {
 	int map_flags;
 
 	std::vector< MapChunk* > chunkVec;
+
+	class MapCaller : public ITimerEventPerformer
+	{
+		int event_id;
+	public:
+		MapCaller() : event_id(-1) {};
+		virtual ~MapCaller(){ };
+
+		inline void start( ) {
+			if( event_id < 0 )
+				event_id = Timer::AddInternalTimerEvent(
+						this, 1, MAP_UPADTE_PERIOD, 0, true, true );
+			Timer::ResumeTimerEvent( event_id );
+		}
+		inline void stop( ) {
+			Timer::SuspendTimerEvent( event_id );
+		}
+
+		inline void OnTimer( InternalTimerEvent& ev ){
+			Map::onDraw();
+		}
+
+		void OnTimerEventDestroy( const InternalTimerEvent& ev ){	}
+	} map_caller;
+
 
 }
 
@@ -82,11 +110,13 @@ unsigned char Map::isActive()
 void Map::setActive()
 {
 	map_flags |= 1;
+	map_caller.start();
 }
 
 void Map::clearActive()
 {
 	map_flags &= ~1;
+	map_caller.stop();
 }
 
 
@@ -357,8 +387,6 @@ void Map::clear( )
 
 void Map::onDraw( )
 {
-	if( ! isActive() )
-		return;
 	if( Updated ){
 		//TODO: cleaning in thread
 		clear();

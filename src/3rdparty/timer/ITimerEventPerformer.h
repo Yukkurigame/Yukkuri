@@ -16,6 +16,7 @@ class InternalTimerEvent;
 class ITimerEventPerformer
 {
 public:
+	virtual ~ITimerEventPerformer() {}
 	// Возникает при наступлении событии таймера.
 	virtual void OnTimer( InternalTimerEvent& ev ) = 0;
 	// Возникает при удалении TimerEvent

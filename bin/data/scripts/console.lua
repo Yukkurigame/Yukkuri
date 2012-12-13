@@ -79,6 +79,6 @@ function Console:process(keynum, char)
 	if self.cursor > self.string:len() then
 		self.cursor = self.string:len()
 	end
-	self:widget():setText(out .. self.prompt .. self.string .. ' ')
+	self:widget():WidgetText(out .. self.prompt .. self.string .. ' ')
 	self:widget():Cursor(out:len() + self.prompt:len() + self.cursor)
 end

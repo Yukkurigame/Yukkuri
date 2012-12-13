@@ -24,6 +24,7 @@ public:
 	void OnTimerEventDestroy( const InternalTimerEvent& ev ) {};
 
 	IActionTimer( Unit* u, LuaRegRef f ) : obj(u), func(f) {};
+	virtual ~IActionTimer() {};
 };
 
 
@@ -32,7 +33,8 @@ struct ActionTimer {
 	IActionTimer* action;
 	ActionTimer* next;
 	UINT timerId;
-	ActionTimer( const Frame* f, IActionTimer* a, ActionTimer* n ) : frame(f), action(a), next(n) {}
+	ActionTimer( const Frame* f, IActionTimer* a, ActionTimer* n ) : frame(f), action(a), next(n),
+		timerId(0) {}
 	~ActionTimer() {
 		delete action, action = NULL;
 	}

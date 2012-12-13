@@ -14,6 +14,7 @@
 #include "graphics/render/GLHelpers.h"
 #include "graphics/render/GLTextures.h"
 #include "graphics/render/TextureArray.h"
+#include "graphics/utils/VBOArray.h"
 
 #include "scripts/LuaConfig.h"
 
@@ -128,6 +129,7 @@ void RenderManager::clean( )
 		free(verticles);
 	GLTextures::clearCache();
 	CleanFonts();
+	VBOArray::clean();
 	ftDone();
 }
 

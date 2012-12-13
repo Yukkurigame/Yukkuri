@@ -11,7 +11,7 @@
 #include "graphics/Render.h"
 #include "graphics/utils/sdl_graphics.h"
 #include "graphics/daytime.h"
-#include "map/Map.h"
+//#include "map/Map.h"
 #include "config.h"
 #include "debug.h"
 
@@ -89,7 +89,7 @@ void Yukkuri::Render( )
 	RenderManager::CleanGLScene( );
 
 	// Display slick graphics on screen
-	Map::onDraw( );
+	//Map::onDraw( );
 
 	//Draw to screen
 	RenderManager::DrawGLScene( );

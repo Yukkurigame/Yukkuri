@@ -18,7 +18,8 @@ WidgetText::WidgetText( )
 	FontSize = 12;
 	TextX = 0;
 	TextY = 0;
-	TextAlign = wtNone;
+	TextAlign = waCENTER;
+	TextVAlign = waMIDDLE;
 	TextContent = "";
 	BindedCache = 0.00123f;
 }

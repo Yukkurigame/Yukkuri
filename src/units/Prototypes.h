@@ -90,7 +90,7 @@ struct Proto
 
 	std::map< std::string, Action > Actions;
 
-	Proto() : id(-1) { parent = NULL; };
+	Proto() : id(-1), physicsType(-1), statical(false) { parent = NULL; };
 
 	Action* getAction( std::string );
 	Action* getParentAction( std::string );
@@ -122,8 +122,8 @@ struct ActionManager
 
 	std::stack< ActionManagerState* > stateStack;
 
-	ActionManager( ) : loaded(false), done(false),
-			lastTick(0), frame(-1), action(NULL), skipTimers(NULL) { }
+	ActionManager( ) : loaded(false), done(false), lastTick(0),
+			frame(-1), proto(NULL), action(NULL), skipTimers(NULL) { }
 	~ActionManager( );
 
 	void setProto( Proto* );

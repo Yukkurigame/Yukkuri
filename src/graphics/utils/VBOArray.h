@@ -12,6 +12,8 @@
 
 namespace VBOArray {
 
+	void clean( );
+
 	int getSpace( unsigned int size );
 	void freeSpace( unsigned int index, unsigned int count );
 	VertexV2FT2FC4UI* pointer( unsigned int index );

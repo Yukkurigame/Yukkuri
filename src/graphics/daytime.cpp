@@ -122,8 +122,12 @@ void DayTime::init()
 
 void DayTime::clean()
 {
-	//RenderManager::FreeGLSprite( sfield );
-	// TODO: cleaning.
+	listElement<ProcessShader*>* t = light_shaders.head;
+	while( t != NULL ){
+		delete t->data;
+		t = t->next;
+	}
+	light_shaders.clear();
 }
 
 bool DayTime::addShader( GLint id )

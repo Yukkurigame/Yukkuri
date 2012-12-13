@@ -87,7 +87,7 @@ struct CharBuild {
 	Parameters state;
 
 
-	CharBuild() : level(1) {}
+	CharBuild() : level(1), age(), kills() {}
 
 #define PARAM_SWITCH( pre, post ) 			\
 	switch( name ){							\

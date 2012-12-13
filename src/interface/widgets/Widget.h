@@ -88,6 +88,7 @@ public:
 	virtual void toggleVisibility( );
 
 	// Lua methods
+	bool load( lua_State* L );
 	bool resize( lua_State* L );
 	bool toggle( lua_State* L );
 	bool bindParam( lua_State* L );

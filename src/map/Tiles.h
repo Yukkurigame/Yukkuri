@@ -32,7 +32,7 @@ struct MapTile
 	s2i pos;
 	TileInfo* Type;
 	void create( signed int x, signed int y );
-	MapTile( ) : TileID() {}
+	MapTile( ) : TileID(), Type(NULL) {}
 };
 
 

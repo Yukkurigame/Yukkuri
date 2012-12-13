@@ -35,7 +35,8 @@ public:
 	// 2 - periodic					событие переодическое
 	// 4 - endless					event is endless and does not ended
 	// 8 - pausable					на время игровой паузы прекращается обработка этого события, его время "замораживается"
-									// и продолжится после снятия игровой паузы
+	//								и продолжится после снятия игровой паузы
+	// 16 - suspended				This event still exists but was excluded from processing
 
 	inline BYTE IsThreadResume()	{ return flags & 1; }
 	inline void SetThreadResume()	{ flags |= 1; }
@@ -52,6 +53,10 @@ public:
 	inline BYTE IsPausable()	{ return flags & 8; }
 	inline void SetPausable()	{ flags |= 8; }
 	inline void ClearPausable()	{ flags &= ~8; }
+
+	inline BYTE IsSuspended()	{ return flags & 16; }
+	inline void SetSuspended()	{ flags |= 16; }
+	inline void ClearSuspended()	{ flags &= ~16; }
 
 	virtual void ExecEvent();
 

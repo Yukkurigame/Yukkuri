@@ -52,13 +52,7 @@ bool WidgetBar::load( std::string id )
 	cfg->getValue( "toppicture", id, picture );
 	cfg->getValue( "barcoverx", id, TopX );
 	cfg->getValue( "barcovery", id, TopY );
-	cfg->getValue( "barcolor", id, vcolor );
-
-	for( unsigned int i=0; i < 4; ++i ){
-		if( i >= vcolor.size() )
-			vcolor.push_back( i == 3 ? 255 : 0 );
-	}
-	color.set( vcolor[0], vcolor[1], vcolor[2], vcolor[3] );
+	cfg->getValue( "barcolor", id, color );
 
 	if( BarWidth <= 0 )
 		BarWidth = (float)Width;

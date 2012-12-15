@@ -4,11 +4,13 @@
  *  Created on: 13.07.2010
  */
 #include "Lua.h"
+#include "graphics/GraphicsTypes.h"
 #include <cstring>
 #include <cstdlib>
 
 #include "debug.h"
 using namespace Debug;
+
 
 int LuaMain::count = 0;
 lua_State* LuaMain::Lst = NULL;
@@ -153,6 +155,29 @@ template<> bool LuaMain::getValue( lua_State* L, int index, char*& ret)
 	ret = '\0';
 	return false;
 }
+
+template<> bool LuaMain::getValue( lua_State* L, int index, s4ub& ret)
+{
+	if( lua_istable(L, index) ){
+		unsigned int val[4];
+		const int count = luaL_getn(L, -1);
+		for( int i = 1; i < 5; ++i ){
+			// TODO: default behavior is strange
+			if( i > count ){
+				val[i-1] = i < 4 ? 0 : 255;
+			}else{
+				lua_pushnumber(L, i);
+				lua_gettable(L, -2);
+				getValue(L, -1, val[i-1]);
+				lua_pop(L, 1); // stack: vector
+			}
+		}
+		ret.set( val[0], val[1], val[2], val[3] );
+		return true;
+	}
+	return false;
+}
+
 
 int LuaMain::execFunction( std::string function )
 {

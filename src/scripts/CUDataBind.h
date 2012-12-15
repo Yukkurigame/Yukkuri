@@ -139,6 +139,7 @@ void RegisterAllTypeMetatables(lua_State* L)
 		GETSETF_METHOD_DECL(WidgetName)					\
 		GETSETF_METHOD_DECL(WidgetX)					\
 		GETSETF_METHOD_DECL(WidgetY)					\
+		EXEC_METHOD_DECL(load)							\
 		EXEC_METHOD_DECL(resize)						\
 		EXEC_METHOD_DECL(toggle)						\
 		EXEC_METHOD_DECL(bindParam)						\
@@ -211,6 +212,7 @@ DECL_WIDGETBAR_METH
 		GETSET_METHOD_ENTRY(ID, WidgetName)		\
 		GETSET_METHOD_ENTRY(ID, WidgetX)		\
 		GETSET_METHOD_ENTRY(ID, WidgetY)		\
+		EXEC_METHOD_ENTRY(ID, load)				\
 		EXEC_METHOD_ENTRY(ID, resize)			\
 		EXEC_METHOD_ENTRY(ID, toggle)			\
 		EXEC_METHOD_ENTRY(ID, bindParam)		\

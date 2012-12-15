@@ -34,6 +34,9 @@ public:
 
 	void toggleVisibility( );
 
+	// Lua methods
+	virtual bool load( lua_State* L );
+
 protected:
 	virtual CUData* createUData();
 

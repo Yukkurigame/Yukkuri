@@ -201,10 +201,11 @@ public:
 	}
 
 	template<typename T>
-	void getValueByName( lua_State* L, const char* name, T& ret )
+	void getValueByName( lua_State* L, const char* name, T& ret, bool check=false )
 	{
 		lua_getfield( L, -1, name );			// stack: table, [name]
-		getValue( L, -1, ret );
+		if( !check || !lua_isnone( L, -1 ) )
+			getValue( L, -1, ret );
 		lua_pop(L, 1);                      // stack: table
 	}
 

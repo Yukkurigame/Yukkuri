@@ -21,7 +21,7 @@ public:
 
 	void updatePosition( );
 
-	void setFontColor( unsigned int r, unsigned int g, unsigned int b );
+	void setFontColor( const s4ub& clr );
 	void setTextPosition( float x, float y );
 	float getTextX( ){ return TextX; }
 	float getTextY( ){ return TextY; }
@@ -45,6 +45,9 @@ public:
 	void setWidgetText( std::string text );
 	inline std::string getWidgetText( ) { return TextContent; }
 
+	// Lua methods
+	virtual bool load( lua_State* L );
+
 
 protected:
 	virtual CUData* createUData();
@@ -54,7 +57,7 @@ protected:
 private:
 	Text TextSprite;
 	float TextX, TextY;
-	int TextAlign, TextVAlign;
+	int TextAlign;
 	std::string TextContent;
 	std::string FontName;
 	int FontSize;

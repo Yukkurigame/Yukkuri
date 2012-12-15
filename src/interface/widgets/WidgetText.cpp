@@ -18,8 +18,7 @@ WidgetText::WidgetText( )
 	FontSize = 12;
 	TextX = 0;
 	TextY = 0;
-	TextAlign = waCENTER;
-	TextVAlign = waMIDDLE;
+	TextAlign = waMIDDLE;
 	TextContent = "";
 	BindedCache = 0.00123f;
 }
@@ -39,14 +38,14 @@ bool WidgetText::load( std::string id )
 	std::string tvalign;
 	int fontsize = 12;
 	float lineheight;
-	std::vector<int> vcolor;
+	s4ub vcolor( 0,0,0,0 );
 	LuaConfig* cfg = new LuaConfig;
 
 	cfg->getValue( "text", id, BaseText );
 	cfg->getValue( "textx", id, TextX );
 	cfg->getValue( "texty", id, TextY );
-	cfg->getValue( "textalign", id, talign );
-	cfg->getValue( "textvalign", id, tvalign );
+	cfg->getValue( "textalign", id, TextAlign );
+	//cfg->getValue( "textvalign", id, tvalign );
 	cfg->getValue( "font", id, font );
 	cfg->getValue( "fontsize", id, fontsize );
 	cfg->getValue( "fontcolor", id, vcolor );
@@ -56,30 +55,13 @@ bool WidgetText::load( std::string id )
 
 	delete cfg;
 
-	if( talign == "Center" )
-		TextAlign = waCENTER;
-	else if( talign == "Right" )
-		TextAlign = waRIGHT;
-	else
-		TextAlign = waLEFT;
-	if( tvalign == "Middle" )
-		TextVAlign = waMIDDLE;
-	else if( tvalign == "Bottom" )
-		TextVAlign = waBOTTOM;
-	else
-		TextVAlign = waTOP;
-
 	TextSprite.setPosition( TextX, TextX, getZ() );
 	TextSprite.setFont( font, fontsize );
 	TextSprite.setFixed( true );
 	TextSprite.setLineHeight( lineheight );
 	setWidgetText( "" );
 
-	for( unsigned int i=0; i < 3; ++i ){
-		if( i >= vcolor.size() )
-			vcolor.push_back(0);
-	}
-	setFontColor( (unsigned)vcolor[0], (unsigned)vcolor[1], (unsigned)vcolor[2] );
+	setFontColor( vcolor );
 
 	if( !Widget::load( id ) )
 		return false;
@@ -98,8 +80,8 @@ void WidgetText::updatePosition( )
 		this->Height = height + TextY;
 	Widget::updatePosition( );
 	posx = posy = 0;
-	switch(TextAlign){
-		case waCENTER:
+	switch( TextAlign & (waLEFT | waRIGHT) ){
+		case waMIDDLE:
 			posx = PosX + this->Width * 0.5f - width * 0.5f + TextX;
 			break;
 		case waRIGHT:
@@ -110,8 +92,8 @@ void WidgetText::updatePosition( )
 			posx = PosX + TextX;
 			break;
 	}
-	switch(TextVAlign){
-			case waCENTER:
+	switch( TextAlign & (waTOP | waBOTTOM) ){
+			case waMIDDLE:
 				posy = PosY - height * 0.5f + this->Height * 0.5f + TextY;
 				break;
 			case waBOTTOM:
@@ -126,9 +108,9 @@ void WidgetText::updatePosition( )
 	TextSprite.setPosition( posx, posy, getZ( ) + 0.1f );
 }
 
-void WidgetText::setFontColor( unsigned int r, unsigned int g, unsigned int b )
+void WidgetText::setFontColor( const s4ub& clr )
 {
-	TextSprite.setColor( r, g, b );
+	TextSprite.setColor( clr.r, clr.g, clr.b );
 }
 
 void WidgetText::setWidgetText( std::string text )

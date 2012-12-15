@@ -18,8 +18,7 @@ struct LuaRet;
 
 enum wType { wtNone = 0, wtBlank, wtText, wtBar, wtConsole };
 
-enum wAlign { waLEFT = 1, waCENTER, waRIGHT };
-enum wVAlign { waTOP = 1, waMIDDLE, waBOTTOM };
+enum wAlign { waMIDDLE=0, waLEFT = 1, waRIGHT=2, waTOP = 4, waBOTTOM = 8 };
 
 
 #define UPDATE_PERIOD 200
@@ -73,9 +72,8 @@ public:
 	bool bindValue( enum type_identifier type, void* val );
 
 	void setBackground( int texture, int picture );
-	inline void setBackgroundColor( int r, int g, int b, int a ){
+	inline void setBackgroundColor( const s4ub& c ){
 		if( background != NULL ){
-			s4ub c(r, g, b, a);
 			background->brush.set_color( c );
 		}
 	}
@@ -88,7 +86,7 @@ public:
 	virtual void toggleVisibility( );
 
 	// Lua methods
-	bool load( lua_State* L );
+	virtual bool load( lua_State* L );
 	bool resize( lua_State* L );
 	bool toggle( lua_State* L );
 	bool bindParam( lua_State* L );
@@ -138,10 +136,6 @@ protected:
 	float OffsetX;
 	float OffsetY;
 
-	//int* iBinded;
-	//float* fBinded;
-	//std::string* SBinded;
-
 	std::string baseID;
 	std::string Name;
 
@@ -158,7 +152,7 @@ private:
 	wType Type;
 	// TODO: Aligns must be one flag
 	int Align;
-	int VAlign; //FIXME: two align is bad?
+	//int VAlign; //FIXME: two align is bad?
 	float PosZ;
 	Widget* Parent;
 	list<Widget*> Children;

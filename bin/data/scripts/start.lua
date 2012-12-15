@@ -1,14 +1,41 @@
 
+require("data/scripts/3rdparty/bit")
 
-local fps = Interface.getWidget(Interface.loadWidget("widget_fps_428624"))
+local fps = Interface.createWidget("widget_fps_5452434", constants.wtText)
+fps:load({
+	name = "fps", align = bit.bor(constants.waLEFT, constants.waBOTTOM),
+	font = "./DejaVuSans.ttf",
+	text = "FPS: ", fontcolor = {80,80,80},
+	fontsize = 20, textalign = constants.waLEFT,
+	y = 0, x = 10
+})
+
 fps:bindParam(nil, constants.gbpFPS)
 
-Interface.loadWidget("widget_time_493245")
+
+local time = Interface.createWidget("widget_time_493245", constants.wtText)
+time:load({
+	name = "time", image = "sprite_widget_time_768888",
+	height = 70, font = "./LiberationSerif-Regular.ttf",
+	texty = 8, width = 263, fontsize = 26,
+	align = bit.bor(constants.waRIGHT, constants.waTOP),
+	bgimage = "misc.png"
+})
 
 
-local console = Interface.getWidget(Interface.loadWidget("widget_console"))
+
+local console = Interface.createWidget("widget_console", constants.wtText)
+console:load({
+		name = "console", font = "./LiberationSerif-Regular.ttf",
+		align = bit.bor(constants.waLEFT, constants.waTOP),
+		textalign = bit.bor(constants.waLEFT, constants.waTOP),
+		fontcolor = {255,255,255}, height = 200, width = 300,
+		depth = 2, fontsize = 18, bgcolor = {0, 0, 0, 127},
+		textx = 5, texty = -5, lineheight = 0.75
+})
 console:resize(configs:getById('windows_width', 'config_general') - 1, 300)
 console:toggle()
+
 
 
 Input.set("bindings_game")

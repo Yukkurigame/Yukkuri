@@ -11,17 +11,127 @@
 #include "units/unitmanager.h"
 #include "basic_types.h"
 
-#include "scripts/Lua.h"
+#include "graphics/Render.h"
+
+#include "scripts/LuaScript.h"
 
 #include "hacks.h"
 
 extern float currentFPS;
 
+extern LuaScript* luaScript;
+
+
+#define GET_VALUE( name, param )	\
+	luaScript->getValueByName( L, name, param, true );
+
 
 bool Widget::load( lua_State* L )
 {
+	luaL_argcheck( L, lua_istable( L, 1 ), 1, "Parameters table expected" );
+
+
+	std::string align;
+	std::string valign;
+
+	GET_VALUE( "name", Name )
+	GET_VALUE( "x", OffsetX )
+	GET_VALUE( "y", OffsetY )
+	GET_VALUE( "width", Width )
+	GET_VALUE( "height", Height )
+	GET_VALUE( "align", Align )
+
+	float z = 0;
+	GET_VALUE( "depth", z )
+	setWidgetRealZ( z );
+
+	updatePosition( );
+
+	{
+		std::string imgname;
+		int picture = 0;
+		s4ub bgcolor(0,0,0,0);
+		GET_VALUE( "image", imgname )
+		GET_VALUE( "picture", picture )
+		GET_VALUE( "bgcolor", bgcolor )
+		if( imgname != "" || bgcolor.a ){
+			setBackground( RenderManager::GetTextureNumberById( imgname ), picture );
+			if( bgcolor.a )
+				setBackgroundColor( bgcolor );
+		}
+	}
+
+	lua_pop( L, 1 );
+
 	return true;
 }
+
+
+bool WidgetText::load( lua_State* L )
+{
+	luaL_argcheck( L, lua_istable( L, 1 ), 1, "Parameters table expected" );
+
+	std::string font;
+	std::string text;
+	std::string talign;
+	std::string tvalign;
+	int fontsize = 12;
+	float lineheight;
+	s4ub vcolor(0,0,0,255);
+
+	GET_VALUE( "text", BaseText )
+	GET_VALUE( "textx", TextX )
+	GET_VALUE( "texty", TextY )
+	GET_VALUE( "textalign", TextAlign )
+	GET_VALUE( "font", font )
+	GET_VALUE( "fontsize", fontsize )
+	GET_VALUE( "fontcolor", vcolor )
+	GET_VALUE( "lineheight", lineheight )
+	if( !lineheight )
+		lineheight = 1.0;
+
+	TextSprite.setPosition( TextX, TextX, getZ() );
+	TextSprite.setFont( font, fontsize );
+	TextSprite.setFixed( true );
+	TextSprite.setLineHeight( lineheight );
+	setWidgetText( "" );
+
+	setFontColor( vcolor );
+
+	return Widget::load( L );
+}
+
+
+bool WidgetBar::load( lua_State* L )
+{
+	std::string imgname;
+	int picture;
+	int barheight;
+	s4ub color;
+
+	GET_VALUE( "barheight", barheight )
+	GET_VALUE( "barwidth", BarWidth )
+	GET_VALUE( "barx", BarX )
+	GET_VALUE( "bary", BarY )
+	GET_VALUE( "topimage", imgname )
+	GET_VALUE( "toppicture", picture )
+	GET_VALUE( "barcoverx", TopX )
+	GET_VALUE( "barcovery", TopY )
+	GET_VALUE( "barcolor", color )
+
+	if( BarWidth <= 0 )
+		BarWidth = (float)Width;
+
+	createBar( imgname, picture, barheight, color );
+	updatePosition();
+
+
+	return WidgetText::load( L );
+}
+
+
+#undef GET_VALUE
+
 
 
 bool Widget::resize( lua_State* L )

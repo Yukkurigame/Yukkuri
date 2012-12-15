@@ -191,11 +191,10 @@ void LuaMain::RegisterApi( lua_State* L )
 		FIELD(wtBar)
 		FIELD(wtConsole)
 		// Widgets align
+		FIELD(waMIDDLE)
 		FIELD(waLEFT)
-		FIELD(waCENTER)
 		FIELD(waRIGHT)
 		FIELD(waTOP)
-		FIELD(waMIDDLE)
 		FIELD(waBOTTOM)
 
 		// Unit base parameters

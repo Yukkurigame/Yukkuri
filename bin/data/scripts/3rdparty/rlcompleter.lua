@@ -1,7 +1,14 @@
 -- Lua side of readline completion for REPL
 -- By Patrick Rapin; adapted by Reuben Thomas; Fixes by Sir Anthony
 
-require("data/shared/p-rlcompleter_c")
+local arch = os.getenv("HOSTTYPE")
+if arch == "x86_64" or arch == "amd64" then
+    arch = "x86_64"
+else
+    arch = "x86"
+end
+
+require("data/shared/" .. arch .. "-rlcompleter_c")
 
 -- The list of Lua keywords
 local keywords = {

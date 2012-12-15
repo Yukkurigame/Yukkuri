@@ -44,8 +44,8 @@ Widget::Widget() : Timer(this)
 	PosX = 0;
 	PosY = 0;
 	PosZ = 0;
-	VAlign = waTOP;
-	Align = waCENTER;
+	//VAlign = waTOP;
+	Align = waMIDDLE;
 	visible = true;
 	Parent = NULL;
 	background = NULL;
@@ -82,23 +82,7 @@ bool Widget::load( std::string id )
 	cfg->getValue( "y", baseID, OffsetY );
 	cfg->getValue( "width", baseID, Width );
 	cfg->getValue( "height", baseID, Height );
-	cfg->getValue( "align", baseID, align );
-	cfg->getValue( "valign", baseID, valign );
-
-	if( align == "Center" )
-		Align = waCENTER;
-	else if( align == "Right" )
-		Align = waRIGHT;
-	else
-		Align = waLEFT;
-
-	if( valign == "Middle" )
-		VAlign = waMIDDLE;
-	else if( valign == "Bottom" )
-		VAlign = waBOTTOM;
-	else
-		VAlign = waTOP;
-
+	cfg->getValue( "align", baseID, Align );
 
 	float z = 0;
 	cfg->getValue("depth", baseID, z );
@@ -109,20 +93,14 @@ bool Widget::load( std::string id )
 	{
 		std::string imgname;
 		int picture = 0;
-		std::vector< int > bgcolor;
+		s4ub bgcolor(0,0,0,0);
 		cfg->getValue( "image", baseID, imgname );
 		cfg->getValue( "picture", baseID, picture );
 		cfg->getValue( "bgcolor", baseID, bgcolor );
-		if( imgname != "" || bgcolor.size() ){
+		if( imgname != "" || bgcolor.a ){
 			setBackground( RenderManager::GetTextureNumberById( imgname ), picture );
-			if( bgcolor.size() ){
-				for( unsigned int i=0; i < 4; ++i ){
-					if( i >= bgcolor.size() )
-						bgcolor.push_back( i < 3 ? 0 : 255 );
-				}
-				setBackgroundColor( (unsigned)bgcolor[0], (unsigned)bgcolor[1],
-									(unsigned)bgcolor[2], (unsigned)bgcolor[3] );
-			}
+			if( bgcolor.a )
+				setBackgroundColor( bgcolor );
 		}
 	}
 
@@ -172,8 +150,8 @@ void Widget::updatePosition( )
 		width = (float)conf.windowWidth;
 		height = (float)conf.windowHeight;
 	}
-	switch(Align){
-		case waCENTER:
+	switch( Align & (waLEFT | waRIGHT) ){
+		case waMIDDLE:
 			posx = startx + width * 0.5f - this->Width * 0.5f + OffsetX;
 			break;
 		case waRIGHT:
@@ -184,8 +162,8 @@ void Widget::updatePosition( )
 			posx = startx + OffsetX;
 			break;
 	}
-	switch(VAlign){
-		case waCENTER:
+	switch( Align & (waTOP | waBOTTOM) ){
+		case waMIDDLE:
 			posy = starty - height * 0.5f - this->Height * 0.5f - OffsetY;
 			break;
 		case waBOTTOM:

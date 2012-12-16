@@ -35,4 +35,7 @@ private:
 };
 
 
+CUDataUser* getUserData( lua_State* L, int idx );
+
+
 #endif /* CUDATAUSER_H_ */

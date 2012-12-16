@@ -52,7 +52,7 @@ int UMApi::deleteUnit( lua_State* L )
 		UINT id = static_cast<UINT>( lua_tointeger(L, 1) );
 		u = UnitManager::GetUnit( id );
 	}else
-		u = reinterpret_cast<Unit*>( lua_touserdata( L, 1 ) );
+		u = reinterpret_cast<Unit*>( getUserData( L, 1 ) );
 
 	lua_pop( L, 1 );
 

@@ -14,8 +14,21 @@ require('data/scripts/consolekeys')
 
 function Console:widget()
 	if self.console == nil then
-		self.console = Interface.getWidgetByName("console")
-		self.lines = self.console:Lines()
+		local console = Interface.getWidgetByName("console")
+		if console == nil then
+			console = Interface.createWidget("widget_console", constants.wtText)
+			console:load({ name = "console", font = "./LiberationSerif-Regular.ttf",
+				align = bit.bor(constants.waLEFT, constants.waTOP),
+				textalign = bit.bor(constants.waLEFT, constants.waTOP),
+				fontcolor = {255,255,255}, height = 200, width = 300,
+				depth = 2, fontsize = 18, bgcolor = {0, 0, 0, 127},
+				textx = 5, texty = -5, lineheight = 0.75
+			})
+			console:resize(configs:getById('windows_width', 'config_general') - 1, 300)
+			console:toggle()
+		end
+		self.console = console
+		self.lines = console:Lines()
 	end
 	return self.console
 end

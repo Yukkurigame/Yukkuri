@@ -24,7 +24,7 @@ namespace Interface
 	Widget* GetWidget( unsigned int id );
 	Widget* GetWidget( std::string name, Widget* parent );
 
-	void Update( );
+	//void Update( );
 
 };
 

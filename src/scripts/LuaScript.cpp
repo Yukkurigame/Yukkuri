@@ -190,7 +190,7 @@ void LuaScript::StackDumpToLog( lua_State *L )
 	}
 	s+= "\n";
 
-	Debug::debug( Debug::CONFIG, s.c_str() );
+	Debug::debug( Debug::SCRIPT, s.c_str() );
 }
 
 

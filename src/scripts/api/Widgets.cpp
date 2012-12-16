@@ -168,7 +168,7 @@ bool Widget::bindParam( lua_State* L )
 		UINT id = static_cast<UINT>( lua_tointeger(L, 1) );
 		u = UnitManager::GetUnit( id );
 	}else
-		u = reinterpret_cast<Unit*>( lua_touserdata( L, 1 ) );
+		u = reinterpret_cast<Unit*>( getUserData( L, 1 ) );
 
 	paramname = lua_tointeger( L, 2 );
 
@@ -245,7 +245,7 @@ bool WidgetBar::bindBarMaxValue( lua_State* L )
 		UINT id = static_cast<UINT>( lua_tointeger(L, 1) );
 		u = UnitManager::GetUnit( id );
 	}else
-		u = reinterpret_cast<Unit*>( lua_touserdata( L, 1 ) );
+		u = reinterpret_cast<Unit*>( getUserData( L, 1 ) );
 
 	paramname = static_cast<enum character_float>( lua_tointeger( L, 2 ) );
 

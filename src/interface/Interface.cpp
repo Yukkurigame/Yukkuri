@@ -168,8 +168,10 @@ Widget* Interface::GetWidget( std::string name, Widget* parent )
 	return NULL;
 }
 
+/*
 void Interface::Update( )
 {
 	FOREACHIT( widgets )
 		(*it)->Update( );
 }
+*/

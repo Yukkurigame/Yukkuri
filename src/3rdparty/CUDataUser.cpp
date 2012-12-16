@@ -37,3 +37,14 @@ int CUDataUser::pushUData( lua_State* L )
 	}
 	return 0;
 }
+
+
+CUDataUser* getUserData( lua_State* L, int idx )
+{
+	luaL_argcheck( L, lua_isuserdata( L, idx ), idx, "Userdata expected" );
+
+	CUData* ud = reinterpret_cast<CUData*>( lua_touserdata( L, idx ) );
+	if( !ud )
+		return NULL;
+	return ud->getUser();
+}

@@ -23,8 +23,8 @@ public:
 
 	void setFontColor( const s4ub& clr );
 	void setTextPosition( float x, float y );
-	float getTextX( ){ return TextX; }
-	float getTextY( ){ return TextY; }
+	float getTextX( ){ return TextPos.x; }
+	float getTextY( ){ return TextPos.y; }
 
 	void Update();
 
@@ -34,7 +34,7 @@ public:
 	inline int getLineHeight( ){ return (int)TextSprite.getLineHeight(); }
 	inline void setLineHeight( float lh ){ TextSprite.setLineHeight( lh ); }
 	inline int getLineSize( ){ return TextSprite.getLineSize(); }
-	inline int getLines( ){ return (int)(Height / TextSprite.getLineSize()); }
+	inline int getLines( ){ return (int)(Rect.height / TextSprite.getLineSize()); }
 
 	inline void setCursor( unsigned int pos ) { TextSprite.setCursorPosition( pos ); }
 	inline int getCursor( ) { return TextSprite.getCursorPosition(); };
@@ -56,7 +56,7 @@ protected:
 
 private:
 	Text TextSprite;
-	float TextX, TextY;
+	s2f TextPos;
 	int TextAlign;
 	std::string TextContent;
 	std::string FontName;

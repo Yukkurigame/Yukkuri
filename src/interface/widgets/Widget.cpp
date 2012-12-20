@@ -37,14 +37,6 @@ Widget::Widget() : Timer(this)
 {
 	ID = 0;
 	Type = wtNone;
-	Width = 0;
-	Height = 0;
-	OffsetX = 0;
-	OffsetY = 0;
-	PosX = 0;
-	PosY = 0;
-	PosZ = 0;
-	//VAlign = waTOP;
 	Align = waMIDDLE;
 	visible = true;
 	Parent = NULL;
@@ -78,10 +70,10 @@ bool Widget::load( std::string id )
 	if( !cfg->getValue( "name", id, Name ) )
 		return false;
 
-	cfg->getValue( "x", baseID, OffsetX );
-	cfg->getValue( "y", baseID, OffsetY );
-	cfg->getValue( "width", baseID, Width );
-	cfg->getValue( "height", baseID, Height );
+	cfg->getValue( "x", baseID, Position.x );
+	cfg->getValue( "y", baseID, Position.y );
+	cfg->getValue( "width", baseID, Rect.width );
+	cfg->getValue( "height", baseID, Rect.height );
 	cfg->getValue( "align", baseID, Align );
 
 	float z = 0;
@@ -116,29 +108,29 @@ void Widget::setBackground( int texture, int picture )
 		return;
 	if( background )
 		RenderManager::FreeGLSprite( background );
-	background = RenderManager::CreateGLSprite( PosX, PosY, getZ(), (int)Width, (int)Height,
-							texture, picture );
+	background = RenderManager::CreateGLSprite( Position.x, Position.y, getZ(),
+				(int)Rect.width, (int)Rect.height, texture, picture );
 	background->setFixed();
 }
 
 
 void Widget::resize( float w, float h )
 {
-	if( w == Width && h == Height )
+	if( w == Rect.width && h == Rect.height )
 		return;
 	if( w >= 0 )
-		Width = w;
+		Rect.width = w;
 	if( h >= 0 )
-		Height = h;
+		Rect.height = h;
 	if( background )
-		background->resize( (float)Width, (float)Height );
+		background->resize( (float)Rect.width, (float)Rect.height );
 }
 
 
 void Widget::updatePosition( )
 {
 	extern MainConfig conf;
-	float posx, posy, startx, starty, width, height;
+	float startx, starty, width, height;
 	if(Parent){
 		width = Parent->getWidgetWidth( );
 		height = Parent->getWidgetHeight( );
@@ -150,34 +142,41 @@ void Widget::updatePosition( )
 		width = (float)conf.windowWidth;
 		height = (float)conf.windowHeight;
 	}
+	Position.x = startx + Rect.x;
+	Position.y = starty - Rect.y;
 	switch( Align & (waLEFT | waRIGHT) ){
 		case waMIDDLE:
-			posx = startx + width * 0.5f - this->Width * 0.5f + OffsetX;
+			Position.x += 0.5f * ( width - this->Rect.width );
+			//posx = startx + width * 0.5f - this->Rect.width * 0.5f + Rect.x;
 			break;
 		case waRIGHT:
-			posx = startx + width - this->Width + OffsetX;
+			Position.x += width - this->Rect.width;
+			//posx = startx + width - this->Rect.width + Rect.x;
 			break;
 		case waLEFT:
 		default:
-			posx = startx + OffsetX;
+			//posx = startx + Rect.x;
 			break;
 	}
 	switch( Align & (waTOP | waBOTTOM) ){
 		case waMIDDLE:
-			posy = starty - height * 0.5f - this->Height * 0.5f - OffsetY;
+			Position.y -= 0.5f * ( height  + this->Rect.height );
+			//posy = starty - height * 0.5f - this->Rect.height * 0.5f - Rect.y;
 			break;
 		case waBOTTOM:
-			posy = starty - height - OffsetY;
+			Position.y -= height;
+			//posy = starty - height - Rect.y;
 			break;
 		case waTOP:
 		default:
-			posy = starty - this->Height - OffsetY;
+			Position.y -= this->Rect.height;
+			//posy = starty - this->Rect.height - Rect.y;
 			break;
 	}
-	PosX = posx;
-	PosY = posy;
+	//Rect.x = posx;
+	//Rect.y = posy;
 	if( background ){
-		background->setPosition( PosX, PosY, getZ() );
+		background->setPosition( Position.x, Position.y, getZ() );
 	}
 
 }
@@ -186,7 +185,7 @@ void Widget::updatePosition( )
 float Widget::getZ( )
 {
 	extern MainConfig conf;
-	return PosZ + conf.widgetsPosZ;
+	return Position.z + conf.widgetsPosZ;
 }
 
 
@@ -194,7 +193,7 @@ void Widget::setParent( Widget* p )
 {
 	extern MainConfig conf;
 	Parent = p;
-	PosZ = PosZ + p->getZ( ) - conf.widgetsPosZ + 0.1f;
+	Position.z = Position.z + p->getZ( ) - conf.widgetsPosZ + 0.1f;
 	updatePosition();
 }
 

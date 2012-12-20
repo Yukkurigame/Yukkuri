@@ -44,10 +44,36 @@ local plevel = Interface.addChild(stats, "textwidget_plevel_152271",
 if plevel then
 	plevel:bindParam(player, constants.uBaseLevel)
 end
+local pdays = Interface.addChild(stats, "textwidget_pdays_353161",
+	constants.wtText, {
+		name = "pdays", font = "./LiberationSerif-Regular.ttf",
+		x = -30, y = 45, text = "Age: ",
+		align = bit.bor(constants.waRIGHT, constants.waTOP),
+		fontsize = 18, textalign = constants.waLEFT,
+})
+if pdays then
+	pdays:bindParam(player, constants.uBaseAge)
+end
 
+local hpbar = Interface.addChild(stats, "barwidget_phpbar_121678",
+	constants.wtBar, {
+		name = "phpbar", text = "HP: ", barcolor = {255},
+		barcovery = -5, barcoverx = -7, bary = -5, width = 146,
+		barwidth = 133, height = 20, barheight = 8, y = 80,
+		font = "./LiberationSerif-Regular.ttf", fontsize = 18,
+		topimage = "sprite_bar_cover_693493",
+		align = constants.waTOP, textalign = constants.waLEFT,
+})
+--[[
+if hpbar then
+	hpbar:bindParam(player, constants.uStateHP)
+	hpbar:bindBarMaxValue(player, constants.uParamHP)
+end
+]]--
 
 Map.active(true)
 Map.loadRegion('region_test2_881880')
+
 
 --[[
 local plevel = Interface.getWidgetByName("plevel", stats)

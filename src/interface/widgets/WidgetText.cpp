@@ -16,8 +16,6 @@ WidgetText::WidgetText( )
 {
 	FontName = "DejaVuSans";
 	FontSize = 12;
-	TextX = 0;
-	TextY = 0;
 	TextAlign = waMIDDLE;
 	TextContent = "";
 	BindedCache = 0.00123f;
@@ -42,10 +40,9 @@ bool WidgetText::load( std::string id )
 	LuaConfig* cfg = new LuaConfig;
 
 	cfg->getValue( "text", id, BaseText );
-	cfg->getValue( "textx", id, TextX );
-	cfg->getValue( "texty", id, TextY );
+	cfg->getValue( "textx", id, TextPos.x );
+	cfg->getValue( "texty", id, TextPos.y );
 	cfg->getValue( "textalign", id, TextAlign );
-	//cfg->getValue( "textvalign", id, tvalign );
 	cfg->getValue( "font", id, font );
 	cfg->getValue( "fontsize", id, fontsize );
 	cfg->getValue( "fontcolor", id, vcolor );
@@ -55,7 +52,7 @@ bool WidgetText::load( std::string id )
 
 	delete cfg;
 
-	TextSprite.setPosition( TextX, TextX, getZ() );
+	TextSprite.setPosition( TextPos.x, TextPos.x, getZ() );
 	TextSprite.setFont( font, fontsize );
 	TextSprite.setFixed( true );
 	TextSprite.setLineHeight( lineheight );
@@ -74,35 +71,41 @@ void WidgetText::updatePosition( )
 	float posx, posy, height, width;
 	width = (float)TextSprite.width();
 	height = (float)TextSprite.height();
-	if( width + TextX > Width )
-		this->Width = width + TextX;
-	if( height + TextY > Height )
-		this->Height = height + TextY;
+	if( width + TextPos.x > Rect.width )
+		this->Rect.width = width + TextPos.x;
+	if( height + TextPos.y > Rect.height )
+		this->Rect.height = height + TextPos.y;
 	Widget::updatePosition( );
-	posx = posy = 0;
+
+	posx = getWidgetRealX() + TextPos.x;
+	posy = getWidgetRealY() + TextPos.y;
 	switch( TextAlign & (waLEFT | waRIGHT) ){
 		case waMIDDLE:
-			posx = PosX + this->Width * 0.5f - width * 0.5f + TextX;
+			posx += 0.5f * (this->Rect.width - width);
+			//posx = Rect.x + this->Rect.width * 0.5f - width * 0.5f + TextPos.x;
 			break;
 		case waRIGHT:
-			posx = PosX + this->Width - width + TextX;
+			posx += this->Rect.width - width;
+			//posx = Rect.x + this->Rect.width - width + TextPos.x;
 			break;
 		case waLEFT:
 		default:
-			posx = PosX + TextX;
+			//posx = Rect.x + TextPos.x;
 			break;
 	}
 	switch( TextAlign & (waTOP | waBOTTOM) ){
 			case waMIDDLE:
-				posy = PosY - height * 0.5f + this->Height * 0.5f + TextY;
+				posy += 0.5f * ( this->Rect.height - height );
+				//posy = Rect.y - height * 0.5f + this->Rect.height * 0.5f + TextPos.y;
 				break;
 			case waBOTTOM:
-				posy = PosY + TextY;
+				//posy = Rect.y + TextPos.y;
 				break;
 			case waTOP:
 			default:
-				posy = PosY + this->Height -
-				TextSprite.getLineSize() + TextY;
+				posy += this->Rect.height - TextSprite.getLineSize();
+				//posy = Rect.y + this->Rect.height -
+				//TextSprite.getLineSize() + TextPos.y;
 				break;
 		}
 	TextSprite.setPosition( posx, posy, getZ( ) + 0.1f );
@@ -120,11 +123,11 @@ void WidgetText::setWidgetText( std::string text )
 		return;
 	TextContent = text;
 	TextSprite.setText( (BaseText + text).c_str() );
-	w = (float)Width;
-	h = (float)Height;
-	if( !Width || Width < TextSprite.width() )
+	w = (float)Rect.width;
+	h = (float)Rect.height;
+	if( !Rect.width || Rect.width < TextSprite.width() )
 		w = (float)TextSprite.width();
-	if( !Height || Height < TextSprite.height() )
+	if( !Rect.height || Rect.height < TextSprite.height() )
 		h = (float)TextSprite.height();
 	resize( w, h );
 	updatePosition();
@@ -132,8 +135,8 @@ void WidgetText::setWidgetText( std::string text )
 
 void WidgetText::setTextPosition( float x, float y )
 {
-	TextX = x;
-	TextY = y;
+	TextPos.x = x;
+	TextPos.y = y;
 	updatePosition();
 }
 

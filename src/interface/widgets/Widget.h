@@ -57,7 +57,7 @@ public:
 	void resize( float w, float h );
 	virtual void updatePosition( );
 
-	void setWidgetRealZ( float z ){ PosZ = z * 0.1f; }
+	void setWidgetRealZ( float z ){ Position.z = z * 0.1f; }
 	float getZ( );
 
 	void setId( unsigned int id ) { ID = id; }
@@ -104,17 +104,18 @@ public:
 
 	GET_PARAM( unsigned int, Id, ID )
 	GET_PARAM( int, Type, Type )
-	GET_PARAM( float, Width, Width )
-	GET_PARAM( float, Height, Height )
-	GET_PARAM( float, RealX, PosX )
-	GET_PARAM( float, RealY, PosY )
-	//GET_PARAM( float, RealZ, PosZ )
+	GET_PARAM( float, Width, Rect.width )
+	GET_PARAM( float, Height, Rect.height )
+	GET_PARAM( float, RealX, Position.x )
+	GET_PARAM( float, RealY, Position.y )
+	GET_PARAM( float, RealZ, Position.z )
 	//SET_PARAM( float, RealZ, PosZ )
 	//GET_SET_PARAM( std::string, Name, Name )
-	GET_SET_PARAM( float, X, OffsetX )
-	GET_SET_PARAM( float, Y, OffsetY )
+	GET_SET_PARAM( float, X, Rect.x )
+	GET_SET_PARAM( float, Y, Rect.y )
 
 	std::string getWidgetName() { return Name; }
+	s3f getWidgetPosition(){ return s3f(Position.x, Position.y, getZ()); }
 	void setWidgetName( std::string _var ) { Name = _var; }
 
 #undef GET_PARAM
@@ -129,12 +130,8 @@ protected:
 	bool visible;
 	Sprite* background;
 
-	float Width;
-	float Height;
-	float PosX;
-	float PosY;
-	float OffsetX;
-	float OffsetY;
+
+	rect2f Rect;
 
 	std::string baseID;
 	std::string Name;
@@ -150,13 +147,13 @@ protected:
 private:
 	unsigned int ID;
 	wType Type;
-	// TODO: Aligns must be one flag
+
 	int Align;
-	//int VAlign; //FIXME: two align is bad?
-	float PosZ;
+
+	s3f Position; 	// Real word position
+
 	Widget* Parent;
 	list<Widget*> Children;
-
 };
 
 #endif /* WIDGETS_H_ */

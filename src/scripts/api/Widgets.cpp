@@ -35,10 +35,10 @@ bool Widget::load( lua_State* L )
 	std::string valign;
 
 	GET_VALUE( "name", Name )
-	GET_VALUE( "x", OffsetX )
-	GET_VALUE( "y", OffsetY )
-	GET_VALUE( "width", Width )
-	GET_VALUE( "height", Height )
+	GET_VALUE( "x", Position.x )
+	GET_VALUE( "y", Position.y )
+	GET_VALUE( "width", Rect.width )
+	GET_VALUE( "height", Rect.height )
 	GET_VALUE( "align", Align )
 
 	float z = 0;
@@ -80,8 +80,8 @@ bool WidgetText::load( lua_State* L )
 	s4ub vcolor(0,0,0,255);
 
 	GET_VALUE( "text", BaseText )
-	GET_VALUE( "textx", TextX )
-	GET_VALUE( "texty", TextY )
+	GET_VALUE( "textx", TextPos.x )
+	GET_VALUE( "texty", TextPos.y )
 	GET_VALUE( "textalign", TextAlign )
 	GET_VALUE( "font", font )
 	GET_VALUE( "fontsize", fontsize )
@@ -90,12 +90,11 @@ bool WidgetText::load( lua_State* L )
 	if( !lineheight )
 		lineheight = 1.0;
 
-	TextSprite.setPosition( TextX, TextX, getZ() );
+	TextSprite.setPosition( TextPos.x, TextPos.x, getZ() );
 	TextSprite.setFont( font, fontsize );
 	TextSprite.setFixed( true );
 	TextSprite.setLineHeight( lineheight );
 	setWidgetText( "" );
-
 	setFontColor( vcolor );
 
 	return Widget::load( L );
@@ -106,25 +105,23 @@ bool WidgetBar::load( lua_State* L )
 {
 	std::string imgname;
 	int picture;
-	int barheight;
 	s4ub color;
 
-	GET_VALUE( "barheight", barheight )
-	GET_VALUE( "barwidth", BarWidth )
-	GET_VALUE( "barx", BarX )
-	GET_VALUE( "bary", BarY )
+	GET_VALUE( "barheight", Bar.height )
+	GET_VALUE( "barwidth", Bar.width )
+	GET_VALUE( "barx", Bar.x )
+	GET_VALUE( "bary", Bar.y )
 	GET_VALUE( "topimage", imgname )
 	GET_VALUE( "toppicture", picture )
-	GET_VALUE( "barcoverx", TopX )
-	GET_VALUE( "barcovery", TopY )
+	GET_VALUE( "barcoverx", Top.x )
+	GET_VALUE( "barcovery", Top.y )
 	GET_VALUE( "barcolor", color )
 
-	if( BarWidth <= 0 )
-		BarWidth = (float)Width;
+	if( Bar.width <= 0 )
+		Bar.width = (float)Rect.width;
 
-	createBar( imgname, picture, barheight, color );
+	createBar( imgname, picture, color );
 	updatePosition();
-
 
 	return WidgetText::load( L );
 }

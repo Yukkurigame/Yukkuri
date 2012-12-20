@@ -52,7 +52,7 @@ private:
 	int Height;
 	int Lines;
 	unsigned int flags;		// 1 - visible
-					// 2 - fixed
+							// 2 - fixed
 	float lineHeight;
 	s4ub color;
 	s3f position;

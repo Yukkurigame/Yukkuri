@@ -18,7 +18,7 @@ public:
 
 	bool load( std::string id );
 
-	void createBar( std::string name, int picture, int height, s4ub color );
+	void createBar( std::string name, int picture, s4ub color );
 	void setBarValue( float val );
 
 	float getBarSize( ) { return BarMaxValue; }
@@ -40,14 +40,14 @@ public:
 protected:
 	virtual CUData* createUData();
 
-	Sprite* BarSprite;
-	Sprite* TopSprite;
-
 private:
-	float BarX, BarY, TopX, TopY;
+	rect2f Bar; // Position & size ( in pixels ) of bar
+	rect2f Top; // Position & size of top image
 	float BarValue;
 	float BarMaxValue; // in units
-	float BarWidth; // in pixels
+
+	Sprite* BarSprite;
+	Sprite* TopSprite;
 
 	float* BindedMaxValue;
 };

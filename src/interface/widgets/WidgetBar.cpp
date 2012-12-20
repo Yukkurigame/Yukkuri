@@ -16,19 +16,18 @@ WidgetBar::WidgetBar()
 {
 	BarSprite = NULL;
 	TopSprite = NULL;
-	BarWidth = 0;
 	BarMaxValue = 1;
-	BindedMaxValue = NULL;
-	BarX = 0;
-	BarY = 0;
 	BarValue = 0;
+	BindedMaxValue = NULL;
 }
+
 
 WidgetBar::~WidgetBar( )
 {
 	RenderManager::FreeGLSprite( BarSprite );
 	RenderManager::FreeGLSprite( TopSprite );
 }
+
 
 bool WidgetBar::load( std::string id )
 {
@@ -37,26 +36,27 @@ bool WidgetBar::load( std::string id )
 
 	std::string imgname;
 	int picture;
-	int barheight;
 	s4ub color;
 	std::vector<unsigned int> vcolor;
 	LuaConfig* cfg = new LuaConfig;
 
 	//Order: topimgx, topimgy, barheight, r, g, b
 	//Ya, it's cruve, but it's simple
-	cfg->getValue( "barheight", id, barheight );
-	cfg->getValue( "barwidth", id, BarWidth );
-	cfg->getValue( "barx", id, BarX );
-	cfg->getValue( "bary", id, BarY );
+	cfg->getValue( "barheight", id, Bar.height );
+	cfg->getValue( "barwidth", id, Bar.width );
+	cfg->getValue( "barx", id, Bar.x );
+	cfg->getValue( "bary", id, Bar.y );
 	cfg->getValue( "topimage", id, imgname );
 	cfg->getValue( "toppicture", id, picture );
-	cfg->getValue( "barcoverx", id, TopX );
-	cfg->getValue( "barcovery", id, TopY );
+	cfg->getValue( "barcoverx", id, Top.x );
+	cfg->getValue( "barcovery", id, Top.y );
 	cfg->getValue( "barcolor", id, color );
 
-	if( BarWidth <= 0 )
-		BarWidth = (float)Width;
-	createBar( imgname, picture, barheight, color );
+	if( Bar.width <= 0 )
+		Bar.width = (float)Rect.width;
+	if( Bar.height <= 0 )
+		Bar.height = (float)Rect.height;
+	createBar( imgname, picture, color );
 	updatePosition();
 
 	delete cfg;
@@ -64,19 +64,19 @@ bool WidgetBar::load( std::string id )
 	return true;
 }
 
-void WidgetBar::createBar( std::string name, int picture, int height, s4ub color )
+
+void WidgetBar::createBar( std::string name, int picture, s4ub color )
 {
-	Height -= height + (int)BarY;
-	BarSprite = RenderManager::CreateGLSprite( PosX + BarX, PosY + BarY, getZ(),(int)BarWidth, height );
-	BarSprite->setFixed();
+	BarSprite = RenderManager::CreateGLSprite( Bar.x, Bar.y, 1.0, Bar.width, Bar.height );
+	if( BarSprite ){
+			BarSprite->setFixed();
+			BarSprite->brush.set_color( color );
+	}
 	if( name != "" ){
-		TopSprite = RenderManager::CreateGLSprite( PosX + TopX, PosY + TopY, getZ() + 0.1f,
-						(int)Width, (int)Height, RenderManager::GetTextureNumberById(name), picture );
+		TopSprite = RenderManager::CreateGLSprite( Top.x,  Top.y, 1.1, Top.width, Top.height,
+						RenderManager::GetTextureNumberById(name), picture );
 		TopSprite->setFixed();
 	}
-	if( BarSprite )
-		BarSprite->brush.set_color( color );
-	//setTextPosition( getTextX(), getTextY() - Height );
 	setBarValue(1);
 	setBarSize(1);
 }
@@ -96,7 +96,7 @@ void WidgetBar::setBarValue( float value )
 	if( value > BarMaxValue )
 		value = BarMaxValue;
 	if( BarSprite )
-		BarSprite->resize( BarWidth * value / BarMaxValue, -1 );
+		BarSprite->resize( Bar.width * value / BarMaxValue, Bar.height );
 }
 
 void WidgetBar::setBarSize( float val )
@@ -111,16 +111,19 @@ void WidgetBar::setBarSize( float val )
 		setWidgetText( str );
 	}
 	if( BarSprite )
-		BarSprite->resize( BarWidth * BarValue / BarMaxValue, -1 );
+		BarSprite->resize( Bar.width * BarValue / BarMaxValue, -1 );
 }
 
 void WidgetBar::updatePosition( )
 {
 	WidgetText::updatePosition( );
+	s3f pos = getWidgetPosition();
 	if( BarSprite )
-		BarSprite->setPosition( PosX + BarX, PosY + BarY, getZ() );
-	if( TopSprite )
-		TopSprite->setPosition( PosX + BarX + TopX, PosY + BarY + TopY, getZ() + 0.01f );
+		BarSprite->setPosition( pos.x + Bar.x, pos.y + Bar.y, pos.z );
+	if( TopSprite ){
+		TopSprite->resize( Top.width, Top.height );
+		TopSprite->setPosition( pos.x + Bar.x + Top.x, pos.y + Bar.y + Top.y, pos.z + 0.01f );
+	}
 }
 
 bool WidgetBar::bindBarMaxValue( float* val )

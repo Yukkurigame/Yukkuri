@@ -17,12 +17,14 @@ function Console:widget()
 		local console = Interface.getWidgetByName("console")
 		if console == nil then
 			console = Interface.createWidget("widget_console", constants.wtText)
-			console:load({ name = "console", font = "./LiberationSerif-Regular.ttf",
+			console:load({ name = "console",
 				align = bit.bor(constants.waLEFT, constants.waTOP),
-				textalign = bit.bor(constants.waLEFT, constants.waTOP),
-				fontcolor = {255,255,255}, height = 200, width = 300,
-				depth = 2, fontsize = 18, bgcolor = {0, 0, 0, 127},
-				textx = 5, texty = -5, lineheight = 0.75
+				height = 200, width = 300, depth = 2, bgcolor = {0, 0, 0, 127},
+				text = {
+					x = 5, y = -5, size = 18, color = {255,255,255},
+					face = "./LiberationSerif-Regular.ttf", lineheight = 0.75,
+					align = bit.bor(constants.waLEFT, constants.waTOP),
+				}
 			})
 			console:resize(configs:getById('windows_width', 'config_general') - 1, 300)
 			console:toggle()

@@ -37,6 +37,14 @@ void LuaMain::RegisterApi( lua_State* L )
 	// Register UData metatables
 	RegisterAllTypeMetatables( L );
 
+	// Register Architecture
+#ifdef __x86_64__
+	lua_pushstring( L, "x86_64" );
+#else
+	lua_pushstring( L, "x86" );
+#endif
+	lua_setglobal( L, "_arch" );
+
 
 	// Register base methods
 	lua_register( L, "readdir", &scriptApi::ReadDirectory );
@@ -78,6 +86,7 @@ void LuaMain::RegisterApi( lua_State* L )
 		}
 	}
 	lua_setglobal(L, "bindings");		// Заносим таблицу в глобальную переменную. Стек:
+
 
 
 #define FIELD(name) \

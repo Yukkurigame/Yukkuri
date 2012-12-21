@@ -66,45 +66,45 @@ bool WidgetText::load( std::string id )
 	return true;
 }
 
-void WidgetText::updatePosition( )
+void WidgetText::redraw( )
 {
-	float posx, posy, height, width;
-	width = (float)TextSprite.width();
-	height = (float)TextSprite.height();
-	if( width + TextPos.x > Rect.width )
-		this->Rect.width = width + TextPos.x;
-	if( height + TextPos.y > Rect.height )
-		this->Rect.height = height + TextPos.y;
-	Widget::updatePosition( );
+	if( !visible )
+		return;
+
+	float posx, posy;
+	const rect2f& rect = getRect();
+
+	s2f size( TextSprite.width(), TextSprite.height() );
+	s2f dimension( rect.width, rect.height );
+	if( size.x + TextPos.x > rect.width )
+		dimension.x = size.x + TextPos.x;
+	if( size.y + TextPos.y > rect.height )
+		dimension.y = size.y + TextPos.y;
+	this->resize( dimension.x, dimension.y );
+	Widget::redraw();
 
 	posx = getWidgetRealX() + TextPos.x;
 	posy = getWidgetRealY() + TextPos.y;
 	switch( TextAlign & (waLEFT | waRIGHT) ){
 		case waMIDDLE:
-			posx += 0.5f * (this->Rect.width - width);
-			//posx = Rect.x + this->Rect.width * 0.5f - width * 0.5f + TextPos.x;
+			posx += 0.5f * ( rect.width - size.x );
 			break;
 		case waRIGHT:
-			posx += this->Rect.width - width;
-			//posx = Rect.x + this->Rect.width - width + TextPos.x;
+			posx += rect.width - size.x;
 			break;
 		case waLEFT:
 		default:
-			//posx = Rect.x + TextPos.x;
 			break;
 	}
 	switch( TextAlign & (waTOP | waBOTTOM) ){
 			case waMIDDLE:
-				posy += 0.5f * ( this->Rect.height - height );
-				//posy = Rect.y - height * 0.5f + this->Rect.height * 0.5f + TextPos.y;
+				posy += 0.5f * ( rect.height - size.y );
 				break;
 			case waBOTTOM:
-				//posy = Rect.y + TextPos.y;
 				break;
 			case waTOP:
 			default:
-				posy += this->Rect.height - TextSprite.getLineSize();
-				//posy = Rect.y + this->Rect.height -
+				posy += rect.height - TextSprite.getLineSize();
 				//TextSprite.getLineSize() + TextPos.y;
 				break;
 		}
@@ -118,26 +118,18 @@ void WidgetText::setFontColor( const s4ub& clr )
 
 void WidgetText::setWidgetText( std::string text )
 {
-	float w, h;
 	if( TextContent == text )
 		return;
 	TextContent = text;
 	TextSprite.setText( (BaseText + text).c_str() );
-	w = (float)Rect.width;
-	h = (float)Rect.height;
-	if( !Rect.width || Rect.width < TextSprite.width() )
-		w = (float)TextSprite.width();
-	if( !Rect.height || Rect.height < TextSprite.height() )
-		h = (float)TextSprite.height();
-	resize( w, h );
-	updatePosition();
+	redraw();
 }
 
 void WidgetText::setTextPosition( float x, float y )
 {
 	TextPos.x = x;
 	TextPos.y = y;
-	updatePosition();
+	redraw();
 }
 
 void WidgetText::Update( )

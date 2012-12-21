@@ -19,7 +19,7 @@ public:
 
 	bool load( std::string id );
 
-	void updatePosition( );
+	void redraw( );
 
 	void setFontColor( const s4ub& clr );
 	void setTextPosition( float x, float y );
@@ -34,7 +34,7 @@ public:
 	inline int getLineHeight( ){ return (int)TextSprite.getLineHeight(); }
 	inline void setLineHeight( float lh ){ TextSprite.setLineHeight( lh ); }
 	inline int getLineSize( ){ return TextSprite.getLineSize(); }
-	inline int getLines( ){ return (int)(Rect.height / TextSprite.getLineSize()); }
+	inline int getLines( ){ return (int)(getRect().height / TextSprite.getLineSize()); }
 
 	inline void setCursor( unsigned int pos ) { TextSprite.setCursorPosition( pos ); }
 	inline int getCursor( ) { return TextSprite.getCursorPosition(); };

@@ -24,8 +24,7 @@ public:
 	float getBarSize( ) { return BarMaxValue; }
 	void  setBarSize( float val );
 
-
-	void updatePosition( );
+	void redraw( );
 
 	bool bindBarMaxValue( float* val );
 	bool bindBarMaxValue( lua_State* L );

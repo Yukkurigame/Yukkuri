@@ -55,10 +55,11 @@ public:
 	void setType( wType t ){ Type = t; }
 
 	void resize( float w, float h );
-	virtual void updatePosition( );
+	virtual void redraw( );
 
 	void setWidgetRealZ( float z ){ Position.z = z * 0.1f; }
 	float getZ( );
+	inline const rect2f& getRect(){ return Rect; }
 
 	void setId( unsigned int id ) { ID = id; }
 
@@ -131,8 +132,6 @@ protected:
 	Sprite* background;
 
 
-	rect2f Rect;
-
 	std::string baseID;
 	std::string Name;
 
@@ -151,6 +150,7 @@ private:
 	int Align;
 
 	s3f Position; 	// Real word position
+	rect2f Rect;	// Screen position
 
 	Widget* Parent;
 	list<Widget*> Children;

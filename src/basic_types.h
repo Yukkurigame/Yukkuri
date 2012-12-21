@@ -8,6 +8,15 @@
 #ifndef BASIC_TYPES_H_
 #define BASIC_TYPES_H_
 
+#ifndef MAX
+	#define MAX( a, b ) ( ((a) > (b)) ? (a) : (b) )
+#endif
+
+#ifndef LOWER_LIMIT
+	#define LOWER_LIMIT( val, limit,  _default )	\
+	if( val < limit ) val = _default;
+#endif
+
 // TODO: find all same structures and group in one.
 enum type_identifier {
 	tiNone = 0, tiInt, tiFloat, tiString,
@@ -33,6 +42,9 @@ struct s2f
 	float y;
 	s2f() : x(), y() {}
 	s2f( float X, float Y ) : x(X), y(Y) {}
+	s2f operator*( const s2f& b ){
+		return s2f( x * b.x, y * b.y );
+	}
 };
 
 
@@ -51,18 +63,10 @@ struct s3f
 		x += b.x; y += b.y; z += b.z;
 	}
 	s3f operator-( const s3f& b ){
-		s3f result = *this;
-		result.x -= b.x;
-		result.y -= b.y;
-		result.z -= b.z;
-		return result;
+		return s3f( x - b.x, y - b.y, z - b.z );
 	}
 	s3f operator+( const s3f& b ){
-		s3f result = *this;
-		result.x += b.x;
-		result.y += b.y;
-		result.z += b.z;
-		return result;
+		return s3f( x + b.x, y + b.y, z + b.z );
 	}
 };
 
@@ -75,6 +79,7 @@ struct rect2f
 	float height;
 	rect2f () : x(), y(), width(), height() {}
 	rect2f ( float X, float Y, float W, float H ) : x(X), y(Y), width(W), height(H) {}
+	s2f size() { return s2f( width, height ); }
 };
 
 

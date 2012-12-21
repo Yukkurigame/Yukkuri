@@ -21,9 +21,13 @@ extern float currentFPS;
 
 extern LuaScript* luaScript;
 
-
-#define GET_VALUE( name, param )	\
+#define GET_VALUE( param )	\
+	luaScript->getValue( L, -1, param );
+#define GET_NAMED_VALUE( name, param )	\
 	luaScript->getValueByName( L, name, param, true );
+#define IS_TABLE( name )			\
+	lua_getfield( L, -1, name );	\
+	if( lua_istable( L, -1 ) )
 
 
 bool Widget::load( lua_State* L )
@@ -34,26 +38,25 @@ bool Widget::load( lua_State* L )
 	std::string align;
 	std::string valign;
 
-	GET_VALUE( "name", Name )
-	GET_VALUE( "x", Position.x )
-	GET_VALUE( "y", Position.y )
-	GET_VALUE( "width", Rect.width )
-	GET_VALUE( "height", Rect.height )
-	GET_VALUE( "align", Align )
+	GET_VALUE( Rect );
+	GET_NAMED_VALUE( "name", Name )
+	GET_NAMED_VALUE( "align", Align )
+	//GET_VALUE( "x", Rect.x )
+	//GET_VALUE( "y", Rect.y )
+	//GET_VALUE( "width", Rect.width )
+	//GET_VALUE( "height", Rect.height )
 
 	float z = 0;
-	GET_VALUE( "depth", z )
+	GET_NAMED_VALUE( "depth", z )
 	setWidgetRealZ( z );
-
-	updatePosition( );
 
 	{
 		std::string imgname;
 		int picture = 0;
 		s4ub bgcolor(0,0,0,0);
-		GET_VALUE( "image", imgname )
-		GET_VALUE( "picture", picture )
-		GET_VALUE( "bgcolor", bgcolor )
+		GET_NAMED_VALUE( "image", imgname )
+		GET_NAMED_VALUE( "picture", picture )
+		GET_NAMED_VALUE( "bgcolor", bgcolor )
 		if( imgname != "" || bgcolor.a ){
 			setBackground( RenderManager::GetTextureNumberById( imgname ), picture );
 			if( bgcolor.a )
@@ -62,6 +65,8 @@ bool Widget::load( lua_State* L )
 	}
 
 	lua_pop( L, 1 );
+
+	redraw( );
 
 	return true;
 }
@@ -76,19 +81,30 @@ bool WidgetText::load( lua_State* L )
 	std::string talign;
 	std::string tvalign;
 	int fontsize = 12;
-	float lineheight;
-	s4ub vcolor(0,0,0,255);
+	float lineheight = 1.0;
+	s4ub vcolor( 0, 0, 0, 255 );
 
-	GET_VALUE( "text", BaseText )
-	GET_VALUE( "textx", TextPos.x )
-	GET_VALUE( "texty", TextPos.y )
-	GET_VALUE( "textalign", TextAlign )
-	GET_VALUE( "font", font )
-	GET_VALUE( "fontsize", fontsize )
-	GET_VALUE( "fontcolor", vcolor )
-	GET_VALUE( "lineheight", lineheight )
-	if( !lineheight )
-		lineheight = 1.0;
+	IS_TABLE( "text" ){
+		GET_NAMED_VALUE( "base", BaseText )
+		GET_NAMED_VALUE( "x", TextPos.x )
+		GET_NAMED_VALUE( "y", TextPos.y )
+		GET_NAMED_VALUE( "align", TextAlign )
+		GET_NAMED_VALUE( "face", font )
+		GET_NAMED_VALUE( "size", fontsize )
+		GET_NAMED_VALUE( "color", vcolor )
+		GET_NAMED_VALUE( "lineheight", lineheight )
+	}
+	lua_pop(L, 1);
+
+	/*GET_NAMED_VALUE( "text", BaseText )
+	GET_NAMED_VALUE( "textx", TextPos.x )
+	GET_NAMED_VALUE( "texty", TextPos.y )
+	GET_NAMED_VALUE( "textalign", TextAlign )
+	GET_NAMED_VALUE( "font", font )
+	GET_NAMED_VALUE( "fontsize", fontsize )
+	GET_NAMED_VALUE( "fontcolor", vcolor )
+	GET_NAMED_VALUE( "lineheight", lineheight )
+	*/
 
 	TextSprite.setPosition( TextPos.x, TextPos.x, getZ() );
 	TextSprite.setFont( font, fontsize );
@@ -107,27 +123,32 @@ bool WidgetBar::load( lua_State* L )
 	int picture;
 	s4ub color;
 
-	GET_VALUE( "barheight", Bar.height )
-	GET_VALUE( "barwidth", Bar.width )
-	GET_VALUE( "barx", Bar.x )
-	GET_VALUE( "bary", Bar.y )
-	GET_VALUE( "topimage", imgname )
-	GET_VALUE( "toppicture", picture )
-	GET_VALUE( "barcoverx", Top.x )
-	GET_VALUE( "barcovery", Top.y )
-	GET_VALUE( "barcolor", color )
+	IS_TABLE( "bar" ){
+		GET_VALUE( Bar );
+		GET_NAMED_VALUE( "color", color )
+		//GET_NAMED_VALUE( "barheight", Bar.height )
+		//GET_NAMED_VALUE( "barwidth", Bar.width )
+		//GET_NAMED_VALUE( "barx", Bar.x )
+		//GET_NAMED_VALUE( "bary", Bar.y )
+	}
+	lua_pop(L, 1);
 
-	if( Bar.width <= 0 )
-		Bar.width = (float)Rect.width;
+	IS_TABLE( "top" ){
+		GET_VALUE( Top );
+		//GET_NAMED_VALUE( "barcoverx", Top.x )
+		//GET_NAMED_VALUE( "barcovery", Top.y )
+		GET_NAMED_VALUE( "image", imgname )
+		GET_NAMED_VALUE( "picture", picture )
+	}
+	lua_pop(L, 1);
 
 	createBar( imgname, picture, color );
-	updatePosition();
 
 	return WidgetText::load( L );
 }
 
 
-#undef GET_VALUE
+#undef GET_NAMED_VALUE
 
 
 

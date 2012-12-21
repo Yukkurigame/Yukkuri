@@ -156,6 +156,7 @@ template<> bool LuaMain::getValue( lua_State* L, int index, char*& ret)
 	return false;
 }
 
+// Color
 template<> bool LuaMain::getValue( lua_State* L, int index, s4ub& ret)
 {
 	if( lua_istable(L, index) ){
@@ -173,6 +174,22 @@ template<> bool LuaMain::getValue( lua_State* L, int index, s4ub& ret)
 			}
 		}
 		ret.set( val[0], val[1], val[2], val[3] );
+		return true;
+	}
+	return false;
+}
+
+// rect2f
+template<> bool LuaMain::getValue( lua_State* L, int index, rect2f& ret)
+{
+	if( lua_istable(L, index) ){
+		const char* val[4] = { "x", "y", "width", "height" };
+		float* r[4] = { &ret.x, &ret.y, &ret.width, &ret.height };
+		for( int i = 0; i < 4; ++i ){
+			lua_getfield( L, -1, val[i] );	// stack: table value
+			getValue( L, -1, *r[i] );
+			lua_pop(L, 1); 					// stack: table
+		}
 		return true;
 	}
 	return false;

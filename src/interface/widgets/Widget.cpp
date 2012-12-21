@@ -80,7 +80,7 @@ bool Widget::load( std::string id )
 	cfg->getValue("depth", baseID, z );
 	setWidgetRealZ( z );
 
-	updatePosition( );
+	redraw( );
 
 	{
 		std::string imgname;
@@ -118,17 +118,18 @@ void Widget::resize( float w, float h )
 {
 	if( w == Rect.width && h == Rect.height )
 		return;
-	if( w >= 0 )
+	if( w >= 1 )
 		Rect.width = w;
-	if( h >= 0 )
+	if( h >= 1 )
 		Rect.height = h;
-	if( background )
-		background->resize( (float)Rect.width, (float)Rect.height );
 }
 
 
-void Widget::updatePosition( )
+void Widget::redraw( )
 {
+	if( !visible )
+		return;
+
 	extern MainConfig conf;
 	float startx, starty, width, height;
 	if(Parent){
@@ -176,6 +177,7 @@ void Widget::updatePosition( )
 	//Rect.x = posx;
 	//Rect.y = posy;
 	if( background ){
+		background->resize( Rect.width, Rect.height );
 		background->setPosition( Position.x, Position.y, getZ() );
 	}
 
@@ -194,7 +196,7 @@ void Widget::setParent( Widget* p )
 	extern MainConfig conf;
 	Parent = p;
 	Position.z = Position.z + p->getZ( ) - conf.widgetsPosZ + 0.1f;
-	updatePosition();
+	redraw();
 }
 
 
@@ -255,6 +257,7 @@ void Widget::toggleVisibility( )
 		visible = false;
 	else
 		visible = true;
+	redraw();
 	// FIXME: 1>yukkuri\interface\widgets\widget.cpp(218): warning C4800: 'unsigned char' :
 	//          forcing value to bool 'true' or 'false' (performance warning)
 	if( this->background && (bool)this->background->isVisible() != visible )

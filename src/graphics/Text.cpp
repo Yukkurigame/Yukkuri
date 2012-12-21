@@ -73,6 +73,7 @@ Text::Text( )
 	cursorBearing = 0;
 	cursorPosition = 0;
 	Width = Height = 0;
+	content = NULL;
 }
 
 Text::~Text( )
@@ -107,7 +108,14 @@ void Text::setText(const char* str)
 	if( !font )
 		return;
 
+	if( (content && str) && !strcmp( str, content ) )
+		return;
+
 	clear();
+
+	if( content )
+		free(content);
+	content = strdup( str );
 
 	char* text = strdup( str );
 

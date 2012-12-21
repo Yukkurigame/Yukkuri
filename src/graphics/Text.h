@@ -32,7 +32,11 @@ public:
 	void setPosition( float x, float y, float z );
 	void setText( const char* text );
 	void setColor( int r, int g, int b );
-	void setLineHeight( float lh ){ lineHeight = lh; }
+	void setLineHeight( float lh ){
+		if( !lh )
+			lh = 1.0;
+		lineHeight = lh;
+	}
 
 	void setVisible( bool v );
 	inline unsigned char isVisible()	{ return flags & 1; }
@@ -54,6 +58,7 @@ private:
 	unsigned int flags;		// 1 - visible
 							// 2 - fixed
 	float lineHeight;
+	char* content;
 	s4ub color;
 	s3f position;
 	font_data* font;

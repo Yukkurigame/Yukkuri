@@ -52,12 +52,7 @@ bool WidgetBar::load( std::string id )
 	cfg->getValue( "barcovery", id, Top.y );
 	cfg->getValue( "barcolor", id, color );
 
-	if( Bar.width <= 0 )
-		Bar.width = (float)Rect.width;
-	if( Bar.height <= 0 )
-		Bar.height = (float)Rect.height;
 	createBar( imgname, picture, color );
-	updatePosition();
 
 	delete cfg;
 
@@ -85,18 +80,17 @@ void WidgetBar::setBarValue( float value )
 {
 	if( value == BarValue )
 		return;
-	BarValue = value;
-	{//Output text;
-		char str[25];
-		snprintf( str, 25, "%.0f/%.0f", value, BarMaxValue );
-		setWidgetText( str );
-	}
 	if( value < 0 )
 		value = 0;
 	if( value > BarMaxValue )
 		value = BarMaxValue;
-	if( BarSprite )
-		BarSprite->resize( Bar.width * value / BarMaxValue, Bar.height );
+	BarValue = value;
+	{ //Output text;
+		char str[25];
+		snprintf( str, 25, "%.0f/%.0f", value, BarMaxValue );
+		setWidgetText( str );
+	}
+	redraw();
 }
 
 void WidgetBar::setBarSize( float val )
@@ -104,23 +98,43 @@ void WidgetBar::setBarSize( float val )
 	if( val > 0 )
 		BarMaxValue = val;
 	else
-		BarMaxValue = 1;
-	{//Output text;
+		BarMaxValue = 1.0;
+	{ //Output text;
 		char str[25];
 		snprintf( str, 25, "%.0f/%.0f", BarValue, BarMaxValue );
 		setWidgetText( str );
 	}
-	if( BarSprite )
-		BarSprite->resize( Bar.width * BarValue / BarMaxValue, -1 );
+	redraw();
 }
 
-void WidgetBar::updatePosition( )
+
+
+void WidgetBar::redraw( )
 {
-	WidgetText::updatePosition( );
+	if( !visible )
+		return;
+
+	const rect2f& rect = getRect();
+
+	LOWER_LIMIT( Bar.width, 1.0, rect.width )
+	LOWER_LIMIT( Bar.height, 1.0, rect.height )
+
+	float rate = BarValue / BarMaxValue;
+	s2f size = Bar.size() * s2f( rate, 1.0f );
+	s2f dimension;
+	dimension.x = MAX( size.x, rect.width );
+	dimension.y = MAX( size.y, rect.height );
+	this->resize( dimension.x, dimension.y );
+	WidgetText::redraw();
+
 	s3f pos = getWidgetPosition();
-	if( BarSprite )
+	if( BarSprite ){
+		BarSprite->resize( size.x, size.y );
 		BarSprite->setPosition( pos.x + Bar.x, pos.y + Bar.y, pos.z );
+	}
 	if( TopSprite ){
+		LOWER_LIMIT( Top.width, 1.0, rect.width )
+		LOWER_LIMIT( Top.height, 1.0, rect.height )
 		TopSprite->resize( Top.width, Top.height );
 		TopSprite->setPosition( pos.x + Bar.x + Top.x, pos.y + Bar.y + Top.y, pos.z + 0.01f );
 	}

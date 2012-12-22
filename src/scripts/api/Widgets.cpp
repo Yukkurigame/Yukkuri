@@ -120,8 +120,8 @@ bool WidgetText::load( lua_State* L )
 bool WidgetBar::load( lua_State* L )
 {
 	std::string imgname;
-	int picture;
 	s4ub color;
+	int picture = 0;
 
 	IS_TABLE( "bar" ){
 		GET_VALUE( Bar );

@@ -15,7 +15,7 @@ Player::Player()
 void Player::attack( )
 {
 	Unit* victim = NULL;
-	victim = closest( utEntity, 120.0 );
+	victim = scope.closest( utEntity, 120.0 );
 	if( victim )
 		this->attackUnit( victim );
 }
@@ -24,7 +24,7 @@ void Player::attack( )
 void Player::eat( )
 {
 	Unit* victim = NULL;
-	victim = closest( &FoodTypes, 300 );
+	victim = scope.closest( FoodTypes, 300 );
 	if( victim )
 		UnitDynamic::eat( victim );
 }

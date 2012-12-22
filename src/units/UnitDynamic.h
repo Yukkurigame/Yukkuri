@@ -3,6 +3,7 @@
 
 #include "Unit.h"
 #include "basic_types.h"
+#include "units/Scope.h"
 
 
 void call_updateAnimOnMovement(cpBody* body, cpFloat dt);
@@ -28,14 +29,11 @@ public:
 	virtual bool calculateForce( );
 	void applyForce( const int& dt );
 
-	inline bool isScope(){ return vis != NULL; }
-	void setScope();
-	void clearScope();
+	inline bool isScope(){ return scope.sprite && scope.sprite->isVisible(); }
+	inline void setScope() { scope.set(); }
+	inline void clearScope() { scope.clear(); };
 
 	void takeAction( );
-
-	Unit* closest( enum unitType type, float limit = 100.0 );
-	Unit* closest( list< enum unitType >* types, float limit = 100.0 );
 
 	Unit* Attacker( ) { return Attacked; }
 	void Attacker( Unit* a ) { Attacked = a; }
@@ -47,17 +45,17 @@ public:
 	inline void setMoving()			{ flags |= ufMoving; }
 	inline void clearMoving()		{ flags &= ~ufMoving; }
 
-	list< Unit* > Collisions;
+
+	Scope scope;
+
 
 protected:
 	virtual CUData* createUData();
 
-	cpShape* scopeShape;
 	cpVect force;
-	Sprite* vis;
 	s2i target;
 
-	list< enum unitType > FoodTypes;
+	int FoodTypes;
 	Unit* Attacked;
 	cpFloat TotalDistance;
 	const static int m_animdistance = 20;

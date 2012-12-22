@@ -169,7 +169,7 @@ void VBOArray::freeSpace( unsigned int index, unsigned int count )
  */
 VertexV2FT2FC4UI* VBOArray::pointer( unsigned int index )
 {
-	if( index < 0 || (int)index >= array_size )
+	if( (int)index >= array_size )
 		return NULL;
 	return &array[index];
 }

@@ -18,7 +18,7 @@ int DynamiUint_begin( cpArbiter* arb, cpSpace* space, void* unused )
 		UnitDynamic* ua = reinterpret_cast<UnitDynamic*>(a->body->data);
 		Unit* ub = reinterpret_cast<Unit*>(b->body->data);
 		if( ua && ub )
-			ua->Collisions.push( ub );
+			ua->scope.add( ub );
 	}
 	return 0;
 }
@@ -33,7 +33,7 @@ void DynamiUint_separate( cpArbiter* arb, cpSpace* space, void* unused )
 		UnitDynamic* ua = reinterpret_cast<UnitDynamic*>(a->body->data);
 		Unit* ub = reinterpret_cast<Unit*>(b->body->data);
 		if( ua && ub )
-			ua->Collisions.remove( ub );
+			ua->scope.remove( ub );
 	}
 }
 

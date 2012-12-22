@@ -9,14 +9,13 @@
 #include "graphics/Render.h"
 
 #include "map/Map.h"
-#include "config.h"
+
 
 #include <stdlib.h>
 #include <math.h>
 #include <iostream>
 #include <string>
 
-extern MainConfig conf;
 
 
 void call_updateAnimOnMovement(cpBody* body, cpFloat dt)
@@ -32,18 +31,10 @@ UnitDynamic::UnitDynamic()
 	currentTile = -1;
 	force.x = 0;
 	force.y = 0;
-	scopeShape = NULL;
-	vis = NULL;
 }
 
 UnitDynamic::~UnitDynamic()
 {
-	if( scopeShape ){
-		cpSpaceRemoveShape( Phys::space, scopeShape );
-		cpShapeFree( scopeShape );
-	}
-	if( vis )
-		RenderManager::FreeGLSprite( vis );
 }
 
 
@@ -54,15 +45,7 @@ bool UnitDynamic::Create( int id, std::string proto )
 
 	physBody->position_func = call_updateAnimOnMovement;
 
-	cpVect scopepos[4] = { {-400.0 * cos(conf._tileAngle), 0}, {0, 400.0 * sin(conf._tileAngle) },
-							{400 * cos(conf._tileAngle), 0}, {0, -400.0 * sin(conf._tileAngle) }  };
-	//cpVect scopepos[4];
-	//cpConvexHull( 4, scopepoints, scopepos, NULL, 0.0 );
-
-	cpShape* scope = cpPolyShapeNew( physBody, 4, scopepos, cpvzero );
-	scopeShape = cpSpaceAddShape( Phys::space, scope );
-	cpShapeSetSensor( scopeShape, cpTrue );
-	scopeShape->collision_type = utLast;
+	scope.attach( physBody );
 
 	return true;
 }
@@ -180,17 +163,7 @@ void UnitDynamic::update( const int& dt )
 	Unit::update( dt );
 	if( isMoving() && this->calculateForce( ) )
 		applyForce( dt );
-	if( vis != NULL ){
-		cpVect lb = cpPolyShapeGetVert( scopeShape, 0 );
-		cpVect lt = cpPolyShapeGetVert( scopeShape, 1 );
-		cpVect rt = cpPolyShapeGetVert( scopeShape, 2 );
-		cpVect rb = cpPolyShapeGetVert( scopeShape, 3 );
-		vis->brush.set_quad( s3f(lb.x, lb.y, 1.0),
-				s3f(lt.x, lt.y, 1.0),
-				s3f(rt.x, rt.y, 1.0),
-				s3f(rb.x, rb.y, 1.0));
-		vis->brush.set_position( physBody->p.x, physBody->p.y, 1.0 );
-	}
+	scope.update();
 }
 
 
@@ -201,7 +174,7 @@ bool UnitDynamic::update( const Frame& frame )
 			if( Actions.checkFrameParams( frame, 1, stInt ) ){
 				int type = frame.params[0].intData;
 				if( type > 0 && type < utLast )
-					FoodTypes.push( (enum unitType)type );
+					FoodTypes |= type;
 			}
 			break;
 		case acDUnitGrow:
@@ -233,53 +206,6 @@ void UnitDynamic::takeAction( )
 }
 
 
-Unit* UnitDynamic::closest( enum unitType type, float limit)
-{
-	Unit* ret = NULL;
-	float distance = 9000;
-	limit *= getUnitSize();
-	listElement< Unit* >* tmp = Collisions.head;
-	while( tmp != NULL ){
-		if( tmp->data && tmp->data->getUnitType() == type ){
-			float dis = this->dist( tmp->data );
-			if( dis < limit && dis < distance ){
-				distance = dis;
-				ret = tmp->data;
-			}
-		}
-		tmp = tmp->next;
-	}
-
-	return ret;
-}
-
-Unit* UnitDynamic::closest( list< enum unitType >* types, float limit )
-{
-	Unit* ret = NULL;
-	float distance = 9000;
-	limit += phys.radius;
-	listElement< Unit* >* tmp = Collisions.head;
-	listElement< enum unitType >* le;
-	while( tmp != NULL ){
-		if( tmp->data ){
-			le = types->head;
-			while( le != NULL ){
-				if( tmp->data->getUnitType() == le->data ){
-					float dis = this->dist( tmp->data );
-					if( dis < limit && dis < distance ){
-						distance = dis;
-						ret = tmp->data;
-					}
-				}
-				le = le->next;
-			}
-		}
-		tmp = tmp->next;
-	}
-
-	return ret;
-}
-
 void UnitDynamic::updateAnimOnMovement( cpBody* body, cpFloat dt )
 {
 	cpVect oldpos = body->p;
@@ -307,25 +233,6 @@ void UnitDynamic::updateAnimOnMovement( cpBody* body, cpFloat dt )
 		Image.setFrame( Image.getCount() ? ( static_cast<int>(TotalDistance) / m_animdistance) % Image.getCount() : 0 );
 	}else{
 		Image.setFrame( 0 );
-	}
-}
-
-
-void UnitDynamic::setScope()
-{
-	if( vis == NULL ){
-		vis = RenderManager::CreateGLSprite( 0, 0, 1, 600, 300 );
-		//vis->clr.set( 255, 255, 0, 127 );
-	}
-	vis->setVisible();
-}
-
-
-void UnitDynamic::clearScope()
-{
-	if( vis != NULL ){
-		RenderManager::FreeGLSprite( vis );
-		vis = NULL;
 	}
 }
 

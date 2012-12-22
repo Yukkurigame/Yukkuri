@@ -15,7 +15,8 @@
 class CUData;
 
 
-enum unitType { utStatic = 0, utPlayer, utEntity, utPlant, utCorpse, utLast };
+enum unitType { utStatic = 0, utPlayer = 1, utEntity = 2,
+				utPlant = 4,  utCorpse = 8, utLast = 128 };
 enum unitFlag { ufDeleted = 1, ufEdible = 2, ufMoving = 4, ufLast };
 enum unitInteraction {  };
 
@@ -71,6 +72,8 @@ public:
 	inline int* getUnitpParameter( enum character param ){ return Char.getPtr( param ); }
 	inline float getUnitParameter( enum character_float param ){ return Char.get( param ); }
 	inline float* getUnitpParameter( enum character_float param ){ return Char.getPtr( param ); }
+
+	inline const cpVect& getUnitPos( ){ return physBody->p; }
 
 
 #define GET_PARAM( type, name, value ) \

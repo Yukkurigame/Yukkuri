@@ -205,7 +205,7 @@ void font_data::size( int* w, int* h, const char* str )
 Char* font_data::getChar( unsigned int c )
 {
 	//TODO: unicode support
-	if( c < 0 || c > CHARSIZE )
+	if( c > CHARSIZE )
 		return getChar('?');
 	return chars[ c ];
 }

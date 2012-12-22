@@ -299,7 +299,7 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 	Sprite* sprite = new Sprite( centered );
 	sprite->texid = texture_id;
 
-	if( texture_id < 0 || texture_id >= texturesCount ){
+	if( texture_id >= texturesCount ){
 		Debug::debug( Debug::GRAPHICS, "Bad texture id passed.\n" );
 		sprite->tex = NULL;
 		sprite->atlas = 0;

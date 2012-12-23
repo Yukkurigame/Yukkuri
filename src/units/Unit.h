@@ -15,8 +15,8 @@
 class CUData;
 
 
-enum unitType { utStatic = 0, utPlayer = 1, utEntity = 2,
-				utPlant = 4,  utCorpse = 8, utLast = 128 };
+enum unitType { utStatic = 1, utPlayer = 2, utEntity = 4,
+				utPlant = 8,  utCorpse = 16, utAll = 127, utLast = 128 };
 enum unitFlag { ufDeleted = 1, ufEdible = 2, ufMoving = 4, ufLast };
 enum unitInteraction {  };
 

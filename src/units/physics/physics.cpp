@@ -60,13 +60,13 @@ void Phys::init()
 
 	cpSpaceSetDamping( space, 0.0 );
 
-	cpSpaceAddCollisionHandler( space, utLast, utPlant,
+	cpSpaceAddCollisionHandler( space, utAll, utPlant,
 			DynamiUint_begin, NULL, NULL, DynamiUint_separate, NULL );
-	cpSpaceAddCollisionHandler( space, utLast, utEntity,
+	cpSpaceAddCollisionHandler( space, utAll, utEntity,
 		DynamiUint_begin, NULL, NULL, DynamiUint_separate, NULL );
-	cpSpaceAddCollisionHandler( space, utLast, utPlayer,
+	cpSpaceAddCollisionHandler( space, utAll, utPlayer,
 			DynamiUint_begin, NULL, NULL, DynamiUint_separate, NULL );
-	cpSpaceAddCollisionHandler( space, utLast, utCorpse,
+	cpSpaceAddCollisionHandler( space, utAll, utCorpse,
 				DynamiUint_begin, NULL, NULL, DynamiUint_separate, NULL );
 }
 

@@ -122,5 +122,11 @@ void GLBrush::set_color( const s4ub& color )
 {
 	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
 	for( int i=0; i < points_count; ++i )
-		arr[i].color = color;
+		arr[i].color.set(color);
+}
+
+s4ub GLBrush::get_color(  )
+{
+	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
+	return arr[0].color;
 }

@@ -38,9 +38,10 @@ bool Scope::attach( cpBody* target )
 	//cpConvexHull( 4, scopepoints, scopepos, NULL, 0.0 );
 
 	cpShape* scope = cpPolyShapeNew( target, 4, scopepos, cpvzero );
+	cpSpace* s = Phys::space;
 	shape = cpSpaceAddShape( Phys::space, scope );
 	cpShapeSetSensor( shape, cpTrue );
-	shape->collision_type = utLast;
+	shape->collision_type = utAll;
 
 	return true;
 }
@@ -63,13 +64,12 @@ void Scope::set( )
 		return;
 
 	if( sprite == NULL ){
-		sprite = RenderManager::CreateGLSprite( 0.0, 0.0, POSITION_Z, 600, 300 );
+		int verts = cpPolyShapeGetNumVerts( shape );
+
+		sprite = RenderManager::CreateGLSprite( 0.0, 0.0, POSITION_Z, 600, 300, 0, prTRIANGLESFAN );
+		sprite->brush.resize_verticles( verts );
 		sprite->brush.set_color( color );
 
-		int verts = cpPolyShapeGetNumVerts( shape );
-		// TODO: change sprite on shape change
-		if( verts != sprite->brush.points_count )
-			return;
 		VertexV2FT2FC4UI* points = sprite->brush.points();
 		for( int i=0; i < verts; ++i ){
 			s3f* pv = &(points[i].verticles);

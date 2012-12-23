@@ -32,6 +32,8 @@ public:
 	inline bool isScope(){ return scope.sprite && scope.sprite->isVisible(); }
 	inline void setScope() { scope.set(); }
 	inline void clearScope() { scope.clear(); };
+	inline void addToScope( Unit* u ) {  scope.add( u ); }
+	inline void removeFromScope( Unit* u ) {  scope.remove( u ); }
 
 	void takeAction( );
 
@@ -46,11 +48,13 @@ public:
 	inline void clearMoving()		{ flags &= ~ufMoving; }
 
 
-	Scope scope;
+	int getClosest( lua_State* L );
 
 
 protected:
 	virtual CUData* createUData();
+
+	Scope scope;
 
 	cpVect force;
 	s2i target;

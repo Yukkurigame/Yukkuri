@@ -37,7 +37,14 @@ struct Sprite
 	void setFixed();					// Needs shader placing
 	inline void clearFixed()			{ flags &= ~4; shader = 0; }
 
-	Sprite( short centered = 0 ) : rect(), brush( prQUADS, centered){
+	Sprite() : rect(), brush( prQUADS, 0 ) {
+		tex = NULL;
+		picture = atlas = texid = 0;
+		flags = 1; // visible only
+		shader = 0;
+	}
+
+	Sprite( enum primitives shape, short centered ) : rect(), brush( shape, centered ){
 		tex = NULL;
 		picture = atlas = texid = 0;
 		flags = 1; // visible only

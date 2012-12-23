@@ -294,9 +294,9 @@ TextureInfo* RenderManager::GetTextureByNumber( unsigned int number )
  * returns Sprite*
  */
 Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int height,
-				unsigned int texture_id, int picture, short centered )
+				unsigned int texture_id, enum primitives shape, short centered )
 {
-	Sprite* sprite = new Sprite( centered );
+	Sprite* sprite = new Sprite( shape, centered );
 	sprite->texid = texture_id;
 
 	if( texture_id >= texturesCount ){
@@ -310,7 +310,6 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 
 	sprite->resize( (float)width, (float)height );
 	sprite->setPosition( x, y, z );
-	sprite->setPicture(picture);
 
 	GLSprites.push_back( sprite );
 
@@ -329,15 +328,6 @@ Sprite* RenderManager::CreateGLSprite( Sprite* osprite )
 		return NULL;
 
 	Sprite* sprite = new Sprite(osprite);
-	/*sprite->texid = osprite->texid;
-	sprite->atlas = osprite->atlas;
-	sprite->tex = osprite->tex;
-
-	sprite->flags = osprite->flags;
-	sprite->resize( osprite->rect.width, osprite->rect.height );
-	sprite->setPosition( osprite->rect.x, osprite->rect.y, osprite->vertices.lb.z );
-	sprite->setPicture( osprite->picture);
-	*/
 
 	GLSprites.push_back( sprite );
 

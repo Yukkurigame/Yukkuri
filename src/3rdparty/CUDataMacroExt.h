@@ -25,6 +25,17 @@
 		return pushToLua(L, static_cast<T*>(ud->getUser())->FIELD(L));	\
 	}
 
+#define EXEC_NORET_METHOD_DECL(FIELD)									\
+	template <typename T>												\
+	int exec_##FIELD( lua_State* L ) {									\
+		CUData* ud = check_userdata<T>( L, 1 );							\
+		if( !ud->getUser( ) )											\
+			luaL_error( L, "Object destroyed" );						\
+		else															\
+			lua_remove( L, 1 ); /* Remove userdata from stack  */		\
+		return static_cast<T*>(ud->getUser())->FIELD(L);				\
+	}
+
 
 // Macros for getting the pointer to getter method
 #define EXEC_METHOD(ID, FIELD)                          \

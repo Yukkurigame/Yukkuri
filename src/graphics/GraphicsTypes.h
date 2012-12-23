@@ -25,73 +25,24 @@ struct s4ub
 	inline void set( unsigned int cr, unsigned int cg, unsigned int cb, unsigned int ca ) {
 		r = cr; g = cg; b = cb; a = ca;
 	}
+	inline void set( const s4ub& c ) {
+			r = c.r; g = c.g; b = c.b; a = c.a;
+	}
 };
 
 
 
 enum primitives {
 	prPOINTS = 0, prLINES, prLINELOOP, prTRIANGLES,
-	prTRIANGLESTRIP, prQUADS, prPOLYGON, prLAST
+	prTRIANGLESTRIP, prTRIANGLESFAN, prQUADS, prPOLYGON, prLAST
 };
 
 static const GLuint gl_methods[prLAST] = {
 	GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_TRIANGLES,
-	GL_TRIANGLE_STRIP, GL_TRIANGLES, GL_POLYGON
-};
-
-/*
-
-struct coord2farr
-{
-	s2f lt; //left-top
-	s2f lb; //left-bottom
-	s2f rt; //right-top
-	s2f rb; //right-bottom
-
-	// Calculated by top side only
-	float width(){ return abs(rt.x - lt.x); }
-	// Calculated by right side only
-	float height(){ return abs(rt.y - rb.y); }
-	coord2farr(){
-		lb.x = lt.x = 0.0;
-		lb.y = rb.y = 0.0;
-		rb.x = rt.x = 1.0;
-		lt.y = rt.y = 1.0;
-	}
+	GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_TRIANGLES, GL_POLYGON
 };
 
 
-struct vertex3farr
-{
-	s3f lt; //left-top
-	s3f lb; //left-bottom
-	s3f rt; //right-top
-	s3f rb; //right-bottom
-	vertex3farr() {};
-};
-
-
-
-struct color4u
-{
-	unsigned int r;
-	unsigned int b;
-	unsigned int g;
-	unsigned int a;
-	color4u(): r(255), b(255), g(255), a(255) {};
-	color4u(unsigned int r, unsigned int b, unsigned int g): r(r), b(b), g(g), a(255) {};
-	color4u(unsigned int r, unsigned int b, unsigned int g, unsigned int a): r(r), b(b), g(g), a(a) {};
-	bool isMax( ){
-		if( r != 255 || g != 255 || b != 255 ) return false;
-		return true;
-	}
-	void set( int c ) { r = g = b = c; }
-	void set( unsigned int c ) { r = g = b = c; }
-	void set( unsigned int cr, unsigned int cg, unsigned int cb ) { r = cr; g = cg; b = cb; }
-	void set( unsigned int cr, unsigned int cg, unsigned int cb, unsigned int ca ) { r = cr; g = cg; b = cb; a = ca; }
-	void set( color4u* c ) { if( !c ) return; r = c->r; g = c->g; b = c->b; a = c->a; }
-};
-*/
 
 struct VertexV2FT2FC4UI
 {

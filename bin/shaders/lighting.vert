@@ -39,6 +39,6 @@ void main(void)
 		vec3(sun_color) // * vec3(mymaterial.diffuse)
 		* max(0.0, dot(normalDirection, lightDirection));
 	color = max(sun_position, scene_ambient);
-	color = max(vec4(diffuseReflection, 1.0), scene_ambient);
+	color = gl_Color * max(vec4(diffuseReflection, 1.0), scene_ambient);
 	gl_Position = mvp * vec4(Position, 1.0); // gl_Vertex;
 }

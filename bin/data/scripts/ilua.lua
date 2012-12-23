@@ -99,7 +99,7 @@ local function join(tbl, delim, limit, depth)
 end
 
 
-local function val2str(val)
+function val2str(val)
 	local tp = type(val)
 	if print_handlers[tp] then
 		local s = print_handlers[tp](val)
@@ -127,6 +127,7 @@ local function val2str(val)
 		return tostring(val)
 	end
 end
+
 
 function ilua._pretty_print(...)
 	for i,val in ipairs(arg) do

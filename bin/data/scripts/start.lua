@@ -111,6 +111,6 @@ Thread.resume(Thread.newThread(function()
 	local spawner = require("data/scripts/spawner"):new()
 	while true do
 		spawner:process()
-		Thread.wait(500)
+		Thread.wait(100)
 	end
 end))

@@ -21,7 +21,34 @@ long last_timerevent_tick = 0;
 namespace {
 	int FPS_tick_counter;
 	int FPS_counter;
-	long last_tick;
+
+	struct Ticks {
+		long accumulator;
+		long elapsed;
+		long input;
+		long timer;
+		long last;
+
+		Ticks( const long& time ) : accumulator(), elapsed(), input(),
+				timer(), last(time) { }
+
+		inline void update( const long& time ){
+			elapsed = time - last;
+			//if( elapsed > 250 )
+			//	elapsed = 250
+
+			accumulator += elapsed;
+
+			// Add elapsed to input accumulator
+			input += elapsed;
+
+			// Set timer last tick to now if more than TIMEREVENTTICK passed
+			if( time - timer >= TIMEREVENTTICK )
+				timer = time;
+
+			last = time;
+		}
+	};
 }
 
 // Gcc bug
@@ -34,24 +61,21 @@ void Yukkuri::Start()
 {
 	Window.state = gsRunning;
 
-	last_tick = 0;
+	const float update_interval = 1.0f / conf.maxFrameRate * MILISECONDS;
+	const float max_cycles = conf.maxFrameRate / conf.minFrameRate;
+	const float max_ticks = max_cycles * update_interval;
 
-	float UpdIterations = 0.0f;
-	float CyclesLeft = 0.0f;
+	sdl_time = SDL_GetTicks();
 
-	long elapsed_ticks;
-	float MaxCycles;
-	float update_interval;
-	int input_interval = 100;
-	int input_ticks = 0;
-
-	update_interval = 1.0f / conf.maxFrameRate;
-	MaxCycles = conf.maxFrameRate / conf.minFrameRate;
+	Ticks ticks(sdl_time);
 
 	// Main loop.
 	while( Window.state != gsEnd ){
 		// Get current tick;
 		sdl_time = SDL_GetTicks();
+
+		// Update various accumulators
+		ticks.update( sdl_time );
 
 		// Calculate FPS.
 		if( sdl_time - FPS_tick_counter >= 250 ){
@@ -61,48 +85,44 @@ void Yukkuri::Start()
 			FPS_counter = 0;
 		}
 
-		// Process timer events
-		if( sdl_time - last_timerevent_tick >= TIMEREVENTTICK ){
+		// Process timer events if timer set to now
+		if( ticks.timer == sdl_time )
 			Timer::ProcessTimerEvents();
-			last_timerevent_tick = sdl_time;
-		}
 
-		elapsed_ticks = sdl_time - last_tick;
-
-		input_ticks += elapsed_ticks;
 
 		// Handle mouse and keyboard input
-		if( input_ticks >= input_interval ){
+		if( ticks.input >= INPUT_INTERVAL ){
 			HandleInput();
-			input_ticks = 0;
+			ticks.input = 0;
 		}
-
-		// Process physics only for running mode
-		if( Window.state == gsRunning )
-			cpSpaceStep( Phys::space, elapsed_ticks );
-
 
 		if( Window.minimized ){
 			// Release some system resources if the app. is minimized.
 			//WaitMessage(); // pause the application until focus in regained
 		}else{
 			if( Window.state == gsRunning ){
-				UpdIterations = elapsed_ticks + CyclesLeft;
+				float current_ticks = ticks.accumulator;
 
-				if( UpdIterations > ( MaxCycles * update_interval ) )
-					UpdIterations = MaxCycles * update_interval;
+				if( current_ticks > max_ticks )
+					current_ticks = max_ticks;
 
-				// Do some thinking
-				while (UpdIterations > update_interval) { // Update game state a variable number of times
-					UpdIterations -= update_interval;
-					Think( elapsed_ticks );
+				// Remove ticks that will be processed from accumulator
+				ticks.accumulator -= current_ticks;
+
+				// Update game state a variable number of times
+				while( current_ticks >= update_interval ){
+					cpSpaceStep( Phys::space, update_interval );
+					Think( update_interval );
+					current_ticks -= update_interval;
 				}
-				CyclesLeft = UpdIterations;
+
+				// Return any ticks left to accumulator
+				ticks.accumulator += current_ticks;
 			}
-			last_tick = sdl_time;
 
 			// Render frame
 			Render();
+
 			++FPS_counter;
 			SDL_Delay(1);
 		}

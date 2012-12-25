@@ -136,7 +136,7 @@ struct list
 		while( t->next != 0 ){
 			remove( t->next, t );
 		}
-		remove( t, 0);
+		remove( t, 0 );
 	}
 	void remove( listElement<T>* t, listElement<T>* prev ){
 		if(!t)
@@ -148,11 +148,12 @@ struct list
 		delete t;
 		t = 0;
 	}
-	void remove( listElement<T>* element ){
+	// Returns pointer to next element after removed
+	listElement<T>* remove( listElement<T>* element ){
 		listElement<T>* t = head;
 		listElement<T>* prev = 0;
 		if( !element )
-			return;
+			return 0;
 		while( t != 0 ){
 			if( t == element ){
 				remove( t, prev );
@@ -161,6 +162,7 @@ struct list
 			prev = t;
 			t = t->next;
 		}
+		return prev ? prev->next : head;
 	}
 	void remove( T data ){
 		listElement<T>* t = head;

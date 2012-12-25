@@ -21,7 +21,7 @@ namespace {
 	static unsigned int LastId = 1;
 
 	std::map< unsigned int, Unit* > Units;
-	std::vector< Unit* > RemovedUnits;
+	list< Unit* > RemovedUnits;
 	std::map< enum unitType, int > Size;
 	Unit* player = NULL;
 
@@ -116,6 +116,9 @@ Unit* UnitManager::CreateUnit( enum unitType type, float x, float y, const char*
 		player = temp;
 	}
 
+	//if( Units.size() % 100 )
+		printf( "Spawned %d units.\n", Units.size() );
+
 	return temp;
 }
 
@@ -126,21 +129,25 @@ void UnitManager::RemoveUnit( Unit* u )
 	if( !u )
 		return;
 	u->setDeleted();
-	RemovedUnits.push_back( u );
+	RemovedUnits.push( u );
 }
 
 
 void UnitManager::BatchRemove()
 {
-	if ( !RemovedUnits.size() )
+	if ( RemovedUnits.head == NULL )
 		return;
 
-	FOREACHIT( RemovedUnits ){
-		Units.erase( (*it)->getUnitId() );
-		DeleteUnit( *it );
+	listElement< Unit* >* le = RemovedUnits.head;
+	while( le != NULL ){
+		if( le->data ){
+			Units.erase( le->data->getUnitId() );
+			DeleteUnit( le->data );
+			le->data = NULL;
+		}
+		le = le->next;
 	}
-
-	RemovedUnits.clear();
+	RemovedUnits.clear( );
 }
 
 
@@ -170,7 +177,7 @@ void UnitManager::tick( const int& dt )
 	FOREACHIT( Units ){
 		u = it->second;
 		if( u->isDeleted() )
-			RemovedUnits.push_back( u );
+			RemovedUnits.push( u );
 		else
 			u->update( dt );
 	}

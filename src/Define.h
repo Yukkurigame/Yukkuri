@@ -7,6 +7,8 @@
 //Render only visible in window
 #define RENDER_VISIBLE
 #define TIMEREVENTTICK 10
+#define INPUT_INTERVAL 100
+#define MILISECONDS 1000.0
 
 #ifndef MAX_PATH
 	#define MAX_PATH 4096

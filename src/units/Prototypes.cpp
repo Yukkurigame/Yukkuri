@@ -8,10 +8,16 @@
 #include <cstdlib>
 #include <stdarg.h>
 
+#include "hacks.h"
 #include "safestring.h"
 #include "debug.h"
 
 extern long sdl_time;
+
+namespace {
+	std::map<std::string, int> action_names;
+	int action_names_counter = 0;
+}
 
 
 Action::~Action( )
@@ -20,23 +26,43 @@ Action::~Action( )
 	//free(frames);
 }
 
-Action* Proto::getAction( std::string aname )
+
+int Action::getId( std::string name )
 {
-	std::map< std::string, Action >::iterator a = Actions.find( aname );
-	if( a != Actions.end() )
-		return &(a->second);
-	else
-		return getParentAction( aname );
+	std::map< std::string, int >::iterator a = action_names.find( name );
+	if( a != action_names.end() )
+		return a->second;
+	action_names[name] = ++action_names_counter;
+	return action_names_counter;
+}
+
+std::string Action::getName( int id )
+{
+	FOREACHIT( action_names ){
+		if( it->second == id )
+			return it->first;
+	}
+	return "";
 }
 
 
-Action* Proto::getParentAction( std::string aname )
+Action* Proto::getAction( int id )
+{
+	std::map< int, Action >::iterator a = Actions.find( id );
+	if( a != Actions.end() )
+		return &(a->second);
+	else
+		return getParentAction( id );
+}
+
+
+Action* Proto::getParentAction( int id )
 {
 	if( !parent )
 		return NULL;
-	std::map< std::string, Action >::iterator faction = parent->Actions.find( aname );
+	std::map< int, Action >::iterator faction = parent->Actions.find( id );
 	if( faction == parent->Actions.end() )
-		return parent->getParentAction( aname );
+		return parent->getParentAction( id );
 	return &faction->second;
 }
 
@@ -60,33 +86,32 @@ void ActionManager::setProto( Proto* p )
 		loaded = true;
 }
 
-void ActionManager::setAction( const char* aname )
+void ActionManager::setAction( int id )
 {
 	if( !loaded )
 		return;
-	if( aname != NULL ){
+	if( id ){
+	//	printf("Setup action %s\n", Action::getName(id).c_str());
 		action = NULL;
-		action = proto->getAction( aname );
-	}
+		action = proto->getAction( id );
+	} //else
+	//	printf("Reset action %s\n", Action::getName(action->id).c_str());
 	frame = -1;
 	done = false;
 }
 
-void ActionManager::setParentAction( const char* aname )
+void ActionManager::setParentAction( int id )
 {
 	if( !loaded || proto->parent == NULL )
 		return;
 	// Load the same action from parent if it was called without name
-	std::string actionname = "";
-	if( aname != NULL )
-		actionname = std::string(aname);
-	else if( action != NULL )
-		actionname = action->name;
-	if( action && action->name == actionname )
+	if( !id && action != NULL )
+		id = action->id;
+	if( action && action->id == id )
 		proto = proto->parent;
-	action = proto->getAction( actionname );
+	action = proto->getAction( id );
 	if( action == NULL )
-		Debug::debug( Debug::PROTO, "Action " + actionname + " not found in parent prototypes of " +
+		Debug::debug( Debug::PROTO, "Action " + citoa(id) + " not found in parent prototypes of " +
 				proto->name + " prototype.\n" );
 	frame = -1;
 	done = false;

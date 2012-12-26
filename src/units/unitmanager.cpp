@@ -117,9 +117,6 @@ Unit* UnitManager::CreateUnit( enum unitType type, float x, float y, const char*
 		player = temp;
 	}
 
-	//if( Units.size() % 100 )
-		printf( "Spawned %d units.\n", Units.size() );
-
 	return temp;
 }
 

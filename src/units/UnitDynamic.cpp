@@ -252,6 +252,6 @@ void UnitDynamic::attackUnit( Unit* victim )
 void UnitDynamic::hit( float damage )
 {
 	Actions.saveState( true );
-	Actions.setAction( "hit" );
+	Actions.setAction( Action::getId("hit") );
 	Char.recieveDamage( damage );
 }

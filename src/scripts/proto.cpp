@@ -176,9 +176,10 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 
 				getValueByName( L, "name", aname );
 
+				const int action_id = Action::getId( aname );
 
-				Action* a = &proto->Actions[aname];
-				a->name = aname;
+				Action* a = &proto->Actions[action_id];
+				a->id = action_id;
 
 				lua_getfield(L, -1, "frames");	// Стек: env actions key actions[key] frames
 				if( lua_istable(L, -1) ){
@@ -198,6 +199,8 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 							if( lua_istable( L, -1 ) ){
 								UINT command = acNone;
 								Frame& frame = a->frames[j];
+
+								frame.condition_end = a->framesCount;
 
 								for(int fr = 0; fr < FRAME_PARAMS_COUNT; ++fr ){
 									frame.params[fr].stringData = NULL;
@@ -219,7 +222,16 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 									if( lua_tonumber( L, -2 ) == 1 ){
 										command = lua_tointeger( L, -1 );
 									}else{
-										if( lua_isnumber( L, -1 ) ){
+										// FIXME: Dirty hack.
+										// Check if parameter is first parameter to setAction or super
+										// command and interpret it as action id
+										if( !params_added &&
+											( command == acSuper || command == acSetAction ) &&
+											lua_isstring( L, -1 ) ){
+											std::string param_aname = lua_tostring( L, -1 );
+											frame.param_types[params_added] = stInt;
+											frame.params[params_added].intData = Action::getId( param_aname );
+										}else if( lua_isnumber( L, -1 ) ){
 											frame.param_types[params_added] = stInt;
 											frame.params[params_added].intData = (int)lua_tonumber( L, -1 );
 										}else if( lua_isstring( L, -1 ) ){
@@ -251,7 +263,8 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 								else if( command == acEnd ){
 									if( conditions.empty() )
 										Debug::debug( Debug::PROTO, "Unexpected acEnd command at frame " + citoa(j) +
-											" in action '" + a->name + "' of proto '" + proto->name + "'. Skipping.\n");
+												" in action '" + Action::getName(a->id) +
+												"' of proto '" + proto->name + "'. Skipping.\n");
 									else{
 										conditions.top()->condition_end = j;
 										conditions.pop();
@@ -269,7 +282,8 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 
 							}else{
 								Debug::debug( Debug::PROTO,
-									"In proto '" + proto->name + "', action '" + a->name + "' " +
+									"In proto '" + proto->name +
+									"', action '" + Action::getName(a->id) + "' " +
 									"frame " + citoa(j) + " - " + lua_typename(L, lua_type(L, -1)) +
 									": Frame loading canceled (not a table).\n");
 								a->framesCount = 0;
@@ -281,21 +295,21 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 							Frame* f = conditions.top();
 							Debug::debug( Debug::PROTO,
 									"End of " + citoa(f->command) + " condition expected. In proto '" + proto->name +
-									"', action '" + a->name + "'.\n");
+									"', action '" + Action::getName(a->id) + "'.\n");
 							f->condition_end = a->framesCount;
 							conditions.pop();
 						}
 					}else{
 						Debug::debug( Debug::PROTO, "There are no frames in action '" +
-								a->name + "' of proto '" + proto->name + "'. Skipping.\n");
+								Action::getName(a->id) + "' of proto '" + proto->name + "'. Skipping.\n");
 						a->framesCount = 0;
 					}
 
 					// Стек: env actions key actions[key] frames
 
 				}else{ // if (lua_istable(L, -1))	frames
-					Debug::debug( Debug::PROTO, "Action '" + a->name + "' in proto '" +
-							proto->name + "' have no frames table. Skipping.\n");
+					Debug::debug( Debug::PROTO, "Action '" + Action::getName(a->id) +
+							"' in proto '" + proto->name + "' have no frames table. Skipping.\n");
 					a->framesCount = 0;
 				}
 

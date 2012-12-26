@@ -19,7 +19,8 @@ actions = {
 		frames = {
 			{ constants.acSuper, skip = 100 },
 			{ constants.acSuper, "check", skip = 5000 },
-			{ constants.acSetAction, dur = 100 }
+			{ constants.acNone, dur = 100 },
+			{ constants.acSetAction }
 		}
 	},
 	{

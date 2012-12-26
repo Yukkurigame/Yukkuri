@@ -15,8 +15,9 @@
 class CUData;
 
 
-enum unitType { utStatic = 1, utPlayer = 2, utEntity = 4,
-				utPlant = 8,  utCorpse = 16, utAll = 127, utLast = 128 };
+enum unitType { utCorpse=1, utStatic = 7,		// Static types
+				utPlayer = 8, utEntity = 16, utPlant = 32, utDynamic = 56, // Dynamic types
+				utAll = 127, utLast = 128 };
 enum unitFlag { ufDeleted = 1, ufEdible = 2, ufMoving = 4, ufLast };
 enum unitInteraction {  };
 
@@ -52,11 +53,6 @@ public:
 	virtual void moveUnit( signed int x, signed int y, const int& dt ) {};
 	virtual void moveUnit( short axis, signed int val ) {};
 
-	int emitEvent( const char* name );
-
-	//virtual void interact( enum unitInteraction action );
-	//virtual void interact( enum unitInteraction action, Unit* target, );
-
 	float dist( Unit* );
 
 	bool setUnitName( std::string type );
@@ -68,7 +64,7 @@ public:
 	inline void setUnitParameter( enum character param, float value ){ Char.set( param, value ); }
 	inline void setUnitParameter( enum character_float param, float value ){ Char.set( param, value ); }
 
-	inline int getUnitParameter( enum character param ){ 	return Char.get( param ); }
+	inline int getUnitParameter( enum character param ){ return Char.get( param ); }
 	inline int* getUnitpParameter( enum character param ){ return Char.getPtr( param ); }
 	inline float getUnitParameter( enum character_float param ){ return Char.get( param ); }
 	inline float* getUnitpParameter( enum character_float param ){ return Char.getPtr( param ); }
@@ -91,12 +87,17 @@ public:
 	GET_PARAM( double*, pY, &(physBody->p.y) )
 #undef GET_PARAM
 
+	/*
 	virtual void hit( float damage ) {
 		Char.recieveDamage( damage );
 	};
+	*/
 
 	// Function bindings
 	int color( lua_State* L );
+	int emitEvent( lua_State* L );
+	int getBuild( lua_State* L );
+	int setAction( lua_State* L );
 
 protected:
 	virtual CUData* createUData();

@@ -55,7 +55,8 @@
 #include "interface/widgets/WidgetBar.h"
 
 // Typelist with all types, that can be passed to lua as userdata
-typedef TYPELIST_9( Unit, UnitStatic, UnitDynamic, Entity, Corpse, Player, Widget, WidgetText, WidgetBar ) ClassesList;
+typedef TYPELIST_10( Unit, UnitStatic, UnitDynamic, Entity, Corpse, Player,
+		Widget, WidgetText, WidgetBar, CharBuild ) ClassesList;
 
 
 
@@ -72,6 +73,8 @@ UDATA_CREATOR_FUNC_DECL(Player);
 UDATA_CREATOR_FUNC_DECL(Widget);
 UDATA_CREATOR_FUNC_DECL(WidgetText);
 UDATA_CREATOR_FUNC_DECL(WidgetBar);
+
+UDATA_CREATOR_FUNC_DECL(CharBuild);
 
 
 
@@ -96,6 +99,8 @@ void RegisterAllTypeMetatables(lua_State* L)
 	RegisterTypeMetatable<WidgetText>(L);
 	RegisterTypeMetatable<WidgetBar>(L);
 
+	RegisterTypeMetatable<CharBuild>(L);
+
 }
 
 
@@ -114,7 +119,9 @@ void RegisterAllTypeMetatables(lua_State* L)
 		GETTERF_METHOD_DECL(UnitId)						\
 		GETTERF_METHOD_DECL(UnitName)					\
 		GETTERF_METHOD_DECL(UnitTypeName)				\
-		GETTERF_METHOD_DECL(UnitSize)					\
+		EXEC_NORET_METHOD_DECL(emitEvent)				\
+		EXEC_NORET_METHOD_DECL(setAction)				\
+		EXEC_NORET_METHOD_DECL(getBuild)				\
 		EXEC_NORET_METHOD_DECL(color)
 
 #define DECL_UNITSTATIC_METH
@@ -159,6 +166,15 @@ void RegisterAllTypeMetatables(lua_State* L)
 		EXEC_METHOD_DECL(bindBarMaxValue)
 
 
+// CharBuild
+#define DECL_CHARBUILD_METH								\
+		GETSETF_METHOD_DECL(Damage)						\
+		EXEC_METHOD_DECL(tire)							\
+		EXEC_METHOD_DECL(levelUp)						\
+		EXEC_METHOD_DECL(get)							\
+		EXEC_METHOD_DECL(set)
+
+
 
 DECL_UNIT_METH
 DECL_UNITDYNAMIC_METH
@@ -168,7 +184,7 @@ DECL_UNITPLAYER_METH
 DECL_WIDGET_METH
 DECL_WIDGETTEXT_METH
 DECL_WIDGETBAR_METH
-
+DECL_CHARBUILD_METH
 
 
 // Metatable records
@@ -183,7 +199,9 @@ DECL_WIDGETBAR_METH
 		GETTER_METHOD_ENTRY(ID, UnitId)			\
 		GETTER_METHOD_ENTRY(ID, UnitName)		\
 		GETTER_METHOD_ENTRY(ID, UnitTypeName)	\
-		GETTER_METHOD_ENTRY(ID, UnitSize)		\
+		EXEC_METHOD_ENTRY(ID, emitEvent)		\
+		EXEC_METHOD_ENTRY(ID, setAction)		\
+		EXEC_METHOD_ENTRY(ID, getBuild)			\
 		EXEC_METHOD_ENTRY(ID, color)
 
 #define UNITSTATIC_METH_ENTRY(ID)				\
@@ -237,6 +255,15 @@ DECL_WIDGETBAR_METH
 		GETSET_METHOD_ENTRY(ID, BarSize)
 
 
+// CharBuild
+#define CHARBUILD_METH_ENTRY(ID)				\
+		GETSET_METHOD_ENTRY(ID, Damage)			\
+		EXEC_METHOD_ENTRY(ID, tire)				\
+		EXEC_METHOD_ENTRY(ID, levelUp)			\
+		EXEC_METHOD_ENTRY(ID, get)				\
+		EXEC_METHOD_ENTRY(ID, set)
+
+
 
 // Meta methods
 const size_t METAMETHODS_MAX_COUNT = 70;
@@ -285,7 +312,12 @@ static const struct luaL_reg ud_meta[TL::Length<ClassesList>::value][METAMETHODS
 		STD_METHODS(8),
 		WIDGETBAR_METH_ENTRY(8)
 		END
-	}
+	},
+	{
+		STD_METHODS(9),
+		CHARBUILD_METH_ENTRY(9)
+		END
+	},
 
 };
 

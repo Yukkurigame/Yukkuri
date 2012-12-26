@@ -104,7 +104,7 @@ void UnitDynamic::applyForce( const int& dt )
 
 void UnitDynamic::eat( Unit* victim )
 {
-	float dmg = Char.getDamage();
+	/*float dmg = Char.getDamage();
 	victim->hit( dmg );
 	if( Char.state.fed >= 80 && Char.state.fed < 100 && Char.state.hp < Char.params.hp ){
 		float hpAdd = dmg / Char.level;
@@ -129,6 +129,7 @@ void UnitDynamic::eat( Unit* victim )
 		else
 			Char.state.fed += fedAdd;
 	}
+	*/
 }
 
 void UnitDynamic::die( )
@@ -239,13 +240,14 @@ void UnitDynamic::updateAnimOnMovement( cpBody* body, cpFloat dt )
 
 void UnitDynamic::attackUnit( Unit* victim )
 {
-	if( victim == this || !victim )
+	/*if( victim == this || !victim )
 		return;
 	Char.tire( 0.1f );
 	UnitDynamic* dvictim = dynamic_cast<UnitDynamic*>(victim);
 	if( dvictim && dvictim->Attacker() != this )
 		dvictim->Attacker( this );
 	victim->hit( Char.getDamage() );
+	*/
 }
 
 
@@ -253,5 +255,5 @@ void UnitDynamic::hit( float damage )
 {
 	Actions.saveState( true );
 	Actions.setAction( Action::getId("hit") );
-	Char.recieveDamage( damage );
+	Char.setDamage( damage );
 }

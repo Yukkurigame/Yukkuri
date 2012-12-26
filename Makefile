@@ -28,7 +28,7 @@ GRAPHUTILS = gl_shader.cpp pngfuncs.c sdl_graphics.cpp VBOArray.cpp
 GRAPHICS = Camera.cpp daytime.cpp Font.cpp gl_extensions.cpp Render.cpp Text.cpp \
 		   $(addprefix render/, $(RENDER)) $(addprefix sprite/, $(SPRITE)) $(addprefix utils/, $(GRAPHUTILS))
 SCRIPTSAPI = UnitManagerApi.cpp InterfaceApi.cpp Widgets.cpp ThreadManagerApi.cpp CameraApi.cpp \
-			 BindingsApi.cpp Units.cpp PathsApi.cpp RegionApi.cpp
+			 BindingsApi.cpp Units.cpp PathsApi.cpp RegionApi.cpp YOBA.cpp
 SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp proto.cpp \
 		  api.cpp $(addprefix $(SCRIPTSAPIDIR), $(SCRIPTSAPI))
 WIDGETS = Widget.cpp WidgetText.cpp WidgetBar.cpp
@@ -65,7 +65,7 @@ HEADERS = $(OBJECTS:.o=.h) $(addprefix $(OBJDIR), $(UNIQHEADERS))
  
  
 GCHOLD = $(HEADERS:.h=.h.gch)
-GCH = $(shell echo $(GCHOLD) | sed -e "s/[^ ]\+\/\(main\|LuaRegister\|api\/Widgets\|api\/Units\).h.gch //g")
+GCH = $(shell echo $(GCHOLD) | sed -e "s/[^ ]\+\/\(main\|LuaRegister\|api\/Widgets\|api\/Units\|api\/YOBA\).h.gch //g")
 
 
 #.cpp.o:

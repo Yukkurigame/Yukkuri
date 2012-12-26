@@ -10,8 +10,10 @@
 #ifndef YOBA_H_
 #define YOBA_H_
 
+#include "3rdparty/CUDataUser.h"
 #include <math.h>
 #include <stdlib.h>
+
 
 enum character {
 	// Base
@@ -22,10 +24,11 @@ enum character {
 	uCharIntLast
 };
 
+
 enum character_float {
 	// Characteristics
 	uChrSpeed = uCharIntLast + 1, uChrDamage, uChrDefence, uChrNutritive,
-	// Parametes
+	// Parameters
 	uParamHP, uParamExp, uParamFed,
 	// State
 	uStateHP, uStateExp, uStateFed,
@@ -71,7 +74,8 @@ namespace {
 	static float NULL_FLOAT = 0.0;
 }
 
-struct CharBuild {
+
+struct CharBuild : public CUDataUser {
 
 	int level;
 	int age;
@@ -201,6 +205,7 @@ struct CharBuild {
 #undef PARAM_SWITCH
 #undef PARAM_SWITCH_FLOAT
 
+	// Calculates maximum value of damage unit can produce
 	inline float getDamage() {
 		float dmg = chars.damage / state.fed * 100;
 		if( dmg < 0.4 )
@@ -208,17 +213,21 @@ struct CharBuild {
 		return dmg;
 	}
 
+	// Apply received damage to unit
+	inline void setDamage( float dmg ){
+		state.hp -= dmg;
+	}
+
 	inline void grow(){
 		++age;
 		set( uStateExp,  state.exp + log(10 * level) );
 	}
 
-	inline void recieveDamage( float dmg ){
-		state.hp -= dmg;
-	}
 
-	inline void tire( ){ tire( 0.2f * log( (float)level ) ); }
-	inline void tire( float value ){
+	// Apply tiring to unit
+	inline void tire( float value = 0.0f ){
+		if( value == 0.0f )
+			value = 0.2f * log( (float)level );
 		if( state.fed > 1 )
 			state.fed -= value;
 	}
@@ -234,6 +243,16 @@ struct CharBuild {
 			state.hp = params.hp * state.hp;
 		}
 	}
+
+	// Lua bindings
+	float get( lua_State* L );
+	float set( lua_State* L );
+	int tire( lua_State* L );
+	int levelUp( lua_State* L );
+
+protected:
+	virtual CUData* createUData();
+
 };
 
 

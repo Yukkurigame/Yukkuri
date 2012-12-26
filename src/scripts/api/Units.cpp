@@ -8,6 +8,8 @@
 #include "units/UnitDynamic.h"
 #include "scripts/Lua.h"
 #include "scripts/LuaScript.h"
+#include "safestring.h"
+
 
 int Unit::color( lua_State* L )
 {
@@ -35,6 +37,62 @@ int Unit::color( lua_State* L )
 	lua_pop( L, top );
 
 	return top ? 0 : 1;
+}
+
+
+int Unit::emitEvent( lua_State* L )
+{
+	luaL_argcheck( L, lua_isstring( L, 1 ), 1, "Event name expected" );
+
+	// Excess call for debug purposes.
+	std::string name = lua_tostring( L, 1 );
+
+	int top = lua_gettop( L ); 							// stack: event_name, params ...,
+
+	extern LuaScript* luaScript;
+
+	int argcount = 1;
+	if( events.self != LUA_NOREF ){
+		luaScript->GetFromRegistry( L, events.self );	// stack: event_name, params ..., events_table
+		lua_insert( L, argcount );						// stack: events_table, event_name, params ...
+		++argcount;
+	}
+	this->pushUData( L );			// stack: event_name, params ..., events_table, udata
+	lua_insert( L, argcount );		// stack: events_table, udata, event_name, params ...
+
+	int ret_val = luaScript->ExecChunkFromReg( events.function, argcount + top );
+	if( ret_val == -1 )
+		Debug::debug( Debug::PROTO,
+			"An error occurred while executing a local event function '" + name +
+			"'. obj id  " + citoa(UnitId) + ", proto_name '" + Actions.proto->name +
+			"', action '" + Action::getName(Actions.action->id)  + "', frame " + citoa(Actions.frame) +
+			": " + luaScript->getString( -1 ) + ".\n" );
+
+	return ret_val;
+}
+
+
+int Unit::getBuild( lua_State* L )
+{
+	Char.pushUData( L );
+	return 1;
+}
+
+
+int Unit::setAction( lua_State* L )
+{
+	luaL_argcheck( L, lua_isstring( L, 1 ) || lua_isnumber( L, 1 ), 1, "Action name expected" );
+
+	int action = 0;
+	if( lua_isstring( L, 1 ) )
+		action = Action::getId( lua_tostring( L, 1 ) );
+	else
+		action = lua_tointeger( L, 1 );
+	lua_pop( L, 1 );
+
+	Actions.setAction( action );
+
+	return 0;
 }
 
 

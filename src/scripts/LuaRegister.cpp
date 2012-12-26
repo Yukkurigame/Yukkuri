@@ -118,6 +118,8 @@ void LuaMain::RegisterApi( lua_State* L )
 
 		// Unit Types
 		FIELD(utStatic)
+		FIELD(utDynamic)
+		FIELD(utAll)
 		FIELD(utPlayer)
 		FIELD(utEntity)
 		FIELD(utPlant)

@@ -262,7 +262,8 @@ bool Unit::update( const Frame& frame )
 		case acEmitEvent:
 			extern LuaScript* luaScript;
 			if( Actions.checkFrameParams( frame, 1, stString ) && this->events.function != LUA_NOREF ){
-				int ret_val = emitEvent(param.stringData);
+				luaScript->push( param.stringData );
+				int ret_val = emitEvent( luaScript->getState() );
 				for(int i = 0; i < ret_val; ++i ){
 					switch( luaScript->getType( 1 ) ){
 						case LUA_TNUMBER:
@@ -459,27 +460,6 @@ bool Unit::update( const Frame& frame )
 #undef PARAMCOND
 #undef PARAMSCOND
 #undef CHECKFLAG
-
-
-int Unit::emitEvent( const char* name )
-{
-	extern LuaScript* luaScript;
-	int argcount = 2;
-	if( events.self != LUA_NOREF ){
-		luaScript->GetFromRegistry( luaScript->getState(), events.self );
-		++argcount;
-	}
-	this->pushUData( luaScript->getState() );
-	luaScript->push( name );
-	int ret_val = luaScript->ExecChunkFromReg( events.function, argcount );
-	if( ret_val == -1 )
-		Debug::debug( Debug::PROTO,
-			"An error occurred while executing a local event function '" + std::string(name) +
-			"'. obj id  " + citoa(UnitId) + ", proto_name '" + Actions.proto->name +
-			"', action '" + Action::getName(Actions.action->id)  + "', frame " + citoa(Actions.frame) +
-			": " + luaScript->getString( -1 ) + ".\n" );
-	return ret_val;
-}
 
 
 void Unit::updatePhysics( )

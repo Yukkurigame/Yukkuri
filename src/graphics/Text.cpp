@@ -180,6 +180,10 @@ SETSPRITEFLAG(Fixed, 2)
 void Text::clear( )
 {
 	Width = Height = 0;
+	if( content ){
+		free(content);
+		content = NULL;
+	}
 	RenderManager::FreeGLSprites( &sprites );
 }
 

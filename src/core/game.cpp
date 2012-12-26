@@ -63,7 +63,7 @@ void Yukkuri::Start()
 
 	const float update_interval = 1.0f / conf.maxFrameRate * MILISECONDS;
 	const float max_cycles = conf.maxFrameRate / conf.minFrameRate;
-	const float max_ticks = max_cycles * update_interval;
+	float max_ticks = max_cycles * update_interval;
 
 	sdl_time = SDL_GetTicks();
 
@@ -102,6 +102,12 @@ void Yukkuri::Start()
 		}else{
 			if( Window.state == gsRunning ){
 				float current_ticks = ticks.accumulator;
+
+				// Ajust max_ticks to make less calculations per frame.
+				if( current_ticks < update_interval * 3 )
+					max_ticks = max_cycles * update_interval;
+				else
+					max_ticks = update_interval;
 
 				if( current_ticks > max_ticks )
 					current_ticks = max_ticks;

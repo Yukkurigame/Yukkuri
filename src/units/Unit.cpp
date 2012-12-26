@@ -74,7 +74,7 @@ bool Unit::Create( int id, std::string proto )
 	{
 		ProtoManager* pm = new ProtoManager;
 		Actions.setProto( pm->GetProtoByName( proto ) );
-		Actions.setAction( "init" );
+		Actions.setAction( Action::getId("init") );
 		delete pm;
 		if( !Actions.loaded ){
 				Debug::debug( Debug::UNIT, "Unit with invalid prototype '" + proto +
@@ -156,7 +156,7 @@ void Unit::update( const int& dt )
 				Debug::debug( Debug::PROTO,
 					"An error occurred while executing a local function. obj id  " +
 					citoa(UnitId) + ", proto_name '" + Actions.proto->name + "', action '" +
-					Actions.action->name  + "', frame " + citoa(Actions.frame) +
+					Action::getName(Actions.action->id)  + "', frame " + citoa(Actions.frame) +
 					": " + luaScript->getString( -1 ) + ".\n" );
 			}
 
@@ -212,7 +212,7 @@ bool Unit::update( const Frame& frame )
 		// Functions
 		case acSuper:
 			Actions.saveState( true );
-			Actions.setParentAction( param.stringData );
+			Actions.setParentAction( param.intData );
 			break;
 		case acRestoreState:
 			// This is return for acSuper command. It does nothing if no saved state .
@@ -220,8 +220,8 @@ bool Unit::update( const Frame& frame )
 			break;
 		case acSetAction:
 			// If param is not null, it will be action call, not replacing
-			if( Actions.checkFrameParams( frame, 1, stStringOrNone ) ){
-				Actions.setAction( param.stringData );
+			if( Actions.checkFrameParams( frame, 1, stIntOrNone ) ){
+				Actions.setAction( param.intData );
 				return false;
 			}
 			break;
@@ -476,7 +476,7 @@ int Unit::emitEvent( const char* name )
 		Debug::debug( Debug::PROTO,
 			"An error occurred while executing a local event function '" + std::string(name) +
 			"'. obj id  " + citoa(UnitId) + ", proto_name '" + Actions.proto->name +
-			"', action '" + Actions.action->name  + "', frame " + citoa(Actions.frame) +
+			"', action '" + Action::getName(Actions.action->id)  + "', frame " + citoa(Actions.frame) +
 			": " + luaScript->getString( -1 ) + ".\n" );
 	return ret_val;
 }

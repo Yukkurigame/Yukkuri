@@ -15,7 +15,6 @@ namespace Phys
 	cpSpace* space = NULL;
 	float friction = 1.7;
 	float g = 9.8;
-
 }
 
 

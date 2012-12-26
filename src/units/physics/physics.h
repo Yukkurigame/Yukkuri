@@ -42,7 +42,7 @@ struct PhysObject {
 	//cpVect frictionForce; // N
 
 	PhysObject() : type(potCircle), mass(1.0), radius(1.0), sides(), scale_factor(1.0) {}
-				   // frictionForce() {}
+				// frictionForce() {}
 
 	void calc_mass( );
 	void scale( cpFloat factor );

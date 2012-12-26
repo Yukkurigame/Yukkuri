@@ -67,16 +67,21 @@ struct FrameTimer {
 	FrameTimer( Frame* f, int t, FrameTimer* n ) : frame(f), time(t), next(n) {}
 };
 
+
 struct Action
 {
-	std::string name;
+	int id;
 	size_t framesCount;
 	Frame* frames;
 
-	Action( ) : framesCount(0), frames(NULL) {}
+	Action( ) : id(0), framesCount(0), frames(NULL) {}
 	~Action( );
 
+	static int getId( std::string name );
+	static std::string getName( int id );
+
 };
+
 
 struct Proto
 {
@@ -88,12 +93,12 @@ struct Proto
 	bool statical;
 
 
-	std::map< std::string, Action > Actions;
+	std::map< int, Action > Actions;
 
 	Proto() : id(-1), physicsType(-1), statical(false) { parent = NULL; };
 
-	Action* getAction( std::string );
-	Action* getParentAction( std::string );
+	Action* getAction( int );
+	Action* getParentAction( int );
 };
 
 struct ActionManagerState
@@ -127,8 +132,8 @@ struct ActionManager
 	~ActionManager( );
 
 	void setProto( Proto* );
-	void setAction( const char* name );
-	void setParentAction( const char* name );
+	void setAction( int id );
+	void setParentAction( int id );
 
 	void updateTimers( const int& dt );
 	bool nextFrame( );

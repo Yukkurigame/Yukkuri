@@ -16,7 +16,7 @@ extern MainConfig conf;
 extern MapChunkManager ChunkManager;
 
 
-#define MAP_UPADTE_PERIOD 300
+#define MAP_UPADTE_PERIOD 100
 
 
 namespace {

@@ -32,7 +32,8 @@ actions = {
 			{ constants.acMove },
 			{ constants.acDUnitGrow, skip = 20000 },
 			{ constants.acRestoreState },
-			{ constants.acSetAction, dur = 100 },
+			{ constants.acNone, dur = 100 },
+			{ constants.acSetAction }
 		}
 	},
 	{

@@ -56,6 +56,7 @@ void UnitManager::init()
 {
 	player = NULL;
 	Phys::init();
+	//cpSpaceUseSpatialHash( Phys::space, 300.0, 3000.0 );
 }
 
 void UnitManager::clean()

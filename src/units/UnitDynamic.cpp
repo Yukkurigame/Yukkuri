@@ -27,7 +27,6 @@ void call_updateAnimOnMovement(cpBody* body, cpFloat dt)
 UnitDynamic::UnitDynamic()
 {
 	TotalDistance = 0;
-	Attacked = NULL;
 	currentTile = -1;
 	force.x = 0;
 	force.y = 0;
@@ -134,7 +133,9 @@ void UnitDynamic::eat( Unit* victim )
 
 void UnitDynamic::die( )
 {
+	/*
 	Corpse* corpse;
+
 	corpse = dynamic_cast<Corpse*>( UnitManager::CreateUnit( utCorpse, getUnitX(), getUnitY() ) );
 	if( corpse ){
 		LuaConfig* cfg = new LuaConfig;
@@ -156,6 +157,7 @@ void UnitDynamic::die( )
 				(float)this->Attacked->getUnitParameter( uBaseKills ) + 1.0f );
 	}
 	this->setDeleted();
+	*/
 }
 
 
@@ -199,11 +201,13 @@ bool UnitDynamic::update( const Frame& frame )
 void UnitDynamic::takeAction( )
 {
 	Char.tire();
+	/*
 	if( Attacked ){
 		if( Attacked->isDeleted() || Attacked->getUnitParameter( uStateHP ) <= 0 || dist(Attacked) >= 1000 ){
 			Attacked = NULL;
 		}
 	}
+	*/
 }
 
 
@@ -238,22 +242,25 @@ void UnitDynamic::updateAnimOnMovement( cpBody* body, cpFloat dt )
 }
 
 
+/*
 void UnitDynamic::attackUnit( Unit* victim )
 {
-	/*if( victim == this || !victim )
+	if( victim == this || !victim )
 		return;
 	Char.tire( 0.1f );
 	UnitDynamic* dvictim = dynamic_cast<UnitDynamic*>(victim);
 	if( dvictim && dvictim->Attacker() != this )
 		dvictim->Attacker( this );
 	victim->hit( Char.getDamage() );
-	*/
+
 }
+*/
 
-
+/*
 void UnitDynamic::hit( float damage )
 {
 	Actions.saveState( true );
 	Actions.setAction( Action::getId("hit") );
 	Char.setDamage( damage );
 }
+*/

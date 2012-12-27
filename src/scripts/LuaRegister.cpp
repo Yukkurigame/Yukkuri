@@ -52,7 +52,9 @@ void LuaMain::RegisterApi( lua_State* L )
 
 	//lua_register( L, "LoadMapRegion", &scriptApi::LoadMapRegion );
 
-#define REGAPI(name, api) luaL_register( L, name, api::methods );
+#define REGAPI(name, api)						\
+	luaL_register( L, name, api::methods );		\
+	lua_pop( L, 1 );
 
 	// Libraries
 	REGAPI( "Interface", IfaceApi )

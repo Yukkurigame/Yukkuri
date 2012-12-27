@@ -129,8 +129,16 @@ void Unit::update( const int& dt )
 	DT = dt;
 	if( isDeleted() )
 		return;
-	if( Char.state.hp < 0 )
-		return die();
+
+	// FIXME: move to prototypes
+	if( Char.state.hp < 0 ){
+		extern LuaScript* luaScript;
+		luaScript->push( std::string("die") );
+		emitEvent( luaScript->getState() );
+		if(isDeleted())
+			return;
+	}
+
 	if( dist( UnitManager::GetPlayer( ) ) > 2000 ){
 		return setDeleted();
 	}

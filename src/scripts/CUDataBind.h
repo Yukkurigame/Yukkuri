@@ -115,10 +115,12 @@ void RegisterAllTypeMetatables(lua_State* L)
 		GETSETF_METHOD_DECL(UnitName)					\
 		GETSETF_METHOD_DECL(UnitX)						\
 		GETSETF_METHOD_DECL(UnitY)						\
+		GETSETF_METHOD_DECL(UnitZ)						\
 		GETSETF_METHOD_DECL(UnitSize)					\
 		GETTERF_METHOD_DECL(UnitId)						\
 		GETTERF_METHOD_DECL(UnitName)					\
 		GETTERF_METHOD_DECL(UnitTypeName)				\
+		GETSET_FLAG_METHOD_DECL(Deleted)				\
 		EXEC_NORET_METHOD_DECL(emitEvent)				\
 		EXEC_NORET_METHOD_DECL(setAction)				\
 		EXEC_NORET_METHOD_DECL(getBuild)				\
@@ -195,10 +197,12 @@ DECL_CHARBUILD_METH
 		GETSET_METHOD_ENTRY(ID, UnitName)		\
 		GETSET_METHOD_ENTRY(ID, UnitX)			\
 		GETSET_METHOD_ENTRY(ID, UnitY)			\
+		GETSET_METHOD_ENTRY(ID, UnitZ)			\
 		GETSET_METHOD_ENTRY(ID, UnitSize)		\
 		GETTER_METHOD_ENTRY(ID, UnitId)			\
 		GETTER_METHOD_ENTRY(ID, UnitName)		\
 		GETTER_METHOD_ENTRY(ID, UnitTypeName)	\
+		GETSET_METHOD_ENTRY(ID, Deleted)		\
 		EXEC_METHOD_ENTRY(ID, emitEvent)		\
 		EXEC_METHOD_ENTRY(ID, setAction)		\
 		EXEC_METHOD_ENTRY(ID, getBuild)			\

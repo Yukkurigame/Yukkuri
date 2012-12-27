@@ -71,12 +71,13 @@ void Binds::movePlayerRight( short down )
 
 void Binds::playerAttackUnit( short down )
 {
-	if( down )
+	/*if( down )
 		return;
 	Player* player;
 	player = dynamic_cast<Player*>(UnitManager::GetPlayer());
 	if( player )
 		player->attack( );
+	*/
 }
 
 void Binds::playerEat( short down )

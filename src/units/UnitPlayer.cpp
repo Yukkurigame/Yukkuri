@@ -12,6 +12,7 @@ Player::Player()
 }
 
 
+/*
 void Player::attack( )
 {
 	Unit* victim = NULL;
@@ -19,6 +20,7 @@ void Player::attack( )
 	if( victim )
 		this->attackUnit( victim );
 }
+*/
 
 
 void Player::eat( )

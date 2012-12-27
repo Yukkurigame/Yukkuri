@@ -37,10 +37,10 @@ public:
 
 	void takeAction( );
 
-	Unit* Attacker( ) { return Attacked; }
-	void Attacker( Unit* a ) { Attacked = a; }
-	void attackUnit( Unit* victim );
-	void hit( float damage );
+	//Unit* Attacker( ) { return Attacked; }
+	//void Attacker( Unit* a ) { Attacked = a; }
+	//void attackUnit( Unit* victim );
+	//void hit( float damage );
 
 	// Flags for moving
 	inline unsigned char isMoving()	{ return flags & ufMoving; }
@@ -60,7 +60,7 @@ protected:
 	s2i target;
 
 	int FoodTypes;
-	Unit* Attacked;
+	//Unit* Attacked;
 	cpFloat TotalDistance;
 	const static int m_animdistance = 20;
 

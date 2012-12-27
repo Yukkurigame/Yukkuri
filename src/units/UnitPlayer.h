@@ -8,7 +8,7 @@ class Player : public UnitDynamic
 public:
 	Player();
 
-	void attack( );
+	//void attack( );
 	void eat( );
 	void die( );
 

@@ -44,7 +44,7 @@ CUData* CreateUData(T& user)
 
 	lua_State* Lst = luaScript->getState();
 
-	CUData* ud = static_cast<CUData*>(lua_newuserdata(Lst, sizeof(CUData)));
+	CUData* ud = static_cast<CUData*>(lua_newuserdata(Lst, (unsigned)sizeof(CUData)));
 	if (!ud)
 		return NULL;
 	// st: ud
@@ -156,6 +156,9 @@ void RegisterTypeMetatable(lua_State* L)
 	lua_pushvalue( L, -2 );                   // st: mt __index mt
 	lua_settable( L, -3 );     /* metatable.__index = metatable */
 	// st: mt
+	lua_pushstring( L, "storage" );           // st: mt storage
+	lua_newtable( L );                        // st: mt storage table
+	lua_settable( L, -3 );     /* metatable.storage = table */
 
 	luaL_register( L, NULL, ud_meta[UD_TYPE_ID(T)] );
 	UD_META_REF(T) = luaScript->AddToRegistry();

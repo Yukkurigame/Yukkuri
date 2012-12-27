@@ -7,7 +7,6 @@
 Entity::Entity()
 {
 	target = NULL;
-	Attacked = NULL;
 }
 
 
@@ -47,11 +46,12 @@ bool Entity::update( const Frame& frame )
 void Entity::takeAction( )
 {
 	UnitDynamic::takeAction( );
-	if( Attacked && !Attacked->isDeleted() ){
+	/*if( Attacked && !Attacked->isDeleted() ){
 		if( dist(Attacked) < getUnitSize( ) * 100 ){
 			attackUnit( Attacked );
 		}
 	}
+	*/
 }
 
 /*	Add random target to path */
@@ -75,26 +75,4 @@ void Entity::move( )
 	force.y = 0;
 	if( !moveUnit(target->x, target->y) )
 		nextTarget();
-
-//	int nx = static_cast<int>(target->x - getUnitX());
-//	int ny = static_cast<int>(target->y - getUnitY());
-//	if( abs(nx) > phys.radius * 2 )
-//		force.x = nx / abs(nx);
-//	if( abs(ny) > phys.radius * 2 )
-//		force.y = ny / abs(ny);
-//	if( force.x == 0 && force.y == 0){
-//
-//		cpBodySetVel( physBody, cpvzero );
-//		return;
-//	}
-//	setMoving();
-//	if( physBody->v.x / abs(physBody->v.x) )
-//		force.x *= phys.mass / 100;
-//	else
-//		force.x = 0;
-//	if( physBody->v.y / abs(physBody->v.y) )
-//		force.y *= phys.mass / 100;
-//	else
-//		force.y = 0;
-//	cpBodyApplyForce( physBody, force, cpvzero );
 }

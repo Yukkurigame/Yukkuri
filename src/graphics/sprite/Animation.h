@@ -40,6 +40,9 @@ public:
 	void setPosition( float x, float y );
 	void setPosition( float x, float y, float z );
 
+	void setDepth( float z );
+	inline float getDepth( ){ return sprite->brush.vertex_origin.z; }
+
 	void setSize( float size );
 	inline float getSize( ) { return size; }
 

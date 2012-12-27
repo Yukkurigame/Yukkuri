@@ -132,6 +132,12 @@ void Animation::setPosition( float x, float y, float z )
 	sprite->setPosition( x, y, z );
 }
 
+void Animation::setDepth( float z )
+{
+	s3f vo = sprite->brush.vertex_origin;
+	sprite->setPosition( vo.x, vo.y, z );
+}
+
 void Animation::setSize( float sz )
 {
 	size = sz;

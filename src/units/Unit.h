@@ -48,12 +48,14 @@ public:
 	virtual void update( const int& );
 	// Called for each action frame until break
 	virtual bool update( const Frame& f );
+	// Called when physics parameters changed.
 	virtual void updatePhysics( );
-	virtual void die( ) { setDeleted(); };
+
 	virtual void moveUnit( signed int x, signed int y, const int& dt ) {};
 	virtual void moveUnit( short axis, signed int val ) {};
 
 	float dist( Unit* );
+
 
 	bool setUnitName( std::string type );
 	void setUnitType( enum unitType type );
@@ -61,6 +63,7 @@ public:
 	void setUnitSize( float size );
 	inline void setUnitX( float x ) { setUnitPos( x, (float)physBody->p.y ); }
 	inline void setUnitY( float y ) { setUnitPos( (float)physBody->p.x, y ); }
+	inline void setUnitZ( float z ) { Image.setDepth( z ); }
 	inline void setUnitParameter( enum character param, float value ){ Char.set( param, value ); }
 	inline void setUnitParameter( enum character_float param, float value ){ Char.set( param, value ); }
 
@@ -82,16 +85,11 @@ public:
 	GET_PARAM( enum unitType, Type, UnitType )
 	GET_PARAM( const float, X, (const float)physBody->p.x )
 	GET_PARAM( const float, Y, (const float)physBody->p.y )
+	GET_PARAM( const float, Z, Image.getDepth() )
 	GET_PARAM( float, Size, Image.getSize() )
 	GET_PARAM( double*, pX, &(physBody->p.x) )
 	GET_PARAM( double*, pY, &(physBody->p.y) )
 #undef GET_PARAM
-
-	/*
-	virtual void hit( float damage ) {
-		Char.recieveDamage( damage );
-	};
-	*/
 
 	// Function bindings
 	int color( lua_State* L );

@@ -74,8 +74,8 @@ int Unit::emitEvent( lua_State* L )
 
 int Unit::getBuild( lua_State* L )
 {
-	Char.pushUData( L );
-	return 1;
+	CharBuild* p = &Char;
+	return p->pushUData( L );
 }
 
 
@@ -88,8 +88,13 @@ int Unit::setAction( lua_State* L )
 		action = Action::getId( lua_tostring( L, 1 ) );
 	else
 		action = lua_tointeger( L, 1 );
-	lua_pop( L, 1 );
 
+	bool change = lua_toboolean( L, 2 );
+
+	lua_pop( L, lua_gettop(L) );
+
+	if( !change )
+		Actions.saveState( true );
 	Actions.setAction( action );
 
 	return 0;
@@ -110,7 +115,5 @@ int UnitDynamic::getClosest( lua_State* L )
 	if( !u )
 		return 0;
 
-	u->pushUData( L );
-
-	return 1;
+	return u->pushUData( L );
 }

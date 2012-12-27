@@ -105,10 +105,11 @@ Unit* Scope::closest( int type, float limit )
 	Unit* ret = NULL;
 	float distance = 9000;
 	cpVect p = shape->body->p;
+	Unit* self = reinterpret_cast<Unit*>(shape->body->data);
 	listElement< Unit* >* tmp = Collisions.head;
 	while( tmp != NULL ){
 		Unit* target = tmp->data;
-		if( target && ( target->getUnitType() & type ) ){
+		if( target && target != self && ( target->getUnitType() & type ) ){
 			float dis = cpvlength( cpvsub( p, target->getUnitPos() ));
 			if( dis < limit && dis < distance ){
 				distance = dis;

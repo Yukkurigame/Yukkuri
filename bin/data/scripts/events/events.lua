@@ -11,3 +11,6 @@ function Events:call(object, string)
 		Debug.print(Debug.SCRIPT, "Bad event name: '" .. string .. "' for object '" .. tostring(object) .. "'.")
 	end
 end
+
+function Events:init(unit)
+end

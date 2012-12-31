@@ -7,6 +7,7 @@
 
 #include "interface/Interface.h"
 #include "scripts/api/InterfaceApi.h"
+#include "scripts/LuaUtils.h"
 
 #include "types.h"
 #include "safestring.h"
@@ -34,6 +35,7 @@ int IfaceApi::loadWidget( lua_State* L )
 	}
 	return 1;
 }
+
 
 int IfaceApi::createWidget( lua_State* L )
 {
@@ -103,9 +105,6 @@ int IfaceApi::getWidgetByName( lua_State* L )
 	return 0;
 }
 
-#include "scripts/LuaScript.h"
-extern LuaScript* luaScript;
-
 
 int IfaceApi::addChild( lua_State* L )
 {
@@ -120,11 +119,14 @@ int IfaceApi::addChild( lua_State* L )
 	Widget* parent = NULL;
 	Widget* children = NULL;
 
+	OBJECT_FROM_LUA( 1, Interface::GetWidget, Widget*, parent )
+	/*
 	if( lua_isnumber( L, 1 ) ){
 		UINT id = static_cast<UINT>( lua_tointeger(L, 1) );
 		parent = Interface::GetWidget( id );
 	}else if( lua_isuserdata( L, 1 ) )
 		parent = reinterpret_cast<Widget*>( getUserData( L, 1 ) );
+	*/
 
 	if( !parent )
 		return 0;

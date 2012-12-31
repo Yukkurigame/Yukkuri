@@ -6,13 +6,13 @@
 
 Entity::Entity()
 {
-	target = NULL;
+	//target = NULL;
 }
 
 
 Entity::~Entity( )
 {
-	while( nextTarget() ) continue;
+	//while( nextTarget() ) continue;
 }
 
 
@@ -22,9 +22,10 @@ bool Entity::update( const Frame& frame )
 		case acMove:
 			move( );
 			break;
-		case acEAddPathTarget:
+		/*case acEAddPathTarget:
 			addTarget( );
 			break;
+		*/
 		default:
 			return UnitDynamic::update( frame );
 			break;
@@ -43,28 +44,33 @@ bool Entity::update( const Frame& frame )
 
 }
 
+/*
 void Entity::takeAction( )
 {
 	UnitDynamic::takeAction( );
-	/*if( Attacked && !Attacked->isDeleted() ){
+	if( Attacked && !Attacked->isDeleted() ){
 		if( dist(Attacked) < getUnitSize( ) * 100 ){
 			attackUnit( Attacked );
 		}
 	}
-	*/
+
 }
+*/
 
 /*	Add random target to path */
+/*
 void Entity::addTarget( )
 {
 	float x = getUnitX() + ( -150 + ( rand() % 300 ) );
 	float y = getUnitY() - ( -150 + ( rand() % 300 ) );
 	addTarget( x, y );
 }
+*/
 
+/*
 void Entity::move( )
 {
-	if( target == NULL && !nextTarget() ){
+	if( waytarget == NULL && !nextTarget() ){
 		Image.setFrame(0);
 		clearMoving();
 		if( physBody )
@@ -73,6 +79,7 @@ void Entity::move( )
 	}
 	force.x = 0;
 	force.y = 0;
-	if( !moveUnit(target->x, target->y) )
+	if( !moveUnit(waytarget->x, waytarget->y) )
 		nextTarget();
 }
+*/

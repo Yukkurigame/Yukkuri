@@ -20,8 +20,10 @@ actions = {
 			{ constants.acSetParam, constants.uBaseAge, 0 },
 			{ constants.acSetUnitPhysics, constants.pptRadius, 30 },
 			{ constants.acSetUnitSize, 35 },
-			{ constants.acDAddFood, constants.utPlant },
-			{ constants.acDAddFood, constants.utCorpse },
+			{ constants.acEmitEvent, "init" },
+			{ constants.acSetTimer, function(unit)
+				unit:emitEvent("action")
+			end, 1000, 0 },
 			{ constants.acRestoreState },
 			{ constants.acSetAction, "idle" },
 		},

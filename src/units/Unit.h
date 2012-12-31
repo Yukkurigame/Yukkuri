@@ -56,7 +56,6 @@ public:
 
 	float dist( Unit* );
 
-
 	bool setUnitName( std::string type );
 	void setUnitType( enum unitType type );
 	virtual void setUnitPos( float x, float y );
@@ -92,6 +91,7 @@ public:
 #undef GET_PARAM
 
 	// Function bindings
+	int dist( lua_State* L );
 	int color( lua_State* L );
 	int emitEvent( lua_State* L );
 	int getBuild( lua_State* L );

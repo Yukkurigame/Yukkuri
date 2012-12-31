@@ -1,4 +1,6 @@
 
+math.randomseed(os.time())
+
 -- Require all libraries needed in configs
 -- require("data/scripts/debugger")()
 require("data/scripts/console")

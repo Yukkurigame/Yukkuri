@@ -38,6 +38,8 @@ bool Yukkuri::Init()
 	Window.state = gsLoading;
 	currentFPS = 0.0;
 
+	srand(time(NULL));
+
 	Paths::init();
 
 	// Load key names for register in api

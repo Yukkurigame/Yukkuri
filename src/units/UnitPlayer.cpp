@@ -1,9 +1,9 @@
 
 #include "UnitPlayer.h"
-#include "config.h"
+//#include "config.h"
 
 
-extern MainConfig conf;
+//extern MainConfig conf;
 
 Player::Player()
 {
@@ -22,7 +22,7 @@ void Player::attack( )
 }
 */
 
-
+/*
 void Player::eat( )
 {
 	Unit* victim = NULL;
@@ -30,14 +30,16 @@ void Player::eat( )
 	if( victim )
 		UnitDynamic::eat( victim );
 }
+*/
 
-
+/*
 void Player::die( )
 {
 	if( conf.playerDies ){
 		UnitDynamic::die( );
 	}
 }
+*/
 
 bool Player::calculateForce( ){
 	if(force == cpvzero && physBody->v == cpvzero ){

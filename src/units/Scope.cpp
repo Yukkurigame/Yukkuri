@@ -38,7 +38,6 @@ bool Scope::attach( cpBody* target )
 	//cpConvexHull( 4, scopepoints, scopepos, NULL, 0.0 );
 
 	cpShape* scope = cpPolyShapeNew( target, 4, scopepos, cpvzero );
-	cpSpace* s = Phys::space;
 	shape = cpSpaceAddShape( Phys::space, scope );
 	cpShapeSetSensor( shape, cpTrue );
 	shape->collision_type = utAll;

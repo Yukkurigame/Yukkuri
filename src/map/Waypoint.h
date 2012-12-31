@@ -1,4 +1,17 @@
+#ifndef WAYPOINT_H
+#define WAYPOINT_H
+
 
 #include "basic_types.h"
 
-typedef s2f Waypoint;
+
+struct Waypoint
+{
+	s2f position;
+	int critical;
+	Waypoint() : position(), critical(0) {};
+	Waypoint( float X, float Y, int crit ) : position(X, Y), critical(crit) {};
+};
+
+
+#endif //WAYPOINT_H

@@ -82,12 +82,14 @@ void Binds::playerAttackUnit( short down )
 
 void Binds::playerEat( short down )
 {
+	/*
 	if( down )
 		return;
 	Player* player;
 	player = dynamic_cast<Player*>(UnitManager::GetPlayer());
 	if( player )
 		player->eat( );
+	*/
 }
 
 void Binds::screenshot( short down )

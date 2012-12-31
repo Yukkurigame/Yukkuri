@@ -6,9 +6,21 @@
  */
 #include "units/Unit.h"
 #include "units/UnitDynamic.h"
+#include "units/unitmanager.h"
 #include "scripts/Lua.h"
 #include "scripts/LuaScript.h"
+#include "scripts/LuaUtils.h"
 #include "safestring.h"
+
+
+int Unit::dist( lua_State* L )
+{
+	luaL_argcheck( L, lua_isnumber( L, 1 ) || lua_isuserdata( L, 1 ), 1,
+					"Unit object or id expected" );
+	Unit* u = NULL;
+	OBJECT_FROM_LUA( 1, UnitManager::GetUnit, Unit*, u )
+	return pushToLua( L, dist(u) );
+}
 
 
 int Unit::color( lua_State* L )
@@ -96,6 +108,24 @@ int Unit::setAction( lua_State* L )
 	if( !change )
 		Actions.saveState( true );
 	Actions.setAction( action );
+
+	return 0;
+}
+
+
+int UnitDynamic::addPathTarget( lua_State* L )
+{
+	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "X position expected" );
+	luaL_argcheck( L, lua_isnumber( L, 2 ), 2, "Y position expected" );
+	luaL_argcheck( L, lua_isnone( L, 3 ) || lua_isnumber( L, 3 ), 3, "Number or none expected" );
+
+	float x = lua_tonumber( L, 1 );
+	float y = lua_tonumber( L, 2 );
+	int crit = lua_tointeger( L, 3 );
+
+	lua_pop( L, lua_gettop(L) );
+
+	addTarget( x, y, crit );
 
 	return 0;
 }

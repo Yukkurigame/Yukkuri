@@ -124,12 +124,15 @@ void RegisterAllTypeMetatables(lua_State* L)
 		EXEC_NORET_METHOD_DECL(emitEvent)				\
 		EXEC_NORET_METHOD_DECL(setAction)				\
 		EXEC_NORET_METHOD_DECL(getBuild)				\
+		EXEC_NORET_METHOD_DECL(dist)					\
 		EXEC_NORET_METHOD_DECL(color)
 
 #define DECL_UNITSTATIC_METH
 
 #define DECL_UNITDYNAMIC_METH							\
 		GETSET_FLAG_METHOD_DECL(Scope)					\
+		GETSET_FLAG_METHOD_DECL(Moving)					\
+		EXEC_NORET_METHOD_DECL(addPathTarget)			\
 		EXEC_NORET_METHOD_DECL(getClosest)
 
 #define DECL_UNITENTITY_METH
@@ -206,6 +209,7 @@ DECL_CHARBUILD_METH
 		EXEC_METHOD_ENTRY(ID, emitEvent)		\
 		EXEC_METHOD_ENTRY(ID, setAction)		\
 		EXEC_METHOD_ENTRY(ID, getBuild)			\
+		EXEC_METHOD_ENTRY(ID, dist)				\
 		EXEC_METHOD_ENTRY(ID, color)
 
 #define UNITSTATIC_METH_ENTRY(ID)				\
@@ -214,6 +218,8 @@ DECL_CHARBUILD_METH
 #define UNITDYNAMIC_METH_ENTRY(ID)				\
 		UNIT_METH_ENTRY(ID)						\
 		GETSET_METHOD_ENTRY(ID, Scope)			\
+		GETSET_METHOD_ENTRY(ID, Moving)			\
+		EXEC_METHOD_ENTRY(ID, addPathTarget)	\
 		EXEC_METHOD_ENTRY(ID, getClosest)
 
 #define UNITENTITY_METH_ENTRY(ID)				\

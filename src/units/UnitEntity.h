@@ -2,8 +2,8 @@
 #define ENTITY_H
 
 #include "units/UnitDynamic.h"
-#include "map/Waypoint.h"
-#include <queue>
+//#include "map/Waypoint.h"
+//#include <queue>
 
 
 class Entity: public UnitDynamic
@@ -13,12 +13,12 @@ public:
 	~Entity( );
 
 	bool update( const Frame& f );
-	void takeAction( );
-	void move( );
+	//void takeAction( );
+	//void move( );
 	/*	Add new random target to path */
-	void addTarget( );
+	//void addTarget( );
 	/*	Add new target to path */
-	inline void addTarget( float x, float y ){
+	/*inline void addTarget( float x, float y ){
 		path.push( new Waypoint( x, y ) );
 	}
 	inline bool nextTarget( ){
@@ -32,14 +32,16 @@ public:
 		path.pop();
 		return true;
 	}
+	*/
 
 protected:
 	virtual CUData* createUData();
 
-
+/*
 private:
 	std::queue < Waypoint* > path;
 	Waypoint* target;
+*/
 
 };
 

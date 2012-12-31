@@ -5,6 +5,7 @@
  *
  */
 #include "scripts/api/UnitManagerApi.h"
+#include "scripts/LuaUtils.h"
 #include "units/unitmanager.h"
 
 #include "safestring.h"
@@ -44,15 +45,17 @@ int UMApi::createUnit( lua_State* L )
 
 int UMApi::deleteUnit( lua_State* L )
 {
-	Unit* u = NULL;
-
 	luaL_argcheck( L, lua_isnumber( L, 1 ) || lua_isuserdata( L, 1 ), 1, "Unit expected" );
 
-	if( lua_isnumber( L, 1 ) ){
+	Unit* u = NULL;
+
+	OBJECT_FROM_LUA( 1, UnitManager::GetUnit, Unit*, u )
+	/*if( lua_isnumber( L, 1 ) ){
 		UINT id = static_cast<UINT>( lua_tointeger(L, 1) );
 		u = UnitManager::GetUnit( id );
 	}else
 		u = reinterpret_cast<Unit*>( getUserData( L, 1 ) );
+	*/
 
 	lua_pop( L, 1 );
 

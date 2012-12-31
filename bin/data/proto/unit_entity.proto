@@ -1,6 +1,9 @@
 
 parent = "unit_sane"
 
+require("data/scripts/events/unit_entity")
+
+
 physics = {
 	shape = constants.potCircle,
 	static = false,
@@ -11,6 +14,7 @@ actions = {
 		name = "init",
 		frames = {
 			{ constants.acSuper },
+			{ constants.acBindEvent, UnitEntity.call, UnitEntity },
 			{ constants.acSetAction, "idle" },
 		},
 	},
@@ -18,17 +22,8 @@ actions = {
 		name = "idle",
 		frames = {
 			{ constants.acSuper, skip = 100 },
-			{ constants.acSuper, "check", skip = 5000 },
 			{ constants.acNone, dur = 100 },
 			{ constants.acSetAction }
 		}
 	},
-	{
-		name = "check",
-		frames = {
-			{ constants.acIfNotFlag, constants.ufMoving },
-				{ constants.acEAddPathTarget },
-			{ constants.acEnd },
-		}
-	}
 }

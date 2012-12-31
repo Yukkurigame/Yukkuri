@@ -1,6 +1,11 @@
 
 parent = "unit_plant"
 
+physics = {
+	shape = constants.potCircle,
+	static = true,
+}
+
 actions = {
 	{
 		name = "init",

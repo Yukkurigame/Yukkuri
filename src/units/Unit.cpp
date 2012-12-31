@@ -115,7 +115,10 @@ bool Unit::Create( int id, std::string proto )
 			break;
 	}
 	if( shape != NULL ){
-		physShape = cpSpaceAddShape( Phys::space, shape );
+		if( Actions.proto->statical )
+			physShape = cpSpaceAddStaticShape( Phys::space, shape );
+		else
+			physShape = cpSpaceAddShape( Phys::space, shape );
 		physShape->collision_type = UnitType;
 	}
 
@@ -234,7 +237,7 @@ bool Unit::update( const Frame& frame )
 			}
 			break;
 		case acSetTimer:
-			if( Actions.checkFrameParams( frame, 2, stFunction, stInt ) ){
+			if( Actions.checkFrameParams( frame, 3, stFunction, stInt, stIntOrNone ) ){
 				ActionTimer* timer = actionTimers;
 				const Frame* pframe = &frame;
 				while( timer != NULL ){
@@ -255,9 +258,14 @@ bool Unit::update( const Frame& frame )
 							timer = timer->next;
 						}
 					}
+					int period = frame.params[1].intData;
+					int calls = 1;
+					if( Actions.checkFrameParams( frame, 2, stFunction, stInt ) )
+						calls = frame.params[2].intData;
 					IActionTimer* t = new IActionTimer( this, param.intData );
 					actionTimers = new ActionTimer( pframe, t, actionTimers );
-					actionTimers->timerId = Timer::AddInternalTimerEvent( t, frame.params[1].intData );
+					actionTimers->timerId = Timer::AddInternalTimerEvent(
+							t, period, period, calls, (calls == 1) ? false : true, false );
 				}
 			}
 			break;
@@ -522,6 +530,8 @@ void Unit::setUnitPos( float x, float y )
 	cpVect v = {x, y};
 	cpBodySetPos( physBody, v );
 	Image.setPosition( x, y, Z );
+	if( cpBodyIsStatic(physBody) && phys.type != potNone )
+		cpSpaceReindexShape( Phys::space, physShape );
 }
 
 

@@ -30,10 +30,12 @@ UnitDynamic::UnitDynamic()
 	currentTile = -1;
 	force.x = 0;
 	force.y = 0;
+	waytarget = NULL;
 }
 
 UnitDynamic::~UnitDynamic()
 {
+	while( nextTarget() ) continue;
 }
 
 
@@ -49,8 +51,8 @@ bool UnitDynamic::Create( int id, std::string proto )
 	return true;
 }
 
-/** Set unit's desire location.
-**/
+
+/* Set unit's desire location. */
 bool UnitDynamic::moveUnit( signed int x, signed int y )
 {
 	this->target.x = x;
@@ -58,6 +60,10 @@ bool UnitDynamic::moveUnit( signed int x, signed int y )
 	return calculateForce();
 }
 
+
+/* Calculates inner force acting on the unit
+ * returns false if unit does not moves
+ */
 bool UnitDynamic::calculateForce( )
 {
 	force = cpvzero;
@@ -68,8 +74,6 @@ bool UnitDynamic::calculateForce( )
 	if( abs(ny) > phys.radius * 3 )
 		force.y = ny / abs(ny);
 	if( force == cpvzero && physBody->v == cpvzero ){
-		//cpBodyResetForces( physBody );
-		//cpBodySetVel( physBody, cpvzero );
 		clearMoving();
 		return false;
 	}
@@ -77,6 +81,8 @@ bool UnitDynamic::calculateForce( )
 	return true;
 }
 
+
+/*	Calculates movement physics and applies it to unit physics body */
 void UnitDynamic::applyForce( const int& dt )
 {
 	// Total force delta
@@ -101,9 +107,64 @@ void UnitDynamic::applyForce( const int& dt )
 }
 
 
+/*
+void UnitDynamic::addTarget( )
+{
+	float x = getUnitX() + ( -150 + ( rand() % 300 ) );
+	float y = getUnitY() - ( -150 + ( rand() % 300 ) );
+	addTarget( x, y );
+}
+*/
+
+
+/*	Add target to unit path
+ *  Unit path is the set of waypoints sorted by criticalness of point
+ *  Unit moves to more critical locations first.
+ */
+void UnitDynamic::addTarget( float x, float y, int critical )
+{
+	Waypoint* w = new Waypoint( x, y, critical );
+	if( !critical ){
+		path.push_back( w );
+		return;
+	}
+	listElement< Waypoint* >* le = path.head;
+	listElement< Waypoint* >* prev = NULL;
+	while( le != NULL ){
+		if( le->data->critical < critical )
+			break;
+		prev = le;
+		le = le->next;
+	}
+	path.insert( w, prev );
+}
+
+
+/*	Check if new waypoint is available */
+void UnitDynamic::move( )
+{
+	if( waytarget == NULL && !nextTarget() ){
+		Image.setFrame(0);
+		clearMoving();
+		if( physBody )
+			cpBodySetVel( physBody, cpvzero );
+		return;
+	}
+	force.x = 0;
+	force.y = 0;
+	// Check if unit needs to drop anything and go to new point
+	if( path.head && waytarget->critical < path.head->data->critical )
+		nextTarget();
+	// Check if unit is already reach desired location
+	if( !moveUnit(waytarget->position.x, waytarget->position.y) )
+		nextTarget();
+}
+
+
+/*
 void UnitDynamic::eat( Unit* victim )
 {
-	/*float dmg = Char.getDamage();
+	float dmg = Char.getDamage();
 	victim->hit( dmg );
 	if( Char.state.fed >= 80 && Char.state.fed < 100 && Char.state.hp < Char.params.hp ){
 		float hpAdd = dmg / Char.level;
@@ -128,12 +189,13 @@ void UnitDynamic::eat( Unit* victim )
 		else
 			Char.state.fed += fedAdd;
 	}
-	*/
 }
+*/
 
+/*
 void UnitDynamic::die( )
 {
-	/*
+
 	Corpse* corpse;
 
 	corpse = dynamic_cast<Corpse*>( UnitManager::CreateUnit( utCorpse, getUnitX(), getUnitY() ) );
@@ -157,8 +219,8 @@ void UnitDynamic::die( )
 				(float)this->Attacked->getUnitParameter( uBaseKills ) + 1.0f );
 	}
 	this->setDeleted();
-	*/
 }
+*/
 
 
 void UnitDynamic::update( const int& dt )
@@ -197,18 +259,18 @@ bool UnitDynamic::update( const Frame& frame )
 	return true;
 }
 
-
+/*
 void UnitDynamic::takeAction( )
 {
 	Char.tire();
-	/*
 	if( Attacked ){
 		if( Attacked->isDeleted() || Attacked->getUnitParameter( uStateHP ) <= 0 || dist(Attacked) >= 1000 ){
 			Attacked = NULL;
 		}
 	}
-	*/
+
 }
+*/
 
 
 void UnitDynamic::updateAnimOnMovement( cpBody* body, cpFloat dt )

@@ -26,7 +26,6 @@ Player = UnitManager.getPlayer()
 Camera.setTarget(player)
 
 
-
 local stats = Interface.createWidget("widget_stats_98072", constants.wtBlank, {
 		name = "stats", image = "sprite_widget_stats_909956",
 		align = bit.bor(constants.waLEFT, constants.waTOP),

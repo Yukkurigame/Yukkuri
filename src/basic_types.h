@@ -129,6 +129,19 @@ struct list
 	void push( T data ){
 		head = new listElement<T>( data, head );
 	}
+	void push_back( T data )
+	{
+		listElement<T>* t = head;
+		while( t && t->next )
+			t = t->next;
+		insert( t, data );
+	}
+	void insert( listElement<T>* prev, T data ){
+		if( !prev )
+			push(data);
+		else
+			prev->next = new listElement<T>( data, prev->next );
+	}
 	void clear( ){
 		listElement<T>* t = head;
 		if( !t )

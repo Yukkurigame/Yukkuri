@@ -28,7 +28,7 @@ float CharBuild::set( lua_State* L )
 
 int CharBuild::tire( lua_State* L )
 {
-	luaL_argcheck( L, lua_isnil( L, 1 ) || lua_isnumber( L, 1 ), 1, "Value or nil excepted" );
+	luaL_argcheck( L, lua_isnone( L, 1 ) || lua_isnumber( L, 1 ), 1, "Value or nil excepted" );
 	tire( lua_tonumber( L, 1 ) );
 	return 0;
 }
@@ -36,7 +36,7 @@ int CharBuild::tire( lua_State* L )
 
 int CharBuild::levelUp( lua_State* L )
 {
-	luaL_argcheck( L, lua_isnil( L, 1 ) || lua_isnumber( L, 1 ), 1, "Value or nil excepted" );
+	luaL_argcheck( L, lua_isnone( L, 1 ) || lua_isnumber( L, 1 ), 1, "Value or nil excepted" );
 	int l = lua_tonumber( L, 1 );
 	levelUp( l ? l : 1 );
 	return level;

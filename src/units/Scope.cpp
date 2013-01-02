@@ -109,7 +109,8 @@ Unit* Scope::closest( int type, float limit )
 	while( tmp != NULL ){
 		Unit* target = tmp->data;
 		if( target && target != self && ( target->getUnitType() & type ) ){
-			float dis = cpvlength( cpvsub( p, target->getUnitPos() ));
+			const s2f& tp = target->getUnitPos();
+			float dis = cpvlength( cpvsub( p, cpv( tp.x, tp.y ) ));
 			if( dis < limit && dis < distance ){
 				distance = dis;
 				ret = tmp->data;

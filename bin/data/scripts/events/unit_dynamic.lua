@@ -16,8 +16,10 @@ function UnitDynamic:action(unit)
 end
 
 
-function UnitDynamic:attack(unit)
-	local closest = unit:getClosest(constants.utDynamic, 120.0)
+function UnitDynamic:attack(unit, closest)
+	if closest == nil then
+		closest = unit:getClosest(constants.utDynamic, 120.0)
+	end
 	unit:getBuild():tire(0.1)
 	if closest ~= nil then
 		closest.storage['attacker'] = unit

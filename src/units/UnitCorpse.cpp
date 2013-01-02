@@ -31,6 +31,7 @@ bool Corpse::Create( int id, std::string proto )
 	return true;
 }
 
+/*
 void Corpse::setUnitPos( float x, float y )
 {
 	UnitStatic::setUnitPos( x, y );
@@ -39,3 +40,4 @@ void Corpse::setUnitPos( float x, float y )
 		blood->resize( Image.getWidth() * getUnitSize(), Image.getHeight() * getUnitSize() );
 	}
 }
+*/

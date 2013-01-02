@@ -113,6 +113,7 @@ void RegisterAllTypeMetatables(lua_State* L)
 // Units
 #define DECL_UNIT_METH									\
 		GETSETF_METHOD_DECL(UnitName)					\
+		GETSETF_METHOD_DECL(UnitPos)					\
 		GETSETF_METHOD_DECL(UnitX)						\
 		GETSETF_METHOD_DECL(UnitY)						\
 		GETSETF_METHOD_DECL(UnitZ)						\
@@ -198,6 +199,7 @@ DECL_CHARBUILD_METH
 // Units
 #define UNIT_METH_ENTRY(ID)						\
 		GETSET_METHOD_ENTRY(ID, UnitName)		\
+		GETSET_METHOD_ENTRY(ID, UnitPos)		\
 		GETSET_METHOD_ENTRY(ID, UnitX)			\
 		GETSET_METHOD_ENTRY(ID, UnitY)			\
 		GETSET_METHOD_ENTRY(ID, UnitZ)			\

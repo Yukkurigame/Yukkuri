@@ -12,6 +12,7 @@
 
 #include "3rdparty/LuaPusher.h"
 #include "scripts/Lua.h"
+#include "basic_types.h"
 #include "assert.h"
 #include <cstring>
 #include "types.h"
@@ -395,6 +396,67 @@ bool CHINP_TESTER<std::wstring>( lua_State* L, int idx )
 	return lua_isstring(L, idx) != 0;
 }
 
+
+// s2f
+template <>
+int pushToLua(lua_State* L, s2f const& val)
+{
+	const float* p[2] = { &val.x, &val.y };
+	const char* pc[2] = { "x", "y" };
+	lua_newtable(L);
+	for( int i=0; i<2; ++i ){
+		lua_pushstring( L, pc[i] );
+		lua_pushnumber( L, *p[i] );
+		lua_settable(L, -3);
+	}
+	return 1;
+}
+
+template<>
+s2f const getFromLua(lua_State* L, int idx)
+{
+	s2f ret;
+	float* r[2] = { &ret.x, &ret.y };
+	lua_pop(L, 1); // stack: vector
+	for( int i = 1; i < 3; ++i ){
+		lua_pushnumber(L, i);
+		lua_gettable(L, -2);
+		getFromLua( L, -1, *r[i] );
+		lua_pop(L, 1);
+	}
+	return ret;
+}
+
+template<>
+void getFromLua(lua_State* L, int idx, s2f& val)
+{
+	float* r[2] = { &val.x, &val.y };
+	lua_pop(L, 1); // stack: vector
+	for( int i = 1; i < 3; ++i ){
+		lua_pushnumber(L, i);
+		lua_gettable(L, -2);
+		getFromLua( L, -1, *r[i] );
+		lua_pop(L, 1);
+	}
+}
+
+template<>
+bool CHINP_TESTER<s2f>(lua_State* L, int idx)
+{
+	if( lua_istable( L, idx ) && luaL_getn( L, idx ) == 2 ){
+		for( int i = 1; i < 3; ++i ){
+			lua_pushnumber(L, i);
+			lua_gettable(L, -2);
+			if( lua_isnumber( L, -1 ) == 0 ){
+				lua_pop(L, 1);
+				return false;
+			}
+			lua_pop(L, 1);
+		}
+		return true;
+	}
+	return false;
+}
 
 //void
 template <>

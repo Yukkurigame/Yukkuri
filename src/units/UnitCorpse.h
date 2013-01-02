@@ -17,7 +17,7 @@ public:
 
 	bool Create( int id, std::string proto );
 
-	void setUnitPos( float x, float y );
+	//void setUnitPos( float x, float y );
 
 	void setBloodColor( int c ) {
 		//if( blood ) blood->clr.set( c );

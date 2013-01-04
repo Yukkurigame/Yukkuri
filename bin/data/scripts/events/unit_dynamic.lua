@@ -6,7 +6,7 @@ UnitDynamic = class(Events)
 
 function UnitDynamic:init(unit)
 	self:super( ):init(unit)
-	unit.storage.foodTypes = bit.bor(constants.utPlant, constants.utCorpse)
+	unit:storage().foodTypes = bit.bor(constants.utPlant, constants.utCorpse)
 end
 
 
@@ -22,7 +22,7 @@ function UnitDynamic:attack(unit, closest)
 	end
 	unit:getBuild():tire(0.1)
 	if closest ~= nil then
-		closest.storage['attacker'] = unit
+		closest:storage().attacker = unit
 		self:hit(closest, unit)
 	end
 	-- Attack animation
@@ -31,7 +31,7 @@ end
 
 function UnitDynamic:hit(unit, attacker)
 	unit:setAction("hit")
-	unit.storage['lasthit'] = attacker
+	unit:storage().lasthit = attacker
 	if attacker ~= nil then
 		local damage = 0
 		if type(attacker) == "userdata" then
@@ -47,7 +47,7 @@ end
 
 
 function UnitDynamic:eat(unit)
-	local closest = unit:getClosest(unit.storage.foodTypes, 120.0)
+	local closest = unit:getClosest(unit:storage().foodTypes, 120.0)
 	unit:getBuild():tire(0.1)
 	if closest ~= nil then
 		self:consume(unit, closest)
@@ -102,8 +102,8 @@ function UnitDynamic:die(unit)
 	cbuild:set(constants.uParamHP,
 		ubuild:get(constants.uParamHP) * ubuild:get(constants.uParamFed) / 100)
 
-	if unit.storage['lasthit'] then
-		local lbuild = unit.storage['lasthit']:getBuild()
+	if unit:storage().lasthit then
+		local lbuild = unit:storage().lasthit:getBuild()
 		lbuild:set(constants.uStateExp, lbuild:get(constants.uStateExp) +
 			ubuild:get(constants.uParamHP) / ubuild:get(constants.uBaseLevel))
 		lbuild:set(constants.uBaseKills, lbuild:get(constants.uBaseKills) + 1)

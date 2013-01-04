@@ -25,6 +25,8 @@ public:
 	int pushUData( lua_State* L );
 	virtual ~CUDataUser( );
 
+	int pushUStorage( lua_State* L );
+
 
 protected:
 	virtual CUData* createUData( ) = 0;

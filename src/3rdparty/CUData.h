@@ -22,14 +22,17 @@ class CUData
 public:
 
 	CUData(CUDataUser* pUser) :
-		pUser(pUser), regRef(-1) { }
+		pUser(pUser), regRef(-1), storage(-1) { }
 
 	CUDataUser* getUser() const { return pUser; }
 	void clearUser();
 	void onGC();
 
 	const LuaRegRef& getRegRef() const { return regRef; }
-	void setRegRef(const LuaRegRef& ref) { regRef = ref; }
+	void setRegRef( const LuaRegRef& ref ) { regRef = ref; }
+
+	const LuaRegRef& getStorage() const { return storage; }
+	void setStorage( const LuaRegRef& ref ) { storage = ref; }
 
 
 private:
@@ -37,6 +40,7 @@ private:
 
 	// Reference to userdata in lua registry. Registry is in standard lua state "lua", created on lua initialization.
 	LuaRegRef regRef;
+	LuaRegRef storage;
 
 	CUData(CUData& ref);
 	CUData& operator=(CUData& ref);

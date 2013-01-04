@@ -148,7 +148,7 @@ int LuaScript::ExecChunkFromReg( LuaRegRef r, UINT args )
 
 std::string to_string( lua_State* L, int idx )
 {
-	std::string s;
+	std::string s = "";
 	char buf[20];
 
 	int t = lua_type( L, idx );

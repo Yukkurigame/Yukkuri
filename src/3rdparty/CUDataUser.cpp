@@ -38,6 +38,19 @@ int CUDataUser::pushUData( lua_State* L )
 	return 0;
 }
 
+int CUDataUser::pushUStorage( lua_State* L )
+{
+	if( !pUdata )
+		return 0;
+	extern LuaScript* luaScript;
+	if( pUdata->getStorage() < 0 ){
+		lua_newtable( L );
+		pUdata->setStorage( luaScript->AddToRegistry() );
+	}
+	luaScript->GetFromRegistry( L, pUdata->getStorage() );
+	return 1;
+}
+
 
 CUDataUser* getUserData( lua_State* L, int idx )
 {
@@ -48,3 +61,5 @@ CUDataUser* getUserData( lua_State* L, int idx )
 		return NULL;
 	return ud->getUser();
 }
+
+

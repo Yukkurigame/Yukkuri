@@ -133,6 +133,16 @@ int object_present(lua_State* L)
 	return 1;
 }
 
+template <typename T>
+int ud_storage(lua_State* L)
+{
+	CUData* ud = check_userdata<T>( L,  1);
+	if( !ud->getUser() )
+		return 0;
+	return ud->getUser()->pushUStorage( L );
+}
+
+
 #include "3rdparty/CUDataMacro.h"
 #include "3rdparty/CUDataMacroExt.h"
 
@@ -154,11 +164,8 @@ void RegisterTypeMetatable(lua_State* L)
 	lua_newtable( L );                        // st: mt
 	lua_pushstring( L, "__index" );           // st: mt __index
 	lua_pushvalue( L, -2 );                   // st: mt __index mt
-	lua_settable( L, -3 );     /* metatable.__index = metatable */
+	lua_settable( L, -3 );    				  /* metatable.__index = metatable */
 	// st: mt
-	lua_pushstring( L, "storage" );           // st: mt storage
-	lua_newtable( L );                        // st: mt storage table
-	lua_settable( L, -3 );     /* metatable.storage = table */
 
 	luaL_register( L, NULL, ud_meta[UD_TYPE_ID(T)] );
 	UD_META_REF(T) = luaScript->AddToRegistry();

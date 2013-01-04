@@ -259,9 +259,10 @@
 
 
 // Standard methods for metatble
-#define STD_METHODS(i)                                                   \
-	{ "__gc",       &on_gc<TL::TypeAt<ClassesList, i>::Result> },        \
-	{ "__tostring", &on_tostring<TL::TypeAt<ClassesList, i>::Result> },   \
+#define STD_METHODS(i)														\
+	{ "__gc",       &on_gc<TL::TypeAt<ClassesList, i>::Result> },			\
+	{ "__tostring", &on_tostring<TL::TypeAt<ClassesList, i>::Result> },		\
+	{ "storage", &ud_storage<TL::TypeAt<ClassesList, i>::Result> },			\
 	{ "object_present", &object_present<TL::TypeAt<ClassesList, i>::Result> }
 
 // Sentinel

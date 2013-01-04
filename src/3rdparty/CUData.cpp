@@ -11,6 +11,8 @@
 #include "3rdparty/CUDataUser.h"
 #include "scripts/LuaScript.h"
 
+extern LuaScript* luaScript;
+
 void CUData::onGC()
 {
 	if(pUser){
@@ -22,8 +24,8 @@ void CUData::onGC()
 void CUData::clearUser()
 {
 	pUser = NULL;
-	extern LuaScript* luaScript;
 	luaScript->RemoveFromRegistry(regRef);
+	luaScript->RemoveFromRegistry(storage);
 }
 
 

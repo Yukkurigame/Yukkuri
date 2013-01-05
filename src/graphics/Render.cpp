@@ -70,6 +70,7 @@ namespace {
 
 	int atlasWidth, atlasHeight;
 	GLuint atlasHandle;
+	GLuint normalsHandle;
 
 	void TestDrawAtlas(int x, int y, GLuint atlas)
 	{
@@ -226,16 +227,18 @@ bool RenderManager::LoadTextures( )
 
 	delete lc;
 	// load basic textures to main atlas
-	return TextureAtlas::create( &atlasHandle, atlasWidth, atlasHeight );
+	return TextureAtlas::create( &atlasHandle, &normalsHandle, atlasWidth, atlasHeight );
 }
 
 
-int RenderManager::PushTexture( TextureProxy* proxy, GLuint atlas )
+int RenderManager::PushTexture( TextureProxy* proxy, GLuint atlas, GLuint normals )
 {
 	textures = (TextureInfo*)realloc(textures, (unsigned)sizeof(TextureInfo) * ( 1 + texturesCount ) );
-	textures[texturesCount].fromTextureProxy( proxy, atlas );
-	textures[texturesCount].id = new char[proxy->id.size() + 1];
-	strcpy(textures[texturesCount].id, proxy->id.c_str());
+	TextureInfo& ti = textures[texturesCount];
+	ti.fromTextureProxy( proxy, atlas );
+	ti.id = new char[proxy->id.size() + 1];
+	ti.normals = normals;
+	strcpy(ti.id, proxy->id.c_str());
 	// Update sprites
 	FOREACHIT( GLSprites )
 		(*it)->tex = &textures[(*it)->texid];
@@ -243,15 +246,17 @@ int RenderManager::PushTexture( TextureProxy* proxy, GLuint atlas )
 }
 
 
-void RenderManager::PushTextures( std::vector < TextureProxy* >& tarray, GLuint atlas )
+void RenderManager::PushTextures( std::vector < TextureProxy* >& tarray, GLuint atlas, GLuint normals )
 {
 	int tcount = tarray.size();
 	textures = (TextureInfo*)realloc(textures, (unsigned)sizeof(TextureInfo) * ( tcount + texturesCount ) );
 	for( int i = 0; i < tcount; ++i ){
 		TextureProxy* proxy = tarray.at( i );
-		textures[texturesCount].fromTextureProxy( proxy, atlas );
-		textures[texturesCount].id = new char[proxy->id.size() + 1];
-		strcpy(textures[texturesCount].id, proxy->id.c_str());
+		TextureInfo& ti = textures[texturesCount];
+		ti.fromTextureProxy( proxy, atlas );
+		ti.id = new char[proxy->id.size() + 1];
+		ti.normals = normals;
+		strcpy(ti.id, proxy->id.c_str());
 		texturesCount++;
 	}
 	// Update sprites
@@ -306,6 +311,7 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 	}else{
 		sprite->tex = &textures[texture_id];
 		sprite->atlas = sprite->tex->atlas;
+		sprite->normals = sprite->tex->normals;
 	}
 
 	sprite->resize( (float)width, (float)height );
@@ -391,9 +397,9 @@ void RenderManager::DrawGLScene()
 
 	//VBOStructureHandle* temp = NULL;
 	//int count = 0;
-	VBOStructureHandle* vbostructure = TextureArray::prepareVBO( /*&count,*/ GLSprites /*, verticles*/ );
+	VBOStructureHandle* vbostructure = TextureArray::prepareVBO( GLSprites );
 
-	GLHelpers::DrawVBO( VBOHandle, /*count, */ vbostructure /*, verticles */ );
+	GLHelpers::DrawVBO( VBOHandle, vbostructure );
 
 	//TestDrawAtlas(-2500, -1000, 10);
 

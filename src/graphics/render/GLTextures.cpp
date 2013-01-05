@@ -59,6 +59,7 @@ Texture* GLTextures::load( std::string name )
 {
 	Texture* tex;
 	SDL_Surface* surface;
+	SDL_Surface* normals;
 
 	if( name == "" )
 		return NULL;
@@ -68,21 +69,29 @@ Texture* GLTextures::load( std::string name )
 	if( !tex ){
 
 		surface = SDLGraphics::LoadImage( name.c_str() );
+		normals = SDLGraphics::LoadImage( ("normals/" + name).c_str(), false );
+
 
 		if( !surface ){
 			Debug::debug( Debug::GRAPHICS, name + " not loaded.\n" );
 			return NULL;
 		}
 
+		if( normals )
+			Debug::debug( Debug::GRAPHICS, name + " normals loaded.\n" );
+
 		tex = new Texture();
 		tex->tex = SDLGraphics::CreateGlTexture( surface );
+		tex->normals = SDLGraphics::CreateGlTexture( normals );
 		tex->w = surface->w;
 		tex->h = surface->h;
 
-		add( name,  tex );
+		add( name, tex );
 
 		if( surface )
 			SDL_FreeSurface( surface );
+		if( normals )
+			SDL_FreeSurface( normals );
 	}
 
 	return tex;

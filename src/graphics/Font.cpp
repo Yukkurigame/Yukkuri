@@ -151,7 +151,7 @@ bool font_data::load( const char * fname, unsigned int height ) {
 	// Add texture to render manager
 	TextureAtlas::addTexture( name, tex, sw, sh, cols, rows, 0, lastLine );
 	// Build texture atlas
-	TextureAtlas::create( &atlasHandle, w, h );
+	TextureAtlas::create( &atlasHandle, NULL, w, h );
 	lastLine += rows * cellHeight;
 	delete tex;
 

@@ -18,7 +18,7 @@ namespace SDLGraphics {
 
 	GLuint CreateGlTexture( SDL_Surface* );
 
-	SDL_Surface* LoadImage( const char* );
+	SDL_Surface* LoadImage( const char*, bool force=true );
 	SDL_Surface* OpenImage( const char* );
 
 	void DrawSurface( SDL_Surface* surface );

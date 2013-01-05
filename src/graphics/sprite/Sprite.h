@@ -18,6 +18,7 @@ struct Sprite
 	unsigned int texid;
 	unsigned int picture;
 	GLuint atlas;		// Texture atlas, same as in tex probably
+	GLuint normals;		// Texture normal map, same as in tex probably
 	unsigned int flags; // 1 - visible
 						// 2 - centred
 						// 4 - fixed
@@ -39,21 +40,22 @@ struct Sprite
 
 	Sprite() : rect(), brush( prQUADS, 0 ) {
 		tex = NULL;
-		picture = atlas = texid = 0;
+		picture = atlas = normals = texid = 0;
 		flags = 1; // visible only
 		shader = 0;
 	}
 
 	Sprite( enum primitives shape, short centered ) : rect(), brush( shape, centered ){
 		tex = NULL;
-		picture = atlas = texid = 0;
+		picture = atlas = normals = texid = 0;
 		flags = 1; // visible only
 		shader = 0;
 	}
 
 	Sprite( Sprite* src ) : texid(src->texid), picture(src->picture),
-		atlas(src->atlas), flags(src->flags), shader(src->shader),
-		rect(src->rect), tex(src->tex), brush(src->brush) { }
+		atlas(src->atlas), normals(src->normals), flags(src->flags),
+		shader(src->shader), rect(src->rect), tex(src->tex),
+		brush(src->brush) { }
 
 	void setPicture( int pic );
 

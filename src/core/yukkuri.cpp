@@ -17,6 +17,7 @@
 #include "config.h"
 #include "debug.h"
 #include "misc.h"
+#include "time.h"
 
 
 namespace {

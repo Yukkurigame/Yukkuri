@@ -25,9 +25,9 @@ namespace TextureAtlas
 
 	bool buildMap( int& width, int& height );
 	bool buildRelativeMap( float width, float height );
-	bool build( GLuint* ahandle, int width, int height );
+	bool build( GLuint* ahandle, GLuint* nhandle, int width, int height );
 
-	bool create( GLuint* ahandle, int& width, int& height );
+	bool create( GLuint* ahandle, GLuint* nhandle, int& width, int& height );
 
 }
 

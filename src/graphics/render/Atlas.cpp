@@ -126,9 +126,9 @@ bool TextureAtlas::buildRelativeMap( float width, float height ){
 }
 
 
-bool TextureAtlas::build( GLuint* ahandle, int width, int height )
+bool TextureAtlas::build( GLuint* ahandle, GLuint* nhandle, int width, int height )
 {
-	return TextureArray::drawToNewGLTexture( ahandle, width, height, internalTextures );
+	return TextureArray::drawToNewGLTexture( ahandle, nhandle, width, height, internalTextures );
 }
 
 
@@ -139,7 +139,7 @@ inline bool compareTextureProxies( TextureProxy* t1, TextureProxy* t2 )
 }
 
 
-bool TextureAtlas::create( GLuint* ahandle, int& width, int& height )
+bool TextureAtlas::create( GLuint* ahandle, GLuint* nhandle, int& width, int& height )
 {
 	if( internalTextures.size() < 1 ){
 		Debug::debug( Debug::GRAPHICS, "Textures is missing.\n" );
@@ -152,13 +152,13 @@ bool TextureAtlas::create( GLuint* ahandle, int& width, int& height )
 		Debug::debug( Debug::GRAPHICS, "Cannot build atlas map.\n" );
 		return false;
 	}
-	if( !build( ahandle, width, height ) ){
+	if( !build( ahandle, nhandle, width, height ) ){
 		Debug::debug( Debug::GRAPHICS, "Cannot draw atlas.\n" );
 		return false;
 	}
 
 	// Push textures to render and clear array
-	RenderManager::PushTextures( internalTextures, *ahandle );
+	RenderManager::PushTextures( internalTextures, *ahandle, nhandle ? *nhandle : 0 );
 	clear_vector( &internalTextures );
 
 	return true;

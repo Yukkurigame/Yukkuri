@@ -65,6 +65,7 @@ struct VertexV2FT2FC4UI
 struct Texture
 {
 	GLuint tex;
+	GLuint normals;
 	int w;
 	int h;
 };
@@ -129,6 +130,7 @@ struct TextureInfo
 	float twidth; // section width in atlas coordinates
 	float theight; // section height in atlas coordinates
 	GLuint atlas; // atlas id
+	GLuint normals; // normals id
 	char* id;
 	rect2f pos;
 	TextureInfo () : rows(0), cols(0), swidth(0), sheight(0),
@@ -192,12 +194,14 @@ struct VBOStructureHandle
 	enum primitives type;
 	GLuint method;
 	GLuint atlas;
+	GLuint normals;
 	GLuint shader;
 	VBOStructureHandle* next;
-	VBOStructureHandle( enum primitives t, int tex, int shd ){
+	VBOStructureHandle( enum primitives t, int tex, int n, int shd ){
 		type = t;
 		method = gl_methods[type];
 		atlas = tex;
+		normals = n;
 		shader = shd;
 		indexes = NULL;
 		count = 0;

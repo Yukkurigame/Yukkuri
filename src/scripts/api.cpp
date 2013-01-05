@@ -10,6 +10,7 @@
 #include <string>
 #include <cstring>
 #include <dirent.h>
+#include <unistd.h>
 
 #include "debug.h"
 
@@ -53,9 +54,9 @@ int scriptApi::GetCWD( lua_State* L )
 {
 	char path[1026];
 
-	memset( path, '\0', sizeof(path) );
+	memset( path, '\0', (unsigned)sizeof(path) );
 
-	if( getcwd( path, sizeof(path) - 1 ) == NULL ){
+	if( getcwd( path, (unsigned)sizeof(path) - 1 ) == NULL ){
 		lua_pushnil( L );
 	}else{
 		lua_pushstring( L, path );

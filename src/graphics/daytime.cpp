@@ -53,13 +53,16 @@ namespace{
 		ProcessShader( GLint id ){
 			this->shader_id = id;
 			// Initialize
-			this->sun_position = glGetUniformLocation( this->shader_id, "sun_position" );
-			this->sun_color = glGetUniformLocation( this->shader_id, "sun_color" );
+			for( int i = 0; i < 4; ++i )
+				LightSun.color[i] = 1.0;
+
+			this->sun_position = glGetUniformLocation( this->shader_id, "lights.position" );
+			this->sun_color = glGetUniformLocation( this->shader_id, "lights.color" );
 		}
 		void setUp( ){
 			glUseProgram( this->shader_id );
 			glUniform4fv( this->sun_position, 1, &LightSun.position[0] );
-			//glUniform4fv( this->sun_color, 1, &LightSun.color[0] );
+			glUniform4fv( this->sun_color, 1, &LightSun.color[0] );
 			glUseProgram( 0 );
 		}
 	};

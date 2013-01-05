@@ -108,8 +108,8 @@ void Paths::init(  )
 		change_dir(path_app);
 		Debug( Debug::OS, "path_app: " + path_app + "\n" );
 	}else{
-		printf( "Error getting application path" );
-		exit(EXIT_FAILURE);
+		Debug::debug( Debug::OS, "Error getting application path.\n" );
+		exit( EXIT_FAILURE );
 	}
 #else
 	#error Unsupported platform.

@@ -18,9 +18,9 @@ namespace TextureArray
 	VBOStructureHandle* prepareVBO( Sprite* sprites, unsigned int scount );
 
 
-	bool drawToNewGLTexture( GLuint* ahandle, int width, int height, std::vector< TextureProxy* >& textures );
+	bool drawToNewGLTexture( GLuint* ahandle, GLuint* nhandle, int width, int height, std::vector< TextureProxy* >& textures );
 	bool drawToNewGLTexture( GLuint* ahandle, int width, int height, Sprite* sprites, unsigned int count );
-	bool drawToGLTexture( GLuint ahandle, std::vector< TextureProxy* >& textures );
+	//bool drawToGLTexture( GLuint ahandle, std::vector< TextureProxy* >& textures );
 
 
 }

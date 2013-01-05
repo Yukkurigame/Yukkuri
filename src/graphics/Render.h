@@ -27,8 +27,8 @@ namespace RenderManager
 
 	bool LoadTextures( );
 
-	int PushTexture( TextureProxy*, GLuint atlas );
-	void PushTextures( std::vector < TextureProxy* >& tarray, GLuint atlas );
+	int PushTexture( TextureProxy*, GLuint atlas, GLuint normals );
+	void PushTextures( std::vector < TextureProxy* >& tarray, GLuint atlas, GLuint normals );
 
 	int GetTextureNumberById( std::string id );
 	TextureInfo* GetTextureByNumber( unsigned int number );

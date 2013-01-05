@@ -97,8 +97,7 @@ bool GLHelpers::ClearView( )
  * 	vbostructure - linked list of vbo description
  * 	vertices - array of vertices, coordinates and color
  */
-void GLHelpers::DrawVBO( GLuint& VBOHandle, /* int vboc, */
-		VBOStructureHandle* vbostructure /*, VertexV2FT2FC4UI* vertices */ )
+void GLHelpers::DrawVBO( GLuint& VBOHandle, VBOStructureHandle* vbostructure )
 {
 	VBOStructureHandle* temp = NULL;
 
@@ -121,16 +120,27 @@ void GLHelpers::DrawVBO( GLuint& VBOHandle, /* int vboc, */
 
 	GLuint aprog = 0;
 	GLuint texture = 0;
+	GLuint normals = 0;
 
 	while(vbostructure != NULL){
-		//glActiveTexture( GL_TEXTURE0 );
+		if( aprog != vbostructure->shader ){
+			aprog = vbostructure->shader;
+			glUseProgram( vbostructure->shader );
+		}
 		if( texture != vbostructure->atlas ){
+			glActiveTexture( GL_TEXTURE0 );
 			glBindTexture( GL_TEXTURE_2D, vbostructure->atlas );
 			texture = vbostructure->atlas;
 		}
-		if( aprog != vbostructure->shader ){
-			glUseProgram( vbostructure->shader );
-			aprog = vbostructure->shader;
+		if( normals != vbostructure->normals ){
+			glActiveTexture( GL_TEXTURE1 );
+			glBindTexture( GL_TEXTURE_2D, vbostructure->normals );
+			normals = vbostructure->normals;
+			GLint location = glGetUniformLocation(vbostructure->shader, "normalsEnabled");
+			if( !normals )
+				glUniform1f(location, 0.0f);
+			else
+				glUniform1f(location, 1.0f);
 		}
 		glDrawElements( vbostructure->method, vbostructure->count, GL_UNSIGNED_INT, vbostructure->indexes );
 		//glDrawArrays(GL_QUADS, vbostructure->indexes, vbostructure->count);
@@ -140,6 +150,9 @@ void GLHelpers::DrawVBO( GLuint& VBOHandle, /* int vboc, */
 		delete temp;
 	}
 	glUseProgram( 0 );
+	glActiveTexture( GL_TEXTURE0 );
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glActiveTexture( GL_TEXTURE1 );
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 #ifdef DEBUG_DRAW_RECTANGLES
@@ -165,7 +178,8 @@ void GLHelpers::DrawVBO( GLuint& VBOHandle, /* int vboc, */
  */
 bool GLHelpers::BindTextureToFBO( GLuint ahandle, GLuint& FBOHandle )
 {
-	glGenFramebuffersEXT(1, &FBOHandle);
+	if( !FBOHandle )
+		glGenFramebuffersEXT(1, &FBOHandle);
 
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, FBOHandle);
 

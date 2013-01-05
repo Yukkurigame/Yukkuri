@@ -105,7 +105,7 @@ void MapChunkManager::init(){
 		tp.atlas.x = tp.atlas.y = 0.0;
 	}
 	GLHelpers::CreateTexture( &atlas, box.Width, box.Height );
-	texture = RenderManager::PushTexture( &tp, atlas );
+	texture = RenderManager::PushTexture( &tp, atlas, 0 );
 }
 
 // You must call this for request a new free space, not only checking for

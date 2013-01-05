@@ -13,6 +13,7 @@
 
 #include <algorithm>
 
+#include "debug.h"
 #include "hacks.h"
 
 
@@ -40,9 +41,10 @@ inline void prepare_vbo( Sprite* s, VBOStructureHandle*& v, VBOStructureHandle*&
 		return;
 
 	if( !v ){
-		first = v = new VBOStructureHandle( s->brush.type, s->atlas, s->shader );
-	}else if( v->type != prQUADS || s->atlas != v->atlas || s->shader != v->shader ){
-		v->next = new VBOStructureHandle( s->brush.type, s->atlas, s->shader );
+		first = v = new VBOStructureHandle( s->brush.type, s->atlas, s->normals, s->shader );
+	}else if( v->type != prQUADS || s->atlas != v->atlas ||
+			s->normals != v->normals || s->shader != v->shader ){
+		v->next = new VBOStructureHandle( s->brush.type, s->atlas, s->normals, s->shader );
 		v = v->next;
 	}
 
@@ -89,6 +91,36 @@ VBOStructureHandle* TextureArray::prepareVBO( Sprite* sprites, unsigned int scou
 }
 
 
+inline void draw_proxy_quad( TextureProxy* t, bool normal = false )
+{
+	if( t && t->texture ){
+		if( normal && !t->texture->normals )
+			return;
+		glBindTexture( GL_TEXTURE_2D, normal ? t->texture->normals : t->texture->tex );
+		glBegin(GL_QUADS);
+		{
+			// Position in original texture
+			float x = static_cast<float>(t->offset.x) / static_cast<float>(t->texture->w);
+			float y = static_cast<float>(t->offset.y) / static_cast<float>(t->texture->h);
+			float dx = static_cast<float>(t->abs.width) / static_cast<float>(t->texture->w);
+			float dy = static_cast<float>(t->abs.height) / static_cast<float>(t->texture->h);
+			//Bottom-left vertex
+			glTexCoord2f(x, y);
+			glVertex2i(t->abs.x, t->abs.y);
+			//Bottom-right vertex
+			glTexCoord2f(x + dx, y);
+			glVertex2i(t->abs.x + t->abs.width, t->abs.y);
+			//Top-right vertex
+			glTexCoord2f(x + dx, y + dy);
+			glVertex2i(t->abs.x + t->abs.width, t->abs.y + t->abs.height);
+			//Top-left vertex
+			glTexCoord2f(x, y + dy);
+			glVertex2i(t->abs.x, t->abs.y + t->abs.height);
+		}
+		glEnd();
+	}
+}
+
 
 /* This function render textures array into new opengl texture (or clear it).
  * ahandle - pointer on opengl texture, if points to 0 new texture will be generated;
@@ -96,9 +128,9 @@ VBOStructureHandle* TextureArray::prepareVBO( Sprite* sprites, unsigned int scou
  * textures - array of textures coordinates to draw;
  * returns boolean
  */
-bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, std::vector< TextureProxy* >& textures )
+bool TextureArray::drawToNewGLTexture( GLuint* ahandle, GLuint* nhandle, int width, int height, std::vector< TextureProxy* >& textures )
 {
-	GLuint FBOHandle;
+	GLuint FBOHandle = 0;
 
 	// A FBO will be used to draw textures. FBO creation and setup.
 	if( !GLHelpers::CreateTexture( ahandle, width, height ) ||
@@ -110,29 +142,11 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, s
 	glEnable(GL_TEXTURE_2D);
 	for ( unsigned int i = 0; i < textures.size(); i++ ){
 		TextureProxy* t = textures.at(i);
-		if( t->texture ){
-			glBindTexture( GL_TEXTURE_2D, t->texture->tex );
-			glBegin(GL_QUADS);
-			{
-				// Position in original texture
-				float x = static_cast<float>(t->offset.x) / static_cast<float>(t->texture->w);
-				float y = static_cast<float>(t->offset.y) / static_cast<float>(t->texture->h);
-				float dx = static_cast<float>(t->abs.width) / static_cast<float>(t->texture->w);
-				float dy = static_cast<float>(t->abs.height) / static_cast<float>(t->texture->h);
-				//Bottom-left vertex
-				glTexCoord2f(x, y);
-				glVertex2i(t->abs.x, t->abs.y);
-				//Bottom-right vertex
-				glTexCoord2f(x + dx, y);
-				glVertex2i(t->abs.x + t->abs.width, t->abs.y);
-				//Top-right vertex
-				glTexCoord2f(x + dx, y + dy);
-				glVertex2i(t->abs.x + t->abs.width, t->abs.y + t->abs.height);
-				//Top-left vertex
-				glTexCoord2f(x, y + dy);
-				glVertex2i(t->abs.x, t->abs.y + t->abs.height);
-			}
-			glEnd();
+		draw_proxy_quad( t );
+
+		if( nhandle && !*nhandle && t->texture && t->texture->normals ){
+			if( !GLHelpers::CreateTexture( nhandle, width, height ) )
+				Debug::debug( Debug::GRAPHICS, "Cannot create normal map for textures.\n" );
 		}
 
 #ifdef DEBUG_DRAW_ATLAS_RECTANGLES
@@ -145,7 +159,14 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, s
 		glEnd();
 		glEnable(GL_TEXTURE_2D);
 #endif
+	}
 
+	if( nhandle && *nhandle ){
+		GLHelpers::BindTextureToFBO( *nhandle, FBOHandle );
+		for ( unsigned int i = 0; i < textures.size(); i++ ){
+			TextureProxy* t = textures.at(i);
+			draw_proxy_quad( t, true );
+		}
 	}
 
 
@@ -162,8 +183,8 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, s
  */
 bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, Sprite* sprites, unsigned int count )
 {
-	GLuint FBOHandle;
-	GLuint VBOHandle;
+	GLuint FBOHandle = 0;
+	GLuint VBOHandle = 0;
 
 	// A FBO will be used to draw textures. FBO creation and setup.
 	if( !GLHelpers::CreateTexture( ahandle, width, height ) ||
@@ -185,11 +206,12 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, S
 }
 
 
+
 /* This function render textures array into opengl texture.
  * ahandle - an opengl texture id, it must be generated previously;
  * textures - an array of textures coordinates to draw;
  * returns boolean
- */
+
 bool TextureArray::drawToGLTexture( GLuint ahandle, std::vector< TextureProxy* >& textures )
 {
 
@@ -204,3 +226,4 @@ bool TextureArray::drawToGLTexture( GLuint ahandle, std::vector< TextureProxy* >
 
 	return true;
 }
+ */

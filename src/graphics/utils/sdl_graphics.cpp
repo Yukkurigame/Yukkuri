@@ -54,6 +54,8 @@ GLuint SDLGraphics::CreateGlTexture( SDL_Surface* surface )
 	GLint  nOfColors;
 	GLenum texture_format = 0;
 
+	if( surface == NULL )
+		return 0;
 
 	/*if( surface->format->colorkey != 0 ){
 		//FIXME: Indexed images support.
@@ -97,14 +99,14 @@ GLuint SDLGraphics::CreateGlTexture( SDL_Surface* surface )
 }
 
 
-SDL_Surface* SDLGraphics::LoadImage( const char* name )
+SDL_Surface* SDLGraphics::LoadImage( const char* name, bool force )
 {
 	SDL_Surface* pImg = NULL;
 	char* path = (char*)malloc( (unsigned int)conf.imagePath.size( ) + strlen( name ) + 1 );
 	strcpy( path, conf.imagePath.c_str() );
 	strcat( path, name );
 	pImg = OpenImage( path );
-	if( !pImg ){
+	if( !pImg && force ){
 		//Not loaded.
 		if( strcmp( name, conf.defaultImage.c_str() ) ){
 			strcpy( path, conf.defaultImage.c_str() );

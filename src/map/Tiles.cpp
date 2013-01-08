@@ -146,7 +146,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 		return;
 	sprite = RenderManager::CreateGLSprite( (float)realPos.x, (float)realPos.y, 0,
 			ChunkManager.chunkSize.x, ChunkManager.chunkSize.y, ChunkManager.texture, picture );
-	sprite->shader = Shaders::getProgram( "lighting" );
+	//sprite->shader = Shaders::getProgram( "lighting" );
 	tiles = (MapTile*)malloc( (unsigned)sizeof(MapTile) * ChunkManager.chunkTilesCount );
 	unsigned int row = 0;
 	unsigned int col = 0;

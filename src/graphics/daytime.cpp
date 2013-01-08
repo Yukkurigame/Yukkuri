@@ -120,7 +120,7 @@ void DayTime::init()
 	Day = 1;
 	Time = 10.0;
 	memset( &LightSun.position[0], 0, (unsigned)sizeof(GLfloat) * 4 );
-	addShader( Shaders::getProgram( "lighting" ) );
+	//addShader( Shaders::getProgram( "lighting" ) );
 }
 
 void DayTime::clean()

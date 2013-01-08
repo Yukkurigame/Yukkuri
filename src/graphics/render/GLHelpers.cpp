@@ -125,7 +125,11 @@ void GLHelpers::DrawVBO( GLuint& VBOHandle, VBOStructureHandle* vbostructure )
 	while(vbostructure != NULL){
 		if( aprog != vbostructure->shader ){
 			aprog = vbostructure->shader;
-			glUseProgram( vbostructure->shader );
+			glUseProgram( aprog );
+			//GLint ct = glGetUniformLocation(aprog, "colorTexture");
+			//GLint nt = glGetUniformLocation(aprog, "normalTexture");
+		    //glUniform1i(ct, 0);
+		    //glUniform1i(nt, 1);
 		}
 		if( texture != vbostructure->atlas ){
 			glActiveTexture( GL_TEXTURE0 );

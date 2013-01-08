@@ -41,10 +41,10 @@ inline void prepare_vbo( Sprite* s, VBOStructureHandle*& v, VBOStructureHandle*&
 		return;
 
 	if( !v ){
-		first = v = new VBOStructureHandle( s->brush.type, s->atlas, s->normals, s->shader );
+		first = v = new VBOStructureHandle( s->brush.type, s->atlas, s->normals, s->material.program );
 	}else if( v->type != prQUADS || s->atlas != v->atlas ||
-			s->normals != v->normals || s->shader != v->shader ){
-		v->next = new VBOStructureHandle( s->brush.type, s->atlas, s->normals, s->shader );
+			s->normals != v->normals || s->material.program != v->shader ){
+		v->next = new VBOStructureHandle( s->brush.type, s->atlas, s->normals, s->material.program );
 		v = v->next;
 	}
 

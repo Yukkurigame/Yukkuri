@@ -19,7 +19,6 @@ extern MainConfig conf;
 
 
 namespace {
-
 	char* filetobuf( const char* file )
 	{
 		FILE *fptr;
@@ -40,154 +39,221 @@ namespace {
 		return buf; /* Return the buffer */
 	}
 
-
-	GLuint createProgram( std::string filename )
-	{
-		GLint IsCompiled_VS, IsCompiled_FS;
-		int IsLinked;
-		int maxLength;
-		char* vertexInfoLog;
-		char* fragmentInfoLog;
-		char* shaderProgramInfoLog;
-
-		/* These pointers will receive the contents of our shader source code files */
-		GLchar* vertexsource;
-		GLchar* fragmentsource;
-
-		/* These are handles used to reference the shaders */
-		GLuint vertexshader, fragmentshader;
-
-		/* This is a handle to the shader program */
-		GLuint shaderprogram;
-
-		/* Read our shaders into the appropriate buffers */
-		vertexsource = (GLchar*)filetobuf( ( filename + ".vert").c_str() );
-		fragmentsource = (GLchar*)filetobuf( ( filename + ".frag").c_str() );
-
-		/* Create an empty vertex shader handle */
-		vertexshader = glCreateShader( GL_VERTEX_SHADER );
-
-		/* Send the vertex shader source code to GL */
-		/* Note that the source code is NULL character terminated. */
-		/* GL will automatically detect that therefore the length info can be 0 in this case (the last parameter) */
-		glShaderSource( vertexshader, 1, (const GLchar**)&vertexsource, 0 );
-
-		/* Compile the vertex shader */
-		glCompileShader( vertexshader );
-
-		glGetShaderiv( vertexshader, GL_COMPILE_STATUS, &IsCompiled_VS );
-		if( IsCompiled_VS == GL_FALSE ){
-		   glGetShaderiv( vertexshader, GL_INFO_LOG_LENGTH, &maxLength );
-
-		   /* The maxLength includes the NULL character */
-		   vertexInfoLog = (char *)malloc( maxLength );
-
-		   glGetShaderInfoLog( vertexshader, maxLength, &maxLength, vertexInfoLog );
-		   Debug::debug( Debug::GRAPHICS, "Vertex shader " + filename + ": " + std::string(vertexInfoLog) );
-
-		   /* Handle the error in an appropriate way such as displaying a message or writing to a log file. */
-		   /* In this simple program, we'll just leave */
-		   free(vertexInfoLog);
-		   return 0;
-		}
-
-		/* Create an empty fragment shader handle */
-		fragmentshader = glCreateShader( GL_FRAGMENT_SHADER );
-
-		/* Send the fragment shader source code to GL */
-		/* Note that the source code is NULL character terminated. */
-		/* GL will automatically detect that therefore the length info can be 0 in this case (the last parameter) */
-		glShaderSource( fragmentshader, 1, (const GLchar**)&fragmentsource, 0 );
-
-		/* Compile the fragment shader */
-		glCompileShader( fragmentshader );
-
-		glGetShaderiv( fragmentshader, GL_COMPILE_STATUS, &IsCompiled_FS );
-		if( IsCompiled_FS == GL_FALSE ){
-		   glGetShaderiv( fragmentshader, GL_INFO_LOG_LENGTH, &maxLength );
-
-		   /* The maxLength includes the NULL character */
-		   fragmentInfoLog = (char *)malloc(maxLength);
-
-		   glGetShaderInfoLog( fragmentshader, maxLength, &maxLength, fragmentInfoLog );
-		   Debug::debug( Debug::GRAPHICS, "Fragment shader " + filename + ": " + std::string(fragmentInfoLog) );
-
-		   /* Handle the error in an appropriate way such as displaying a message or writing to a log file. */
-		   /* In this simple program, we'll just leave */
-		   free( fragmentInfoLog );
-		   return 0;
-		}
-
-		/* If we reached this point it means the vertex and fragment shaders compiled and are syntax error free. */
-		/* We must link them together to make a GL shader program */
-		/* GL shader programs are monolithic. It is a single piece made of 1 vertex shader and 1 fragment shader. */
-		/* Assign our program handle a "name" */
-		shaderprogram = glCreateProgram();
-
-		/* Attach our shaders to our program */
-		glAttachShader( shaderprogram, vertexshader );
-		glAttachShader( shaderprogram, fragmentshader );
-
-		/* Bind attribute index 0 (coordinates) to in_Position and attribute index 1 (color) to in_Color */
-		/* Attribute locations must be setup before calling glLinkProgram. */
-		//glBindAttribLocation( shaderprogram, 0, "in_Position" );
-		//glBindAttribLocation( shaderprogram, 1, "in_Color" );
-
-		/* Link our program */
-		/* At this stage, the vertex and fragment programs are inspected, optimized and a binary code is generated for the shader. */
-		/* The binary code is uploaded to the GPU, if there is no error. */
-		glLinkProgram( shaderprogram );
-
-		/* Again, we must check and make sure that it linked. If it fails, it would mean either there is a mismatch between the vertex */
-		/* and fragment shaders. It might be that you have surpassed your GPU's abilities. Perhaps too many ALU operations or */
-		/* too many texel fetch instructions or too many interpolators or dynamic loops. */
-
-		glGetProgramiv( shaderprogram, GL_LINK_STATUS, (int *)&IsLinked );
-		if( IsLinked == GL_FALSE ){
-		   /* Noticed that glGetProgramiv is used to get the length for a shader program, not glGetShaderiv. */
-		   glGetProgramiv(shaderprogram, GL_INFO_LOG_LENGTH, &maxLength);
-
-		   /* The maxLength includes the NULL character */
-		   shaderProgramInfoLog = (char *)malloc(maxLength);
-
-		   /* Notice that glGetProgramInfoLog, not glGetShaderInfoLog. */
-		   glGetProgramInfoLog( shaderprogram, maxLength, &maxLength, shaderProgramInfoLog );
-		   Debug::debug( Debug::GRAPHICS, "Shader program " + filename + ": " + std::string(shaderProgramInfoLog) );
-
-		   /* Handle the error in an appropriate way such as displaying a message or writing to a log file. */
-		   /* In this simple program, we'll just leave */
-		   free( shaderProgramInfoLog );
-		   return 0;
-		}
-
-		/* Cleanup all the things we bound and allocated */
-
-		//glDetachShader(shaderprogram, vertexshader);
-		//glDetachShader(shaderprogram, fragmentshader);
-		//glDeleteProgram(shaderprogram);
-		//glDeleteShader(vertexshader);
-		//glDeleteShader(fragmentshader);
-		free(vertexsource);
-		free(fragmentsource);
-
-		return shaderprogram;
-	}
+	std::map< enum GLSFlags, GLuint > shaders;
 
 
-	std::map< std::string, GLuint > shaders;
+	#define MACROS_SIZE 3
+	const char* macros[MACROS_SIZE] = {
+		"_YNORMALS", "_YLIGHT", "_YFIXED"
+	};
 }
 
 
-GLuint Shaders::getProgram( std::string filename )
+char* generate_defines( enum GLSFlags glflags )
 {
-	std::map< std::string, GLuint >::iterator fit = shaders.find( filename );
+	unsigned int size = sizeof(char);
+	int string_size = 1;
+	char* str = (char*)malloc( size );
+	str[0] = '\0';
+	const char* def = "#define ";
+
+	unsigned int flag = glsFirst;
+	int index = -1;
+	while( flag < glsLast ){
+		++index;
+		flag <<= 1;
+		if( ( glflags & flag ) == 0 || index > MACROS_SIZE )
+			continue;
+
+		const char* decl = macros[index];
+		string_size += strlen(def) + strlen(decl) + 1;
+		str = (char*)realloc( str, size * string_size );
+		strcat( str, def );
+		strcat( str, decl );
+		strcat( str, "\n" );
+	}
+
+	//string_size++; // Add null terminator
+	//str = (char*)realloc( str, size * string_size );
+	//strcat( str, "\0" );
+
+	return str;
+}
+
+
+
+bool check_shader( GLuint object, int status_name, std::string name )
+{
+	// TODO: rewrite
+	GLint status;
+	switch( status_name ){
+		case GL_COMPILE_STATUS:
+			glGetShaderiv( object, status_name, &status );
+			break;
+		case GL_LINK_STATUS:
+			glGetProgramiv( object, status_name, &status );
+			break;
+		default:
+			Debug::debug( Debug::GRAPHICS, "Wrong shader operation");
+			return false;
+	}
+
+	if( status == GL_FALSE ){
+		int log_length;
+		char* info_log;
+
+		switch( status_name ){
+			case GL_COMPILE_STATUS:
+				glGetShaderiv( object, GL_INFO_LOG_LENGTH, &log_length );
+				break;
+			case GL_LINK_STATUS:
+				glGetProgramiv( object, GL_INFO_LOG_LENGTH, &log_length );
+				break;
+			default:
+				Debug::debug( Debug::GRAPHICS, "Wrong shader operation");
+				return false;
+		}
+
+		/* The maxLength includes the NULL character */
+		info_log = (char*)malloc( log_length );
+
+		switch( status_name ){
+			case GL_COMPILE_STATUS:
+				glGetShaderInfoLog( object, log_length, &log_length, info_log );
+				break;
+			case GL_LINK_STATUS:
+				glGetProgramInfoLog( object, log_length, &log_length, info_log );
+				break;
+			default:
+				Debug::debug( Debug::GRAPHICS, "Wrong shader operation");
+				return false;
+		}
+
+		Debug::debug( Debug::GRAPHICS, name + ": " + std::string(info_log) );
+
+		/* Handle the error in an appropriate way such as displaying a message or writing to a log file. */
+		/* In this simple program, we'll just leave */
+		free(info_log);
+		return false;
+	}
+	return true;
+}
+
+
+GLint create_shader( const char* filename, int type, const char* defines )
+{
+	/* Pointer will receive the contents of our shader source code files */
+	char* buffer = filetobuf( filename );
+	int size = 8 + strlen(filename);
+	char* name = (char*)malloc( sizeof(char) * size );
+	snprintf( name, size, "Shader %s", filename );
+
+	const char* sources[2] = { defines, buffer };
+
+	/* Create an empty shader handle */
+	GLuint shader = glCreateShader( type );
+
+	/* Send the shader source code to GL */
+	/* Note that the source code is NULL character terminated. */
+	/* GL will automatically detect that therefore the length info can be 0 in this case (the last parameter) */
+
+	glShaderSource( shader, 2, sources, 0 );
+
+	/* Compile the shader */
+	glCompileShader( shader );
+
+	if( !check_shader( shader, GL_COMPILE_STATUS, name ) ){
+		glDeleteShader(shader);
+		shader = -1;
+	}
+
+	// Free allocated resources
+	free(name);
+	free(buffer);
+
+	return shader;
+}
+
+
+GLuint createProgram( std::string filename, enum GLSFlags glflags )
+{
+	char* defines = generate_defines( glflags );
+
+	GLint vertex = create_shader( (filename + ".vert").c_str(), GL_VERTEX_SHADER, defines );
+	GLint fragment = create_shader( (filename + ".frag").c_str(), GL_FRAGMENT_SHADER, defines );
+
+	free( defines );
+
+	if( vertex < 0 || fragment < 0 )
+		return 0;
+
+
+	/* If we reached this point it means the vertex and fragment shaders compiled and are syntax error free. */
+	/* We must link them together to make a GL shader program */
+	/* GL shader programs are monolithic. It is a single piece made of 1 vertex shader and 1 fragment shader. */
+	/* Assign our program handle a "name" */
+	GLuint shaderprogram = glCreateProgram();
+
+	/* Attach our shaders to our program */
+	glAttachShader( shaderprogram, vertex );
+	glAttachShader( shaderprogram, fragment );
+
+	/* Bind attribute index 0 (coordinates) to in_Position and attribute index 1 (color) to in_Color */
+	/* Attribute locations must be setup before calling glLinkProgram. */
+	//glBindAttribLocation( shaderprogram, 0, "in_Position" );
+	//glBindAttribLocation( shaderprogram, 1, "in_Color" );
+
+	/* Link our program */
+	/* At this stage, the vertex and fragment programs are inspected, optimized and a binary code is generated for the shader. */
+	/* The binary code is uploaded to the GPU, if there is no error. */
+	glLinkProgram( shaderprogram );
+
+	/* Cleanup all the things we bound and allocated */
+#ifndef DEBUG
+	glDetachShader( shaderprogram, vertex );
+	glDetachShader( shaderprogram, fragment );
+	glDeleteShader( vertex );
+	glDeleteShader( fragment );
+#endif
+
+	/* Again, we must check and make sure that it linked. If it fails, it would mean either there is a mismatch between the vertex */
+	/* and fragment shaders. It might be that you have surpassed your GPU's abilities. Perhaps too many ALU operations or */
+	/* too many texel fetch instructions or too many interpolators or dynamic loops. */
+
+	if( !check_shader( shaderprogram, GL_LINK_STATUS, "Shader program " + filename ) ){
+		glDeleteProgram( shaderprogram );
+		return 0;
+	}
+
+	return shaderprogram;
+}
+
+
+GLuint Shaders::getProgram( enum GLSFlags glflags )
+{
+	std::map< enum GLSFlags, GLuint >::iterator fit = shaders.find( glflags );
 	if( fit != shaders.end() )
 		return fit->second;
-	GLuint prog = createProgram( conf.shadersPath + filename );
+	GLuint prog = createProgram( conf.shadersPath + "main", glflags );
 	if( prog )
-		shaders[filename] = prog;
+		shaders[glflags] = prog;
 	return prog;
 }
 
 
+#define PASS_UNIFORM( glname, type )														\
+void Shaders::passUniform##glname( enum GLSFlags glflag, const char* name, int count, type data )	\
+{																					\
+	FOREACHIT(shaders){																\
+		if( !(it->first & glflag) )													\
+			continue;																\
+		int location = glGetUniformLocation( it->second, name );					\
+		glUseProgram(it->second);													\
+		glUniform##glname( location, count, data );									\
+	}																				\
+	glUseProgram(0);																\
+}
 
+PASS_UNIFORM( 3fv, float* )
+
+#undef PASS_UNIFORM

@@ -67,7 +67,7 @@ bool Animation::init(  std::string subconfig, std::string config)
 					RenderManager::GetTextureNumberById( image ), picture , 1 );
 	//sprite->setCentered();
 	sprite->setPicture( picture );
-	sprite->shader = Shaders::getProgram( "lighting" );
+	//sprite->shader = Shaders::getProgram( "lighting" );
 	count = 0;
 
 

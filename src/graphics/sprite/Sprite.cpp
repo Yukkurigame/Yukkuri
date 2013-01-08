@@ -11,12 +11,14 @@
 #include "graphics/GraphicsTypes.h"
 #include "graphics/utils/gl_shader.h"
 
+/*
 
 void Sprite::setFixed()
 {
 	flags |= 4;
-	shader = Shaders::getProgram( "fixed" );
+	//shader = Shaders::getProgram( "fixed" );
 }
+*/
 
 
 void Sprite::setPicture( int pic )

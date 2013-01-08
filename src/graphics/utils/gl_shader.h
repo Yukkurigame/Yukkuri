@@ -10,11 +10,23 @@
 #ifndef GL_SHADER_H_
 #define GL_SHADER_H_
 
-#include <string>
 #include "graphics/GraphicsTypes.h"
 
+
+enum GLSFlags {
+	glsNone = 		0x00,
+	glsFirst = 		0x01,
+	glsNormals = 	0x02,
+	glsLight = 		0x04,
+	glsFixed = 		0x08,
+	glsLast = 		0x10
+};
+
+
 namespace Shaders {
-	GLuint getProgram( std::string filename );
+	//GLuint getProgram( std::string filename );
+	GLuint getProgram( enum GLSFlags glflags );
+	void passUniform3fv( enum GLSFlags, const char* name, int count, float* data);
 }
 
 

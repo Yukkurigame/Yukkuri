@@ -44,6 +44,7 @@ namespace {
 	//////////////////////////////////////////////////
 	// Verticles
 
+	/*
 	int verticlesSize;
 	VertexV2FT2FC4UI* verticles;
 
@@ -52,6 +53,7 @@ namespace {
 		verticlesSize *= 2;
 		verticles = (VertexV2FT2FC4UI*)realloc( verticles, (unsigned)sizeof(VertexV2FT2FC4UI) * verticlesSize * 4 );
 	}
+	*/
 
 
 	//////////////////////////////////////////////////
@@ -97,8 +99,8 @@ namespace {
 void RenderManager::init( )
 {
 	textures = NULL;
-	verticles = NULL;
-	verticlesSize = 1; // for success multiplication
+	//verticles = NULL;
+	//verticlesSize = 1; // for success multiplication
 	atlasHandle = 0;
 	GLSprites.clear();
 	// Set first texture info to 0
@@ -126,8 +128,8 @@ void RenderManager::clean( )
 			delete[] textures[i].id;
 		free(textures);
 	}
-	if( verticles )
-		free(verticles);
+	//if( verticles )
+	//	free(verticles);
 	GLTextures::clearCache();
 	CleanFonts();
 	VBOArray::clean();
@@ -319,9 +321,9 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 
 	GLSprites.push_back( sprite );
 
-	int vcount = GLSprites.size() - verticlesSize;
-	if( vcount > 0 )
-		ExtendVerticles( );
+	//int vcount = GLSprites.size() - verticlesSize;
+	//if( vcount > 0 )
+	//	ExtendVerticles( );
 
 	return sprite;
 }
@@ -337,9 +339,9 @@ Sprite* RenderManager::CreateGLSprite( Sprite* osprite )
 
 	GLSprites.push_back( sprite );
 
-	int vcount = GLSprites.size() - verticlesSize;
-	if( vcount > 0 )
-		ExtendVerticles( );
+	//int vcount = GLSprites.size() - verticlesSize;
+	//if( vcount > 0 )
+	//	ExtendVerticles( );
 
 	return sprite;
 }
@@ -370,24 +372,26 @@ void RenderManager::FreeGLSprites( std::vector< Sprite* >* sprites )
 //////////////////////////////////////////////////
 // Scene
 
-static const std::string fixedShaders[] = {
-	"fixed", "daytime", ""
-};
+//static const std::string fixedShaders[] = {
+//	"fixed", "daytime", ""
+//};
 
 
 void RenderManager::MoveGlScene( )
 {
 	glTranslatef( vpoint.x, vpoint.y, vpoint.z );
-	int i = 0;
+	Shaders::passUniform3fv( glsFixed, "offset", 1, &vpoint.x );
+	/*int i = 0;
 	std::string fname = fixedShaders[i++];
 
 	while( fname != "" ){
-		GLuint fixed = Shaders::getProgram( fname );
-		glUseProgram( fixed );
-		glUniform3fv( glGetUniformLocation( fixed, "offset" ), 1, &vpoint.x );
-		fname = fixedShaders[i++];
+		/GLuint fixed = Shaders::getProgram( fname );
+		/glUseProgram( fixed );
+		/glUniform3fv( glGetUniformLocation( fixed, "offset" ), 1, &vpoint.x );
+		/fname = fixedShaders[i++];
 	}
 	glUseProgram( 0 );
+	*/
 }
 
 void RenderManager::DrawGLScene()

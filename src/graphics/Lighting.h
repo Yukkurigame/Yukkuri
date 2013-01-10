@@ -10,17 +10,28 @@
 #include "graphics/GraphicsTypes.h"
 
 enum LigthType {
-	ltAmbient = 1, ltPoint = 2, ltSpot = 4
+	ltAmbient = 1, ltDirectional = 2, ltPoint = 4, ltSpot = 8
 };
 
 
 struct LightSource
 {
+	// Base
 	enum LigthType type;
-	s4ub ambient;
-	s4ub diffuse;
-	s4ub specular;
+	s4ub color;
+	float ambient_intensity;
+	float diffuse_intensity;
+	// Directional && Spot
+	s3f direction;
+	// Point && Spot
 	s3f position;
+    struct {
+        float Constant;
+        float Linear;
+        float Exp;
+    } Attenuation;
+    // Spot
+    float cut_off;
 };
 
 

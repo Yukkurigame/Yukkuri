@@ -1,7 +1,7 @@
 #version 120
-#extension GL_ARB_explicit_attrib_location : require
+//#extension GL_ARB_explicit_attrib_location : require
 
-layout(location = 0) in vec3 in_Position;
+//layout(location = 0) in vec3 in_Position;
 
 varying vec2 texCoords;
 varying vec4 vert_color;
@@ -17,6 +17,7 @@ varying vec4 vert_color;
 void main(void)
 {
 	//texCoords = in_texCoords;
+	vec3 in_Position = gl_Vertex.xyz;
 	texCoords = vec2(gl_MultiTexCoord0);
 	vert_color = gl_Color;
 

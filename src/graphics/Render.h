@@ -57,18 +57,19 @@ namespace RenderManager
 	//////////////////////////////////////////////////
 	// Scene
 
-	void MoveGlScene( );
+	//void MoveGlScene( );
 	void DrawGLScene( );
 	void CleanGLScene( );
 
-	static s3f vpoint;
-
+	//static s3f vpoint;
+	/*
 	inline void MoveGlScene( int x, int y, int z ){
 		vpoint.x = (float)x;
 		vpoint.y = (float)y;
 		vpoint.z = (float)z;
 		MoveGlScene();
 	}
+	*/
 
 };
 

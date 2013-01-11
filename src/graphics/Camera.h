@@ -13,12 +13,13 @@ enum ctMode {
 
 
 namespace Camera {
-	void init( s3f* view );
+	void init( );
 
 	void Update();
 	float GetX( );
 	float GetY( );
-	void Move( float X, float Y );
+	void Translate( float X, float Y, float Z = 0 );
+	void Rotate( float angle, float X, float Y, float Z );
 	void ChangeMode( enum ctMode mode );
 	void SetTarget( Unit* u );
 	void SetTarget( double* X, double* Y );

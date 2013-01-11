@@ -31,7 +31,7 @@ int CameraApi::moveTo(lua_State* L)
 	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Number expected" );
 	luaL_argcheck( L, lua_isnumber( L, 2 ), 2, "Number expected" );
 
-	Camera::Move( (float)lua_tonumber(L, 1), (float)lua_tonumber(L, 2) );
+	Camera::Translate( (float)lua_tonumber(L, 1), (float)lua_tonumber(L, 2) );
 
 	lua_pop( L, 2 );
 

@@ -113,7 +113,7 @@ void RenderManager::init( )
 	strcpy(textures[0].id, n.c_str());
 
 	AnimDef::init();
-	Camera::init( &vpoint );
+	Camera::init( );
 
 }
 
@@ -176,15 +176,15 @@ void RenderManager::openglSetup( int wwidth, int wheight )
 	//glEnable(GL_ALPHA_TEST); //It's work but with ugly border
 	//glAlphaFunc(GL_NOTEQUAL, 0);
 
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity();
+	//glMatrixMode( GL_PROJECTION );
+	//glLoadIdentity();
 
-	glOrtho(0.0, wwidth, 0.0, wheight, -10.0, 1.0);
+	//glOrtho(0.0, wwidth, 0.0, wheight, -10.0, 1.0);
 	//glOrtho(-wwidth*1.5, wwidth*1.5, -wheight*1.5, wheight*1.5, -10.0, 1.0);
 	//glOrtho(-wwidth*2, wwidth*2, -wheight*2, wheight*2, -30.0, 30.0);
 
-	glMatrixMode( GL_MODELVIEW );
-	glLoadIdentity();
+	//glMatrixMode( GL_MODELVIEW );
+	//glLoadIdentity();
 
 	glGenBuffersARB( 1, &VBOHandle );
 
@@ -377,11 +377,13 @@ void RenderManager::FreeGLSprites( std::vector< Sprite* >* sprites )
 //};
 
 
+/*
 void RenderManager::MoveGlScene( )
 {
 	glTranslatef( vpoint.x, vpoint.y, vpoint.z );
 	Shaders::passUniform3fv( glsFixed, "offset", 1, &vpoint.x );
-	/*int i = 0;
+	Camera::Update();
+	int i = 0;
 	std::string fname = fixedShaders[i++];
 
 	while( fname != "" ){
@@ -391,13 +393,13 @@ void RenderManager::MoveGlScene( )
 		/fname = fixedShaders[i++];
 	}
 	glUseProgram( 0 );
-	*/
 }
+*/
 
 void RenderManager::DrawGLScene()
 {
 	Camera::Update();
-	MoveGlScene();
+	//MoveGlScene();
 
 	//VBOStructureHandle* temp = NULL;
 	//int count = 0;
@@ -407,7 +409,7 @@ void RenderManager::DrawGLScene()
 
 	//TestDrawAtlas(-2500, -1000, 10);
 
-	glLoadIdentity();
+	//glLoadIdentity();
 	SDL_GL_SwapBuffers();
 }
 

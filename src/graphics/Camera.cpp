@@ -3,39 +3,64 @@
 #include "graphics/Camera.h"
 #include "units/Unit.h"
 #include "config.h"
+#include "graphics/utils/gl_shader.h"
 #include <math.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 
 
 extern MainConfig conf;
 
+#define GLM_PTR (float*)glm::value_ptr
 
-namespace {
+
+namespace Camera {
 	int TargetMode = ctmNormal;
-	s2f pos;
-	s2f offset;
 	double* TargetX = NULL;
 	double* TargetY = NULL;
 	Unit* Target = NULL;
-	s3f* MainView = NULL;
+
+	glm::mat3 rotation;
+	glm::vec3 cam_position;
+	glm::vec3 cam_offset;
+	glm::mat4x4 projection;
+	glm::mat4x4 model;
+	glm::mat4x4 model_view;
 }
 
 
 
-void Camera::init( s3f* view )
+void Camera::init( )
 {
-	MainView = view;
+	glm::vec3 eye(1.0, 1.0, 1.0);
+	glm::vec3 target(0.0, 0.0, 0.0);
+	glm::vec3 up(0.0, 0.0, 1.0);
+	model_view = glm::lookAt( eye, target, up );
+	double wwidth = conf.windowWidth;
+	double wheight = conf.windowHeight;
+	projection = glm::ortho(0.0, wwidth, 0.0, wheight, -10.0, 1.0);
+	//			 glm::ortho( -wwidth*2.0, wwidth*2.0, -wheight*2.0, wheight*2.0, -30.0, 30.0 );
+	model = glm::mat4x4(1.0);
 }
 
 
 void Camera::Update( )
 {
-	MainView->x = -floor( pos.x - offset.x );
-	MainView->y = -floor( pos.y - offset.y );
 	if( TargetX && TargetY ){
-		if( (*TargetX) != pos.x || (*TargetY) != pos.y ){
-			Move( (float)(pos.x - (*TargetX)), (float)(pos.y - (*TargetY)) );
+		if( (*TargetX) != cam_position.x || (*TargetY) != cam_position.y ){
+			Translate(cam_position.x + (*TargetX),
+					cam_position.y +(*TargetY), 0);
 		}
 	}
+
+	glm::vec3 cam_translation = cam_position + cam_offset;
+	glm::mat4 view = glm::translate(glm::mat4(1.0), cam_translation);
+
+	glm::mat4x4 mvp = projection * view * model;
+	Shaders::passUniformMatrix4fv( glsAll, "in_MVP", 1, GL_FALSE, GLM_PTR(mvp));
+	Shaders::passUniform3fv( glsFixed, "in_Offset", 1, GLM_PTR(cam_translation));
 }
 
 
@@ -47,7 +72,7 @@ float Camera::GetX( )
 		}
 		return *TargetX;
 	}
-	return pos.x;
+	return cam_position.x;
 }
 
 
@@ -59,15 +84,22 @@ float Camera::GetY( )
 		}
 		return *TargetY;
 	}
-	return pos.y;
+	return cam_position.y;
 }
 
 
-void Camera::Move( float x, float y )
+void Camera::Translate( float x, float y, float z )
 {
-	pos.x -= x;
-	pos.y -= y;
+	cam_position -= glm::vec3(x, y, z);
 }
+
+
+void Camera::Rotate( float angle, float x, float y, float z )
+{
+	printf("rotation: %f\n", angle);
+	model = glm::rotate(model, angle, glm::normalize(glm::vec3(x, y, z)));
+}
+
 
 
 void Camera::ChangeMode( enum ctMode mode )
@@ -77,11 +109,11 @@ void Camera::ChangeMode( enum ctMode mode )
 	TargetMode = mode;
 	switch( mode ){
 		case ctmCenter:
-			offset.x = (float)(conf.windowWidth >> 1);
-			offset.y = (float)(conf.windowHeight >> 1);
+			cam_offset.x = (float)(conf.windowWidth >> 1);
+			cam_offset.y = (float)(conf.windowHeight >> 1);
 			break;
 		case ctmNormal:
-			offset.x = offset.y = 0;
+			cam_offset.x = cam_offset.y = 0;
 			break;
 	}
 }

@@ -128,24 +128,19 @@ void GLHelpers::DrawVBO( GLuint& VBOHandle, VBOStructureHandle* vbostructure )
 			glUseProgram( aprog );
 			//GLint ct = glGetUniformLocation(aprog, "colorTexture");
 			//GLint nt = glGetUniformLocation(aprog, "normalTexture");
-		    //glUniform1i(ct, 0);
-		    //glUniform1i(nt, 1);
+			//glUniform1i(ct, 0);
+			//glUniform1i(nt, 1);
 		}
 		if( texture != vbostructure->atlas ){
 			glActiveTexture( GL_TEXTURE0 );
 			glBindTexture( GL_TEXTURE_2D, vbostructure->atlas );
 			texture = vbostructure->atlas;
 		}
-		if( normals != vbostructure->normals ){
-			glActiveTexture( GL_TEXTURE1 );
-			glBindTexture( GL_TEXTURE_2D, vbostructure->normals );
-			normals = vbostructure->normals;
-			GLint location = glGetUniformLocation(vbostructure->shader, "normalsEnabled");
-			if( !normals )
-				glUniform1f(location, 0.0f);
-			else
-				glUniform1f(location, 1.0f);
-		}
+		//if( normals != vbostructure->normals ){
+		//	glActiveTexture( GL_TEXTURE1 );
+		//	glBindTexture( GL_TEXTURE_2D, vbostructure->normals );
+			//normals = vbostructure->normals;
+		//}
 		glDrawElements( vbostructure->method, vbostructure->count, GL_UNSIGNED_INT, vbostructure->indexes );
 		//glDrawArrays(GL_QUADS, vbostructure->indexes, vbostructure->count);
 		//Clean vbos

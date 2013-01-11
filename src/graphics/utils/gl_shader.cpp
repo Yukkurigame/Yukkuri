@@ -42,9 +42,9 @@ namespace {
 	std::map< enum GLSFlags, GLuint > shaders;
 
 
-	#define MACROS_SIZE 3
+	#define MACROS_SIZE 4
 	const char* macros[MACROS_SIZE] = {
-		"_YNORMALS", "_YLIGHT", "_YFIXED"
+		"_YNORMALS", "_YLIGHT", "_YFIXED", "_YGEOMETRY_PASS"
 	};
 }
 
@@ -59,7 +59,7 @@ char* generate_defines( enum GLSFlags glflags )
 
 	unsigned int flag = glsFirst;
 	int index = -1;
-	while( flag < glsLast ){
+	while( flag < glsAll ){
 		++index;
 		flag <<= 1;
 		if( ( glflags & flag ) == 0 || index > MACROS_SIZE )
@@ -145,7 +145,7 @@ GLint create_shader( const char* filename, int type, const char* defines )
 	/* Pointer will receive the contents of our shader source code files */
 	char* buffer = filetobuf( filename );
 	int size = 8 + strlen(filename);
-	char* name = (char*)malloc( sizeof(char) * size );
+	char* name = (char*)malloc( (unsigned)sizeof(char) * size );
 	snprintf( name, size, "Shader %s", filename );
 
 	const char* sources[2] = { defines, buffer };
@@ -241,19 +241,34 @@ GLuint Shaders::getProgram( enum GLSFlags glflags )
 }
 
 
-#define PASS_UNIFORM( glname, type )														\
-void Shaders::passUniform##glname( enum GLSFlags glflag, const char* name, int count, type data )	\
-{																					\
+#define PASS_UNIFORM( type, func )											\
 	FOREACHIT(shaders){																\
-		if( !(it->first & glflag) )													\
+		/* flag in flags or flag is glsAll && flags is None */						\
+		if( glflag != glsAll && !(it->first & glflag ) )							\
 			continue;																\
 		int location = glGetUniformLocation( it->second, name );					\
 		glUseProgram(it->second);													\
-		glUniform##glname( location, count, data );									\
+		func;																		\
 	}																				\
 	glUseProgram(0);																\
+
+#define PASS_UNIFORM_V( glname, type )												\
+void Shaders::passUniform##glname( enum GLSFlags glflag, const char* name,			\
+		int count, type data )														\
+{																					\
+	PASS_UNIFORM(type, glUniform##glname( location, count, data ));					\
 }
 
-PASS_UNIFORM( 3fv, float* )
+#define PASS_UNIFORM_MATRIX( glname, type )											\
+void Shaders::passUniformMatrix##glname( enum GLSFlags glflag, const char* name,	\
+		int count, GLboolean transpose, type data )									\
+{																					\
+	PASS_UNIFORM(type, glUniformMatrix##glname( location, count, transpose, data ));\
+}
+
+
+PASS_UNIFORM_V( 3fv, float* )
+
+PASS_UNIFORM_MATRIX( 4fv, float* )
 
 #undef PASS_UNIFORM

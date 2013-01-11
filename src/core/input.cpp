@@ -11,6 +11,7 @@
 
 #include <string>
 #include "SDL/SDL.h"
+#include "graphics/Camera.h"
 
 
 
@@ -40,7 +41,6 @@ bool Yukkuri::InitInput( )
 
 	return true;
 }
-
 
 /** Handles all controller inputs. **/
 void Yukkuri::HandleInput()

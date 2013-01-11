@@ -235,8 +235,12 @@ GLuint Shaders::getProgram( enum GLSFlags glflags )
 	if( fit != shaders.end() )
 		return fit->second;
 	GLuint prog = createProgram( conf.shadersPath + "main", glflags );
-	if( prog )
+	if( prog ){
 		shaders[glflags] = prog;
+		glUniform1i(glGetUniformLocation(prog, "colorTexture"), 0);
+		if( glflags & glsNormals )
+			glUniform1i(glGetUniformLocation(prog, "normalTexture"), 1);
+	}
 	return prog;
 }
 

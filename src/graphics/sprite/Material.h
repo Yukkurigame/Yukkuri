@@ -14,8 +14,10 @@
 
 struct GLMaterial
 {
-	GLuint program;
 	UINT flags;
+	struct  {
+		GLuint geometry;
+	} programs;
 
 	void init_flags( UINT glflags );
 
@@ -25,7 +27,7 @@ struct GLMaterial
 
 };
 
-
+/*
 namespace GLMaterialManager {
 
 	void clean( );
@@ -33,6 +35,7 @@ namespace GLMaterialManager {
 	UINT CreateMaterial( UINT glflags );
 	GLMaterial* GetMaterial( UINT id );
 }
+*/
 
 
 #endif /* MATERIAL_H_ */

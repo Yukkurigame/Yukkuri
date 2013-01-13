@@ -7,6 +7,7 @@
 
 #include "graphics/render/TextureArray.h"
 #include "graphics/render/GLHelpers.h"
+#include "graphics/utils/gl_shader.h"
 #include "graphics/GraphicsTypes.h"
 #include "graphics/gl_extensions.h"
 #include "graphics/Render.h"
@@ -35,16 +36,16 @@ namespace {
 }
 
 
-inline void prepare_vbo( Sprite* s, VBOStructureHandle*& v, VBOStructureHandle*& first )
+inline void vbo_handler( Sprite* s, GLuint shader, VBOStructureHandle*& v, VBOStructureHandle*& first )
 {
 	if( s == NULL || !s->isVisible() )
 		return;
 
 	if( !v ){
-		first = v = new VBOStructureHandle( s->brush.type, s->atlas, s->normals, s->material.program );
+		first = v = new VBOStructureHandle( s->brush.type, s->atlas, s->normals, shader );
 	}else if( v->type != prQUADS || s->atlas != v->atlas ||
-			s->normals != v->normals || s->material.program != v->shader ){
-		v->next = new VBOStructureHandle( s->brush.type, s->atlas, s->normals, s->material.program );
+			s->normals != v->normals || shader != v->shader ){
+		v->next = new VBOStructureHandle( s->brush.type, s->atlas, s->normals, shader );
 		v = v->next;
 	}
 
@@ -58,14 +59,21 @@ inline void prepare_vbo( Sprite* s, VBOStructureHandle*& v, VBOStructureHandle*&
  *	verticles - vbo data array
  *	returns pointer to the first vbo info handler
  */
-VBOStructureHandle* TextureArray::prepareVBO( std::vector< Sprite* >& sprites )
+VBOStructureHandle* TextureArray::prepareVBO( int pass, std::vector< Sprite* >& sprites )
 {
 	sort(sprites.begin(), sprites.end(), compareSprites);
 	VBOStructureHandle* v = NULL;
 	VBOStructureHandle* first = NULL;
 	FOREACHIT( sprites ){
 		Sprite* s = *(it);
-		prepare_vbo( s, v, first );
+		int shader = glpNone;
+		switch(pass){
+			case glpGeometry:
+				shader = s->material.programs.geometry;
+				break;
+		}
+
+		vbo_handler( s, shader, v, first );
 	}
 	return first;
 }
@@ -85,7 +93,7 @@ VBOStructureHandle* TextureArray::prepareVBO( Sprite* sprites, unsigned int scou
 	VBOStructureHandle* first = NULL;
 	for( unsigned int i = 0; i < scount; ++i ){
 		Sprite* s = &sprites[i];
-		prepare_vbo( s, v, first );
+		vbo_handler( s, 0, v, first );
 	}
 	return first;
 }
@@ -195,8 +203,15 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, S
 	VBOStructureHandle* vbostructure = prepareVBO( sprites, count );
 
 	glGenBuffers(1, &VBOHandle);
-	GLHelpers::DrawVBO( VBOHandle, vbostructure );
+	GLHelpers::DrawVBO( VBOHandle, vbostructure, false );
 	glDeleteBuffers( 1, &VBOHandle );
+
+	VBOStructureHandle* temp;
+	while( vbos != NULL ){
+		temp = vbos;
+		vbos = vbos->next;
+		delete temp;
+	}
 
 	/* free( vertices ); */
 

@@ -19,15 +19,21 @@ enum GLSFlags {
 	glsNormals = 	0x02,
 	glsLight = 		0x04,
 	glsFixed = 		0x08,
-	glsGeometry = 	0x10,
-	glsAll = 		0x1F,
-	glsLast = 		0x20
+	glsAll = 		0x0F,
+	glsLast = 		0x10
+};
+
+
+enum GLSPass {
+	glpNone = 0x00,
+	glpGeometry = 0x01,
+	glpLast = 0x20,
 };
 
 
 namespace Shaders {
 	//GLuint getProgram( std::string filename );
-	GLuint getProgram( enum GLSFlags glflags );
+	GLuint getProgram( enum GLSPass, enum GLSFlags glflags );
 	void passUniform3fv( enum GLSFlags, const char* name, int count, float* data);
 	void passUniformMatrix4fv( enum GLSFlags, const char* name,	int count, GLboolean transpose, float* data );
 }

@@ -12,14 +12,14 @@
 void GLMaterial::init_flags( UINT glflags )
 {
 	flags = glflags;
-	program = Shaders::getProgram( static_cast<enum GLSFlags>(glflags) );
+	programs.geometry = Shaders::getProgram( glpGeometry, static_cast<enum GLSFlags>(glflags) );
 }
 
 
 
 /////////////////////////////////////////////////////
 //			Material manager
-
+/*
 namespace GLMaterialManager
 {
 	GLMaterial* materials = NULL;
@@ -51,3 +51,4 @@ GLMaterial* GLMaterialManager::GetMaterial( UINT id )
 		return NULL;
 	return &materials[id];
 }
+*/

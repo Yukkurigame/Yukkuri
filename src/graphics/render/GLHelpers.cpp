@@ -9,11 +9,15 @@
 #include "graphics/utils/VBOArray.h"
 #include "graphics/gl_extensions.h"
 
-
 #include "debug.h"
 
 
 #define BUFFER_OFFSET(i) ((char*)NULL + (int)(i))
+#define POSITION_LOCATION 0
+#define TEX_COORD_LOCATION 1
+#define NORMAL_LOCATION 2
+#define COLOR_LOCATION 3
+
 
 
 /*	This function creates new opengl texture. If texture is exists it will be cleared.
@@ -97,9 +101,18 @@ bool GLHelpers::ClearView( )
  * 	vbostructure - linked list of vbo description
  * 	vertices - array of vertices, coordinates and color
  */
-void GLHelpers::DrawVBO( GLuint& VBOHandle, VBOStructureHandle* vbostructure )
+void GLHelpers::DrawVBO( GLuint& VBOHandle, VBOStructureHandle* vbostructure, bool shaders )
 {
-	VBOStructureHandle* temp = NULL;
+	//VBOStructureHandle* temp = NULL;
+
+	glEnableVertexAttribArray(POSITION_LOCATION);
+	glVertexAttribPointer(POSITION_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(TEX_COORD_LOCATION);
+	glVertexAttribPointer(TEX_COORD_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	//glEnableVertexAttribArray(NORMAL_LOCATION);
+	//glVertexAttribPointer(NORMAL_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(COLOR_LOCATION);
+	glVertexAttribPointer(COLOR_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 	//glGenBuffers(1, &VBOHandle);
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -123,7 +136,7 @@ void GLHelpers::DrawVBO( GLuint& VBOHandle, VBOStructureHandle* vbostructure )
 	GLuint normals = 0;
 
 	while(vbostructure != NULL){
-		if( aprog != vbostructure->shader ){
+		if( shaders && aprog != vbostructure->shader ){
 			aprog = vbostructure->shader;
 			glUseProgram( aprog );
 			//GLint ct = glGetUniformLocation(aprog, "colorTexture");
@@ -144,9 +157,9 @@ void GLHelpers::DrawVBO( GLuint& VBOHandle, VBOStructureHandle* vbostructure )
 		glDrawElements( vbostructure->method, vbostructure->count, GL_UNSIGNED_INT, vbostructure->indexes );
 		//glDrawArrays(GL_QUADS, vbostructure->indexes, vbostructure->count);
 		//Clean vbos
-		temp = vbostructure;
+		//temp = vbostructure;
 		vbostructure = vbostructure->next;
-		delete temp;
+		//delete temp;
 	}
 	glUseProgram( 0 );
 	glActiveTexture( GL_TEXTURE0 );

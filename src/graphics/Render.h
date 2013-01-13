@@ -19,7 +19,7 @@ namespace RenderManager
 	void clean( );
 
 	void openglInit();
-	void openglSetup( int wwidth, int wheight );
+	bool openglSetup( int wwidth, int wheight );
 
 
 	//////////////////////////////////////////////////
@@ -52,6 +52,8 @@ namespace RenderManager
 	Sprite* CreateGLSprite( Sprite* osprite );
 	void FreeGLSprite( Sprite* sprite );
 	void FreeGLSprites( std::vector< Sprite* >* sprites );
+
+	std::vector< Sprite* >& GetSpritesArray( );
 
 
 	//////////////////////////////////////////////////

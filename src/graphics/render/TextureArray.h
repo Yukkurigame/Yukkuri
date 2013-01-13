@@ -14,7 +14,7 @@
 namespace TextureArray
 {
 	// Vertex buffer object
-	VBOStructureHandle* prepareVBO( std::vector< Sprite* >& sprites );
+	VBOStructureHandle* prepareVBO( int pass, std::vector< Sprite* >& sprites );
 	VBOStructureHandle* prepareVBO( Sprite* sprites, unsigned int scount );
 
 

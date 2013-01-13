@@ -11,6 +11,7 @@
 #include "graphics/Camera.h"
 #include "graphics/Text.h"
 #include "graphics/render/Atlas.h"
+#include "graphics/render/GBuffer.h"
 #include "graphics/render/GLHelpers.h"
 #include "graphics/render/GLTextures.h"
 #include "graphics/render/TextureArray.h"
@@ -114,7 +115,6 @@ void RenderManager::init( )
 
 	AnimDef::init();
 	Camera::init( );
-
 }
 
 
@@ -132,7 +132,8 @@ void RenderManager::clean( )
 	//	free(verticles);
 	GLTextures::clearCache();
 	CleanFonts();
-	VBOArray::clean();
+	VBOArray::clean( );
+	GBuffer::clean( );
 	ftDone();
 }
 
@@ -149,9 +150,11 @@ void RenderManager::openglInit( )
 }
 
 
-void RenderManager::openglSetup( int wwidth, int wheight )
+bool RenderManager::openglSetup( int wwidth, int wheight )
 {
 	GLExtensions::load();
+	if( !GBuffer::init( ) )
+		return false;
 
 	//glEnable( GL_TEXTURE_2D );
 
@@ -171,7 +174,7 @@ void RenderManager::openglSetup( int wwidth, int wheight )
 	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);
+	//glEnable(GL_BLEND);
 
 	//glEnable(GL_ALPHA_TEST); //It's work but with ugly border
 	//glAlphaFunc(GL_NOTEQUAL, 0);
@@ -200,6 +203,7 @@ void RenderManager::openglSetup( int wwidth, int wheight )
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+	return true;
 }
 
 
@@ -369,6 +373,12 @@ void RenderManager::FreeGLSprites( std::vector< Sprite* >* sprites )
 }
 
 
+std::vector< Sprite* >& RenderManager::GetSpritesArray( )
+{
+	return GLSprites;
+}
+
+
 //////////////////////////////////////////////////
 // Scene
 
@@ -403,9 +413,12 @@ void RenderManager::DrawGLScene()
 
 	//VBOStructureHandle* temp = NULL;
 	//int count = 0;
-	VBOStructureHandle* vbostructure = TextureArray::prepareVBO( GLSprites );
+	//VBOStructureHandle* vbostructure = TextureArray::prepareVBO( GLSprites );
 
-	GLHelpers::DrawVBO( VBOHandle, vbostructure );
+	//GLHelpers::DrawVBO( VBOHandle, vbostructure );
+
+	GBuffer::render( );
+
 
 	//TestDrawAtlas(-2500, -1000, 10);
 

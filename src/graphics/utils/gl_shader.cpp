@@ -39,12 +39,16 @@ namespace {
 		return buf; /* Return the buffer */
 	}
 
-	std::map< enum GLSFlags, GLuint > shaders;
+
+	std::map< enum GLSFlags, GLuint > shaders[glpLast];
 
 
-	#define MACROS_SIZE 4
+	#define MACROS_SIZE 3
 	const char* macros[MACROS_SIZE] = {
-		"_YNORMALS", "_YLIGHT", "_YFIXED", "_YGEOMETRY_PASS"
+		"_YNORMALS", "_YLIGHT", "_YFIXED"
+	};
+	const char* passes[glpLast] = {
+		"main", "geometry",
 	};
 }
 
@@ -229,32 +233,39 @@ GLuint createProgram( std::string filename, enum GLSFlags glflags )
 }
 
 
-GLuint Shaders::getProgram( enum GLSFlags glflags )
+GLuint Shaders::getProgram( enum GLSPass pass, enum GLSFlags glflags )
 {
-	std::map< enum GLSFlags, GLuint >::iterator fit = shaders.find( glflags );
-	if( fit != shaders.end() )
+	std::map< enum GLSFlags, GLuint >& shaders_map = shaders[pass];
+	std::map< enum GLSFlags, GLuint >::iterator fit = shaders_map.find( glflags );
+	if( fit != shaders_map.end() )
 		return fit->second;
-	GLuint prog = createProgram( conf.shadersPath + "main", glflags );
+	const char* sdrname = passes[pass];
+	GLuint prog = createProgram( conf.shadersPath + sdrname, glflags );
 	if( prog ){
-		shaders[glflags] = prog;
-		glUniform1i(glGetUniformLocation(prog, "colorTexture"), 0);
-		if( glflags & glsNormals )
-			glUniform1i(glGetUniformLocation(prog, "normalTexture"), 1);
+		shaders_map[glflags] = prog;
+		//glUniform1i(glGetUniformLocation(prog, "colorTexture"), 0);
+		//if( glflags & glsNormals )
+		//	glUniform1i(glGetUniformLocation(prog, "normalTexture"), 1);
 	}
 	return prog;
 }
 
 
-#define PASS_UNIFORM( type, func )											\
-	FOREACHIT(shaders){																\
-		/* flag in flags or flag is glsAll && flags is None */						\
-		if( glflag != glsAll && !(it->first & glflag ) )							\
-			continue;																\
-		int location = glGetUniformLocation( it->second, name );					\
-		glUseProgram(it->second);													\
-		func;																		\
+#define PASS_UNIFORM( type, func )													\
+	int pass = 1;																	\
+	while( pass < glpLast ){														\
+		std::map< enum GLSFlags, GLuint >& shaders_map = shaders[pass];				\
+		FOREACHIT(shaders_map){														\
+			/* flag in flags or flag is glsAll */									\
+			if( glflag != glsAll && !(it->first & glflag ) )						\
+				continue;															\
+			int location = glGetUniformLocation( it->second, name );				\
+			glUseProgram(it->second);												\
+			func;																	\
+		}																			\
+		pass <<= 1;																	\
 	}																				\
-	glUseProgram(0);																\
+	glUseProgram(0);
 
 #define PASS_UNIFORM_V( glname, type )												\
 void Shaders::passUniform##glname( enum GLSFlags glflag, const char* name,			\

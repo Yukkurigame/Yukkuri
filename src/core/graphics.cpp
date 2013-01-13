@@ -60,7 +60,8 @@ bool Yukkuri::InitGraphics( )
 	Window.width = conf.windowWidth;
 	Window.height = conf.windowHeight;
 
-	RenderManager::openglSetup( Window.width, Window.height );
+	if( !RenderManager::openglSetup( Window.width, Window.height ) )
+		return false;
 
 	Debug::debug( Debug::NONE, "Done\n" );
 

@@ -15,6 +15,12 @@
 #include "debug.h"
 
 
+#define POSITION_LOCATION 0
+#define TEX_COORD_LOCATION 1
+#define COLOR_LOCATION 2
+#define NORMAL_LOCATION 3
+
+
 extern MainConfig conf;
 
 
@@ -169,6 +175,11 @@ GLint create_shader( const char* filename, int type, const char* defines )
 	if( !check_shader( shader, GL_COMPILE_STATUS, name ) ){
 		glDeleteShader(shader);
 		shader = -1;
+	}else{
+		glBindAttribLocation(shader, POSITION_LOCATION, "in_Position");
+		glBindAttribLocation(shader, TEX_COORD_LOCATION, "in_TextCoord");
+		glBindAttribLocation(shader, NORMAL_LOCATION, "in_Normal");
+		glBindAttribLocation(shader, COLOR_LOCATION, "in_Color");
 	}
 
 	// Free allocated resources

@@ -57,6 +57,12 @@ bool Yukkuri::InitGraphics( )
 		Debug::debug( Debug::MAIN, "Unable to set up video: " + static_cast<std::string>(SDL_GetError( )) + "\n" );
 		return false;
 	}
+	GLenum err = glewInit();
+	if( err != GLEW_OK ){
+		Debug::debug( Debug::GRAPHICS, "Unable to init glew. No YOBA available.\n" );
+		return false;
+	}
+
 	Window.width = conf.windowWidth;
 	Window.height = conf.windowHeight;
 

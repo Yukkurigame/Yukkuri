@@ -13,11 +13,6 @@
 
 
 #define BUFFER_OFFSET(i) ((char*)NULL + (int)(i))
-#define POSITION_LOCATION 0
-#define TEX_COORD_LOCATION 1
-#define NORMAL_LOCATION 2
-#define COLOR_LOCATION 3
-
 
 
 /*	This function creates new opengl texture. If texture is exists it will be cleared.
@@ -104,15 +99,6 @@ bool GLHelpers::ClearView( )
 void GLHelpers::DrawVBO( GLuint& VBOHandle, VBOStructureHandle* vbostructure, bool shaders )
 {
 	//VBOStructureHandle* temp = NULL;
-
-	glEnableVertexAttribArray(POSITION_LOCATION);
-	glVertexAttribPointer(POSITION_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(TEX_COORD_LOCATION);
-	glVertexAttribPointer(TEX_COORD_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	//glEnableVertexAttribArray(NORMAL_LOCATION);
-	//glVertexAttribPointer(NORMAL_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(COLOR_LOCATION);
-	glVertexAttribPointer(COLOR_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 	//glGenBuffers(1, &VBOHandle);
 	glEnableClientState(GL_VERTEX_ARRAY);

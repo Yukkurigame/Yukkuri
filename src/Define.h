@@ -20,6 +20,8 @@
 	#include "GL\glew.h"
 #else
 	#define GL_GLEXT_PROTOTYPES 1
+	#define NO_SDL_GLEXT
+	#include "GL/glew.h"
 	#include "SDL/SDL_opengl.h"
 #endif
 

@@ -207,9 +207,9 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, S
 	glDeleteBuffers( 1, &VBOHandle );
 
 	VBOStructureHandle* temp;
-	while( vbos != NULL ){
-		temp = vbos;
-		vbos = vbos->next;
+	while( vbostructure != NULL ){
+		temp = vbostructure;
+		vbostructure = vbostructure->next;
 		delete temp;
 	}
 

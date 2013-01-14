@@ -14,6 +14,12 @@
 #include <cstdlib>
 
 
+enum Textures {
+	gltColor = GL_TEXTURE0,
+	gltNormal = GL_TEXTURE1
+};
+
+
 struct s4ub
 {
 	GLubyte r;

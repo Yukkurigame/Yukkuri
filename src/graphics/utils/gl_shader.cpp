@@ -176,10 +176,16 @@ GLint create_shader( const char* filename, int type, const char* defines )
 		glDeleteShader(shader);
 		shader = -1;
 	}else{
-		glBindAttribLocation(shader, POSITION_LOCATION, "in_Position");
-		glBindAttribLocation(shader, TEX_COORD_LOCATION, "in_TextCoord");
-		glBindAttribLocation(shader, NORMAL_LOCATION, "in_Normal");
-		glBindAttribLocation(shader, COLOR_LOCATION, "in_Color");
+		glUseProgram( shader );
+		glBindAttribLocation( shader, POSITION_LOCATION, "in_Position" );
+		glBindAttribLocation( shader, TEX_COORD_LOCATION, "in_TextCoord" );
+		glBindAttribLocation( shader, NORMAL_LOCATION, "in_Normal" );
+		glBindAttribLocation( shader, COLOR_LOCATION, "in_Color" );
+		GLint cm = glGetUniformLocation( shader, "in_ColorMap" );
+		GLint nm = glGetUniformLocation( shader, "in_NormalMap" );
+		glUniform1i( cm, gltColor );
+		glUniform1i( cm, gltNormal );
+		glUseProgram( 0 );
 	}
 
 	// Free allocated resources

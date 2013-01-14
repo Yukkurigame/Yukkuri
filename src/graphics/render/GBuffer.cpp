@@ -55,8 +55,12 @@ bool GBuffer::init()
 
 	// Depth texture
 	glBindTexture( GL_TEXTURE_2D, depth_texture );
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH32F_STENCIL8, conf.windowWidth, conf.windowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL );
-	glFramebufferTexture2DEXT( GL_DRAW_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depth_texture, 0 );
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, conf.windowWidth, conf.windowHeight,
+				0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL );
+	glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+							GL_TEXTURE_2D, depth_texture, 0 );
+	glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
+							GL_TEXTURE_2D, depth_texture, 0 );
 
 	// Result texture
 	glBindTexture( GL_TEXTURE_2D, final_texture );
@@ -71,6 +75,7 @@ bool GBuffer::init()
 	}
 
 	// restore default FBO
+	glBindTexture( GL_TEXTURE_2D, 0 );
 	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
 
 	return true;
@@ -103,16 +108,21 @@ void GBuffer::render()
 	glDrawBuffer( GL_COLOR_ATTACHMENT4 );
 	glClear( GL_COLOR_BUFFER_BIT );
 
+	GLHelpers::BindVBO( VBOHandle );
+	GLHelpers::FillVBO();
+
 	geometry_pass( );
+
+	GLHelpers::UnbindVBO( );
 
 	// Draw to final texture
 	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
-    glBindFramebuffer( GL_READ_FRAMEBUFFER, fbo );
-    glReadBuffer( GL_COLOR_ATTACHMENT4 );
+	glBindFramebuffer( GL_READ_FRAMEBUFFER, fbo );
+	glReadBuffer( GL_COLOR_ATTACHMENT4 );
 
-    // Blit final texture to screen
-    glBlitFramebuffer(0, 0, conf.windowWidth, conf.windowHeight, 0, 0,
-                      conf.windowWidth, conf.windowHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	// Blit final texture to screen
+	glBlitFramebuffer(0, 0, conf.windowWidth, conf.windowHeight, 0, 0,
+					conf.windowWidth, conf.windowHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
 }
 
@@ -124,7 +134,7 @@ void GBuffer::geometry_pass( )
 			GL_COLOR_ATTACHMENT1,
 			GL_COLOR_ATTACHMENT2 };
 
-	glDrawBuffers( 3, draw_buffers );
+	glDrawBuffersARB( 3, draw_buffers );
 
 	// Only the geometry pass updates the depth buffer
 	glDepthMask( GL_TRUE );
@@ -136,7 +146,7 @@ void GBuffer::geometry_pass( )
 	VBOStructureHandle* vbos = TextureArray::prepareVBO(
 			glpGeometry, RenderManager::GetSpritesArray() );
 
-	GLHelpers::DrawVBO( VBOHandle, vbos );
+	GLHelpers::DrawVBO( vbos );
 
 	VBOStructureHandle* temp;
 	while( vbos != NULL ){

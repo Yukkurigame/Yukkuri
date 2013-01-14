@@ -91,66 +91,81 @@ bool GLHelpers::ClearView( )
 }
 
 
-/*	This function draws vertex buffer object
- * 	vboc - vertices count
- * 	vbostructure - linked list of vbo description
- * 	vertices - array of vertices, coordinates and color
+/*	This function pass verticles array data to VBO
+ *  VBO must be bindes perviously.
  */
-void GLHelpers::DrawVBO( GLuint& VBOHandle, VBOStructureHandle* vbostructure, bool shaders )
+void GLHelpers::FillVBO( )
 {
-	//VBOStructureHandle* temp = NULL;
-
-	//glGenBuffers(1, &VBOHandle);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnable(GL_TEXTURE_2D);
-	glBindBuffer( GL_ARRAY_BUFFER, VBOHandle );
-
 	// VBO + GL_STREAM_DRAW == +10 fps
-	int vertex_size =  sizeof(VertexV2FT2FC4UI);
 	VertexV2FT2FC4UI* head = VBOArray::head();
 	int size = VBOArray::size();
 	glBufferData( GL_ARRAY_BUFFER, size, head, GL_STREAM_DRAW );
+}
 
+
+/*	This function binds VBO and set up pointers positions.
+ *  VBOHandle - VBO id.
+ */
+void GLHelpers::BindVBO( GLuint VBOHandle )
+{
+	glBindBuffer( GL_ARRAY_BUFFER, VBOHandle );
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+
+	// Set up VBO strides & offsets
+	int vertex_size =  sizeof(VertexV2FT2FC4UI);
 	glVertexPointer( 3, GL_FLOAT, vertex_size, 0 );
 	glTexCoordPointer( 2, GL_FLOAT, vertex_size, BUFFER_OFFSET(sizeof(s3f)) );
 	glColorPointer( 4, GL_UNSIGNED_BYTE, vertex_size, BUFFER_OFFSET(sizeof(s3f) + sizeof(s2f)) );
+}
 
+
+/*	This function ubinds VBO. */
+void GLHelpers::UnbindVBO( )
+{
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
+}
+
+
+/*	This function draws vertex buffer object
+ * 	vbostructure - linked list of vbo description
+ */
+void GLHelpers::DrawVBO( VBOStructureHandle* vbostructure )
+{
 	GLuint aprog = 0;
 	GLuint texture = 0;
 	GLuint normals = 0;
 
+	glEnable(GL_TEXTURE_2D);
 	while(vbostructure != NULL){
-		if( shaders && aprog != vbostructure->shader ){
+		if( aprog != vbostructure->shader ){
 			aprog = vbostructure->shader;
 			glUseProgram( aprog );
-			//GLint ct = glGetUniformLocation(aprog, "colorTexture");
-			//GLint nt = glGetUniformLocation(aprog, "normalTexture");
-			//glUniform1i(ct, 0);
-			//glUniform1i(nt, 1);
 		}
 		if( texture != vbostructure->atlas ){
-			glActiveTexture( GL_TEXTURE0 );
-			glBindTexture( GL_TEXTURE_2D, vbostructure->atlas );
 			texture = vbostructure->atlas;
+			glActiveTexture( gltColor );
+			glBindTexture( GL_TEXTURE_2D, texture );
 		}
-		//if( normals != vbostructure->normals ){
-		//	glActiveTexture( GL_TEXTURE1 );
-		//	glBindTexture( GL_TEXTURE_2D, vbostructure->normals );
-			//normals = vbostructure->normals;
-		//}
+		if( normals != vbostructure->normals ){
+			normals = vbostructure->normals;
+			glActiveTexture( gltNormal );
+			glBindTexture( GL_TEXTURE_2D, normals );
+		}
 		glDrawElements( vbostructure->method, vbostructure->count, GL_UNSIGNED_INT, vbostructure->indexes );
 		//glDrawArrays(GL_QUADS, vbostructure->indexes, vbostructure->count);
 		//Clean vbos
-		//temp = vbostructure;
 		vbostructure = vbostructure->next;
-		//delete temp;
 	}
 	glUseProgram( 0 );
-	glActiveTexture( GL_TEXTURE0 );
+	glActiveTexture( gltColor );
 	glBindTexture(GL_TEXTURE_2D, 0);
-	glActiveTexture( GL_TEXTURE1 );
+	glActiveTexture( gltNormal );
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 #ifdef DEBUG_DRAW_RECTANGLES
@@ -158,13 +173,7 @@ void GLHelpers::DrawVBO( GLuint& VBOHandle, VBOStructureHandle* vbostructure, bo
 		glDrawArrays(GL_LINE_LOOP, i, 4);
 #endif
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisable(GL_TEXTURE_2D);
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
-
-	//glDeleteBuffers( 1, &VBOHandle );
 }
 
 

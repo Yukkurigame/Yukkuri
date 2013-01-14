@@ -202,8 +202,11 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, S
 
 	VBOStructureHandle* vbostructure = prepareVBO( sprites, count );
 
-	glGenBuffers(1, &VBOHandle);
-	GLHelpers::DrawVBO( VBOHandle, vbostructure, false );
+	glGenBuffers( 1, &VBOHandle );
+	GLHelpers::BindVBO( VBOHandle );
+	GLHelpers::FillVBO( );
+	GLHelpers::DrawVBO( vbostructure );
+	GLHelpers::UnbindVBO( );
 	glDeleteBuffers( 1, &VBOHandle );
 
 	VBOStructureHandle* temp;

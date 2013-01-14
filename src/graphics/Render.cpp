@@ -317,7 +317,7 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 	}else{
 		sprite->tex = &textures[texture_id];
 		sprite->atlas = sprite->tex->atlas;
-		sprite->normals = sprite->tex->normals;
+		sprite->addNormalMap( sprite->tex->normals );
 	}
 
 	sprite->resize( (float)width, (float)height );

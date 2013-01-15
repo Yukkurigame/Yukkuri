@@ -38,8 +38,16 @@ struct Sprite
 
 	inline void setFixed( ){ material.add_flag(glsFixed); }
 	inline void clearFixed( ){ material.clear_flag(glsFixed); }
-	//void setFixed();					// Needs shader placing
-	//inline void clearFixed()			{ flags &= ~4; shader = 0; }
+
+	inline void addNormalMap( GLuint map ){
+		normals = map;
+		if( map )
+			material.add_flag( glsNormals );
+	}
+	inline void removeNormalMap( ){
+		normals = 0;
+		material.clear_flag( glsNormals );
+	}
 
 	Sprite() : rect(), brush( prQUADS, 0 ) {
 		tex = NULL;

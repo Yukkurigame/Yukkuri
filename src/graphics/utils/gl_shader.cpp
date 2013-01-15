@@ -244,6 +244,10 @@ GLuint createProgram( std::string filename, enum GLSFlags glflags )
 		GLint nm = glGetUniformLocation( shaderprogram, "in_NormalMap" );
 		if( nm >= 0 )
 			glUniform1i( nm, gltNormal );
+		glBindFragDataLocation( shaderprogram, 0, "frag_WorldPos");
+		glBindFragDataLocation( shaderprogram, 1, "frag_TexCoord");
+		glBindFragDataLocation( shaderprogram, 2, "frag_ColorMap");
+		glBindFragDataLocation( shaderprogram, 3, "frag_Normal");
 		glUseProgram( 0 );
 	}
 

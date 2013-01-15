@@ -175,19 +175,7 @@ GLint create_shader( const char* filename, int type, const char* defines )
 	if( !check_shader( shader, GL_COMPILE_STATUS, name ) ){
 		glDeleteShader(shader);
 		shader = -1;
-	}else{
-		glUseProgram( shader );
-		glBindAttribLocation( shader, POSITION_LOCATION, "in_Position" );
-		glBindAttribLocation( shader, TEX_COORD_LOCATION, "in_TextCoord" );
-		glBindAttribLocation( shader, NORMAL_LOCATION, "in_Normal" );
-		glBindAttribLocation( shader, COLOR_LOCATION, "in_Color" );
-		GLint cm = glGetUniformLocation( shader, "in_ColorMap" );
-		GLint nm = glGetUniformLocation( shader, "in_NormalMap" );
-		glUniform1i( cm, gltColor );
-		glUniform1i( cm, gltNormal );
-		glUseProgram( 0 );
 	}
-
 	// Free allocated resources
 	free(name);
 	free(buffer);
@@ -244,7 +232,21 @@ GLuint createProgram( std::string filename, enum GLSFlags glflags )
 	if( !check_shader( shaderprogram, GL_LINK_STATUS, "Shader program " + filename ) ){
 		glDeleteProgram( shaderprogram );
 		return 0;
+	}else{
+		glUseProgram( shaderprogram );
+		glBindAttribLocation( shaderprogram, POSITION_LOCATION, "in_Position" );
+		glBindAttribLocation( shaderprogram, TEX_COORD_LOCATION, "in_TextCoord" );
+		glBindAttribLocation( shaderprogram, NORMAL_LOCATION, "in_Normal" );
+		glBindAttribLocation( shaderprogram, COLOR_LOCATION, "in_Color" );
+		GLint cm = glGetUniformLocation( shaderprogram, "in_ColorMap" );
+		if( cm >= 0 )
+			glUniform1i( cm, gltColor );
+		GLint nm = glGetUniformLocation( shaderprogram, "in_NormalMap" );
+		if( nm >= 0 )
+			glUniform1i( nm, gltNormal );
+		glUseProgram( 0 );
 	}
+
 
 	return shaderprogram;
 }

@@ -128,7 +128,7 @@ void GBuffer::render()
 
 void GBuffer::geometry_pass( )
 {
-	glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER, fbo );
+	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, fbo );
 
 	GLenum draw_buffers[3] = { GL_COLOR_ATTACHMENT0,
 			GL_COLOR_ATTACHMENT1,

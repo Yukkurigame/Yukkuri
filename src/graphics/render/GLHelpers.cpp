@@ -149,12 +149,12 @@ void GLHelpers::DrawVBO( VBOStructureHandle* vbostructure )
 		}
 		if( texture != vbostructure->atlas ){
 			texture = vbostructure->atlas;
-			glActiveTexture( gltColor );
+			glActiveTexture( GL_TEXTURE_FROM_INDEX(gltColor) );
 			glBindTexture( GL_TEXTURE_2D, texture );
 		}
 		if( normals != vbostructure->normals ){
 			normals = vbostructure->normals;
-			glActiveTexture( gltNormal );
+			glActiveTexture( GL_TEXTURE_FROM_INDEX(gltNormal) );
 			glBindTexture( GL_TEXTURE_2D, normals );
 		}
 		glDrawElements( vbostructure->method, vbostructure->count, GL_UNSIGNED_INT, vbostructure->indexes );
@@ -163,9 +163,9 @@ void GLHelpers::DrawVBO( VBOStructureHandle* vbostructure )
 		vbostructure = vbostructure->next;
 	}
 	glUseProgram( 0 );
-	glActiveTexture( gltColor );
+	glActiveTexture( GL_TEXTURE_FROM_INDEX(gltColor) );
 	glBindTexture(GL_TEXTURE_2D, 0);
-	glActiveTexture( gltNormal );
+	glActiveTexture( GL_TEXTURE_FROM_INDEX(gltNormal) );
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 #ifdef DEBUG_DRAW_RECTANGLES

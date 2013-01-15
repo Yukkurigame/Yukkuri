@@ -15,9 +15,11 @@
 
 
 enum Textures {
-	gltColor = GL_TEXTURE0,
-	gltNormal = GL_TEXTURE1
+	gltColor = 0,
+	gltNormal = 1
 };
+
+#define GL_TEXTURE_FROM_INDEX(i) GL_TEXTURE0 + i
 
 
 struct s4ub

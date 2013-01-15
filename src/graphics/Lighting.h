@@ -8,6 +8,8 @@
 #define LIGHTING_H_
 
 #include "graphics/GraphicsTypes.h"
+#include "basic_types.h"
+
 
 enum LigthType {
 	ltAmbient = 1, ltDirectional = 2, ltPoint = 4, ltSpot = 8
@@ -38,11 +40,9 @@ struct LightSource
 
 namespace LightingManager
 {
-	UINT addLight( enum LigthType type );
-	LightSource* getLight( UINT id );
-	void removeLight(  );
-	void setupLights( );
-
+	LightSource* addLight( enum LigthType type );
+	void freeLight( LightSource* );
+	listElement<LightSource*>* first( enum LigthType type );
 }
 
 

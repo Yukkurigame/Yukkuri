@@ -11,16 +11,8 @@
 
 class Plant: public UnitStatic
 {
-public:
-	void hit( float damage );
-
 protected:
 	virtual CUData* createUData();
-
-
-private:
-
-
 };
 
 #endif /* PLANTS_H_ */

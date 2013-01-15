@@ -24,11 +24,6 @@ namespace GBuffer
 	void clean( );
 
 	void render();
-
-	void geometry_pass( );
-	void stencil_pass( );
-	void light_pass( );
-	void final_pass( );
 }
 
 

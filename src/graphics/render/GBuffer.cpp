@@ -10,7 +10,9 @@
 #include "graphics/utils/gl_shader.h"
 #include "graphics/render/TextureArray.h"
 #include "graphics/render/GLHelpers.h"
+#include "graphics/Lighting.h"
 #include "graphics/Render.h"
+
 
 #include "config.h"
 #include "debug.h"
@@ -27,6 +29,12 @@ namespace GBuffer
 	GLuint final_texture;
 
 	GLuint VBOHandle;
+
+	void geometry_pass( );
+	void stencil_pass( LightSource* );
+	void light_pass_point( LightSource* );
+	void light_pass_directional( LightSource* );
+	void final_pass( );
 }
 
 
@@ -113,6 +121,19 @@ void GBuffer::render()
 
 	geometry_pass( );
 
+	glEnable(GL_STENCIL_TEST);
+
+	listElement<LightSource*>* light = LightingManager::first( ltPoint );
+	while( light != NULL ){
+
+
+		light = light->next;
+	}
+
+
+	glDisable(GL_STENCIL_TEST);
+
+
 	GLHelpers::UnbindVBO( );
 
 	// Draw to final texture
@@ -161,13 +182,22 @@ void GBuffer::geometry_pass( )
 
 }
 
-void GBuffer::stencil_pass( )
+
+void GBuffer::stencil_pass( LightSource* )
+{
+
+}
+
+
+void GBuffer::light_pass_point( LightSource* )
 {
 }
 
-void GBuffer::light_pass( )
+
+void GBuffer::light_pass_directional( LightSource* )
 {
 }
+
 
 void GBuffer::final_pass( )
 {

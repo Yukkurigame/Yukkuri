@@ -190,6 +190,9 @@ GLint create_shader( const char* filename, int type, const char* defines )
 	return shader;
 }
 
+#define BIND_COLORMAP(name, value) \
+	cm = glGetUniformLocation( shaderprogram, name );	\
+	if( cm >= 0 ) glUniform1i( cm, value );
 
 GLuint createProgram( std::string filename, enum GLSFlags glflags )
 {
@@ -243,12 +246,12 @@ GLuint createProgram( std::string filename, enum GLSFlags glflags )
 		return 0;
 	}else{
 		glUseProgram( shaderprogram );
-		GLint cm = glGetUniformLocation( shaderprogram, "in_ColorMap" );
-		if( cm >= 0 )
-			glUniform1i( cm, gltColor );
-		GLint nm = glGetUniformLocation( shaderprogram, "in_NormalMap" );
-		if( nm >= 0 )
-			glUniform1i( nm, gltNormal );
+		GLint cm = 0;
+		BIND_COLORMAP( "in_ColorMap", gltColor )
+		BIND_COLORMAP( "in_NormalMap", gltNormal )
+		BIND_COLORMAP( "in_gPositionMap", gltLast )
+		BIND_COLORMAP( "in_gColorMap", gltLast + 1 )
+		BIND_COLORMAP( "in_gNormalMap", gltLast + 2 )
 		glBindFragDataLocation( shaderprogram, 0, "frag_WorldPos");
 		glBindFragDataLocation( shaderprogram, 1, "frag_ColorMap");
 		glBindFragDataLocation( shaderprogram, 2, "frag_Normal");
@@ -258,7 +261,7 @@ GLuint createProgram( std::string filename, enum GLSFlags glflags )
 
 	return shaderprogram;
 }
-
+#undef BIND_COLORMAP
 
 GLuint Shaders::getProgram( enum GLSPass pass, enum GLSFlags glflags )
 {

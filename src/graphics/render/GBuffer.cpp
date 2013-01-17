@@ -222,7 +222,7 @@ void GBuffer::light_pass_directional( )
 	glDrawBuffer( GL_COLOR_ATTACHMENT4 );
 
 	for (unsigned int i = 0 ; i < gbufLast; i++) {
-		glActiveTexture( GL_TEXTURE0 + i );
+		glActiveTexture( GL_TEXTURE2 + i );
 		glBindTexture( texture_type, textures[i] );
 	}
 

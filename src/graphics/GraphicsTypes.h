@@ -16,7 +16,8 @@
 
 enum Textures {
 	gltColor = 0,
-	gltNormal = 1
+	gltNormal = 1,
+	gltLast = 2
 };
 
 #define GL_TEXTURE_FROM_INDEX(i) GL_TEXTURE0 + i

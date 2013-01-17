@@ -11,7 +11,6 @@ uniform vec3 in_Offset;
 out vec3 vert_WorldPos;
 out vec2 vert_TexCoord;
 out vec4 vert_Color;
-//varying vec4 vert_ColorMap;
 
 
 void main()

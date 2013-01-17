@@ -27,9 +27,17 @@ enum GLSFlags {
 enum GLSPass {
 	glpNone = 0x00,
 	glpGeometry = 0x01,
+	glpPointLight = 0x02,
+	glpDirLight = 0x04,
 	glpLast = 0x20,
 };
 
+enum GLSLocations {
+	gllPosition = 0,
+	gllTexCoord = 1,
+	gllColor = 2,
+	gllNormal = 3
+};
 
 namespace Shaders {
 	//GLuint getProgram( std::string filename );

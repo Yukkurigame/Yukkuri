@@ -173,7 +173,7 @@ bool RenderManager::openglSetup( int wwidth, int wheight )
 
 	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//glEnable(GL_BLEND);
 
 	//glEnable(GL_ALPHA_TEST); //It's work but with ugly border

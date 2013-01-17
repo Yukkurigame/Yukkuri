@@ -30,12 +30,26 @@ namespace GBuffer
 
 	GLuint VBOHandle;
 
+	const int texture_type = GL_TEXTURE_2D;
+
 	void geometry_pass( );
 	void stencil_pass( LightSource* );
 	void light_pass_point( LightSource* );
-	void light_pass_directional( LightSource* );
+	void light_pass_directional( );
 	void final_pass( );
+
+	inline void texture_to_fbo( GLuint tex_id, int int_format, int format, int type, int attach )
+	{
+		glBindTexture( texture_type, tex_id );
+		glTexImage2D( texture_type, 0, int_format, conf.windowWidth, conf.windowHeight,
+						0, format, type, NULL );
+		glTexParameterf( texture_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+		glTexParameterf( texture_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+		glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, attach, texture_type, tex_id, 0 );
+	}
 }
+
+
 
 
 
@@ -54,26 +68,29 @@ bool GBuffer::init()
 	glGenTextures( 1, &final_texture );
 
 	for( unsigned int i = 0 ; i < gbufLast; i++ ){
-		glBindTexture( GL_TEXTURE_2D, textures[i] );
-		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB32F, conf.windowWidth, conf.windowHeight, 0, GL_RGB, GL_FLOAT, NULL );
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, textures[i], 0 );
+		texture_to_fbo( textures[i], GL_RGBA, GL_RGBA, GL_UNSIGNED_INT, GL_COLOR_ATTACHMENT0 + i );
+		/*glBindTexture( texture_type, textures[i] );
+		glTexImage2D( texture_type, 0, GL_RGB32F, conf.windowWidth, conf.windowHeight, 0, GL_RGB, GL_FLOAT, NULL );
+		glTexParameterf( texture_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+		glTexParameterf( texture_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+		glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, texture_type, textures[i], 0 );
+		*/
 	}
 
 	// Depth texture
-	glBindTexture( GL_TEXTURE_2D, depth_texture );
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, conf.windowWidth, conf.windowHeight,
-				0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL );
-	glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-							GL_TEXTURE_2D, depth_texture, 0 );
-	glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
-							GL_TEXTURE_2D, depth_texture, 0 );
+	//glBindTexture( texture_type, depth_texture );
+	//glTexImage2D( texture_type, 0, GL_DEPTH24_STENCIL8, conf.windowWidth, conf.windowHeight,
+	//			0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL );
+	//glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+	//						texture_type, depth_texture, 0 );
+	texture_to_fbo( depth_texture, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, GL_DEPTH_ATTACHMENT );
+	glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, texture_type, depth_texture, 0 );
 
 	// Result texture
-	glBindTexture( GL_TEXTURE_2D, final_texture );
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, conf.windowWidth, conf.windowHeight, 0, GL_RGB, GL_FLOAT, NULL );
-	glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, final_texture, 0 );
+	//glBindTexture( texture_type, final_texture );
+	//glTexImage2D( texture_type, 0, GL_RGBA, conf.windowWidth, conf.windowHeight, 0, GL_RGB, GL_FLOAT, NULL );
+	//glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, texture_type, final_texture, 0 );
+	texture_to_fbo( final_texture, GL_RGBA, GL_RGBA, GL_UNSIGNED_INT, GL_COLOR_ATTACHMENT4 );
 
 	GLenum fbstatus = glCheckFramebufferStatus( GL_FRAMEBUFFER );
 
@@ -83,7 +100,7 @@ bool GBuffer::init()
 	}
 
 	// restore default FBO
-	glBindTexture( GL_TEXTURE_2D, 0 );
+	glBindTexture( texture_type, 0 );
 	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
 
 	return true;
@@ -125,13 +142,14 @@ void GBuffer::render()
 
 	listElement<LightSource*>* light = LightingManager::first( ltPoint );
 	while( light != NULL ){
-
-
+		stencil_pass( light->data );
+		light_pass_point( light->data );
 		light = light->next;
 	}
 
-
 	glDisable(GL_STENCIL_TEST);
+
+	light_pass_directional( );
 
 
 	GLHelpers::UnbindVBO( );
@@ -167,7 +185,12 @@ void GBuffer::geometry_pass( )
 	VBOStructureHandle* vbos = TextureArray::prepareVBO(
 			glpGeometry, RenderManager::GetSpritesArray() );
 
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+
 	GLHelpers::DrawVBO( vbos );
+
+	glDisable(GL_BLEND);
 
 	VBOStructureHandle* temp;
 	while( vbos != NULL ){
@@ -194,8 +217,32 @@ void GBuffer::light_pass_point( LightSource* )
 }
 
 
-void GBuffer::light_pass_directional( LightSource* )
+void GBuffer::light_pass_directional( )
 {
+	glDrawBuffer( GL_COLOR_ATTACHMENT4 );
+
+	for (unsigned int i = 0 ; i < gbufLast; i++) {
+		glActiveTexture( GL_TEXTURE0 + i );
+		glBindTexture( texture_type, textures[i] );
+	}
+
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendEquation(GL_FUNC_ADD);
+	glBlendFunc(GL_ONE, GL_ONE);
+
+	VBOStructureHandle* vbos = TextureArray::prepareVBO(
+			glpDirLight, RenderManager::GetSpritesArray() );
+	GLHelpers::DrawVBO( vbos );
+
+	VBOStructureHandle* temp;
+	while( vbos != NULL ){
+		temp = vbos;
+		vbos = vbos->next;
+		delete temp;
+	}
+
+	glDisable(GL_BLEND);
 }
 
 

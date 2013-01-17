@@ -91,10 +91,10 @@ all: $(PROGNAME)
 
 rebuild: cleanprog all
 
-$(PROGNAME) : | $(OBJDIR) $(GCH) $(OBJS)	
+$(PROGNAME) : dirs $(GCH) $(OBJS)	
 	$(CC) $(CFLAGS)  -o $(OUTDIR)$(PROGNAME) $(OBJS) $(LIBS)
 
-$(OBJDIR):
+dirs:
 	mkdir -p $(addprefix $(OBJDIR), $(COREDIR) $(SCRIPTSDIR) $(SCRIPTSDIR)$(SCRIPTSAPIDIR) \
 	 $(GRAPHICSDIR) $(GRAPHICSDIR)render/ $(GRAPHICSDIR)sprite/ $(GRAPHICSDIR)utils/  \
 	 $(UNITSDIR) $(INTERFACEDIR) $(INTERFACEDIR)$(WIDGETSDIR) $(MAPDIR) $(3RDPARTYDIR) \
@@ -113,4 +113,4 @@ cleanprog:
 	$(rm) $(OUTDIR)$(PROGNAME)
 
 cleandirs:
-	$(rm) -r $(OBJDIR)
+	$(rm) -r $(OBJDIR)*

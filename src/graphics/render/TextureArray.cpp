@@ -71,8 +71,10 @@ VBOStructureHandle* TextureArray::prepareVBO( int pass, std::vector< Sprite* >& 
 			case glpGeometry:
 				shader = s->material.programs.geometry;
 				break;
+			case glpDirLight:
+				shader = s->material.programs.directional_light;
+				break;
 		}
-
 		vbo_handler( s, shader, v, first );
 	}
 	return first;
@@ -202,12 +204,17 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, S
 
 	VBOStructureHandle* vbostructure = prepareVBO( sprites, count );
 
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+
 	glGenBuffers( 1, &VBOHandle );
 	GLHelpers::BindVBO( VBOHandle );
 	GLHelpers::FillVBO( );
 	GLHelpers::DrawVBO( vbostructure );
 	GLHelpers::UnbindVBO( );
 	glDeleteBuffers( 1, &VBOHandle );
+
+	glDisable(GL_BLEND);
 
 	VBOStructureHandle* temp;
 	while( vbostructure != NULL ){

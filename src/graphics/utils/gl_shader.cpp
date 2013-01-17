@@ -15,12 +15,6 @@
 #include "debug.h"
 
 
-#define POSITION_LOCATION 0
-#define TEX_COORD_LOCATION 1
-#define COLOR_LOCATION 2
-#define NORMAL_LOCATION 3
-
-
 extern MainConfig conf;
 
 
@@ -54,8 +48,16 @@ namespace {
 		"_YNORMALS", "_YLIGHT", "_YFIXED"
 	};
 	const char* passes[glpLast] = {
-		"main", "geometry",
+		"main", "geometry", "point_light", "directional_light"
 	};
+	unsigned int pass_index( unsigned int pass ){
+		// Pass enumerated in pow2 order. Obtain its index.
+		if( !pass )
+			return 0;
+		unsigned int index = 1;
+		while( pass >>= 1 ) ++index;
+		return index;
+	}
 }
 
 
@@ -154,6 +156,11 @@ GLint create_shader( const char* filename, int type, const char* defines )
 {
 	/* Pointer will receive the contents of our shader source code files */
 	char* buffer = filetobuf( filename );
+	if( buffer == NULL ){
+		Debug::debug( Debug::OS, "Shader file not found: " + std::string(filename) + "\n" );
+		return -1;
+	}
+
 	int size = 8 + strlen(filename);
 	char* name = (char*)malloc( (unsigned)sizeof(char) * size );
 	snprintf( name, size, "Shader %s", filename );
@@ -209,8 +216,10 @@ GLuint createProgram( std::string filename, enum GLSFlags glflags )
 
 	/* Bind attribute index 0 (coordinates) to in_Position and attribute index 1 (color) to in_Color */
 	/* Attribute locations must be setup before calling glLinkProgram. */
-	//glBindAttribLocation( shaderprogram, 0, "in_Position" );
-	//glBindAttribLocation( shaderprogram, 1, "in_Color" );
+	glBindAttribLocation( shaderprogram, gllPosition, "in_Position" );
+	glBindAttribLocation( shaderprogram, gllTexCoord, "in_TextCoord" );
+	glBindAttribLocation( shaderprogram, gllColor, "in_Color" );
+	glBindAttribLocation( shaderprogram, gllNormal, "in_Normal" );
 
 	/* Link our program */
 	/* At this stage, the vertex and fragment programs are inspected, optimized and a binary code is generated for the shader. */
@@ -234,18 +243,13 @@ GLuint createProgram( std::string filename, enum GLSFlags glflags )
 		return 0;
 	}else{
 		glUseProgram( shaderprogram );
-		glBindAttribLocation( shaderprogram, POSITION_LOCATION, "in_Position" );
-		glBindAttribLocation( shaderprogram, TEX_COORD_LOCATION, "in_TextCoord" );
-		glBindAttribLocation( shaderprogram, NORMAL_LOCATION, "in_Normal" );
-		glBindAttribLocation( shaderprogram, COLOR_LOCATION, "in_Color" );
 		GLint cm = glGetUniformLocation( shaderprogram, "in_ColorMap" );
 		if( cm >= 0 )
 			glUniform1i( cm, gltColor );
 		GLint nm = glGetUniformLocation( shaderprogram, "in_NormalMap" );
 		if( nm >= 0 )
 			glUniform1i( nm, gltNormal );
-		//glBindFragDataLocation( shaderprogram, 0, "frag_WorldPos");
-		glBindFragDataLocation( shaderprogram, 0, "frag_TexCoord");
+		glBindFragDataLocation( shaderprogram, 0, "frag_WorldPos");
 		glBindFragDataLocation( shaderprogram, 1, "frag_ColorMap");
 		glBindFragDataLocation( shaderprogram, 2, "frag_Normal");
 		glUseProgram( 0 );
@@ -262,13 +266,11 @@ GLuint Shaders::getProgram( enum GLSPass pass, enum GLSFlags glflags )
 	std::map< enum GLSFlags, GLuint >::iterator fit = shaders_map.find( glflags );
 	if( fit != shaders_map.end() )
 		return fit->second;
-	const char* sdrname = passes[pass];
+
+	const char* sdrname = passes[ pass_index(pass) ];
 	GLuint prog = createProgram( conf.shadersPath + sdrname, glflags );
 	if( prog ){
 		shaders_map[glflags] = prog;
-		//glUniform1i(glGetUniformLocation(prog, "colorTexture"), 0);
-		//if( glflags & glsNormals )
-		//	glUniform1i(glGetUniformLocation(prog, "normalTexture"), 1);
 	}
 	return prog;
 }
@@ -283,8 +285,10 @@ GLuint Shaders::getProgram( enum GLSPass pass, enum GLSFlags glflags )
 			if( glflag != glsAll && !(it->first & glflag ) )						\
 				continue;															\
 			int location = glGetUniformLocation( it->second, name );				\
-			glUseProgram(it->second);												\
-			func;																	\
+			if( location > 0 ){														\
+				glUseProgram(it->second);											\
+				func;																\
+			}																		\
 		}																			\
 		pass <<= 1;																	\
 	}																				\

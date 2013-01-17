@@ -7,6 +7,7 @@
 
 #include "graphics/render/GLHelpers.h"
 #include "graphics/utils/VBOArray.h"
+#include "graphics/utils/gl_shader.h"
 #include "graphics/gl_extensions.h"
 
 #include "debug.h"
@@ -110,15 +111,24 @@ void GLHelpers::BindVBO( GLuint VBOHandle )
 {
 	glBindBuffer( GL_ARRAY_BUFFER, VBOHandle );
 
+	// Set up VBO strides & offsets
+	int vertex_size =  sizeof(VertexV2FT2FC4UI);
+
+	//TODO: Deprecate
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
-
-	// Set up VBO strides & offsets
-	int vertex_size =  sizeof(VertexV2FT2FC4UI);
 	glVertexPointer( 3, GL_FLOAT, vertex_size, 0 );
 	glTexCoordPointer( 2, GL_FLOAT, vertex_size, BUFFER_OFFSET(sizeof(s3f)) );
 	glColorPointer( 4, GL_UNSIGNED_BYTE, vertex_size, BUFFER_OFFSET(sizeof(s3f) + sizeof(s2f)) );
+
+	// Enable attrib
+	glEnableVertexAttribArray( gllPosition );
+	glEnableVertexAttribArray( gllTexCoord );
+	glEnableVertexAttribArray( gllColor );
+	glVertexAttribPointer( gllPosition, 3, GL_FLOAT, GL_FALSE, vertex_size, 0 );
+	glVertexAttribPointer( gllTexCoord, 2, GL_FLOAT, GL_FALSE, vertex_size, BUFFER_OFFSET(sizeof(s3f)) );
+	glVertexAttribPointer( gllColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, vertex_size, BUFFER_OFFSET(sizeof(s3f) + sizeof(s2f)) );
 }
 
 
@@ -126,6 +136,10 @@ void GLHelpers::BindVBO( GLuint VBOHandle )
 void GLHelpers::UnbindVBO( )
 {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glDisableVertexAttribArray( gllPosition );
+	glDisableVertexAttribArray( gllTexCoord );
+	glDisableVertexAttribArray( gllColor );
+	//TODO: Deprecate
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);

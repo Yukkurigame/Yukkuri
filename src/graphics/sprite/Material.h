@@ -17,6 +17,7 @@ struct GLMaterial
 	UINT flags;
 	struct  {
 		GLuint geometry;
+		GLuint directional_light;
 	} programs;
 
 	void init_flags( UINT glflags );

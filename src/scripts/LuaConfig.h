@@ -15,7 +15,7 @@
 
 #include "debug.h"
 
-class LuaConfig : LuaMain
+class LuaConfig : public LuaMain
 {
 public:
 	LuaConfig( );
@@ -29,6 +29,14 @@ public:
 	bool getSubconfigsList( std::string config, std::vector< std::string >& ret );
 
 	bool getSubconfigsLength( std::string config, int& len );
+
+	bool pushSubconfig( std::string subconfig, std::string config ){
+		const int prmsz = 2;
+		const char* prm[prmsz] = { subconfig.c_str(), config.c_str() };
+		int ret = 0;
+		bool res = execFunction("configs:getSubconfig", prm, prmsz, ret);
+		return res;
+	}
 
 	// Get value by subconfig-config
 	template<typename T>

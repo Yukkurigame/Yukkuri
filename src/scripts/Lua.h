@@ -63,9 +63,19 @@ public:
 	bool OpenFile( std::string name );
 
 	template <typename T>
+	inline void get( int idx, T& val ){
+		getFromLua( Lst, idx, val );
+	}
+
+	template <typename T>
 	inline int push( T const & val ){
 		return pushToLua( Lst, val );
 	}
+
+	inline void pop( int count ){
+		lua_pop( Lst, count );
+	}
+
 
 	//Какого хрена шаблоны перестают работать, если их вынести?
 	//FIXME: move from header

@@ -7,6 +7,8 @@
 
 #include "Lua.h"
 
+#include "graphics/utils/gl_shader.h"
+
 #include "3rdparty/CUDataTemplates.h"
 
 #include "api.h"
@@ -117,6 +119,12 @@ void LuaMain::RegisterApi( lua_State* L )
 	{
 		// Core bind points
 		FIELD(gbpFPS)
+
+		// Shaders
+		FIELD(gllPosition)
+		FIELD(gllTexCoord)
+		FIELD(gllColor)
+		FIELD(gllNormal)
 
 		// Unit Types
 		FIELD(utStatic)

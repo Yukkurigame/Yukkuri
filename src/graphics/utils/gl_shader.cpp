@@ -8,6 +8,7 @@
 
 #include "graphics/utils/gl_shader.h"
 #include <stdio.h>
+#include "scripts/LuaConfig.h"
 #include <map>
 
 #include "config.h"
@@ -15,7 +16,32 @@
 #include "debug.h"
 
 
+
 extern MainConfig conf;
+
+ShaderConfigAttributes::~ShaderConfigAttributes()
+{
+	free( name );
+}
+
+
+ShaderConfigData::~ShaderConfigData()
+{
+	if( vertex_name )
+		free( vertex_name );
+	if( fragment_name )
+		free( fragment_name );
+
+	if( output ){
+		for( unsigned int i = 0; i < output_count; ++i )
+			free( output[i] );
+		free( output );
+	}
+
+	if( attributes )
+		delete[] attributes;
+}
+
 
 
 namespace {
@@ -39,7 +65,6 @@ namespace {
 		return buf; /* Return the buffer */
 	}
 
-
 	std::map< enum GLSFlags, GLuint > shaders[glpLast];
 
 
@@ -48,7 +73,7 @@ namespace {
 		"_YNORMALS", "_YLIGHT", "_YFIXED"
 	};
 	const char* passes[glpLast] = {
-		"main", "geometry", "point_light", "directional_light"
+		"none", "geometry", "point_light", "dir_light"
 	};
 	unsigned int pass_index( unsigned int pass ){
 		// Pass enumerated in pow2 order. Obtain its index.
@@ -190,13 +215,27 @@ GLint create_shader( const char* filename, int type, const char* defines )
 	return shader;
 }
 
+
 #define BIND_COLORMAP(name, value) \
 	cm = glGetUniformLocation( shaderprogram, name );	\
 	if( cm >= 0 ) glUniform1i( cm, value );
 
-GLuint createProgram( std::string filename, enum GLSFlags glflags )
+
+GLuint createProgram( const char* name, enum GLSFlags glflags )
 {
 	char* defines = generate_defines( glflags );
+
+	// Get data from config file
+	ShaderConfigData config;
+	// Push shader config to stack and load config;
+	LuaConfig* cfg = new LuaConfig();
+	std::string shd_id = "shader_" + std::string(name);
+	cfg->pushSubconfig( shd_id, "config" );
+	cfg->get( 1, config );
+	// Remove shader config from stack;
+	cfg->pop( 1 );
+
+	std::string filename = conf.shadersPath + name;
 
 	GLint vertex = create_shader( (filename + ".vert").c_str(), GL_VERTEX_SHADER, defines );
 	GLint fragment = create_shader( (filename + ".frag").c_str(), GL_FRAGMENT_SHADER, defines );
@@ -271,7 +310,7 @@ GLuint Shaders::getProgram( enum GLSPass pass, enum GLSFlags glflags )
 		return fit->second;
 
 	const char* sdrname = passes[ pass_index(pass) ];
-	GLuint prog = createProgram( conf.shadersPath + sdrname, glflags );
+	GLuint prog = createProgram( sdrname, glflags );
 	if( prog ){
 		shaders_map[glflags] = prog;
 	}

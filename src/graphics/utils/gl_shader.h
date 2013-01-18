@@ -39,6 +39,29 @@ enum GLSLocations {
 	gllNormal = 3
 };
 
+
+struct ShaderConfigAttributes {
+	GLuint index;
+	char* name;
+
+	~ShaderConfigAttributes();
+};
+
+
+struct ShaderConfigData {
+	char* vertex_name;
+	char* fragment_name;
+	char** output;
+	unsigned int output_count;
+	unsigned int attributes_count;
+	ShaderConfigAttributes* attributes;
+
+	ShaderConfigData() : vertex_name(NULL), fragment_name(NULL), output(NULL),
+						output_count(), attributes_count(), attributes(NULL) {}
+	~ShaderConfigData();
+};
+
+
 namespace Shaders {
 	//GLuint getProgram( std::string filename );
 	GLuint getProgram( enum GLSPass, enum GLSFlags glflags );

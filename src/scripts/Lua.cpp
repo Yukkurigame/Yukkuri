@@ -83,7 +83,18 @@ bool LuaMain::OpenFile( std::string name )
 	return true;
 }
 
+template<> void initValue( bool& ret ) { ret = false; }
+template<> void initValue( float& ret ) { ret = 0.0f; }
+template<> void initValue( double& ret ) { ret = 0.0; }
+template<> void initValue( unsigned int& ret ) { ret = 0; }
+template<> void initValue( int& ret ) { ret = 0; }
+template<> void initValue( std::string& ret ) { ret = ""; }
+template<> void initValue( char*& ret ) { ret = '\0'; }
+template<> void initValue( rect2f& ret ) { ret = rect2f(); }
+template<> void initValue( s4ub& ret ) { ret = s4ub(); }
 
+
+/*
 template<> bool LuaMain::getValue( lua_State* L, int index, bool& ret)
 {
 	ret = false;
@@ -194,7 +205,7 @@ template<> bool LuaMain::getValue( lua_State* L, int index, rect2f& ret)
 	}
 	return false;
 }
-
+*/
 
 int LuaMain::execFunction( std::string function )
 {

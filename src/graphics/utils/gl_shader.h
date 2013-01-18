@@ -44,11 +44,13 @@ struct ShaderConfigAttributes {
 	GLuint index;
 	char* name;
 
+	ShaderConfigAttributes() : index(0), name(NULL) { }
 	~ShaderConfigAttributes();
 };
 
 
 struct ShaderConfigData {
+	char* id;
 	char* vertex_name;
 	char* fragment_name;
 	char** output;
@@ -56,7 +58,7 @@ struct ShaderConfigData {
 	unsigned int attributes_count;
 	ShaderConfigAttributes* attributes;
 
-	ShaderConfigData() : vertex_name(NULL), fragment_name(NULL), output(NULL),
+	ShaderConfigData() : id(NULL), vertex_name(NULL), fragment_name(NULL), output(NULL),
 						output_count(), attributes_count(), attributes(NULL) {}
 	~ShaderConfigData();
 };

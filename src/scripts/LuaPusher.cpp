@@ -14,7 +14,11 @@
 
 #include "safestring.h"
 
-
+#define GET_TABLE_VALUE( idx, val )	\
+	lua_pushnumber( L, idx );		\
+	lua_gettable( L, -2 );			\
+	getFromLua( L, -1, val );		\
+	lua_pop( L, 1 );
 
 // s2f
 template <>
@@ -36,12 +40,8 @@ s2f const getFromLua(lua_State* L, int idx)
 {
 	s2f ret;
 	float* r[2] = { &ret.x, &ret.y };
-	lua_pop(L, 1); // stack: vector
-	for( int i = 1; i < 3; ++i ){
-		lua_pushnumber(L, i);
-		lua_gettable(L, -2);
-		getFromLua( L, -1, *r[i] );
-		lua_pop(L, 1);
+	for( int i = 0; i < 2; ++i ){
+		GET_TABLE_VALUE( i + 1, *r[i] )
 	}
 	return ret;
 }
@@ -50,12 +50,8 @@ template<>
 void getFromLua(lua_State* L, int idx, s2f& val)
 {
 	float* r[2] = { &val.x, &val.y };
-	lua_pop(L, 1); // stack: vector
-	for( int i = 1; i < 3; ++i ){
-		lua_pushnumber(L, i);
-		lua_gettable(L, -2);
-		getFromLua( L, -1, *r[i] );
-		lua_pop(L, 1);
+	for( int i = 0; i < 2; ++i ){
+		GET_TABLE_VALUE( i + 1, *r[i] )
 	}
 }
 
@@ -78,6 +74,117 @@ bool CHINP_TESTER<s2f>(lua_State* L, int idx)
 }
 
 
+// rect2f
+template <>
+int pushToLua(lua_State* L, rect2f const& val)
+{
+	const float* p[4] = { &val.x, &val.y, &val.width, &val.height };
+	const char* pc[4] = { "x", "y", "width", "height" };
+	lua_newtable(L);
+	for( int i=0; i<4; ++i ){
+		lua_pushstring( L, pc[i] );
+		lua_pushnumber( L, *p[i] );
+		lua_settable(L, -3);
+	}
+	return 1;
+}
+
+template<>
+rect2f const getFromLua(lua_State* L, int idx)
+{
+	rect2f ret;
+	float* r[4] = { &ret.x, &ret.y, &ret.width, &ret.height };
+	for( int i = 0; i < 4; ++i ){
+		GET_TABLE_VALUE( i + 1, *r[i] )
+	}
+	return ret;
+}
+
+template<>
+void getFromLua( lua_State* L, int idx, rect2f& val )
+{
+	float* r[4] = { &val.x, &val.y, &val.width, &val.height };
+	for( int i = 0; i < 4; ++i ){
+		GET_TABLE_VALUE( i + 1, *r[i] )
+	}
+}
+
+template<>
+bool CHINP_TESTER<rect2f>(lua_State* L, int idx)
+{
+	if( lua_istable( L, idx ) && luaL_getn( L, idx ) == 2 ){
+		for( int i = 1; i < 5; ++i ){
+			lua_pushnumber( L, i );
+			lua_gettable( L, -2 );
+			if( lua_isnumber( L, -1 ) == 0 ){
+				lua_pop(L, 1);
+				return false;
+			}
+			lua_pop(L, 1);
+		}
+		return true;
+	}
+	return false;
+}
+
+
+// s4ub
+template <>
+int pushToLua( lua_State* L, s4ub const& val )
+{
+	const GLubyte* p[4] = { &val.r, &val.g, &val.b, &val.a };
+	const char* pc[4] = { "r", "g", "b", "a" };
+	lua_newtable(L);
+	for( int i=0; i<4; ++i ){
+		lua_pushstring( L, pc[i] );
+		lua_pushnumber( L, *p[i] );
+		lua_settable(L, -3);
+	}
+	return 1;
+}
+
+template<>
+s4ub const getFromLua( lua_State* L, int idx )
+{
+	s4ub ret;
+	GLubyte* r[4] = { &ret.r, &ret.g, &ret.b, &ret.a };
+	for( int i = 0; i < 4; ++i ){
+		GET_TABLE_VALUE( i + 1, *r[i] )
+	}
+	return ret;
+}
+
+template<>
+void getFromLua( lua_State* L, int idx, s4ub& val )
+{
+	GLubyte* r[4] = { &val.r, &val.g, &val.b, &val.a };
+	for( int i = 0; i < 4; ++i ){
+		GET_TABLE_VALUE( i + 1, *r[i] )
+		lua_pushnumber(L, i);
+		lua_gettable(L, -2);
+		getFromLua( L, -1, *r[i] );
+		lua_pop(L, 1);
+	}
+}
+
+template<>
+bool CHINP_TESTER<s4ub>(lua_State* L, int idx)
+{
+	if( lua_istable( L, idx ) && luaL_getn( L, idx ) == 2 ){
+		for( int i = 1; i < 5; ++i ){
+			lua_pushnumber( L, i );
+			lua_gettable( L, -2 );
+			if( lua_isnumber( L, -1 ) == 0 ){
+				lua_pop(L, 1);
+				return false;
+			}
+			lua_pop(L, 1);
+		}
+		return true;
+	}
+	return false;
+}
+
 
 // ShaderConfigData
 template <>
@@ -96,18 +203,22 @@ ShaderConfigData const getFromLua( lua_State* L, int idx )
 	return ret;
 }
 
+
 template<>
 void getFromLua( lua_State* L, int idx, ShaderConfigData& val )
 {
+	// Get id
+	lua_pushstring( L, "id" );	// st: table id
+	lua_gettable( L, -2 );		// st: table string
+	getFromLua( L, -1, val.id );
+	lua_pop(L, 1);				// st: table
+
 	// Get filenames
 	char** filenames[2] = { &val.vertex_name, &val.fragment_name };
 	lua_pushstring( L, "files" );	// st: table files
 	lua_gettable( L, -2 );			// st: table table{file1, file2}
 	for( int i = 0; i < 2; ++i ){
-		lua_pushnumber( L, i );
-		lua_gettable( L, -2 );
-		getFromLua( L, -1, *filenames[i] );
-		lua_pop( L, 1 );
+		GET_TABLE_VALUE( i + 1, *filenames[i] )
 	}
 	lua_pop(L, 1);					// st: table
 
@@ -118,11 +229,8 @@ void getFromLua( lua_State* L, int idx, ShaderConfigData& val )
 	if( val.output_count ){
 		val.output = (char**)malloc( (unsigned)sizeof(char*) * val.output_count );
 		for( unsigned int i = 0; i < val.output_count; ++i ){
-			lua_pushnumber( L, i );
-			lua_gettable( L, -2 );
 			val.output[i] = NULL;
-			getFromLua( L, -1, val.output[i] );
-			lua_pop( L, 1 );
+			GET_TABLE_VALUE( i + 1, val.output[i] )
 		}
 	}
 	lua_pop( L, 1 );
@@ -134,24 +242,20 @@ void getFromLua( lua_State* L, int idx, ShaderConfigData& val )
 	if( val.attributes_count ){
 		val.attributes = new ShaderConfigAttributes[val.attributes_count];
 		for( unsigned int i = 0; i < val.attributes_count; ++i ){
-			lua_pushnumber( L, i );
+			lua_pushnumber( L, i + 1 );
 			lua_gettable( L, -2 );		// st: table table table{int, string}
 
-			lua_pushnumber( L, 0 );
-			lua_gettable( L, -2 );		// st: table table table int
-			getFromLua( L, -1, val.attributes[i].index );
-			lua_pop( L, 1 );
-
-			lua_pushnumber( L, 1 );
-			lua_gettable( L, -2 );		// st: table table table int
-			getFromLua( L, -1, val.attributes[i].name );
-			lua_pop( L, 1 );
+			GET_TABLE_VALUE( 1, val.attributes[i].index )
+			GET_TABLE_VALUE( 2, val.attributes[i].name )
 
 			lua_pop( L, 1 );			// st: table table
 		}
 	}
 	lua_pop( L, 1 );					// st: table
 }
+
+#undef GET_TABLE_VALUE
+
 
 template<>
 bool CHINP_TESTER<ShaderConfigData>(lua_State* L, int idx)

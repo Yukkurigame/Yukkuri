@@ -220,7 +220,6 @@ GLint create_shader( const char* filename, int type, const char* defines )
 	cm = glGetUniformLocation( shaderprogram, name );	\
 	if( cm >= 0 ) glUniform1i( cm, value );
 
-
 GLuint createProgram( const char* name, enum GLSFlags glflags )
 {
 	char* defines = generate_defines( glflags );
@@ -230,15 +229,16 @@ GLuint createProgram( const char* name, enum GLSFlags glflags )
 	// Push shader config to stack and load config;
 	LuaConfig* cfg = new LuaConfig();
 	std::string shd_id = "shader_" + std::string(name);
-	cfg->pushSubconfig( shd_id, "config" );
+	cfg->pushSubconfig( shd_id, "shader" );
 	cfg->get( 1, config );
 	// Remove shader config from stack;
 	cfg->pop( 1 );
+	delete cfg;
 
-	std::string filename = conf.shadersPath + name;
-
-	GLint vertex = create_shader( (filename + ".vert").c_str(), GL_VERTEX_SHADER, defines );
-	GLint fragment = create_shader( (filename + ".frag").c_str(), GL_FRAGMENT_SHADER, defines );
+	GLint vertex = create_shader( (conf.shadersPath + config.vertex_name).c_str(),
+									GL_VERTEX_SHADER, defines );
+	GLint fragment = create_shader( (conf.shadersPath + config.fragment_name).c_str(),
+									GL_FRAGMENT_SHADER, defines );
 
 	free( defines );
 
@@ -258,10 +258,8 @@ GLuint createProgram( const char* name, enum GLSFlags glflags )
 
 	/* Bind attribute index 0 (coordinates) to in_Position and attribute index 1 (color) to in_Color */
 	/* Attribute locations must be setup before calling glLinkProgram. */
-	glBindAttribLocation( shaderprogram, gllPosition, "in_Position" );
-	glBindAttribLocation( shaderprogram, gllTexCoord, "in_TextCoord" );
-	glBindAttribLocation( shaderprogram, gllColor, "in_Color" );
-	glBindAttribLocation( shaderprogram, gllNormal, "in_Normal" );
+	for( unsigned int i = 0; i < config.attributes_count; ++i )
+		glBindAttribLocation( shaderprogram, config.attributes[i].index, config.attributes[i].name );
 
 	/* Link our program */
 	/* At this stage, the vertex and fragment programs are inspected, optimized and a binary code is generated for the shader. */
@@ -280,23 +278,22 @@ GLuint createProgram( const char* name, enum GLSFlags glflags )
 	/* and fragment shaders. It might be that you have surpassed your GPU's abilities. Perhaps too many ALU operations or */
 	/* too many texel fetch instructions or too many interpolators or dynamic loops. */
 
-	if( !check_shader( shaderprogram, GL_LINK_STATUS, "Shader program " + filename ) ){
+	if( !check_shader( shaderprogram, GL_LINK_STATUS, (std::string)"Shader program " + config.id ) ){
 		glDeleteProgram( shaderprogram );
 		return 0;
-	}else{
-		glUseProgram( shaderprogram );
-		GLint cm = 0;
-		BIND_COLORMAP( "in_ColorMap", gltColor )
-		BIND_COLORMAP( "in_NormalMap", gltNormal )
-		BIND_COLORMAP( "in_gPositionMap", gltLast )
-		BIND_COLORMAP( "in_gColorMap", gltLast + 1 )
-		BIND_COLORMAP( "in_gNormalMap", gltLast + 2 )
-		glBindFragDataLocation( shaderprogram, 0, "frag_WorldPos");
-		glBindFragDataLocation( shaderprogram, 1, "frag_ColorMap");
-		glBindFragDataLocation( shaderprogram, 2, "frag_Normal");
-		glUseProgram( 0 );
 	}
 
+	for( unsigned int i = 0; i < config.output_count; ++i )
+		glBindFragDataLocation( shaderprogram, i, config.output[i] );
+
+	glUseProgram( shaderprogram );
+	GLint cm = 0;
+	BIND_COLORMAP( "in_ColorMap", gltColor )
+	BIND_COLORMAP( "in_NormalMap", gltNormal )
+	BIND_COLORMAP( "in_gPositionMap", gltLast )
+	BIND_COLORMAP( "in_gColorMap", gltLast + 1 )
+	BIND_COLORMAP( "in_gNormalMap", gltLast + 2 )
+	glUseProgram( 0 );
 
 	return shaderprogram;
 }

@@ -150,6 +150,9 @@ std::string to_string( lua_State* L, int idx )
 {
 	std::string s = "";
 	char buf[20];
+	if( idx < 0 ){
+		idx += lua_gettop( L ) + 1;
+	}
 
 	int t = lua_type( L, idx );
 	switch( t ){

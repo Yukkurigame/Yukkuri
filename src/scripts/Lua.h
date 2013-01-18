@@ -47,6 +47,12 @@ private:
 };
 
 
+/// Returns the default value of type T
+/// @param[out] val is the returned value
+template <typename T>
+void initValue( T& val );
+
+
 class LuaMain
 {
 public:
@@ -77,27 +83,35 @@ public:
 	}
 
 
-	//Какого хрена шаблоны перестают работать, если их вынести?
-	//FIXME: move from header
-
-	//TODO: exec without returned values
-	template<typename T>
-	bool execFunction( std::string function, const char* params[], const int sz, T& ret)
+	// This function may leave something on stack.
+	int execFunction( std::string function, const char* params[], const int sz)
 	{
-		LuaStackChecker sc(Lst, __FILE__, __LINE__);
-
 		int szadd = execFunction( function );
 
-		for( int i=0; i<sz; ++i ){
+		for( int i=0; i<sz; ++i )
 			lua_pushstring( Lst, params[i] );
-		}
+
 		if( lua_pcall( Lst, sz + szadd, 1, 0 ) ){
 			std::string err;
 			getValue( Lst, -1, err );
 			debug( Debug::SCRIPT, "Lua function '" + function + "' execute error: " + err + "\n" );
 			lua_pop( Lst, 1 + szadd );
-			return false;
+			return -1;
 		}
+		return szadd;
+	}
+
+	// This function MUST NOT leave anything on stack
+	template<typename T>
+	bool execFunction( std::string function, const char* params[], const int sz, T& ret)
+	{
+		LuaStackChecker sc(Lst, __FILE__, __LINE__);
+
+		int szadd = execFunction( function, params, sz );
+
+		if( szadd < 0 )
+			return false;
+
 		bool res = getValue( Lst, -1, ret );
 		//TODO: szadd должно работать при :, но это неправильный костыль, больше негде проверить.
 		lua_pop( Lst, 1 + szadd );
@@ -134,7 +148,15 @@ public:
 	}
 
 	template<typename T>
-	bool getValue( lua_State* L, int index, T& ret);
+	bool getValue( lua_State* L, int index, T& ret)
+	{
+		if( checkInputParam( L, index, ret ) ){
+			getFromLua( L, index, ret );
+			return true;
+		}
+		initValue( ret );
+		return false;
+	}
 
 	template<typename T1, typename T2>
 	bool getValue( lua_State* L, int index, std::pair<T1, T2>& ret )

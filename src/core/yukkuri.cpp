@@ -29,7 +29,6 @@ float currentFPS;
 
 // Gcc bug
 extern LuaScript* luaScript;
-extern MainConfig conf;
 
 
 bool Yukkuri::Init()
@@ -54,7 +53,7 @@ bool Yukkuri::Init()
 
 	// Load default scripts
 	Debug::debug( Debug::MAIN, "Loading defaults.\n" );
-	if( !conf.load( ) ){
+	if( !loadMainConfig( ) ){
 		Debug::debug( Debug::MAIN, "Loading default configuration failed. Exiting." );
 		return false;
 	}
@@ -94,6 +93,7 @@ void Yukkuri::WindowInactive( )
 	last_state = Window.state;
 	Window.state = gsPaused;
 };
+
 void Yukkuri::WindowActive( )
 {
 	Window.state = last_state;

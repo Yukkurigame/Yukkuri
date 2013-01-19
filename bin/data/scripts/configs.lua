@@ -83,12 +83,12 @@ function Configs:loadAll( type )
 end
 
 function Configs:getSubconfig( subconfig, config )
-	ctype = string.lower(config)
+	local ctype = string.lower(config)
 	if self.configs[ctype] == nil then
 		Debug.print(Debug.CONFIG, "Config " .. ctype .. " does not exist.")
 		return
 	end
-	csubtype = string.lower(subconfig)
+	local csubtype = string.lower(subconfig)
 	if self.configs[ctype][csubtype] == nil then
 		Debug.print(Debug.CONFIG, "Subconfig " .. csubtype .. " not exists in config " .. ctype)
 		return
@@ -100,19 +100,6 @@ end
 function Configs:get( value, subconfig, config )
 	local sconfig = self:getSubconfig(subconfig, config)
 	if sconfig == nil then return end
---[[
-	ctype = string.lower(config)
-	if self.configs[ctype] == nil then
-		Debug.print(Debug.CONFIG, "Config " .. ctype .. " does not exist.")
-		return
-	end
-	csubtype = string.lower(subconfig)
-	if self.configs[ctype][csubtype] == nil then
-		Debug.print(Debug.CONFIG, "Subconfig " .. csubtype .. " not exists in config " .. ctype)
-		return
-	end
-	ret = self.configs[ctype][csubtype][value]
--- ]]--
 	ret = sconfig[value]
 	return ret
 end

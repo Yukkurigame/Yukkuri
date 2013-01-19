@@ -26,6 +26,21 @@ extern "C" {
 
 #include "debug.h"
 
+
+#define LUA_GET_TABLE_VALUE( idx, val )	\
+	lua_pushnumber( L, idx );			\
+	lua_gettable( L, -2 );				\
+	getFromLua( L, -1, val );			\
+	lua_pop( L, 1 );
+
+#define LUA_GET_VALUE( string, val )						\
+	lua_pushstring( L, string );	/* st: table string	*/	\
+	lua_gettable( L, -2 );			/* st: table val	*/	\
+	getFromLua( L, -1, val );							\
+	lua_pop(L, 1);					/* st: table		*/
+
+
+
 struct LuaRet {
 	int c;
 	LuaRet() : c() {};
@@ -98,6 +113,9 @@ public:
 			lua_pop( Lst, 1 + szadd );
 			return -1;
 		}
+		// Remove function name from stack
+		lua_insert( Lst, -( 1 + szadd ) );
+		lua_pop( Lst, szadd );
 		return szadd;
 	}
 
@@ -113,8 +131,7 @@ public:
 			return false;
 
 		bool res = getValue( Lst, -1, ret );
-		//TODO: szadd должно работать при :, но это неправильный костыль, больше негде проверить.
-		lua_pop( Lst, 1 + szadd );
+		lua_pop( Lst, 1 );
 		return res;
 	}
 

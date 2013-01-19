@@ -6,58 +6,89 @@
 
 #include "config.h"
 #include "scripts/LuaConfig.h"
+#include "3rdparty/LuaPusher.h"
 #include <cstring>
 #include <math.h>
 
 MainConfig conf;
 
 
-MainConfig::MainConfig()
-{
-		memset( this, 0, (unsigned)sizeof(this) );
-}
-
-bool MainConfig::load( )
+bool loadMainConfig( )
 {
 	LuaConfig* lc = new LuaConfig;
-
-	std::string id;
-	std::string config;
-	id = "config_general";
-	config = "config";
-	lc->getValue( "windows_width" , id, config, windowWidth );
-	lc->getValue( "windows_height" , id, config, windowHeight );
-	lc->getValue( "maximum_frame_rate" , id, config, maxFrameRate );
-	lc->getValue( "minimum_frame_rate" , id, config, minFrameRate );
-	lc->getValue( "texture_border" , id, config, textureBorder );
-
-	lc->getValue( "images_path" , id, config, imagePath );
-	lc->getValue( "default_image_name" , id, config, defaultImage );
-	lc->getValue( "fonts_path" , id, config, fontsPath );
-	lc->getValue( "scripts_path" , id, config, scriptsPath );
-	lc->getValue( "configs_path" , id, config, configsPath );
-	lc->getValue( "proto_path" , id, config, protoPath );
-	lc->getValue( "shaders_path" , id, config, shadersPath );
-
-	lc->getValue( "widgets_z" , id, config, widgetsPosZ );
-
-	lc->getValue( "map_tile_size" , id, config, mapTileSize );
-	lc->getValue( "map_default_tile" , id, config, mapDefaultTile );
-	lc->getValue( "day_length" , id, config, dayLength );
-	lc->getValue( "action_interval" , id, config, actionInterval );
-	lc->getValue( "max_spawn" , id, config, maxSpawn );
-	lc->getValue( "max_edibles" , id, config, maxEdibles );
-
-	lc->getValue( "player_dies" , id, config, playerDies );
-
+	lc->pushSubconfig( "config_general", "config" );
+	lc->get( 1, conf );
+	lc->pop( 1 );
 	delete lc;
 
-	float right = (float)(mapTileSize >> 2);
-	float bottom = (float)(mapTileSize >> 1);
 
+	float right = (float)(conf.mapTileSize >> 2);
+	float bottom = (float)(conf.mapTileSize >> 1);
 	float tile_side = sqrt( right * right + bottom * bottom );
-
-	_tileAngle = asin( right / tile_side );
+	conf._tileAngle = asin( right / tile_side );
 
 	return true;
 };
+
+
+
+// LuaPusher MainConfig
+template <>
+int pushToLua( lua_State* L, MainConfig* const& val )
+{
+	// NOT IMPLEMENTED.
+	return 0;
+}
+
+
+template<>
+MainConfig const getFromLua( lua_State* L, int idx )
+{
+	MainConfig ret;
+	// NOT IMPLEMENTED.
+	return ret;
+}
+
+
+template<>
+void getFromLua( lua_State* L, int idx, MainConfig& val )
+{
+	LUA_GET_VALUE( "windows_width", val.windowWidth )
+	LUA_GET_VALUE( "windows_height", val.windowHeight )
+	LUA_GET_VALUE( "maximum_frame_rate", val.maxFrameRate )
+	LUA_GET_VALUE( "minimum_frame_rate", val.minFrameRate )
+	LUA_GET_VALUE( "texture_border", val.textureBorder )
+
+	LUA_GET_VALUE( "images_path", val.imagePath )
+	LUA_GET_VALUE( "default_image_name", val.defaultImage )
+	LUA_GET_VALUE( "fonts_path", val.fontsPath )
+	LUA_GET_VALUE( "scripts_path", val.scriptsPath )
+	LUA_GET_VALUE( "configs_path", val.configsPath )
+	LUA_GET_VALUE( "proto_path", val.protoPath )
+	LUA_GET_VALUE( "shaders_path", val.shadersPath )
+
+	LUA_GET_VALUE( "widgets_z", val.widgetsPosZ )
+
+	LUA_GET_VALUE( "map_tile_size", val.mapTileSize )
+	LUA_GET_VALUE( "map_default_tile", val.mapDefaultTile )
+	LUA_GET_VALUE( "day_length", val.dayLength )
+	LUA_GET_VALUE( "action_interval", val.actionInterval )
+	LUA_GET_VALUE( "max_spawn", val.maxSpawn )
+	LUA_GET_VALUE( "max_edibles", val.maxEdibles )
+
+	LUA_GET_VALUE( "player_dies", val.playerDies )
+
+}
+
+template<>
+bool CHINP_TESTER<MainConfig>(lua_State* L, int idx)
+{
+	if( lua_istable( L, idx ) ){
+		lua_pushstring( L, "type" );
+		lua_gettable( L, -2 );
+		if( lua_isstring( L, 1 ) &&
+			!strcmp( "config", lua_tostring( L, 1 ) ) )
+			return true;
+	}
+	return false;
+}

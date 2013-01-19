@@ -11,14 +11,8 @@
 #include "scripts/Lua.h"
 #include "basic_types.h"
 #include "graphics/utils/gl_shader.h"
-
 #include "safestring.h"
 
-#define GET_TABLE_VALUE( idx, val )	\
-	lua_pushnumber( L, idx );		\
-	lua_gettable( L, -2 );			\
-	getFromLua( L, -1, val );		\
-	lua_pop( L, 1 );
 
 // s2f
 template <>
@@ -41,7 +35,7 @@ s2f const getFromLua(lua_State* L, int idx)
 	s2f ret;
 	float* r[2] = { &ret.x, &ret.y };
 	for( int i = 0; i < 2; ++i ){
-		GET_TABLE_VALUE( i + 1, *r[i] )
+		LUA_GET_TABLE_VALUE( i + 1, *r[i] )
 	}
 	return ret;
 }
@@ -51,7 +45,7 @@ void getFromLua(lua_State* L, int idx, s2f& val)
 {
 	float* r[2] = { &val.x, &val.y };
 	for( int i = 0; i < 2; ++i ){
-		GET_TABLE_VALUE( i + 1, *r[i] )
+		LUA_GET_TABLE_VALUE( i + 1, *r[i] )
 	}
 }
 
@@ -95,7 +89,7 @@ rect2f const getFromLua(lua_State* L, int idx)
 	rect2f ret;
 	float* r[4] = { &ret.x, &ret.y, &ret.width, &ret.height };
 	for( int i = 0; i < 4; ++i ){
-		GET_TABLE_VALUE( i + 1, *r[i] )
+		LUA_GET_TABLE_VALUE( i + 1, *r[i] )
 	}
 	return ret;
 }
@@ -105,7 +99,7 @@ void getFromLua( lua_State* L, int idx, rect2f& val )
 {
 	float* r[4] = { &val.x, &val.y, &val.width, &val.height };
 	for( int i = 0; i < 4; ++i ){
-		GET_TABLE_VALUE( i + 1, *r[i] )
+		LUA_GET_TABLE_VALUE( i + 1, *r[i] )
 	}
 }
 
@@ -149,7 +143,7 @@ s4ub const getFromLua( lua_State* L, int idx )
 	s4ub ret;
 	GLubyte* r[4] = { &ret.r, &ret.g, &ret.b, &ret.a };
 	for( int i = 0; i < 4; ++i ){
-		GET_TABLE_VALUE( i + 1, *r[i] )
+		LUA_GET_TABLE_VALUE( i + 1, *r[i] )
 	}
 	return ret;
 }
@@ -159,11 +153,7 @@ void getFromLua( lua_State* L, int idx, s4ub& val )
 {
 	GLubyte* r[4] = { &val.r, &val.g, &val.b, &val.a };
 	for( int i = 0; i < 4; ++i ){
-		GET_TABLE_VALUE( i + 1, *r[i] )
-		lua_pushnumber(L, i);
-		lua_gettable(L, -2);
-		getFromLua( L, -1, *r[i] );
-		lua_pop(L, 1);
+		LUA_GET_TABLE_VALUE( i + 1, *r[i] )
 	}
 }
 
@@ -208,17 +198,14 @@ template<>
 void getFromLua( lua_State* L, int idx, ShaderConfigData& val )
 {
 	// Get id
-	lua_pushstring( L, "id" );	// st: table id
-	lua_gettable( L, -2 );		// st: table string
-	getFromLua( L, -1, val.id );
-	lua_pop(L, 1);				// st: table
+	LUA_GET_VALUE( "id", val.id )
 
 	// Get filenames
 	char** filenames[2] = { &val.vertex_name, &val.fragment_name };
 	lua_pushstring( L, "files" );	// st: table files
 	lua_gettable( L, -2 );			// st: table table{file1, file2}
 	for( int i = 0; i < 2; ++i ){
-		GET_TABLE_VALUE( i + 1, *filenames[i] )
+		LUA_GET_TABLE_VALUE( i + 1, *filenames[i] )
 	}
 	lua_pop(L, 1);					// st: table
 
@@ -230,7 +217,7 @@ void getFromLua( lua_State* L, int idx, ShaderConfigData& val )
 		val.output = (char**)malloc( (unsigned)sizeof(char*) * val.output_count );
 		for( unsigned int i = 0; i < val.output_count; ++i ){
 			val.output[i] = NULL;
-			GET_TABLE_VALUE( i + 1, val.output[i] )
+			LUA_GET_TABLE_VALUE( i + 1, val.output[i] )
 		}
 	}
 	lua_pop( L, 1 );
@@ -245,16 +232,14 @@ void getFromLua( lua_State* L, int idx, ShaderConfigData& val )
 			lua_pushnumber( L, i + 1 );
 			lua_gettable( L, -2 );		// st: table table table{int, string}
 
-			GET_TABLE_VALUE( 1, val.attributes[i].index )
-			GET_TABLE_VALUE( 2, val.attributes[i].name )
+			LUA_GET_TABLE_VALUE( 1, val.attributes[i].index )
+			LUA_GET_TABLE_VALUE( 2, val.attributes[i].name )
 
 			lua_pop( L, 1 );			// st: table table
 		}
 	}
 	lua_pop( L, 1 );					// st: table
 }
-
-#undef GET_TABLE_VALUE
 
 
 template<>
@@ -269,3 +254,4 @@ bool CHINP_TESTER<ShaderConfigData>(lua_State* L, int idx)
 	}
 	return false;
 }
+

@@ -34,11 +34,9 @@ struct MainConfig
 	std::string shadersPath;
 
 	float _tileAngle;
-
-	MainConfig();
-
-	bool load();
-
 };
+
+bool loadMainConfig();
+
 
 #endif /* CONFIG_H_ */

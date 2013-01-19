@@ -51,17 +51,18 @@ int Unit::color( lua_State* L )
 	return top ? 0 : 1;
 }
 
-
 int Unit::emitEvent( lua_State* L )
 {
 	luaL_argcheck( L, lua_isstring( L, 1 ), 1, "Event name expected" );
+
+	extern LuaScript* luaScript;
 
 	// Excess call for debug purposes.
 	std::string name = lua_tostring( L, 1 );
 
 	int top = lua_gettop( L ); 							// stack: event_name, params ...,
 
-	extern LuaScript* luaScript;
+
 
 	int argcount = 1;
 	if( events.self != LUA_NOREF ){

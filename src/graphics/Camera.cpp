@@ -38,8 +38,8 @@ void Camera::init( )
 	glm::vec3 target(0.0, 0.0, 0.0);
 	glm::vec3 up(0.0, 0.0, 1.0);
 	model_view = glm::lookAt( eye, target, up );
-	double wwidth = conf.windowWidth;
-	double wheight = conf.windowHeight;
+	double wwidth = conf.video.windowWidth;
+	double wheight = conf.video.windowHeight;
 	projection = glm::ortho(0.0, wwidth, 0.0, wheight, -10.0, 1.0);
 	//			 glm::ortho( -wwidth*2.0, wwidth*2.0, -wheight*2.0, wheight*2.0, -30.0, 30.0 );
 	model = glm::mat4x4(1.0);
@@ -68,7 +68,7 @@ float Camera::GetX( )
 {
 	if( TargetX != NULL ){
 		if( TargetMode == ctmCenter ){
-			return *TargetX - ( conf.windowWidth / 2 );
+			return *TargetX - ( conf.video.windowWidth / 2 );
 		}
 		return *TargetX;
 	}
@@ -80,7 +80,7 @@ float Camera::GetY( )
 {
 	if( TargetY != NULL ){
 		if( TargetMode == ctmCenter ){
-			return *TargetY - ( conf.windowHeight / 2 );
+			return *TargetY - ( conf.video.windowHeight / 2 );
 		}
 		return *TargetY;
 	}
@@ -109,8 +109,8 @@ void Camera::ChangeMode( enum ctMode mode )
 	TargetMode = mode;
 	switch( mode ){
 		case ctmCenter:
-			cam_offset.x = (float)(conf.windowWidth >> 1);
-			cam_offset.y = (float)(conf.windowHeight >> 1);
+			cam_offset.x = (float)(conf.video.windowWidth >> 1);
+			cam_offset.y = (float)(conf.video.windowHeight >> 1);
 			break;
 		case ctmNormal:
 			cam_offset.x = cam_offset.y = 0;

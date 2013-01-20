@@ -41,7 +41,7 @@ namespace GBuffer
 	inline void texture_to_fbo( GLuint tex_id, int int_format, int format, int type, int attach )
 	{
 		glBindTexture( texture_type, tex_id );
-		glTexImage2D( texture_type, 0, int_format, conf.windowWidth, conf.windowHeight,
+		glTexImage2D( texture_type, 0, int_format, conf.video.windowWidth, conf.video.windowHeight,
 						0, format, type, NULL );
 		glTexParameterf( texture_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 		glTexParameterf( texture_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
@@ -146,8 +146,9 @@ void GBuffer::render()
 	glReadBuffer( GL_COLOR_ATTACHMENT4 );
 
 	// Blit final texture to screen
-	glBlitFramebuffer(0, 0, conf.windowWidth, conf.windowHeight, 0, 0,
-					conf.windowWidth, conf.windowHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	glBlitFramebuffer(0, 0, conf.video.windowWidth, conf.video.windowHeight, 0, 0,
+					conf.video.windowWidth, conf.video.windowHeight,
+					GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
 }
 
@@ -172,11 +173,11 @@ void GBuffer::geometry_pass( )
 			glpGeometry, RenderManager::GetSpritesArray() );
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//glEnable(GL_BLEND);
+	glEnable(GL_BLEND);
 
 	GLHelpers::DrawVBO( vbos );
 
-	//glDisable(GL_BLEND);
+	glDisable(GL_BLEND);
 
 	VBOStructureHandle* temp;
 	while( vbos != NULL ){

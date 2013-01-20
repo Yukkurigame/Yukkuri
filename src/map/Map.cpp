@@ -69,9 +69,9 @@ static struct MapDefines{
 		lTileSize = static_cast<int>( floor( log(static_cast<float>(conf.mapTileSize)) / log(2.0f) ) ) - 1;
 		Right.set(1, -1);
 		Top.set(1, 1);
-		XCount = conf.windowWidth >> lTileSize;
-		YCount = conf.windowHeight >> lTileSize;
-		ROffset.set( conf.windowWidth / 2, conf.windowHeight / 2 );
+		XCount = conf.video.windowWidth >> lTileSize;
+		YCount = conf.video.windowHeight >> lTileSize;
+		ROffset.set( conf.video.windowWidth / 2, conf.video.windowHeight / 2 );
 		Map::toMapCoordinates(&ROffset.X, &ROffset.Y);
 		ROffset += ROffset; // Right top corner
 		LOffset = ROffset + ( Right * -1 * ( XCount >> 1 ) ); // Left top corner

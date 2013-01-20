@@ -11,7 +11,6 @@
 #include "graphics/Render.h"
 #include "graphics/utils/sdl_graphics.h"
 #include "graphics/daytime.h"
-//#include "map/Map.h"
 #include "config.h"
 #include "debug.h"
 
@@ -52,7 +51,8 @@ bool Yukkuri::InitGraphics( )
 	RenderManager::openglInit( );
 
 	// Attempt to create a window with the specified height and width.
-	if( !SDLGraphics::SetScreen( SDL_SetVideoMode( conf.windowWidth, conf.windowHeight, 0, videoFlags ) ) ) {
+	if( !SDLGraphics::SetScreen( SDL_SetVideoMode(
+			conf.video.windowWidth, conf.video.windowHeight, 0, videoFlags ) ) ) {
 		Debug::debug( Debug::NONE, "[FAIL]\n" );
 		Debug::debug( Debug::MAIN, "Unable to set up video: " + static_cast<std::string>(SDL_GetError( )) + "\n" );
 		return false;
@@ -63,8 +63,8 @@ bool Yukkuri::InitGraphics( )
 		return false;
 	}
 
-	Window.width = conf.windowWidth;
-	Window.height = conf.windowHeight;
+	Window.width = conf.video.windowWidth;
+	Window.height = conf.video.windowHeight;
 
 	if( !RenderManager::openglSetup( Window.width, Window.height ) )
 		return false;

@@ -12,6 +12,7 @@
 #include <map>
 
 #include "config.h"
+#include "safestring.h"
 #include "hacks.h"
 #include "debug.h"
 
@@ -72,17 +73,6 @@ namespace {
 	const char* macros[MACROS_SIZE] = {
 		"_YNORMALS", "_YLIGHT", "_YFIXED"
 	};
-	const char* passes[glpLast] = {
-		"none", "geometry", "point_light", "dir_light"
-	};
-	unsigned int pass_index( unsigned int pass ){
-		// Pass enumerated in pow2 order. Obtain its index.
-		if( !pass )
-			return 0;
-		unsigned int index = 1;
-		while( pass >>= 1 ) ++index;
-		return index;
-	}
 }
 
 
@@ -220,7 +210,7 @@ GLint create_shader( const char* filename, int type, const char* defines )
 	cm = glGetUniformLocation( shaderprogram, name );	\
 	if( cm >= 0 ) glUniform1i( cm, value );
 
-GLuint createProgram( const char* name, enum GLSFlags glflags )
+GLuint createProgram( enum GLSPass pass, enum GLSFlags glflags )
 {
 	char* defines = generate_defines( glflags );
 
@@ -228,7 +218,7 @@ GLuint createProgram( const char* name, enum GLSFlags glflags )
 	ShaderConfigData config;
 	// Push shader config to stack and load config;
 	LuaConfig* cfg = new LuaConfig();
-	std::string shd_id = "shader_" + std::string(name);
+	std::string shd_id = "shader_" + citoa(pass);
 	cfg->pushSubconfig( shd_id, "shader" );
 	cfg->get( 1, config );
 	// Remove shader config from stack;
@@ -256,7 +246,7 @@ GLuint createProgram( const char* name, enum GLSFlags glflags )
 	glAttachShader( shaderprogram, vertex );
 	glAttachShader( shaderprogram, fragment );
 
-	/* Bind attribute index 0 (coordinates) to in_Position and attribute index 1 (color) to in_Color */
+	/* Bind attribute indexes to locations */
 	/* Attribute locations must be setup before calling glLinkProgram. */
 	for( unsigned int i = 0; i < config.attributes_count; ++i )
 		glBindAttribLocation( shaderprogram, config.attributes[i].index, config.attributes[i].name );
@@ -278,7 +268,7 @@ GLuint createProgram( const char* name, enum GLSFlags glflags )
 	/* and fragment shaders. It might be that you have surpassed your GPU's abilities. Perhaps too many ALU operations or */
 	/* too many texel fetch instructions or too many interpolators or dynamic loops. */
 
-	if( !check_shader( shaderprogram, GL_LINK_STATUS, (std::string)"Shader program " + config.id ) ){
+	if( !check_shader( shaderprogram, GL_LINK_STATUS, (std::string)"Shader program " + config.name ) ){
 		glDeleteProgram( shaderprogram );
 		return 0;
 	}
@@ -306,8 +296,7 @@ GLuint Shaders::getProgram( enum GLSPass pass, enum GLSFlags glflags )
 	if( fit != shaders_map.end() )
 		return fit->second;
 
-	const char* sdrname = passes[ pass_index(pass) ];
-	GLuint prog = createProgram( sdrname, glflags );
+	GLuint prog = createProgram( pass, glflags );
 	if( prog ){
 		shaders_map[glflags] = prog;
 	}
@@ -324,7 +313,7 @@ GLuint Shaders::getProgram( enum GLSPass pass, enum GLSFlags glflags )
 			if( glflag != glsAll && !(it->first & glflag ) )						\
 				continue;															\
 			int location = glGetUniformLocation( it->second, name );				\
-			if( location > 0 ){														\
+			if( location >= 0 ){														\
 				glUseProgram(it->second);											\
 				func;																\
 			}																		\

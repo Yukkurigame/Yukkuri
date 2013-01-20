@@ -28,6 +28,9 @@
 #include "safestring.h"
 
 
+extern MainConfig conf;
+
+
 namespace {
 
 	//////////////////////////////////////////////////
@@ -411,14 +414,31 @@ void RenderManager::DrawGLScene()
 	Camera::Update();
 	//MoveGlScene();
 
-	//VBOStructureHandle* temp = NULL;
-	//int count = 0;
-	//VBOStructureHandle* vbostructure = TextureArray::prepareVBO( GLSprites );
+	switch( conf.video.renderMethod ){
+		case rmSingle:
+		{
+			VBOStructureHandle* vbos = TextureArray::prepareVBO( glpDefault, GLSprites );
+			GLHelpers::BindVBO( VBOHandle );
+			GLHelpers::FillVBO();
 
-	//GLHelpers::DrawVBO( VBOHandle, vbostructure );
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glEnable(GL_BLEND);
+			GLHelpers::DrawVBO( vbos );
+			glDisable(GL_BLEND);
 
-	GBuffer::render( );
-
+			GLHelpers::UnbindVBO( );
+			VBOStructureHandle* temp;
+			while( vbos != NULL ){
+				temp = vbos;
+				vbos = vbos->next;
+				delete temp;
+			}
+		}
+			break;
+		case rmGBuffer:
+			GBuffer::render( );
+			break;
+	}
 
 	//TestDrawAtlas(-2500, -1000, 10);
 

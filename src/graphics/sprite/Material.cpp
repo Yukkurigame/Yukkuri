@@ -12,7 +12,7 @@
 void GLMaterial::init_flags( UINT glflags )
 {
 	flags = glflags;
-	programs.none = Shaders::getProgram( glpNone, static_cast<enum GLSFlags>(glflags) );
+	programs.base = Shaders::getProgram( glpDefault, static_cast<enum GLSFlags>(glflags) );
 	programs.geometry = Shaders::getProgram( glpGeometry, static_cast<enum GLSFlags>(glflags) );
 	programs.directional_light = Shaders::getProgram( glpDirLight, static_cast<enum GLSFlags>(glflags) );
 }

@@ -68,6 +68,9 @@ VBOStructureHandle* TextureArray::prepareVBO( int pass, std::vector< Sprite* >& 
 		Sprite* s = *(it);
 		int shader = glpNone;
 		switch(pass){
+			case glpDefault:
+				shader = s->material.programs.base;
+				break;
 			case glpGeometry:
 				shader = s->material.programs.geometry;
 				break;

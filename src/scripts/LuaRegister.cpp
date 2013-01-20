@@ -120,11 +120,19 @@ void LuaMain::RegisterApi( lua_State* L )
 		// Core bind points
 		FIELD(gbpFPS)
 
-		// Shaders
+		// Shaders attrib
 		FIELD(gllPosition)
 		FIELD(gllTexCoord)
 		FIELD(gllColor)
 		FIELD(gllNormal)
+		// Shaders texture map
+		FIELD(gltColor)
+		FIELD(gltNormal)
+		// Render passes
+		FIELD(glpDefault)
+		FIELD(glpGeometry)
+		FIELD(glpPointLight)
+		FIELD(glpDirLight)
 
 		// Unit Types
 		FIELD(utStatic)

@@ -1,13 +1,14 @@
-#version 120
+#version 130
 
-uniform sampler2D colorTexture;
+uniform sampler2D in_ColorMap;
 
 #ifdef _YNORMALS
-	uniform sampler2D normalTexture;
+	uniform sampler2D in_NormalMap;
 #endif
 
-varying vec2 texCoords; // the interpolated texture coordinates
-varying vec4 vert_color;
+in vec2 vert_TexCoords;
+in vec4 vert_Color;
+
 
 #ifdef _YLIGHT
 	varying vec3 vert_normal;
@@ -21,16 +22,19 @@ varying vec4 vert_color;
 #endif
 
 
+out vec4 out_FragColor;
+
+
 void main(void)
 {
-	vec4 color = texture2D(colorTexture, texCoords);
+	vec4 color = texture2D(in_ColorMap, vert_TexCoords);
 
 #ifdef _YLIGHT
-	vec3 frag_normal = normalize(vert_normal);
+	vec3 frag_normal = vec3(0.0, 0.0, 1.0);
 	vec3 light_normal = normalize(lights.position.xyz);
 
 	#ifdef _YNORMALS
-		vec3 ncolor = normalize((texture2D(normalTexture, texCoords).rgb - 0.5) * 2.0);
+		vec3 ncolor = normalize((texture2D(in_NormalMap, vert_TexCoords).rgb - 0.5) * 2.0);
 		frag_normal = normalize(ncolor.rgb + frag_normal);
 	#endif
 
@@ -51,10 +55,9 @@ void main(void)
 
 	vec3 frag_color = scene_ambient * ambient_contribution +				// Ambient
 					lights.color.rgb * max(0.0, d) * diffuse_contribution;	// Diffuse
-	vec4 out_color = vec4(frag_color * color.rgb, color.a);
+	vec4 result_color = vec4(frag_color * color.rgb, color.a);
 #else
-	vec4 out_color = color;
+	vec4 result_color = color;
 #endif
-
-	gl_FragColor = vert_color * out_color;
+	out_FragColor = vert_Color * result_color;
 }

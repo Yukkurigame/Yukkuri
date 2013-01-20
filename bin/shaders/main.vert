@@ -1,30 +1,24 @@
-#version 120
-//#extension GL_ARB_explicit_attrib_location : require
+#version 130
 
-//layout(location = 0) in vec3 in_Position;
-
-varying vec2 texCoords;
-varying vec4 vert_color;
-uniform mat4 in_MVP;
-
-#ifdef _YLIGHT
-	varying vec3 vert_normal;
-#endif
+in vec3 in_Position;
+in vec2 in_TexCoords;
+in vec4 in_Color;
 
 #ifdef _YFIXED
 	uniform vec3 in_Offset;
 #endif
 
+
+out vec2 vert_TexCoords;
+out vec4 vert_Color;
+
+uniform mat4 in_MVP;
+
+
 void main(void)
 {
-	//texCoords = in_texCoords;
-	vec3 in_Position = gl_Vertex.xyz;
-	texCoords = vec2(gl_MultiTexCoord0);
-	vert_color = gl_Color;
-
-#ifdef _YLIGHT
-	vert_normal = vec3(0.0, 0.0, 1.0); //gl_Normal;
-#endif
+	vert_TexCoords = in_TexCoords;
+	vert_Color = in_Color;
 
 #ifdef _YFIXED
 	vec4 position = vec4(in_Position - in_Offset, 1.0);
@@ -32,6 +26,5 @@ void main(void)
 	vec4 position = vec4(in_Position, 1.0);
 #endif
 
-	mat4 mvp = in_MVP; // gl_ModelViewProjectionMatrix;
-	gl_Position = mvp * position;
+	gl_Position = in_MVP * position;
 }

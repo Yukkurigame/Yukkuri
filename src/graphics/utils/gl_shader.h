@@ -26,9 +26,10 @@ enum GLSFlags {
 
 enum GLSPass {
 	glpNone = 0x00,
-	glpGeometry = 0x01,
-	glpPointLight = 0x02,
-	glpDirLight = 0x04,
+	glpDefault = 0x01,
+	glpGeometry = 0x02,
+	glpPointLight = 0x4,
+	glpDirLight = 0x08,
 	glpLast = 0x20,
 };
 
@@ -50,7 +51,7 @@ struct ShaderConfigAttributes {
 
 
 struct ShaderConfigData {
-	char* id;
+	char* name;
 	char* vertex_name;
 	char* fragment_name;
 	char** output;
@@ -58,7 +59,7 @@ struct ShaderConfigData {
 	unsigned int attributes_count;
 	ShaderConfigAttributes* attributes;
 
-	ShaderConfigData() : id(NULL), vertex_name(NULL), fragment_name(NULL), output(NULL),
+	ShaderConfigData() : name(NULL), vertex_name(NULL), fragment_name(NULL), output(NULL),
 						output_count(), attributes_count(), attributes(NULL) {}
 	~ShaderConfigData();
 };

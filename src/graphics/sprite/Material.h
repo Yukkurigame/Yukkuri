@@ -16,7 +16,7 @@ struct GLMaterial
 {
 	UINT flags;
 	struct  {
-		GLuint none;
+		GLuint base;
 		GLuint geometry;
 		GLuint directional_light;
 	} programs;

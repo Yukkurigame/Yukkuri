@@ -61,8 +61,8 @@ void Yukkuri::Start()
 {
 	Window.state = gsRunning;
 
-	const float update_interval = 1.0f / conf.maxFrameRate * MILISECONDS;
-	const float max_cycles = conf.maxFrameRate / conf.minFrameRate;
+	const float update_interval = 1.0f / conf.video.maxFrameRate * MILISECONDS;
+	const float max_cycles = conf.video.maxFrameRate / conf.video.minFrameRate;
 	float max_ticks = max_cycles * update_interval;
 
 	sdl_time = SDL_GetTicks();

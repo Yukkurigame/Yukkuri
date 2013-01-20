@@ -14,7 +14,7 @@
 #include <cstdlib>
 
 
-enum Textures {
+enum GLTextureMaps {
 	gltColor = 0,
 	gltNormal = 1,
 	gltLast = 2

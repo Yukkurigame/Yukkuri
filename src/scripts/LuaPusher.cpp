@@ -198,7 +198,7 @@ template<>
 void getFromLua( lua_State* L, int idx, ShaderConfigData& val )
 {
 	// Get id
-	LUA_GET_VALUE( "id", val.id )
+	LUA_GET_VALUE( "name", val.name )
 
 	// Get filenames
 	char** filenames[2] = { &val.vertex_name, &val.fragment_name };

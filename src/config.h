@@ -12,10 +12,13 @@
 
 struct MainConfig
 {
-	int windowWidth;
-	int windowHeight;
-	float maxFrameRate;
-	float minFrameRate;
+	struct {
+		int windowWidth;
+		int windowHeight;
+		float maxFrameRate;
+		float minFrameRate;
+		int renderMethod;
+	} video;
 	float widgetsPosZ;
 	int mapTileSize;
 	std::string mapDefaultTile;
@@ -24,7 +27,6 @@ struct MainConfig
 	int maxSpawn;
 	int maxEdibles;
 	int playerDies;
-	int textureBorder;
 	std::string imagePath;
 	std::string defaultImage;
 	std::string fontsPath;

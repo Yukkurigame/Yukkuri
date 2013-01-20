@@ -139,9 +139,9 @@ void Widget::redraw( )
 		starty = Parent->getWidgetRealY( ) + height;
 	}else{
 		startx = 0;
-		starty = (float)conf.windowHeight;
-		width = (float)conf.windowWidth;
-		height = (float)conf.windowHeight;
+		starty = (float)conf.video.windowHeight;
+		width = (float)conf.video.windowWidth;
+		height = (float)conf.video.windowHeight;
 	}
 	Position.x = startx + Rect.x;
 	Position.y = starty - Rect.y;

@@ -77,8 +77,8 @@ void MapChunkManager::init(){
 	// tile y is half of x; Each odd row located between two another.
 	chunkSize.y = ( conf.mapTileSize << (CHUNK_SIZE - 1 ) ) + (conf.mapTileSize >> 1);
 	// Calculate count of chunks in the screen
-	screen.x = conf.windowWidth >> ( lTileSize + CHUNK_SIZE );
-	screen.y = conf.windowHeight >> ( lTileSize + CHUNK_SIZE - 1 );
+	screen.x = conf.video.windowWidth >> ( lTileSize + CHUNK_SIZE );
+	screen.y = conf.video.windowHeight >> ( lTileSize + CHUNK_SIZE - 1 );
 	// Tiles in chunk: two interpenetrative girds of CHUNK_SIZE^2 tiles.
 	chunkTilesCount = 1 << ( CHUNK_SIZE + CHUNK_SIZE + 1);
 	// calculate size of atlas. CHUNK_SIZE is additional places here

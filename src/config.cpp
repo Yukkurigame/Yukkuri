@@ -53,11 +53,14 @@ MainConfig const getFromLua( lua_State* L, int idx )
 template<>
 void getFromLua( lua_State* L, int idx, MainConfig& val )
 {
-	LUA_GET_VALUE( "windows_width", val.windowWidth )
-	LUA_GET_VALUE( "windows_height", val.windowHeight )
-	LUA_GET_VALUE( "maximum_frame_rate", val.maxFrameRate )
-	LUA_GET_VALUE( "minimum_frame_rate", val.minFrameRate )
-	LUA_GET_VALUE( "texture_border", val.textureBorder )
+	lua_pushstring( L, "video" );	/* st: table string	*/	\
+	lua_gettable( L, -2 );			/* st: table val	*/	\
+	LUA_GET_VALUE( "window_width", val.video.windowWidth )
+	LUA_GET_VALUE( "window_height", val.video.windowHeight )
+	LUA_GET_VALUE( "maximum_frame_rate", val.video.maxFrameRate )
+	LUA_GET_VALUE( "minimum_frame_rate", val.video.minFrameRate )
+	LUA_GET_VALUE( "render_method", val.video.renderMethod )
+	lua_pop( L, 1 );
 
 	LUA_GET_VALUE( "images_path", val.imagePath )
 	LUA_GET_VALUE( "default_image_name", val.defaultImage )

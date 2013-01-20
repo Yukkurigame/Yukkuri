@@ -12,6 +12,12 @@
 #include <string>
 #include <vector>
 
+enum RenderMethod {
+	rmSingle = 0,
+	rmGBuffer = 1
+};
+
+
 
 namespace RenderManager
 {

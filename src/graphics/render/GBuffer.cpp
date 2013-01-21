@@ -11,6 +11,7 @@
 #include "graphics/utils/gl_shader.h"
 #include "graphics/Lighting.h"
 #include "graphics/Render.h"
+#include "graphics/Camera.h"
 
 
 #include "config.h"
@@ -46,9 +47,9 @@ namespace GBuffer
 		glTexParameterf( texture_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 		glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, attach, texture_type, tex_id, 0 );
 	}
+
+	list< Sprite* > last_pass_sprites;
 }
-
-
 
 
 
@@ -87,6 +88,10 @@ bool GBuffer::init()
 	// restore default FBO
 	glBindTexture( texture_type, 0 );
 	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
+
+	for( int i = 0; i < gbufLast; ++i )
+		last_pass_sprites.push( RenderManager::CreateGLSprite( 0.0f, 0.0f, 0.0f,
+				conf.video.windowWidth, conf.video.windowHeight ));
 
 	return true;
 }
@@ -207,8 +212,7 @@ void GBuffer::light_pass_directional( )
 
 	glDisable(GL_DEPTH_TEST);
 
-	VBOStructureHandle* vbos = VBuffer::prepare_handler(
-				glpDirLight, RenderManager::GetSpritesArray() );
+	VBOStructureHandle* vbos = VBuffer::prepare_handler( glpDirLight, &last_pass_sprites );
 
 	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);

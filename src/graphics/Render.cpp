@@ -111,9 +111,6 @@ void RenderManager::init( )
 	strcpy(textures[0].id, n.c_str());
 
 	AnimDef::init();
-
-	rect2f view( 0.0, 0.0, conf.video.windowWidth, conf.video.windowHeight );
-	Camera::push_state( &view );
 }
 
 
@@ -150,10 +147,10 @@ void RenderManager::openglInit( )
 bool RenderManager::openglSetup( int wwidth, int wheight )
 {
 	GLExtensions::load();
-	if( !GBuffer::init( ) )
-		return false;
 
-	glViewport( 0, 0, wwidth, wheight );
+	// Does not init gbuffer if single mode uses
+	if( conf.video.renderMethod == rmGBuffer && !GBuffer::init( ) )
+		return false;
 
 	glClear( GL_COLOR_BUFFER_BIT ); // | GL_DEPTH_BUFFER_BIT );
 
@@ -178,6 +175,9 @@ bool RenderManager::openglSetup( int wwidth, int wheight )
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	rect2f view( 0.0, 0.0, conf.video.windowWidth, conf.video.windowHeight );
+	Camera::push_state( &view );
 
 	return true;
 }
@@ -348,29 +348,6 @@ list< Sprite* >* RenderManager::GetSpritesArray( )
 //////////////////////////////////////////////////
 // Scene
 
-//static const std::string fixedShaders[] = {
-//	"fixed", "daytime", ""
-//};
-
-
-/*
-void RenderManager::MoveGlScene( )
-{
-	glTranslatef( vpoint.x, vpoint.y, vpoint.z );
-	Shaders::passUniform3fv( glsFixed, "offset", 1, &vpoint.x );
-	Camera::Update();
-	int i = 0;
-	std::string fname = fixedShaders[i++];
-
-	while( fname != "" ){
-		/GLuint fixed = Shaders::getProgram( fname );
-		/glUseProgram( fixed );
-		/glUniform3fv( glGetUniformLocation( fixed, "offset" ), 1, &vpoint.x );
-		/fname = fixedShaders[i++];
-	}
-	glUseProgram( 0 );
-}
-*/
 
 inline bool compareSprites( Sprite* s1, Sprite* s2 )
 {
@@ -389,7 +366,6 @@ inline bool compareSprites( Sprite* s1, Sprite* s2 )
 void RenderManager::DrawGLScene()
 {
 	Camera::Update();
-	//MoveGlScene();
 
 	switch( conf.video.renderMethod ){
 		case rmSingle:
@@ -414,7 +390,6 @@ void RenderManager::DrawGLScene()
 
 	//TestDrawAtlas(-2500, -1000, 10);
 
-	//glLoadIdentity();
 	SDL_GL_SwapBuffers();
 }
 

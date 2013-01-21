@@ -29,11 +29,10 @@ bool GLHelpers::CreateTexture( GLuint* ahandle, int width, int height )
 		glGenTextures(1, ahandle);
 	glBindTexture( GL_TEXTURE_2D, *ahandle );
 	glTexImage2D( GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-	//GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
-	//GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
-
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
 	glBindTexture( GL_TEXTURE_2D, 0 );
 
 	return true;
@@ -87,105 +86,6 @@ bool GLHelpers::ClearView( )
 	glPopAttrib();
 	return true;
 }
-
-
-/*	This function pass verticles array data to VBO
- *  VBO must be bindes perviously.
-
-void GLHelpers::FillVBO( )
-{
-	// VBO + GL_STREAM_DRAW == +10 fps
-	VertexV2FT2FC4UI* head = VBOArray::head();
-	int size = VBOArray::size();
-	glBufferData( GL_ARRAY_BUFFER, size, head, GL_STREAM_DRAW );
-} */
-
-
-/*	This function binds VBO and set up pointers positions.
- *  VBOHandle - VBO id.
-
-void GLHelpers::BindVBO( GLuint VBOHandle )
-{
-	glBindBuffer( GL_ARRAY_BUFFER, VBOHandle );
-
-	// Set up VBO strides & offsets
-	int vertex_size =  sizeof(VertexV2FT2FC4UI);
-
-	//TODO: Deprecate
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glVertexPointer( 3, GL_FLOAT, vertex_size, 0 );
-	glTexCoordPointer( 2, GL_FLOAT, vertex_size, BUFFER_OFFSET(sizeof(s3f)) );
-	glColorPointer( 4, GL_UNSIGNED_BYTE, vertex_size, BUFFER_OFFSET(sizeof(s3f) + sizeof(s2f)) );
-
-	// Enable attrib
-	glEnableVertexAttribArray( gllPosition );
-	glEnableVertexAttribArray( gllTexCoord );
-	glEnableVertexAttribArray( gllColor );
-	glVertexAttribPointer( gllPosition, 3, GL_FLOAT, GL_FALSE, vertex_size, 0 );
-	glVertexAttribPointer( gllTexCoord, 2, GL_FLOAT, GL_FALSE, vertex_size, BUFFER_OFFSET(sizeof(s3f)) );
-	glVertexAttribPointer( gllColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, vertex_size, BUFFER_OFFSET(sizeof(s3f) + sizeof(s2f)) );
-} */
-
-
-/*	This function ubinds VBO.
-void GLHelpers::UnbindVBO( )
-{
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glDisableVertexAttribArray( gllPosition );
-	glDisableVertexAttribArray( gllTexCoord );
-	glDisableVertexAttribArray( gllColor );
-	//TODO: Deprecate
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
-}*/
-
-
-/*	This function draws vertex buffer object
- * 	vbostructure - linked list of vbo description
-void GLHelpers::DrawVBO( VBOStructureHandle* vbostructure )
-{
-	GLuint aprog = 0;
-	GLuint texture = 0;
-	GLuint normals = 0;
-
-	glEnable(GL_TEXTURE_2D);
-	while(vbostructure != NULL){
-		if( aprog != vbostructure->shader ){
-			aprog = vbostructure->shader;
-			glUseProgram( aprog );
-		}
-		if( texture != vbostructure->atlas ){
-			texture = vbostructure->atlas;
-			glActiveTexture( GL_TEXTURE_FROM_INDEX(gltColor) );
-			glBindTexture( GL_TEXTURE_2D, texture );
-		}
-		if( normals != vbostructure->normals ){
-			normals = vbostructure->normals;
-			glActiveTexture( GL_TEXTURE_FROM_INDEX(gltNormal) );
-			glBindTexture( GL_TEXTURE_2D, normals );
-		}
-		glDrawElements( vbostructure->method, vbostructure->count, GL_UNSIGNED_INT, vbostructure->indexes );
-		//glDrawArrays(GL_QUADS, vbostructure->indexes, vbostructure->count);
-		//Clean vbos
-		vbostructure = vbostructure->next;
-	}
-	glUseProgram( 0 );
-	glActiveTexture( GL_TEXTURE_FROM_INDEX(gltColor) );
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glActiveTexture( GL_TEXTURE_FROM_INDEX(gltNormal) );
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-#ifdef DEBUG_DRAW_RECTANGLES
-	for( int i = 0; i < count; i = i + 4 )
-		glDrawArrays(GL_LINE_LOOP, i, 4);
-#endif
-
-	glDisable(GL_TEXTURE_2D);
-}
-*/
 
 
 /* This function creates new FBO and bind texture to it

@@ -30,6 +30,25 @@ namespace Camera {
 	};
 
 	list< CameraState* > states;
+
+	inline void update_viewport( ){
+		if( !states.head )
+			return;
+		CameraState* state = states.head->data;
+
+		// FIXME: Strange hack
+		rect2f view( &state->cam_view );
+		if( view.width < 0 ){
+			view.width = state->cam_view.x;
+			view.x = state->cam_view.x + state->cam_view.width;
+		}
+		if( view.height < 0 ){
+			view.height = state->cam_view.y;
+			view.y = state->cam_view.y + state->cam_view.height;
+		}
+		// FIXME: Why gl call here?
+		glViewport( view.x, view.y, view.width, view.height );
+	}
 }
 
 
@@ -51,6 +70,7 @@ void Camera::push_state( const rect2f* view )
 			//v( -wwidth*2.0, wwidth*2.0, -wheight*2.0, wheight*2.0 );
 	state->model = glm::mat4x4(1.0);
 	states.push( state );
+	update_viewport( );
 }
 
 void Camera::pop_state( )
@@ -60,6 +80,7 @@ void Camera::pop_state( )
 	delete states.head->data;
 	states.remove( states.head, NULL );
 	Update( );
+	update_viewport( );
 }
 
 

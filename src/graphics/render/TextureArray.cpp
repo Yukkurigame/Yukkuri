@@ -120,6 +120,8 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, l
 		!GLHelpers::BindTextureToFBO( *ahandle, FBOHandle ) )
 		return false;
 
+	glClear( GL_COLOR_BUFFER_BIT );
+
 	rect2f new_camera(0, height, width, -height);
 	Camera::push_state( &new_camera );
 	Camera::Update();

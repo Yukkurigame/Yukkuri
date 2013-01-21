@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+
 enum RenderMethod {
 	rmSingle = 0,
 	rmGBuffer = 1
@@ -59,7 +60,7 @@ namespace RenderManager
 	void FreeGLSprite( Sprite* sprite );
 	void FreeGLSprites( std::vector< Sprite* >* sprites );
 
-	std::vector< Sprite* >& GetSpritesArray( );
+	list< Sprite* >* GetSpritesArray( );
 
 
 	//////////////////////////////////////////////////
@@ -68,16 +69,6 @@ namespace RenderManager
 	//void MoveGlScene( );
 	void DrawGLScene( );
 	void CleanGLScene( );
-
-	//static s3f vpoint;
-	/*
-	inline void MoveGlScene( int x, int y, int z ){
-		vpoint.x = (float)x;
-		vpoint.y = (float)y;
-		vpoint.z = (float)z;
-		MoveGlScene();
-	}
-	*/
 
 };
 

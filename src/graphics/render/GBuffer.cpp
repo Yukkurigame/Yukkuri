@@ -6,10 +6,9 @@
  */
 
 #include "graphics/render/GBuffer.h"
+#include "graphics/render/VBuffer.h"
 #include "graphics/gl_extensions.h"
 #include "graphics/utils/gl_shader.h"
-#include "graphics/render/TextureArray.h"
-#include "graphics/render/GLHelpers.h"
 #include "graphics/Lighting.h"
 #include "graphics/Render.h"
 
@@ -119,8 +118,7 @@ void GBuffer::render()
 	glDrawBuffer( GL_COLOR_ATTACHMENT4 );
 	glClear( GL_COLOR_BUFFER_BIT );
 
-	GLHelpers::BindVBO( VBOHandle );
-	GLHelpers::FillVBO();
+	VBuffer::setup( VBOHandle );
 
 	geometry_pass( );
 
@@ -137,8 +135,7 @@ void GBuffer::render()
 
 	light_pass_directional( );
 
-
-	GLHelpers::UnbindVBO( );
+	VBuffer::unbind( );
 
 	// Draw to final texture
 	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
@@ -169,22 +166,17 @@ void GBuffer::geometry_pass( )
 
 	glEnable( GL_DEPTH_TEST );
 
-	VBOStructureHandle* vbos = TextureArray::prepareVBO(
+	VBOStructureHandle* vbos = VBuffer::prepare_handler(
 			glpGeometry, RenderManager::GetSpritesArray() );
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 
-	GLHelpers::DrawVBO( vbos );
+	VBuffer::draw( vbos );
 
 	glDisable(GL_BLEND);
 
-	VBOStructureHandle* temp;
-	while( vbos != NULL ){
-		temp = vbos;
-		vbos = vbos->next;
-		delete temp;
-	}
+	VBuffer::free_handler( &vbos );
 
 	// When we get here the depth buffer is already populated and the stencil pass
 	// depends on it, but it does not write to it.
@@ -214,22 +206,20 @@ void GBuffer::light_pass_directional( )
 	}
 
 	glDisable(GL_DEPTH_TEST);
+
+	VBOStructureHandle* vbos = VBuffer::prepare_handler(
+				glpDirLight, RenderManager::GetSpritesArray() );
+
 	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);
 	glBlendFunc(GL_ONE, GL_ONE);
 
-	VBOStructureHandle* vbos = TextureArray::prepareVBO(
-			glpDirLight, RenderManager::GetSpritesArray() );
-	GLHelpers::DrawVBO( vbos );
-
-	VBOStructureHandle* temp;
-	while( vbos != NULL ){
-		temp = vbos;
-		vbos = vbos->next;
-		delete temp;
-	}
+	VBuffer::draw( vbos );
 
 	glDisable(GL_BLEND);
+
+	VBuffer::free_handler( &vbos );
+
 }
 
 

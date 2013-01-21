@@ -13,7 +13,9 @@ enum ctMode {
 
 
 namespace Camera {
-	void init( );
+
+	void push_state( const rect2f* view );
+	void pop_state( );
 
 	void Update();
 	float GetX( );

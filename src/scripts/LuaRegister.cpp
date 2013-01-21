@@ -130,6 +130,7 @@ void LuaMain::RegisterApi( lua_State* L )
 		FIELD(gltNormal)
 		// Render passes
 		FIELD(glpDefault)
+		FIELD(glpSimple)
 		FIELD(glpGeometry)
 		FIELD(glpPointLight)
 		FIELD(glpDirLight)

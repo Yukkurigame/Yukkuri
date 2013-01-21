@@ -13,15 +13,9 @@
 
 namespace TextureArray
 {
-	// Vertex buffer object
-	VBOStructureHandle* prepareVBO( int pass, std::vector< Sprite* >& sprites );
-	VBOStructureHandle* prepareVBO( Sprite* sprites, unsigned int scount );
-
-
 	bool drawToNewGLTexture( GLuint* ahandle, GLuint* nhandle, int width, int height, std::vector< TextureProxy* >& textures );
-	bool drawToNewGLTexture( GLuint* ahandle, int width, int height, Sprite* sprites, unsigned int count );
+	bool drawToNewGLTexture( GLuint* ahandle, int width, int height, list< Sprite* >* sprites );
 	//bool drawToGLTexture( GLuint ahandle, std::vector< TextureProxy* >& textures );
-
 
 }
 

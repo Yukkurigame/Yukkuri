@@ -151,6 +151,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 	unsigned int row = 0;
 	unsigned int col = 0;
 	Sprite* sprites = new Sprite[ ChunkManager.chunkTilesCount ];
+	list< Sprite* > sprite_list;
 	for( int tile = ChunkManager.chunkTilesCount - 1; tile >= 0; --tile ){
 		MapTile& t = tiles[tile];
 		int tx = realPos.x + col * conf.mapTileSize + ( row % 2 ? (conf.mapTileSize >> 1) : 0 );
@@ -158,15 +159,16 @@ MapChunk::MapChunk( signed int x, signed int y )
 		Map::toMapCoordinates( &tx, &ty );
 		t.create( tx, ty );
 
-		Sprite& s = sprites[tile];
-		s.texid = t.Type->texture;
-		s.tex = RenderManager::GetTextureByNumber( s.texid );
-		s.atlas = s.tex->atlas;
-		s.setPosition(
+		Sprite* s = &sprites[tile];
+		sprite_list.push( s );
+		s->texid = t.Type->texture;
+		s->tex = RenderManager::GetTextureByNumber( s->texid );
+		s->atlas = s->tex->atlas;
+		s->setPosition(
 				(float)( col * conf.mapTileSize + ( row % 2 ? (conf.mapTileSize >> 1) : 0 ) ),
 				(float)( row * conf.mapTileSize - row * ( 3 * (conf.mapTileSize >> 2) ) ) );
-		s.setPicture( t.Type->picture );
-		s.resize( (float)conf.mapTileSize, (float)conf.mapTileSize );
+		s->setPicture( t.Type->picture );
+		s->resize( (float)conf.mapTileSize, (float)conf.mapTileSize );
 		if( ++col >= side ){
 			col = 0;
 			row++;
@@ -176,9 +178,11 @@ MapChunk::MapChunk( signed int x, signed int y )
 	tex.w = ChunkManager.chunkSize.x;
 	tex.h = ChunkManager.chunkSize.y;
 	tex.tex = 0;
-	TextureArray::drawToNewGLTexture( &tex.tex, ChunkManager.chunkSize.x, ChunkManager.chunkSize.y, sprites, ChunkManager.chunkTilesCount );
+	TextureArray::drawToNewGLTexture( &tex.tex, ChunkManager.chunkSize.x,
+					ChunkManager.chunkSize.y, &sprite_list );
 	GLHelpers::UpdateTexture( ChunkManager.atlas, &tex, (int)atlasPos.x, (int)atlasPos.y );
 	delete[] sprites;
+
 }
 
 

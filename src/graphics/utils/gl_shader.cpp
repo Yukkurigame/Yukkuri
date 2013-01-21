@@ -308,14 +308,16 @@ GLuint Shaders::getProgram( enum GLSPass pass, enum GLSFlags glflags )
 	int pass = 1;																	\
 	while( pass < glpLast ){														\
 		std::map< enum GLSFlags, GLuint >& shaders_map = shaders[pass];				\
-		FOREACHIT(shaders_map){														\
-			/* flag in flags or flag is glsAll */									\
-			if( glflag != glsAll && !(it->first & glflag ) )						\
-				continue;															\
-			int location = glGetUniformLocation( it->second, name );				\
-			if( location >= 0 ){														\
-				glUseProgram(it->second);											\
-				func;																\
+		if( !shaders_map.empty() ){													\
+			FOREACHIT(shaders_map){													\
+				/* flag in flags or flag is glsAll */								\
+				if( glflag != glsAll && !(it->first & glflag ) )					\
+					continue;														\
+				int location = glGetUniformLocation( it->second, name );			\
+				if( location >= 0 ){												\
+					glUseProgram(it->second);										\
+					func;															\
+				}																	\
 			}																		\
 		}																			\
 		pass <<= 1;																	\

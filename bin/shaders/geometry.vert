@@ -16,7 +16,6 @@ out vec4 vert_Color;
 void main()
 {
 	vert_TexCoord   = in_TexCoord;
-	vert_WorldPos   = (in_MVP * vec4(in_Position, 1.0)).xyz; //(gWorld * vec4(VSin.Position, 1.0)).xyz;
 	vert_Color		= in_Color;
 
 #ifdef _YFIXED
@@ -24,7 +23,9 @@ void main()
 #else
 	vec4 position = vec4(in_Position, 1.0);
 #endif
+	position = in_MVP * position;
 
-	gl_Position = in_MVP * position;
+	vert_WorldPos = position.xyz;
+	gl_Position = position;
 
 }

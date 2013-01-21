@@ -7,7 +7,9 @@
 
 #include "graphics/render/TextureArray.h"
 #include "graphics/render/GLHelpers.h"
+#include "graphics/render/VBuffer.h"
 #include "graphics/utils/gl_shader.h"
+#include "graphics/Camera.h"
 #include "graphics/GraphicsTypes.h"
 #include "graphics/gl_extensions.h"
 #include "graphics/Render.h"
@@ -16,92 +18,6 @@
 
 #include "debug.h"
 #include "hacks.h"
-
-
-namespace {
-
-	inline bool compareSprites( Sprite* s1, Sprite* s2 )
-	{
-		s3f* o1 = &s1->brush.vertex_origin;
-		s3f* o2 = &s2->brush.vertex_origin;
-		if( o1->z == o2->z ){
-			if( o1->y == o2->y ){
-				return ( o1->x > o2->x );
-			}
-			return ( o1->y > o2->y );
-		}
-		return ( o1->z < o2->z );
-	}
-
-}
-
-
-inline void vbo_handler( Sprite* s, GLuint shader, VBOStructureHandle*& v, VBOStructureHandle*& first )
-{
-	if( s == NULL || !s->isVisible() )
-		return;
-
-	if( !v ){
-		first = v = new VBOStructureHandle( s->brush.type, s->atlas, s->normals, shader );
-	}else if( v->type != prQUADS || s->atlas != v->atlas ||
-			s->normals != v->normals || shader != v->shader ){
-		v->next = new VBOStructureHandle( s->brush.type, s->atlas, s->normals, shader );
-		v = v->next;
-	}
-
-	v->set_indexes( s->brush.point_index, s->brush.points_count );
-}
-
-
-/*	This function make vbo array from sprite array
- *	c - count of vbos handles to be returned
- *	sprites - vector of sprites
- *	verticles - vbo data array
- *	returns pointer to the first vbo info handler
- */
-VBOStructureHandle* TextureArray::prepareVBO( int pass, std::vector< Sprite* >& sprites )
-{
-	sort(sprites.begin(), sprites.end(), compareSprites);
-	VBOStructureHandle* v = NULL;
-	VBOStructureHandle* first = NULL;
-	FOREACHIT( sprites ){
-		Sprite* s = *(it);
-		int shader = glpNone;
-		switch(pass){
-			case glpDefault:
-				shader = s->material.programs.base;
-				break;
-			case glpGeometry:
-				shader = s->material.programs.geometry;
-				break;
-			case glpDirLight:
-				shader = s->material.programs.directional_light;
-				break;
-		}
-		vbo_handler( s, shader, v, first );
-	}
-	return first;
-}
-
-
-/*	This function make vbo array from sprite array
- *	c - count of vbos handles to be returned
- *	sprites - Pointer to array of sprites
- *	scount - count of sprites in array
- *	verticles - vbo data array
- *	returns pointer to the first vbo info handler
- */
-VBOStructureHandle* TextureArray::prepareVBO( Sprite* sprites, unsigned int scount )
-{
-	//int count = 0;
-	VBOStructureHandle* v = NULL;
-	VBOStructureHandle* first = NULL;
-	for( unsigned int i = 0; i < scount; ++i ){
-		Sprite* s = &sprites[i];
-		vbo_handler( s, 0, v, first );
-	}
-	return first;
-}
 
 
 inline void draw_proxy_quad( TextureProxy* t, bool normal = false )
@@ -194,43 +110,40 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, GLuint* nhandle, int wid
  * sprites - array of sprites to draw;
  * returns boolean
  */
-bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, Sprite* sprites, unsigned int count )
+bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, list< Sprite* >* sprites )
 {
 	GLuint FBOHandle = 0;
 	GLuint VBOHandle = 0;
 
 	// A FBO will be used to draw textures. FBO creation and setup.
 	if( !GLHelpers::CreateTexture( ahandle, width, height ) ||
-		!GLHelpers::BindTextureToFBO( *ahandle, FBOHandle ) ||
-		!GLHelpers::SetUpView( width, height, 1 ) )
+		!GLHelpers::BindTextureToFBO( *ahandle, FBOHandle ) )
 		return false;
 
-	VBOStructureHandle* vbostructure = prepareVBO( sprites, count );
+	rect2f new_camera(0, height, width, -height);
+	Camera::push_state( &new_camera );
+	Camera::Update();
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 
 	glGenBuffers( 1, &VBOHandle );
-	GLHelpers::BindVBO( VBOHandle );
-	GLHelpers::FillVBO( );
-	GLHelpers::DrawVBO( vbostructure );
-	GLHelpers::UnbindVBO( );
-	glDeleteBuffers( 1, &VBOHandle );
 
+	VBOStructureHandle* vbostructure = VBuffer::prepare_handler( glpSimple, sprites );
+	VBuffer::setup( VBOHandle );
+	VBuffer::draw( vbostructure );
+	VBuffer::unbind( );
+	VBuffer::free_handler( &vbostructure );
+
+	glDeleteBuffers( 1, &VBOHandle );
 	glDisable(GL_BLEND);
 
-	VBOStructureHandle* temp;
-	while( vbostructure != NULL ){
-		temp = vbostructure;
-		vbostructure = vbostructure->next;
-		delete temp;
-	}
+	Camera::pop_state();
 
-	/* free( vertices ); */
+	//GLHelpers::ClearView( );
 
 	// Reset FBO
-	return  GLHelpers::ClearView( ) &&
-			GLHelpers::UnbindFBO( FBOHandle );
+	return  GLHelpers::UnbindFBO( FBOHandle );
 }
 
 

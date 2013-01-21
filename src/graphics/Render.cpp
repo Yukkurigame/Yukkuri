@@ -13,8 +13,8 @@
 #include "graphics/render/Atlas.h"
 #include "graphics/render/GBuffer.h"
 #include "graphics/render/GLHelpers.h"
+#include "graphics/render/VBuffer.h"
 #include "graphics/render/GLTextures.h"
-#include "graphics/render/TextureArray.h"
 #include "graphics/utils/VBOArray.h"
 
 #include "scripts/LuaConfig.h"
@@ -42,22 +42,9 @@ namespace {
 	//////////////////////////////////////////////////
 	// Sprites
 
-	std::vector < Sprite* > GLSprites;
+	list < Sprite* > sprites_array;
 
-
-	//////////////////////////////////////////////////
-	// Verticles
-
-	/*
-	int verticlesSize;
-	VertexV2FT2FC4UI* verticles;
-
-	void ExtendVerticles( )
-	{
-		verticlesSize *= 2;
-		verticles = (VertexV2FT2FC4UI*)realloc( verticles, (unsigned)sizeof(VertexV2FT2FC4UI) * verticlesSize * 4 );
-	}
-	*/
+	//std::vector < Sprite* > GLSprites;
 
 
 	//////////////////////////////////////////////////
@@ -96,8 +83,16 @@ namespace {
 	}
 
 
+	void update_sprites(  )
+	{
+		listElement< Sprite* >* it = sprites_array.head;
+		while( it != NULL ){
+			Sprite* s = it->data;
+			s->tex = &textures[s->texid];
+			it = it->next;
+		}
+	}
 }
-
 
 
 void RenderManager::init( )
@@ -106,7 +101,6 @@ void RenderManager::init( )
 	//verticles = NULL;
 	//verticlesSize = 1; // for success multiplication
 	atlasHandle = 0;
-	GLSprites.clear();
 	// Set first texture info to 0
 	textures = (TextureInfo*)malloc( (unsigned)sizeof(TextureInfo) );
 	texturesCount = 1;
@@ -117,7 +111,9 @@ void RenderManager::init( )
 	strcpy(textures[0].id, n.c_str());
 
 	AnimDef::init();
-	Camera::init( );
+
+	rect2f view( 0.0, 0.0, conf.video.windowWidth, conf.video.windowHeight );
+	Camera::push_state( &view );
 }
 
 
@@ -131,8 +127,6 @@ void RenderManager::clean( )
 			delete[] textures[i].id;
 		free(textures);
 	}
-	//if( verticles )
-	//	free(verticles);
 	GLTextures::clearCache();
 	CleanFonts();
 	VBOArray::clean( );
@@ -159,8 +153,6 @@ bool RenderManager::openglSetup( int wwidth, int wheight )
 	if( !GBuffer::init( ) )
 		return false;
 
-	//glEnable( GL_TEXTURE_2D );
-
 	glViewport( 0, 0, wwidth, wheight );
 
 	glClear( GL_COLOR_BUFFER_BIT ); // | GL_DEPTH_BUFFER_BIT );
@@ -171,26 +163,7 @@ bool RenderManager::openglSetup( int wwidth, int wheight )
 
 	glClearDepth( 10.0f );
 
-	//glEnable(GL_DEPTH_TEST);
-	//glDepthFunc(GL_LEQUAL);
-
 	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
-
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//glEnable(GL_BLEND);
-
-	//glEnable(GL_ALPHA_TEST); //It's work but with ugly border
-	//glAlphaFunc(GL_NOTEQUAL, 0);
-
-	//glMatrixMode( GL_PROJECTION );
-	//glLoadIdentity();
-
-	//glOrtho(0.0, wwidth, 0.0, wheight, -10.0, 1.0);
-	//glOrtho(-wwidth*1.5, wwidth*1.5, -wheight*1.5, wheight*1.5, -10.0, 1.0);
-	//glOrtho(-wwidth*2, wwidth*2, -wheight*2, wheight*2, -30.0, 30.0);
-
-	//glMatrixMode( GL_MODELVIEW );
-	//glLoadIdentity();
 
 	glGenBuffersARB( 1, &VBOHandle );
 
@@ -248,9 +221,7 @@ int RenderManager::PushTexture( TextureProxy* proxy, GLuint atlas, GLuint normal
 	ti.id = new char[proxy->id.size() + 1];
 	ti.normals = normals;
 	strcpy(ti.id, proxy->id.c_str());
-	// Update sprites
-	FOREACHIT( GLSprites )
-		(*it)->tex = &textures[(*it)->texid];
+	update_sprites();
 	return texturesCount++;
 }
 
@@ -268,9 +239,7 @@ void RenderManager::PushTextures( std::vector < TextureProxy* >& tarray, GLuint 
 		strcpy(ti.id, proxy->id.c_str());
 		texturesCount++;
 	}
-	// Update sprites
-	FOREACHIT( GLSprites )
-		(*it)->tex = &textures[(*it)->texid];
+	update_sprites();
 }
 
 
@@ -326,11 +295,7 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 	sprite->resize( (float)width, (float)height );
 	sprite->setPosition( x, y, z );
 
-	GLSprites.push_back( sprite );
-
-	//int vcount = GLSprites.size() - verticlesSize;
-	//if( vcount > 0 )
-	//	ExtendVerticles( );
+	sprites_array.push_back( sprite );
 
 	return sprite;
 }
@@ -344,11 +309,7 @@ Sprite* RenderManager::CreateGLSprite( Sprite* osprite )
 
 	Sprite* sprite = new Sprite(osprite);
 
-	GLSprites.push_back( sprite );
-
-	//int vcount = GLSprites.size() - verticlesSize;
-	//if( vcount > 0 )
-	//	ExtendVerticles( );
+	sprites_array.push_back( sprite );
 
 	return sprite;
 }
@@ -356,13 +317,15 @@ Sprite* RenderManager::CreateGLSprite( Sprite* osprite )
 
 void RenderManager::FreeGLSprite( Sprite* sprite )
 {
-	std::vector< Sprite* >::iterator it;
-	it = std::find( GLSprites.begin(), GLSprites.end(), sprite );
-	if( it != GLSprites.end() ){
-		GLSprites.erase(it);
-	}else{
-		//debug( GRAPHICS, "Sprite not under control.\n" );
+	listElement< Sprite* >* it = sprites_array.head;
+	while( it != NULL ){
+		if( it->data == sprite )
+			break;
+		it = it->next;
 	}
+	sprites_array.remove(it);
+	/* if( it == NULL )
+		debug( GRAPHICS, "Sprite not under control.\n" ); */
 	if( sprite )
 		delete sprite;
 }
@@ -376,9 +339,9 @@ void RenderManager::FreeGLSprites( std::vector< Sprite* >* sprites )
 }
 
 
-std::vector< Sprite* >& RenderManager::GetSpritesArray( )
+list< Sprite* >* RenderManager::GetSpritesArray( )
 {
-	return GLSprites;
+	return &sprites_array;
 }
 
 
@@ -409,6 +372,20 @@ void RenderManager::MoveGlScene( )
 }
 */
 
+inline bool compareSprites( Sprite* s1, Sprite* s2 )
+{
+	s3f* o1 = &s1->brush.vertex_origin;
+	s3f* o2 = &s2->brush.vertex_origin;
+	if( o1->z == o2->z ){
+		if( o1->y == o2->y ){
+			return ( o1->x > o2->x );
+		}
+		return ( o1->y > o2->y );
+	}
+	return ( o1->z < o2->z );
+}
+
+
 void RenderManager::DrawGLScene()
 {
 	Camera::Update();
@@ -417,22 +394,17 @@ void RenderManager::DrawGLScene()
 	switch( conf.video.renderMethod ){
 		case rmSingle:
 		{
-			VBOStructureHandle* vbos = TextureArray::prepareVBO( glpDefault, GLSprites );
-			GLHelpers::BindVBO( VBOHandle );
-			GLHelpers::FillVBO();
+			//sort( GLSprites.begin(), GLSprites.end(), compareSprites );
+			VBOStructureHandle* vbos = VBuffer::prepare_handler( glpDefault, &sprites_array );
+			VBuffer::setup( VBOHandle );
 
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glEnable(GL_BLEND);
-			GLHelpers::DrawVBO( vbos );
+			VBuffer::draw( vbos );
 			glDisable(GL_BLEND);
+			VBuffer::unbind( );
 
-			GLHelpers::UnbindVBO( );
-			VBOStructureHandle* temp;
-			while( vbos != NULL ){
-				temp = vbos;
-				vbos = vbos->next;
-				delete temp;
-			}
+			VBuffer::free_handler( &vbos );
 		}
 			break;
 		case rmGBuffer:

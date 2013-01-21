@@ -79,6 +79,7 @@ struct rect2f
 	float height;
 	rect2f () : x(), y(), width(), height() {}
 	rect2f ( float X, float Y, float W, float H ) : x(X), y(Y), width(W), height(H) {}
+	rect2f ( const rect2f* src ) : x(src->x), y(src->y), width(src->width), height(src->height) {}
 	s2f size() { return s2f( width, height ); }
 };
 

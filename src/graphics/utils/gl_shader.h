@@ -27,9 +27,10 @@ enum GLSFlags {
 enum GLSPass {
 	glpNone = 0x00,
 	glpDefault = 0x01,
-	glpGeometry = 0x02,
-	glpPointLight = 0x4,
-	glpDirLight = 0x08,
+	glpSimple = 0x02,
+	glpGeometry = 0x04,
+	glpPointLight = 0x8,
+	glpDirLight = 0x10,
 	glpLast = 0x20,
 };
 

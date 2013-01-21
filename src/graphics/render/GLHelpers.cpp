@@ -13,9 +13,6 @@
 #include "debug.h"
 
 
-#define BUFFER_OFFSET(i) ((char*)NULL + (int)(i))
-
-
 /*	This function creates new opengl texture. If texture is exists it will be cleared.
  *	ahandle - pointer to texture id
  *	width, height - texture size
@@ -94,19 +91,19 @@ bool GLHelpers::ClearView( )
 
 /*	This function pass verticles array data to VBO
  *  VBO must be bindes perviously.
- */
+
 void GLHelpers::FillVBO( )
 {
 	// VBO + GL_STREAM_DRAW == +10 fps
 	VertexV2FT2FC4UI* head = VBOArray::head();
 	int size = VBOArray::size();
 	glBufferData( GL_ARRAY_BUFFER, size, head, GL_STREAM_DRAW );
-}
+} */
 
 
 /*	This function binds VBO and set up pointers positions.
  *  VBOHandle - VBO id.
- */
+
 void GLHelpers::BindVBO( GLuint VBOHandle )
 {
 	glBindBuffer( GL_ARRAY_BUFFER, VBOHandle );
@@ -129,10 +126,10 @@ void GLHelpers::BindVBO( GLuint VBOHandle )
 	glVertexAttribPointer( gllPosition, 3, GL_FLOAT, GL_FALSE, vertex_size, 0 );
 	glVertexAttribPointer( gllTexCoord, 2, GL_FLOAT, GL_FALSE, vertex_size, BUFFER_OFFSET(sizeof(s3f)) );
 	glVertexAttribPointer( gllColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, vertex_size, BUFFER_OFFSET(sizeof(s3f) + sizeof(s2f)) );
-}
+} */
 
 
-/*	This function ubinds VBO. */
+/*	This function ubinds VBO.
 void GLHelpers::UnbindVBO( )
 {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -143,12 +140,11 @@ void GLHelpers::UnbindVBO( )
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
-}
+}*/
 
 
 /*	This function draws vertex buffer object
  * 	vbostructure - linked list of vbo description
- */
 void GLHelpers::DrawVBO( VBOStructureHandle* vbostructure )
 {
 	GLuint aprog = 0;
@@ -189,6 +185,7 @@ void GLHelpers::DrawVBO( VBOStructureHandle* vbostructure )
 
 	glDisable(GL_TEXTURE_2D);
 }
+*/
 
 
 /* This function creates new FBO and bind texture to it

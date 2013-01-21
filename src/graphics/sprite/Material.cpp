@@ -8,14 +8,19 @@
 #include "graphics/sprite/Material.h"
 #include "graphics/utils/gl_shader.h"
 
+#define GET_PROGRAM( target, val )	\
+	programs.target = Shaders::getProgram( val, static_cast<enum GLSFlags>(glflags) );
 
 void GLMaterial::init_flags( UINT glflags )
 {
 	flags = glflags;
-	programs.base = Shaders::getProgram( glpDefault, static_cast<enum GLSFlags>(glflags) );
-	programs.geometry = Shaders::getProgram( glpGeometry, static_cast<enum GLSFlags>(glflags) );
-	programs.directional_light = Shaders::getProgram( glpDirLight, static_cast<enum GLSFlags>(glflags) );
+	GET_PROGRAM( base, glpDefault )
+	GET_PROGRAM( simple, glpSimple )
+	GET_PROGRAM( geometry, glpGeometry )
+	GET_PROGRAM( directional_light, glpDirLight )
 }
+
+#undef GET_PROGRAM
 
 
 

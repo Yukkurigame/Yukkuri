@@ -21,6 +21,7 @@ enum GLTextureMaps {
 };
 
 #define GL_TEXTURE_FROM_INDEX(i) GL_TEXTURE0 + i
+#define BUFFER_OFFSET(i) ((char*)NULL + (int)(i))
 
 
 struct s4ub

@@ -111,7 +111,7 @@ s3f Camera::position( )
 	s3f ret;
 	if( states.head ){
 		CameraState* state = states.head->data;
-		glm::vec3 pos = state->cam_position + state->cam_offset;
+		glm::vec3 pos = -( state->cam_position + state->cam_offset );
 		ret.x = pos.x;
 		ret.y = pos.y;
 		ret.z = pos.z;

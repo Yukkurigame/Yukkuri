@@ -12,7 +12,6 @@ out vec3 vert_WorldPos;
 out vec2 vert_TexCoord;
 out vec4 vert_Color;
 
-
 void main()
 {
 	vert_TexCoord   = in_TexCoord;

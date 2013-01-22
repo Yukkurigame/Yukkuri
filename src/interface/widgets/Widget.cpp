@@ -111,6 +111,7 @@ void Widget::setBackground( int texture, int picture )
 	background = RenderManager::CreateGLSprite( Position.x, Position.y, getZ(),
 				(int)Rect.width, (int)Rect.height, texture, picture );
 	background->setFixed();
+	background->clearLight();
 }
 
 

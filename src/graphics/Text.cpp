@@ -194,6 +194,7 @@ void Text::addSprite( int x, int y, Char* c )
 		position.y - static_cast<float>(y), position.z, font->cellWidth,
 		font->cellHeight, font->texture, c->pic );
 	s->brush.set_color( color );
+	s->clearLight();
 	sprites.push_back(s);
 }
 
@@ -211,6 +212,7 @@ void Text::setCursorPosition( unsigned int pos )
 				position.x, position.y, position.z,
 				font->cellWidth, font->cellHeight, font->texture, tmpc->pic );
 		cursor->setFixed();
+		cursor->clearLight();
 	}
 	Sprite* next = NULL;
 	if( pos >= sprites.size() ){

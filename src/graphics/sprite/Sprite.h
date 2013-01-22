@@ -38,6 +38,8 @@ struct Sprite
 
 	inline void setFixed( ){ material.add_flag(glsFixed); }
 	inline void clearFixed( ){ material.clear_flag(glsFixed); }
+	inline void setLight( ){ material.add_flag(glsLight); }
+	inline void clearLight( ){ material.clear_flag(glsLight); }
 
 	inline void addNormalMap( GLuint map ){
 		normals = map;
@@ -51,23 +53,21 @@ struct Sprite
 
 	Sprite() : rect(), brush( prQUADS, 0 ) {
 		tex = NULL;
-		material.init_flags(0);
+		material.init_flags(glsLight);
 		picture = atlas = normals = texid = 0;
 		flags = 1; // visible only
-//		shader = 0;
 	}
 
 	Sprite( enum primitives shape, short centered ) : rect(), brush( shape, centered ){
 		tex = NULL;
-		material.init_flags(0);
+		material.init_flags(glsLight);
 		picture = atlas = normals = texid = 0;
 		flags = 1; // visible only
-//		shader = 0;
 	}
 
 	Sprite( Sprite* src ) : texid(src->texid), picture(src->picture),
 		atlas(src->atlas), normals(src->normals),
-		flags(src->flags), /*shader(src->shader),*/ rect(src->rect), tex(src->tex),
+		flags(src->flags), rect(src->rect), tex(src->tex),
 		brush(src->brush) {
 		material.init_flags( src->material.flags );
 	}

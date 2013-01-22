@@ -17,6 +17,7 @@ namespace GBuffer
 		gbufTPosition,
 		gbufTDiffuse,
 		gbufTNormal,
+		gnufTUi,
 		gbufLast
 	};
 

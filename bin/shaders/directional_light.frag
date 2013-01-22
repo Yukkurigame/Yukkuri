@@ -48,10 +48,9 @@ vec2 get_TexCoord() {
 }
 
 void main() {
-
 	vec2 tex_coord = get_TexCoord();
-	vec3 position = texture2D(in_gPositionMap, tex_coord.st).rgb;
 	vec4 color = texture2D(in_gColorMap, tex_coord.st);
+	vec3 position = texture2D(in_gPositionMap, tex_coord.st).rgb;
 	vec3 normal = normalize(texture2D(in_gNormalMap, tex_coord.st).rgb);
 
 	out_Color = color * calculate_light(in_Light, position, normal);

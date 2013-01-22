@@ -65,12 +65,14 @@ void WidgetBar::createBar( std::string name, int picture, s4ub color )
 	BarSprite = RenderManager::CreateGLSprite( Bar.x, Bar.y, 1.0, Bar.width, Bar.height );
 	if( BarSprite ){
 			BarSprite->setFixed();
+			BarSprite->clearLight();
 			BarSprite->brush.set_color( color );
 	}
 	if( name != "" ){
 		TopSprite = RenderManager::CreateGLSprite( Top.x,  Top.y, 1.1, Top.width, Top.height,
 						RenderManager::GetTextureNumberById(name), picture );
 		TopSprite->setFixed();
+		TopSprite->clearLight();
 	}
 	setBarValue(1);
 	setBarSize(1);

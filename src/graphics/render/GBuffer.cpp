@@ -11,7 +11,6 @@
 #include "graphics/utils/gl_shader.h"
 #include "graphics/Lighting.h"
 #include "graphics/Render.h"
-#include "graphics/Camera.h"
 
 
 #include "config.h"
@@ -94,8 +93,8 @@ bool GBuffer::init()
 	glBindTexture( texture_type, 0 );
 	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
 
-	combinator = RenderManager::CreateGLSprite( 0.0f, 0.0f, 0.0f,
-				conf.video.windowWidth, conf.video.windowHeight);
+	combinator = new Sprite( );
+	combinator->resize( window_size.x, window_size.y );
 	combinator->setFixed();
 
 	return true;
@@ -163,11 +162,12 @@ void GBuffer::geometry_pass( )
 {
 	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, fbo );
 
-	GLenum draw_buffers[3] = { GL_COLOR_ATTACHMENT0,
+	GLenum draw_buffers[4] = { GL_COLOR_ATTACHMENT0,
 			GL_COLOR_ATTACHMENT1,
-			GL_COLOR_ATTACHMENT2 };
+			GL_COLOR_ATTACHMENT2,
+			GL_COLOR_ATTACHMENT3 };
 
-	glDrawBuffersARB( 3, draw_buffers );
+	glDrawBuffersARB( 4, draw_buffers );
 
 	// Only the geometry pass updates the depth buffer
 	glDepthMask( GL_TRUE );

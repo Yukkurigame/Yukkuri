@@ -365,7 +365,7 @@ inline bool compareSprites( Sprite* s1, Sprite* s2 )
 
 void RenderManager::DrawGLScene()
 {
-	Camera::Update();
+	Camera::update();
 
 	switch( conf.video.renderMethod ){
 		case rmSingle:

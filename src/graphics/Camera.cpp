@@ -79,12 +79,12 @@ void Camera::pop_state( )
 		return;
 	delete states.head->data;
 	states.remove( states.head, NULL );
-	Update( );
+	update( );
 	update_viewport( );
 }
 
 
-void Camera::Update( )
+void Camera::update( )
 {
 	if( !states.head )
 		return;
@@ -106,9 +106,24 @@ void Camera::Update( )
 }
 
 
-float Camera::GetX( )
+s3f Camera::position( )
 {
-	if( !states.head )
+	s3f ret;
+	if( states.head ){
+		CameraState* state = states.head->data;
+		glm::vec3 pos = state->cam_position + state->cam_offset;
+		ret.x = pos.x;
+		ret.y = pos.y;
+		ret.z = pos.z;
+	}
+	return ret;
+}
+
+
+float Camera::getX( )
+{
+	return position().x;
+/*	if( !states.head )
 		return 0;
 
 	CameraState* state = states.head->data;
@@ -120,12 +135,14 @@ float Camera::GetX( )
 		return * state->TargetX;
 	}
 	return state->cam_position.x;
+*/
 }
 
 
-float Camera::GetY( )
+float Camera::getY( )
 {
-	if( !states.head )
+	return position().y;
+/*	if( !states.head )
 		return 0;
 
 	CameraState* state = states.head->data;
@@ -137,6 +154,7 @@ float Camera::GetY( )
 		return *state->TargetY;
 	}
 	return state->cam_position.y;
+*/
 }
 
 
@@ -200,7 +218,7 @@ void Camera::SetTarget( double* x, double* y )
 	state->TargetX = x;
 	state->TargetY = y;
 	ChangeMode( ctmCenter );
-	Update( );
+	update( );
 }
 
 

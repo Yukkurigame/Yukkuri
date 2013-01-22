@@ -69,6 +69,7 @@ struct ShaderConfigData {
 namespace Shaders {
 	//GLuint getProgram( std::string filename );
 	GLuint getProgram( enum GLSPass, enum GLSFlags glflags );
+	void passUniform2fv( enum GLSFlags, const char* name, int count, float* data);
 	void passUniform3fv( enum GLSFlags, const char* name, int count, float* data);
 	void passUniformMatrix4fv( enum GLSFlags, const char* name,	int count, GLboolean transpose, float* data );
 }

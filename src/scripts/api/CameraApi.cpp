@@ -17,10 +17,10 @@ int CameraApi::position(lua_State* L)
 	lua_newtable( L );
 	int top = lua_gettop( L );
 	lua_pushstring( L, "x" );
-	lua_pushnumber( L, Camera::GetX() );
+	lua_pushnumber( L, Camera::getX() );
 	lua_settable( L, top );
 	lua_pushstring( L, "y" );
-	lua_pushnumber( L, Camera::GetY() );
+	lua_pushnumber( L, Camera::getY() );
 	lua_settable( L, top );
 	return 1;
 }

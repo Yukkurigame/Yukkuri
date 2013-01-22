@@ -114,7 +114,8 @@ void VBuffer::draw( VBOStructureHandle* vbostructure )
 
 
 
-inline void vbo_handler( Sprite* s, GLuint shader, VBOStructureHandle*& v, VBOStructureHandle*& first )
+inline void vbo_handler( Sprite* s, GLuint shader,
+		VBOStructureHandle*& v, VBOStructureHandle*& first )
 {
 	if( s == NULL || !s->isVisible() )
 		return;
@@ -131,6 +132,36 @@ inline void vbo_handler( Sprite* s, GLuint shader, VBOStructureHandle*& v, VBOSt
 }
 
 
+#define CASED_PROGAM( d, location )				\
+	case d:									\
+		shader = s->material.programs.location;	\
+		break;
+
+inline int guess_shader( int pass, const Sprite* s )
+{
+	int shader = glpNone;
+	switch(pass){
+		CASED_PROGAM( glpDefault, base )
+		CASED_PROGAM( glpSimple, simple )
+		CASED_PROGAM( glpGeometry, geometry )
+		CASED_PROGAM( glpDirLight, directional_light )
+	}
+	return shader;
+}
+
+#undef CASED_PROGAM
+
+
+VBOStructureHandle* VBuffer::prepare_handler( int pass, Sprite* sprite )
+{
+	VBOStructureHandle* v = NULL;
+	VBOStructureHandle* first = NULL;
+	int shader = guess_shader( pass, sprite );
+	vbo_handler( sprite, shader, v, first );
+	return first;
+}
+
+
 /*	This function make vao array from sprite array
  *	pass - id of render pass.
  *	sprites - array of sprites
@@ -142,26 +173,12 @@ VBOStructureHandle* VBuffer::prepare_handler( int pass, list< Sprite* >* sprites
 	VBOStructureHandle* first = NULL;
 	listElement< Sprite* >* sprites_element = sprites->head;
 
-#define CASED_PROGAM( d, location )				\
-	case d:									\
-		shader = s->material.programs.location;	\
-		break;
-
 	while( sprites_element != NULL ){
 		Sprite* s = sprites_element->data;
-		int shader = glpNone;
-		switch(pass){
-			CASED_PROGAM( glpDefault, base )
-			CASED_PROGAM( glpSimple, simple )
-			CASED_PROGAM( glpGeometry, geometry )
-			CASED_PROGAM( glpDirLight, directional_light )
-		}
+		int shader = guess_shader( pass, s );
 		vbo_handler( s, shader, v, first );
-
 		sprites_element = sprites_element->next;
 	}
-
-#undef CASED_PROGAM
 
 	return first;
 }
@@ -171,7 +188,6 @@ VBOStructureHandle* VBuffer::prepare_handler( int pass, list< Sprite* >* sprites
  *	sprites - Pointer to array of sprites
  *	scount - count of sprites in array
  *	returns pointer to the first vbo info handler
- */
 VBOStructureHandle* VBuffer::prepare_handler( Sprite* sprites, unsigned int scount )
 {
 	//int count = 0;
@@ -183,6 +199,7 @@ VBOStructureHandle* VBuffer::prepare_handler( Sprite* sprites, unsigned int scou
 	}
 	return first;
 }
+*/
 
 
 /*	This function removes all elements from vao handler

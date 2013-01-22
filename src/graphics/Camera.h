@@ -17,9 +17,10 @@ namespace Camera {
 	void push_state( const rect2f* view );
 	void pop_state( );
 
-	void Update();
-	float GetX( );
-	float GetY( );
+	void update( );
+	s3f position( );
+	float getX( );
+	float getY( );
 	void Translate( float X, float Y, float Z = 0 );
 	void Rotate( float angle, float X, float Y, float Z );
 	void ChangeMode( enum ctMode mode );

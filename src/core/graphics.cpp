@@ -80,6 +80,11 @@ bool Yukkuri::InitGraphics( )
 
 	DayTime::init();
 
+#ifdef DEBUG
+	// Make explicit swap call to split initialization and rendering
+	SDL_GL_SwapBuffers();
+#endif
+
 	return true;
 }
 

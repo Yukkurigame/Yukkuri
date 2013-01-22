@@ -1,24 +1,25 @@
 This version has not autotools support yet.
 To compile try
-    make
+	make
 To remove previous build try
-    make clean
+	make clean
 
 Requirements:
-    SDL
-    SDL_Image
-    libpng
-    freetype2
-    lua5.1
-    Chipmunk-Physics (static linking, for build only.) 
-        It is better to build libchipmunk.a from its source on target pc and 
-        replace it in ./libs by your library.
-    GLEW (windows version only)
+	SDL
+	SDL_Image
+	libpng
+	freetype2
+	lua5.1
+	Chipmunk-Physics (static linking, for build only.)
+		It is better to build libchipmunk.a from its source on target pc and
+		replace it in ./libs by your library.
+	GLEW (windows version only)
+	glm (build phase only)
 You need to have development version of this packages for successfully build.
 If you have troubles with headers try to use your paths in Makefile.
 
 Windows builds:
-    Visual studio solution included for build from source code.
-    All required libraries for linking may be found in source repository.
-    Libraries is not part of project and distributed under their licenses.
-    There are two libraries builds avaliable: for release and debug builds.
+	Visual studio solution included for build from source code.
+	All required libraries for linking may be found in source repository.
+	Libraries is not part of project and distributed under their licenses.
+	There are two libraries builds avaliable: for release and debug builds.

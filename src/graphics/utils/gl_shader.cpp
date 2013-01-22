@@ -340,6 +340,7 @@ void Shaders::passUniformMatrix##glname( enum GLSFlags glflag, const char* name,
 
 
 PASS_UNIFORM_V( 3fv, float* )
+PASS_UNIFORM_V( 2fv, float* )
 
 PASS_UNIFORM_MATRIX( 4fv, float* )
 

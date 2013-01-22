@@ -355,8 +355,8 @@ void Map::clear( )
 	int cx, cy, ytop;
 	if( chunkVec.empty() )
 		return;
-	cx = static_cast<int>(Camera::GetX()) - 64;
-	cy = static_cast<int>(Camera::GetY()) - 64;
+	cx = static_cast<int>(Camera::getX()) - 64;
+	cy = static_cast<int>(Camera::getY()) - 64;
 	toChunkCoordinates( cx, cy );
 	ytop = cy + ChunkManager.screen.y - 1;
 	ChunkListIter xlborder = getChunkXIt( cx );
@@ -396,8 +396,8 @@ void Map::onDraw( )
 		Updated = false;
 	}
 	int cx, cy;
-	cx = static_cast<int>(Camera::GetX()) - 64;
-	cy = static_cast<int>(Camera::GetY()) - 64;
+	cx = static_cast<int>(Camera::getX()) - 64;
+	cy = static_cast<int>(Camera::getY()) - 64;
 	toChunkCoordinates( cx, cy );
 	if( posX != cx || posY != cy ){
 		createChunksRectangle( cx, cy, ChunkManager.screen.x, ChunkManager.screen.y );

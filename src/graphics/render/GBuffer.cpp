@@ -30,6 +30,8 @@ namespace GBuffer
 
 	GLuint VBOHandle;
 
+	s2f window_size;
+
 	const int texture_type = GL_TEXTURE_2D;
 
 	void geometry_pass( );
@@ -41,20 +43,23 @@ namespace GBuffer
 	inline void texture_to_fbo( GLuint tex_id, int int_format, int format, int type, int attach )
 	{
 		glBindTexture( texture_type, tex_id );
-		glTexImage2D( texture_type, 0, int_format, conf.video.windowWidth, conf.video.windowHeight,
+		glTexImage2D( texture_type, 0, int_format, window_size.x, window_size.y,
 						0, format, type, NULL );
 		glTexParameterf( texture_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 		glTexParameterf( texture_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 		glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, attach, texture_type, tex_id, 0 );
 	}
 
-	list< Sprite* > last_pass_sprites;
+	Sprite* combinator;
 }
 
 
 
 bool GBuffer::init()
 {
+	window_size.x = conf.video.windowWidth;
+	window_size.y = conf.video.windowHeight;
+
 	// Create the VBO
 	glGenBuffers(1, &VBOHandle);
 
@@ -89,9 +94,9 @@ bool GBuffer::init()
 	glBindTexture( texture_type, 0 );
 	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
 
-	for( int i = 0; i < gbufLast; ++i )
-		last_pass_sprites.push( RenderManager::CreateGLSprite( 0.0f, 0.0f, 0.0f,
-				conf.video.windowWidth, conf.video.windowHeight ));
+	combinator = RenderManager::CreateGLSprite( 0.0f, 0.0f, 0.0f,
+				conf.video.windowWidth, conf.video.windowHeight);
+	combinator->setFixed();
 
 	return true;
 }
@@ -212,15 +217,16 @@ void GBuffer::light_pass_directional( )
 
 	glDisable(GL_DEPTH_TEST);
 
-	VBOStructureHandle* vbos = VBuffer::prepare_handler( glpDirLight, &last_pass_sprites );
+	VBOStructureHandle* vbos = VBuffer::prepare_handler( glpDirLight, combinator );
 
-	glEnable(GL_BLEND);
-	glBlendEquation(GL_FUNC_ADD);
-	glBlendFunc(GL_ONE, GL_ONE);
+	//glEnable(GL_BLEND);
+	//glBlendEquation(GL_FUNC_ADD);
+	//glBlendFunc(GL_ONE, GL_ONE);
 
+	Shaders::passUniform2fv( glsFixed, "in_ScreenSize", 1, &window_size.x );
 	VBuffer::draw( vbos );
 
-	glDisable(GL_BLEND);
+	//glDisable(GL_BLEND);
 
 	VBuffer::free_handler( &vbos );
 

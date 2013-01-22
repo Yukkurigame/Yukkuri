@@ -124,7 +124,7 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, l
 
 	rect2f new_camera(0, height, width, -height);
 	Camera::push_state( &new_camera );
-	Camera::Update();
+	Camera::update();
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);

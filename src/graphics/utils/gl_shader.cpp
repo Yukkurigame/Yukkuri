@@ -20,9 +20,19 @@
 
 extern MainConfig conf;
 
+
 ShaderConfigAttributes::~ShaderConfigAttributes()
 {
 	free( name );
+}
+
+ShaderConfigStrings::~ShaderConfigStrings()
+{
+	if( data ){
+		for( unsigned int i = 0; i < count; ++i )
+			free(data[i]);
+		free(data);
+	}
 }
 
 
@@ -66,8 +76,17 @@ namespace {
 		return buf; /* Return the buffer */
 	}
 
-	std::map< enum GLSFlags, GLuint > shaders[glpLast];
+	static unsigned int pass_index( unsigned int pass ){
+		// Pass enumerated in pow2 order. Obtain its index.
+		if( !pass )
+			return 0;
+		unsigned int index = 1;
+			while( pass >>= 1 ) ++index;
+		return index;
+	}
 
+	std::map< enum GLSFlags, GLuint > shaders[GLP_COUNT];
+	std::map< enum GLSFlags, ShaderConfigStrings > samplers[GLP_COUNT];
 
 	#define MACROS_SIZE 3
 	const char* macros[MACROS_SIZE] = {
@@ -216,6 +235,7 @@ GLuint createProgram( enum GLSPass pass, enum GLSFlags glflags )
 
 	// Get data from config file
 	ShaderConfigData config;
+	config.samplers = Shaders::getSamplers(pass, glflags);
 	// Push shader config to stack and load config;
 	LuaConfig* cfg = new LuaConfig();
 	std::string shd_id = "shader_" + citoa(pass);
@@ -291,7 +311,7 @@ GLuint createProgram( enum GLSPass pass, enum GLSFlags glflags )
 
 GLuint Shaders::getProgram( enum GLSPass pass, enum GLSFlags glflags )
 {
-	std::map< enum GLSFlags, GLuint >& shaders_map = shaders[pass];
+	std::map< enum GLSFlags, GLuint >& shaders_map = shaders[pass_index(pass)];
 	std::map< enum GLSFlags, GLuint >::iterator fit = shaders_map.find( glflags );
 	if( fit != shaders_map.end() )
 		return fit->second;
@@ -303,11 +323,20 @@ GLuint Shaders::getProgram( enum GLSPass pass, enum GLSFlags glflags )
 	return prog;
 }
 
+ShaderConfigStrings* Shaders::getSamplers( enum GLSPass pass, enum GLSFlags glflags )
+{
+	std::map< enum GLSFlags, ShaderConfigStrings >& samplers_map = samplers[pass_index(pass)];
+	std::map< enum GLSFlags, ShaderConfigStrings >::iterator fit = samplers_map.find( glflags );
+	if( fit != samplers_map.end() )
+		return &fit->second;
+	return NULL;
+}
+
 
 #define PASS_UNIFORM( type, func )													\
 	int pass = 1;																	\
 	while( pass < glpLast ){														\
-		std::map< enum GLSFlags, GLuint >& shaders_map = shaders[pass];				\
+		std::map< enum GLSFlags, GLuint >& shaders_map = shaders[pass_index(pass)];	\
 		if( !shaders_map.empty() ){													\
 			FOREACHIT(shaders_map){													\
 				/* flag in flags or flag is glsAll */								\

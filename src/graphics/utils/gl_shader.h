@@ -23,6 +23,7 @@ enum GLSFlags {
 	glsLast = 		0x10
 };
 
+#define GLP_COUNT 6
 
 enum GLSPass {
 	glpNone = 0x00,
@@ -33,6 +34,8 @@ enum GLSPass {
 	glpDirLight = 0x10,
 	glpLast = 0x20,
 };
+
+
 
 enum GLSLocations {
 	gllPosition = 0,
@@ -50,6 +53,13 @@ struct ShaderConfigAttributes {
 	~ShaderConfigAttributes();
 };
 
+struct ShaderConfigStrings {
+	unsigned int count;
+	char** data;
+	ShaderConfigStrings() : count(0), data(NULL) {}
+	~ShaderConfigStrings();
+};
+
 
 struct ShaderConfigData {
 	char* name;
@@ -59,9 +69,10 @@ struct ShaderConfigData {
 	unsigned int output_count;
 	unsigned int attributes_count;
 	ShaderConfigAttributes* attributes;
+	ShaderConfigStrings* samplers;
 
 	ShaderConfigData() : name(NULL), vertex_name(NULL), fragment_name(NULL), output(NULL),
-						output_count(), attributes_count(), attributes(NULL) {}
+						output_count(), attributes_count(), attributes(NULL), samplers(NULL) {}
 	~ShaderConfigData();
 };
 
@@ -69,6 +80,7 @@ struct ShaderConfigData {
 namespace Shaders {
 	//GLuint getProgram( std::string filename );
 	GLuint getProgram( enum GLSPass, enum GLSFlags glflags );
+	ShaderConfigStrings* getSamplers( enum GLSPass, enum GLSFlags glflags );
 	void passUniform2fv( enum GLSFlags, const char* name, int count, float* data);
 	void passUniform3fv( enum GLSFlags, const char* name, int count, float* data);
 	void passUniformMatrix4fv( enum GLSFlags, const char* name,	int count, GLboolean transpose, float* data );

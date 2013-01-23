@@ -1,10 +1,7 @@
 #version 130
 
 uniform sampler2D in_ColorMap;
-
-#ifdef _YNORMALS
-	uniform sampler2D in_NormalMap;
-#endif
+uniform sampler2D in_NormalMap;
 
 in vec2 vert_TexCoords;
 in vec4 vert_Color;

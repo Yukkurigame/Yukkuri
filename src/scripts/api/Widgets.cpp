@@ -34,17 +34,12 @@ bool Widget::load( lua_State* L )
 {
 	luaL_argcheck( L, lua_istable( L, 1 ), 1, "Parameters table expected" );
 
-
 	std::string align;
 	std::string valign;
 
 	GET_VALUE( Rect );
 	GET_NAMED_VALUE( "name", Name )
 	GET_NAMED_VALUE( "align", Align )
-	//GET_VALUE( "x", Rect.x )
-	//GET_VALUE( "y", Rect.y )
-	//GET_VALUE( "width", Rect.width )
-	//GET_VALUE( "height", Rect.height )
 
 	float z = 0;
 	GET_NAMED_VALUE( "depth", z )

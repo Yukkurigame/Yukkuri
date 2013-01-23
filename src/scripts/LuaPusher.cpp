@@ -88,8 +88,9 @@ rect2f const getFromLua(lua_State* L, int idx)
 {
 	rect2f ret;
 	float* r[4] = { &ret.x, &ret.y, &ret.width, &ret.height };
+	const char* pc[4] = { "x", "y", "width", "height" };
 	for( int i = 0; i < 4; ++i ){
-		LUA_GET_TABLE_VALUE( i + 1, *r[i] )
+		LUA_GET_VALUE( pc[i], *r[i] )
 	}
 	return ret;
 }
@@ -98,21 +99,24 @@ template<>
 void getFromLua( lua_State* L, int idx, rect2f& val )
 {
 	float* r[4] = { &val.x, &val.y, &val.width, &val.height };
+	const char* pc[4] = { "x", "y", "width", "height" };
 	for( int i = 0; i < 4; ++i ){
-		LUA_GET_TABLE_VALUE( i + 1, *r[i] )
+		LUA_GET_VALUE( pc[i], *r[i] )
 	}
 }
 
 template<>
 bool CHINP_TESTER<rect2f>(lua_State* L, int idx)
 {
-	if( lua_istable( L, idx ) && luaL_getn( L, idx ) == 2 ){
-		for( int i = 1; i < 5; ++i ){
-			lua_pushnumber( L, i );
+	const char* pc[4] = { "x", "y", "width", "height" };
+	if( lua_istable( L, idx ) ){
+		for( int i = 0; i < 4; ++i ){
+			lua_pushstring( L, pc[i] );
 			lua_gettable( L, -2 );
-			if( lua_isnumber( L, -1 ) == 0 ){
-				lua_pop(L, 1);
-				return false;
+			if( !lua_isnumber( L, -1 ) &&
+				!lua_isnoneornil( L, -1 ) ){
+					lua_pop(L, 1);
+					return false;
 			}
 			lua_pop(L, 1);
 		}
@@ -153,20 +157,25 @@ void getFromLua( lua_State* L, int idx, s4ub& val )
 {
 	GLubyte* r[4] = { &val.r, &val.g, &val.b, &val.a };
 	for( int i = 0; i < 4; ++i ){
-		LUA_GET_TABLE_VALUE( i + 1, *r[i] )
+		LUA_GET_TABLE_VALUE_DEFAULT( i + 1, *r[i], (i > 2 ? 255 : 0) )
 	}
 }
+
+#include "scripts/LuaScript.h"
+extern LuaScript* luaScript;
 
 template<>
 bool CHINP_TESTER<s4ub>(lua_State* L, int idx)
 {
-	if( lua_istable( L, idx ) && luaL_getn( L, idx ) == 2 ){
-		for( int i = 1; i < 5; ++i ){
+	luaScript->StackDumpToLog( L );
+	if( lua_istable( L, idx ) ){
+		for( int i = 1; i < 4; ++i ){
 			lua_pushnumber( L, i );
 			lua_gettable( L, -2 );
-			if( lua_isnumber( L, -1 ) == 0 ){
-				lua_pop(L, 1);
-				return false;
+			if( !lua_isnumber( L, -1 ) &&
+				!lua_isnone( L, -1 ) ){
+					lua_pop(L, 1);
+					return false;
 			}
 			lua_pop(L, 1);
 		}
@@ -239,6 +248,20 @@ void getFromLua( lua_State* L, int idx, ShaderConfigData& val )
 		}
 	}
 	lua_pop( L, 1 );					// st: table
+
+	// Only if samplers was allocated
+	if( val.samplers != NULL ){
+		lua_pushstring( L, "samplers" );
+		lua_gettable( L, -2 );
+		val.samplers->count = luaL_getn( L, -1 );
+		if( val.samplers->count ){
+			val.samplers->data = (char**)malloc( (unsigned)sizeof(char*) * val.samplers->count );
+			for( unsigned int i = 0; i < val.samplers->count; ++i ){
+				val.samplers->data[i] = NULL;
+				LUA_GET_TABLE_VALUE( i + 1, val.samplers->data[i] )
+			}
+		}
+	}
 }
 
 

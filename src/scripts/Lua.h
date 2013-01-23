@@ -33,6 +33,15 @@ extern "C" {
 	getFromLua( L, -1, val );			\
 	lua_pop( L, 1 );
 
+#define LUA_GET_TABLE_VALUE_DEFAULT( idx, val, dflt )	\
+	lua_pushnumber( L, idx );							\
+	lua_gettable( L, -2 );								\
+	if( lua_isnone( L, -1 ) )							\
+		val = dflt;										\
+	else												\
+		getFromLua( L, -1, val );						\
+	lua_pop( L, 1 );
+
 #define LUA_GET_VALUE( string, val )						\
 	lua_pushstring( L, string );	/* st: table string	*/	\
 	lua_gettable( L, -2 );			/* st: table val	*/	\
@@ -253,7 +262,7 @@ public:
 	void getValueByName( lua_State* L, const char* name, T& ret, bool check=false )
 	{
 		lua_getfield( L, -1, name );			// stack: table, [name]
-		if( !check || !lua_isnone( L, -1 ) )
+		if( !check || !lua_isnoneornil( L, -1 ) )
 			getValue( L, -1, ret );
 		lua_pop(L, 1);                      // stack: table
 	}

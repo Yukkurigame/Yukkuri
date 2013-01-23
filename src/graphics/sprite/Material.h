@@ -22,6 +22,13 @@ struct GLMaterial
 		GLuint directional_light;
 	} programs;
 
+	struct {
+		ShaderConfigStrings* base;
+		ShaderConfigStrings* simple;
+		ShaderConfigStrings* geometry;
+		ShaderConfigStrings* directional_light;
+	} samplers;
+
 	void init_flags( UINT glflags );
 
 	inline void add_flag( UINT glflag ){ init_flags( flags | glflag ); }

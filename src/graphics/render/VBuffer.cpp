@@ -114,27 +114,40 @@ void VBuffer::draw( VBOStructureHandle* vbostructure )
 
 
 
-inline void vbo_handler( Sprite* s, GLuint shader,
-		VBOStructureHandle*& v, VBOStructureHandle*& first )
+inline void vbo_handler( Sprite* s, list<VBOStructureHandle*>* handlers )
+		//VBOStructureHandle*& v, VBOStructureHandle*& first )
 {
 	if( s == NULL || !s->isVisible() )
 		return;
 
-	if( !v ){
-		first = v = new VBOStructureHandle( s->brush.type, s->atlas, s->normals, shader );
-	}else if( v->type != prQUADS || s->atlas != v->atlas ||
+	VBOStructureHandle* v = NULL;
+	if( handlers->head )
+		v = handlers->head->data;
+
+	if( !v || v->type != prQUADS ||
+		v->material != s->material ||
+		!v->textures.cmp( &s->textures ) ){
+		v = new VBOStructureHandle( s->brush.type, &s->textures, s->material );
+		handlers->push_back( v );
+	/*}else if( v->type != prQUADS ||	s->material != v->material ||
+			s->textures
 			s->normals != v->normals || shader != v->shader ){
+		v = new VBOStructureHandle( s->brush.type, &s->textures, s->material );
+		handlers->push_back( v );
 		v->next = new VBOStructureHandle( s->brush.type, s->atlas, s->normals, shader );
 		v = v->next;
+	*/
 	}
 
 	v->set_indexes( s->brush.point_index, s->brush.points_count );
 }
 
 
-#define CASED_PROGAM( d, location )				\
-	case d:									\
-		shader = s->material.programs.location;	\
+#define CASED_PROGAM( d, location )										\
+	case d:																\
+		GLMaterial* mat = GLMaterialManager::get_pointer(s->material);	\
+		if( mat )														\
+			shader = mat->programs.location;							\
 		break;
 
 inline int guess_shader( int pass, const Sprite* s )
@@ -152,13 +165,15 @@ inline int guess_shader( int pass, const Sprite* s )
 #undef CASED_PROGAM
 
 
-VBOStructureHandle* VBuffer::prepare_handler( int pass, Sprite* sprite )
+void prepare_handler( int pass, Sprite* sprite, list<VBOStructureHandle*>* handler )
 {
-	VBOStructureHandle* v = NULL;
-	VBOStructureHandle* first = NULL;
-	int shader = guess_shader( pass, sprite );
-	vbo_handler( sprite, shader, v, first );
-	return first;
+//VBOStructureHandle* VBuffer::prepare_handler( int pass, Sprite* sprite )
+//{
+	//VBOStructureHandle* v = NULL;
+	//VBOStructureHandle* first = NULL;
+	//int shader = guess_shader( pass, sprite );
+	vbo_handler( sprite, handler /* shader, v, first */ );
+	//return first;
 }
 
 
@@ -167,20 +182,19 @@ VBOStructureHandle* VBuffer::prepare_handler( int pass, Sprite* sprite )
  *	sprites - array of sprites
  *	returns pointer to the first vbo info handler
  */
-VBOStructureHandle* VBuffer::prepare_handler( int pass, list< Sprite* >* sprites )
+void prepare_handler( int pass, list< Sprite* >* sprites, list<VBOStructureHandle*>* handler )
+//VBOStructureHandle* VBuffer::prepare_handler( int pass, list< Sprite* >* sprites )
 {
-	VBOStructureHandle* v = NULL;
-	VBOStructureHandle* first = NULL;
+	//VBOStructureHandle* v = NULL;
+	//VBOStructureHandle* first = NULL;
 	listElement< Sprite* >* sprites_element = sprites->head;
-
 	while( sprites_element != NULL ){
-		Sprite* s = sprites_element->data;
-		int shader = guess_shader( pass, s );
-		vbo_handler( s, shader, v, first );
+		//Sprite* s = sprites_element->data;
+		//int shader = guess_shader( pass, s );
+		vbo_handler( sprites_element->data, handler /*shader, v, first*/ );
 		sprites_element = sprites_element->next;
 	}
-
-	return first;
+	//return first;
 }
 
 

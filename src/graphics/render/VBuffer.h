@@ -23,8 +23,10 @@ namespace VBuffer {
 	void draw( VBOStructureHandle* vbostructure );
 
 	// Structures
-	VBOStructureHandle* prepare_handler( int pass, Sprite* sprite );
-	VBOStructureHandle* prepare_handler( int pass, list< Sprite* >* sprites );
+	void prepare_handler( int pass, Sprite* sprite, list<VBOStructureHandle*>* );
+	void prepare_handler( int pass, list< Sprite* >* sprites, list<VBOStructureHandle*>* );
+	//VBOStructureHandle* prepare_handler( int pass, Sprite* sprite );
+	//VBOStructureHandle* prepare_handler( int pass, list< Sprite* >* sprites );
 	//VBOStructureHandle* prepare_handler( Sprite* sprites, unsigned int scount );
 	void free_handler( VBOStructureHandle** );
 

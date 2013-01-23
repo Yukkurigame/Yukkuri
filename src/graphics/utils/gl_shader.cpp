@@ -235,6 +235,7 @@ GLuint createProgram( enum GLSPass pass, enum GLSFlags glflags )
 
 	// Get data from config file
 	ShaderConfigData config;
+	samplers[pass_index(pass)][glflags] = ShaderConfigStrings();
 	config.samplers = Shaders::getSamplers(pass, glflags);
 	// Push shader config to stack and load config;
 	LuaConfig* cfg = new LuaConfig();

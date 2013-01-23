@@ -20,13 +20,12 @@ struct Sprite
 	unsigned int picture;
 	GLuint atlas;		// Texture atlas, same as in tex probably
 	GLuint normals;		// Texture normal map, same as in tex probably
-	GLMaterial material;
+	list< GLuint > textures; // All textures uses single coordinates
+	UINT material;
 	unsigned int flags; // 1 - visible
-						// 2 - centred
-						// 4 - fixed
-	//GLuint shader;
+						// 2 - centered
 	rect2f rect;
-	TextureInfo* tex;
+	//TextureInfo* tex;
 	GLBrush brush;
 
 
@@ -36,41 +35,40 @@ struct Sprite
 
 	inline unsigned char isCentered()	{ return brush.isCentered(); }
 
-	inline void setFixed( ){ material.add_flag(glsFixed); }
-	inline void clearFixed( ){ material.clear_flag(glsFixed); }
-	inline void setLight( ){ material.add_flag(glsLight); }
-	inline void clearLight( ){ material.clear_flag(glsLight); }
+	inline void setFixed( ){ CHANGE_MATERIAL_FLAG( material, add_flag, glsFixed ) }
+	inline void clearFixed( ){ CHANGE_MATERIAL_FLAG( material, clear_flag, glsFixed) }
+	inline void setLight( ){CHANGE_MATERIAL_FLAG( material, add_flag, glsLight ) }
+	inline void clearLight( ){ CHANGE_MATERIAL_FLAG( material, clear_flag, glsLight ) }
 
 	inline void addNormalMap( GLuint map ){
 		normals = map;
-		if( map )
-			material.add_flag( glsNormals );
+		if( map ){
+			CHANGE_MATERIAL_FLAG( material, add_flag, glsNormals )
+		}
 	}
 	inline void removeNormalMap( ){
 		normals = 0;
-		material.clear_flag( glsNormals );
+		CHANGE_MATERIAL_FLAG( material, clear_flag, glsNormals )
 	}
 
 	Sprite() : rect(), brush( prQUADS, 0 ) {
-		tex = NULL;
-		material.init_flags(glsLight);
+		//tex = NULL;
+		material = GLMaterialManager::get( glsLight );
 		picture = atlas = normals = texid = 0;
 		flags = 1; // visible only
 	}
 
 	Sprite( enum primitives shape, short centered ) : rect(), brush( shape, centered ){
-		tex = NULL;
-		material.init_flags(glsLight);
+		//tex = NULL;
+		material = GLMaterialManager::get( glsLight );
 		picture = atlas = normals = texid = 0;
 		flags = 1; // visible only
 	}
 
 	Sprite( Sprite* src ) : texid(src->texid), picture(src->picture),
-		atlas(src->atlas), normals(src->normals),
-		flags(src->flags), rect(src->rect), tex(src->tex),
-		brush(src->brush) {
-		material.init_flags( src->material.flags );
-	}
+		atlas(src->atlas), normals(src->normals), material(src->material),
+		flags(src->flags), rect(src->rect), // tex(src->tex),
+		brush(src->brush) { }
 
 	void setPicture( int pic );
 

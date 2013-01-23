@@ -203,19 +203,20 @@ struct VBOStructureHandle
 	int count;
 	enum primitives type;
 	GLuint method;
-	GLuint atlas;
-	GLuint normals;
 	GLuint shader;
-	VBOStructureHandle* next;
-	VBOStructureHandle( enum primitives t, int tex, int n, int shd ){
+	list< GLuint > textures;
+	UINT material;
+
+	VBOStructureHandle( enum primitives t, list< GLuint >* tex, UINT mat ) : textures(tex) {
 		type = t;
 		method = gl_methods[type];
-		atlas = tex;
-		normals = n;
-		shader = shd;
+		//atlas = tex;
+		//normals = n;
+		//shader = shd;
 		indexes = NULL;
 		count = 0;
-		next = NULL;
+		//next = NULL;
+		material = mat;
 	}
 	~VBOStructureHandle( ){
 		if( indexes )

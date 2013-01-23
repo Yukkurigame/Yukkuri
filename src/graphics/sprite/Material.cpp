@@ -32,15 +32,12 @@ void GLMaterial::init_flags( UINT glflags )
 
 /////////////////////////////////////////////////////
 //			Material manager
-/*
 namespace GLMaterialManager
 {
 	GLMaterial* materials = NULL;
 	unsigned int materials_count = 0;
 
 }
-
-
 
 void GLMaterialManager::clean( )
 {
@@ -49,7 +46,7 @@ void GLMaterialManager::clean( )
 }
 
 
-UINT GLMaterialManager::CreateMaterial( UINT params )
+UINT GLMaterialManager::create( UINT params )
 {
 	materials_count++;
 	materials = (GLMaterial*)realloc(materials, sizeof(GLMaterial*) * materials_count );
@@ -58,10 +55,18 @@ UINT GLMaterialManager::CreateMaterial( UINT params )
 }
 
 
-GLMaterial* GLMaterialManager::GetMaterial( UINT id )
+UINT GLMaterialManager::get( UINT glflags )
+{
+	for( unsigned int i = 0; i < materials_count; ++i ){
+		if( materials[i].flags == glflags )
+			return i;
+	}
+	return create( glflags );
+}
+
+GLMaterial* GLMaterialManager::get_pointer( UINT id )
 {
 	if( id > materials_count )
 		return NULL;
 	return &materials[id];
 }
-*/

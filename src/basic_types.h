@@ -112,7 +112,15 @@ template< typename T >
 struct list
 {
 	listElement<T>* head;
-	list( ) : head(0) {};
+	listElement<T>* tail;
+	list( ) : head(0), tail(0) {};
+	list( const list<T>* src ){
+		listElement<T>* t = src->head;
+		while( t != 0 ){
+			push_back(t->data);
+			t = t->next;
+		}
+	}
 	~list( ){
 		listElement<T>* t = 0;
 		while( head != 0 ){
@@ -121,27 +129,37 @@ struct list
 			delete t;
 		}
 	};
+	bool cmp( const list<T>* src ){
+		listElement<T>* self = head;
+		listElement<T>* target = src->head;
+		while( self != 0 ){
+			if( target == 0 || self->data != target->data )
+				return false;
+			self = self->next;
+			target = target->next;
+		}
+		// If target is not 0 then it has more elements
+		if( target == 0 )
+			return true;
+		return false;
+	}
 	void insert( T data, listElement<T>* prev ){
-		if( prev == 0 )
+		if( prev == 0 ){
 			push( data );
-		else
+		}else{
 			prev->next = new listElement<T>( data, prev->next );
+			if( prev->next->next == 0 )
+				tail = prev->next;
+		}
 	}
 	void push( T data ){
 		head = new listElement<T>( data, head );
+		if( !head->next )
+			tail = head;
 	}
-	void push_back( T data )
+	inline void push_back( T data )
 	{
-		listElement<T>* t = head;
-		while( t && t->next )
-			t = t->next;
-		insert( t, data );
-	}
-	void insert( listElement<T>* prev, T data ){
-		if( !prev )
-			push(data);
-		else
-			prev->next = new listElement<T>( data, prev->next );
+		insert( tail, data );
 	}
 	void clear( ){
 		listElement<T>* t = head;
@@ -159,6 +177,8 @@ struct list
 			head = t->next;
 		else
 			prev->next = t->next;
+		if( tail == t )
+			tail = prev;
 		delete t;
 		t = 0;
 	}

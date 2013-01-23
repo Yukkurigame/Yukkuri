@@ -37,15 +37,18 @@ struct GLMaterial
 
 };
 
-/*
 namespace GLMaterialManager {
-
 	void clean( );
-
-	UINT CreateMaterial( UINT glflags );
-	GLMaterial* GetMaterial( UINT id );
+	UINT create( UINT glflags );
+	UINT get( UINT glflags );
+	GLMaterial* get_pointer( UINT id );
 }
-*/
+
+// You want beautiful-look functions instead? Write it yourself.
+#define CHANGE_MATERIAL_FLAG( material, op, flag )					\
+	GLMaterial* _mat = GLMaterialManager::get_pointer( material );	\
+	if( _mat )														\
+		_mat->op( flag );
 
 
 #endif /* MATERIAL_H_ */

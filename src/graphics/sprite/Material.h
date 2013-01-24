@@ -15,19 +15,8 @@
 struct GLMaterial
 {
 	UINT flags;
-	struct  {
-		GLuint base;
-		GLuint simple;
-		GLuint geometry;
-		GLuint directional_light;
-	} programs;
-
-	struct {
-		ShaderConfigStrings* base;
-		ShaderConfigStrings* simple;
-		ShaderConfigStrings* geometry;
-		ShaderConfigStrings* directional_light;
-	} samplers;
+	GLuint programs[glpLast];
+	ShaderConfigStrings* samplers[glpLast];
 
 	void init_flags( UINT glflags );
 

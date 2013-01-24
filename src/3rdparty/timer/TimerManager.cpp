@@ -12,7 +12,7 @@
 #include "3rdparty/timer/InternalTimerEvent.h"
 #include "scripts/LuaThread.h"
 #include "core/yukkuri.h"
-#include "basic_types.h"
+#include "utils/list.h"
 
 #include <list>
 #include "hacks.h"

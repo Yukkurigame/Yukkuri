@@ -33,7 +33,7 @@ public:
 	bool pushSubconfig( std::string subconfig, std::string config ){
 		const int prmsz = 2;
 		const char* prm[prmsz] = { subconfig.c_str(), config.c_str() };
-		return execFunction("configs:getSubconfig", prm, prmsz);
+		return execFunction("configs:getSubconfig", prm, prmsz) > 0;
 	}
 
 	// Get value by subconfig-config

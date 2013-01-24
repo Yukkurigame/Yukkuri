@@ -261,16 +261,17 @@ void getFromLua( lua_State* L, int idx, ShaderConfigData& val )
 	}
 }
 
-
 template<>
 bool CHINP_TESTER<ShaderConfigData>(lua_State* L, int idx)
 {
 	if( lua_istable( L, idx ) ){
 		lua_pushstring( L, "type" );
 		lua_gettable( L, -2 );
-		if( lua_isstring( L, 1 ) &&
-			!strcmp( "shader", lua_tostring( L, 1 ) ) )
+		if( lua_isstring( L, -1 ) && !strcmp( "shader", lua_tostring( L, -1 ) ) ){
+			lua_pop( L, 1 );
 			return true;
+		}
+		lua_pop( L, 1 );
 	}
 	return false;
 }

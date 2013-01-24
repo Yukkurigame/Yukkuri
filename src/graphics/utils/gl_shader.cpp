@@ -76,6 +76,7 @@ namespace {
 		return buf; /* Return the buffer */
 	}
 
+	/*
 	static unsigned int pass_index( unsigned int pass ){
 		// Pass enumerated in pow2 order. Obtain its index.
 		if( !pass )
@@ -84,10 +85,12 @@ namespace {
 			while( pass >>= 1 ) ++index;
 		return index;
 	}
+	*/
 
-	std::map< enum GLSFlags, GLuint > shaders[GLP_COUNT];
-	std::map< enum GLSFlags, ShaderConfigStrings > samplers[GLP_COUNT];
+	std::map< enum GLSFlags, GLuint > shaders[glpLast];
+	std::map< enum GLSFlags, ShaderConfigStrings > samplers[glpLast];
 
+	// TODO: macro from configs
 	#define MACROS_SIZE 3
 	const char* macros[MACROS_SIZE] = {
 		"_YNORMALS", "_YLIGHT", "_YFIXED"
@@ -118,10 +121,6 @@ char* generate_defines( enum GLSFlags glflags )
 		strcat( str, decl );
 		strcat( str, "\n" );
 	}
-
-	//string_size++; // Add null terminator
-	//str = (char*)realloc( str, size * string_size );
-	//strcat( str, "\0" );
 
 	return str;
 }
@@ -224,11 +223,7 @@ GLint create_shader( const char* filename, int type, const char* defines )
 	return shader;
 }
 
-/*
-#define BIND_COLORMAP(name, value) \
-	cm = glGetUniformLocation( shaderprogram, name );	\
-	if( cm >= 0 ) glUniform1i( cm, value );
-*/
+
 
 GLuint createProgram( enum GLSPass pass, enum GLSFlags glflags )
 {
@@ -236,16 +231,19 @@ GLuint createProgram( enum GLSPass pass, enum GLSFlags glflags )
 
 	// Get data from config file
 	ShaderConfigData config;
-	samplers[pass_index(pass)][glflags] = ShaderConfigStrings();
+	samplers[pass][glflags] = ShaderConfigStrings();
 	config.samplers = Shaders::getSamplers(pass, glflags);
 	// Push shader config to stack and load config;
 	LuaConfig* cfg = new LuaConfig();
 	std::string shd_id = "shader_" + citoa(pass);
-	cfg->pushSubconfig( shd_id, "shader" );
-	cfg->get( 1, config );
+	cfg->pushSubconfig( shd_id, "shader");
+	int conf_loaded = cfg->LuaMain::getValue( -1, config );
 	// Remove shader config from stack;
 	cfg->pop( 1 );
 	delete cfg;
+
+	if( !conf_loaded )
+		return 0;
 
 	GLint vertex = create_shader( (conf.shadersPath + config.vertex_name).c_str(),
 									GL_VERTEX_SHADER, defines );
@@ -297,24 +295,18 @@ GLuint createProgram( enum GLSPass pass, enum GLSFlags glflags )
 
 	for( unsigned int i = 0; i < config.output_count; ++i )
 		glBindFragDataLocation( shaderprogram, i, config.output[i] );
-/*
-	glUseProgram( shaderprogram );
-	GLint cm = 0;
-	BIND_COLORMAP( "in_ColorMap", gltColor )
-	BIND_COLORMAP( "in_NormalMap", gltNormal )
-	BIND_COLORMAP( "in_gPositionMap", gltLast )
-	BIND_COLORMAP( "in_gColorMap", gltLast + 1 )
-	BIND_COLORMAP( "in_gNormalMap", gltLast + 2 )
-	glUseProgram( 0 );
-*/
 
 	return shaderprogram;
 }
-#undef BIND_COLORMAP
+
+
 
 GLuint Shaders::getProgram( enum GLSPass pass, enum GLSFlags glflags )
 {
-	std::map< enum GLSFlags, GLuint >& shaders_map = shaders[pass_index(pass)];
+	if( pass == glpNone )
+		return 0;
+
+	std::map< enum GLSFlags, GLuint >& shaders_map = shaders[pass];
 	std::map< enum GLSFlags, GLuint >::iterator fit = shaders_map.find( glflags );
 	if( fit != shaders_map.end() )
 		return fit->second;
@@ -328,7 +320,10 @@ GLuint Shaders::getProgram( enum GLSPass pass, enum GLSFlags glflags )
 
 ShaderConfigStrings* Shaders::getSamplers( enum GLSPass pass, enum GLSFlags glflags )
 {
-	std::map< enum GLSFlags, ShaderConfigStrings >& samplers_map = samplers[pass_index(pass)];
+	if( pass == glpNone )
+		return NULL;
+
+	std::map< enum GLSFlags, ShaderConfigStrings >& samplers_map = samplers[pass];
 	std::map< enum GLSFlags, ShaderConfigStrings >::iterator fit = samplers_map.find( glflags );
 	if( fit != samplers_map.end() )
 		return &fit->second;
@@ -339,7 +334,7 @@ ShaderConfigStrings* Shaders::getSamplers( enum GLSPass pass, enum GLSFlags glfl
 #define PASS_UNIFORM( type, func )													\
 	int pass = 1;																	\
 	while( pass < glpLast ){														\
-		std::map< enum GLSFlags, GLuint >& shaders_map = shaders[pass_index(pass)];	\
+		std::map< enum GLSFlags, GLuint >& shaders_map = shaders[pass];	\
 		if( !shaders_map.empty() ){													\
 			FOREACHIT(shaders_map){													\
 				/* flag in flags or flag is glsAll */								\
@@ -352,7 +347,7 @@ ShaderConfigStrings* Shaders::getSamplers( enum GLSPass pass, enum GLSFlags glfl
 				}																	\
 			}																		\
 		}																			\
-		pass <<= 1;																	\
+		pass++;																	\
 	}																				\
 	glUseProgram(0);
 

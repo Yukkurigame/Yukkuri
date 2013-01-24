@@ -5,6 +5,7 @@
  */
 #include "Lua.h"
 #include "graphics/GraphicsTypes.h"
+#include "graphics/utils/gl_shader.h"
 #include <cstring>
 #include <cstdlib>
 
@@ -92,6 +93,7 @@ template<> void initValue( std::string& ret ) { ret = ""; }
 template<> void initValue( char*& ret ) { ret = '\0'; }
 template<> void initValue( rect2f& ret ) { ret = rect2f(); }
 template<> void initValue( s4ub& ret ) { ret = s4ub(); }
+template<> void initValue( ShaderConfigData& ret ) { }
 
 
 int LuaMain::execFunction( std::string function )

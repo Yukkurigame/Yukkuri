@@ -8,15 +8,23 @@
 #include "graphics/sprite/Material.h"
 #include "graphics/utils/gl_shader.h"
 
+/*
 #define GET_PROGRAM( target, val )	\
 	programs.target = Shaders::getProgram( val, static_cast<enum GLSFlags>(glflags) );
 #define GET_SAMPLERS( target, val )	\
 	samplers.target = Shaders::getSamplers( val, static_cast<enum GLSFlags>(glflags) );
+*/
 
 void GLMaterial::init_flags( UINT glflags )
 {
 	flags = glflags;
-	GET_PROGRAM( base, glpDefault )
+	enum GLSFlags new_flags = static_cast<enum GLSFlags>(glflags);
+	for( unsigned int i = glpNone; i < glpLast; ++i ){
+		enum GLSPass pass = static_cast<enum GLSPass>(i);
+		programs[i] = Shaders::getProgram( pass, new_flags );
+		samplers[i] = Shaders::getSamplers( pass, new_flags );
+	}
+	/*GET_PROGRAM( base, glpDefault )
 	GET_PROGRAM( simple, glpSimple )
 	GET_PROGRAM( geometry, glpGeometry )
 	GET_PROGRAM( directional_light, glpDirLight )
@@ -24,6 +32,7 @@ void GLMaterial::init_flags( UINT glflags )
 	GET_SAMPLERS( simple, glpSimple )
 	GET_SAMPLERS( geometry, glpGeometry )
 	GET_SAMPLERS( directional_light, glpDirLight )
+	*/
 }
 
 #undef GET_PROGRAM

@@ -18,14 +18,11 @@ struct Sprite
 {
 	unsigned int texid;
 	unsigned int picture;
-	GLuint atlas;		// Texture atlas, same as in tex probably
-	GLuint normals;		// Texture normal map, same as in tex probably
 	list< GLuint > textures; // All textures uses single coordinates
 	UINT material;
 	unsigned int flags; // 1 - visible
 						// 2 - centered
 	rect2f rect;
-	//TextureInfo* tex;
 	GLBrush brush;
 
 
@@ -54,19 +51,18 @@ struct Sprite
 
 	Sprite() : rect(), brush( prQUADS, 0 ) {
 		material = GLMaterialManager::get( glsLight );
-		picture = atlas = normals = texid = 0;
+		picture = texid = 0;
 		flags = 1; // visible only
 	}
 
 	Sprite( enum primitives shape, short centered ) : rect(), brush( shape, centered ){
 		material = GLMaterialManager::get( glsLight );
-		picture = atlas = normals = texid = 0;
+		picture = texid = 0;
 		flags = 1; // visible only
 	}
 
 	Sprite( Sprite* src ) : texid(src->texid), picture(src->picture),
-		atlas(src->atlas), normals(src->normals), material(src->material),
-		flags(src->flags), rect(src->rect), // tex(src->tex),
+		material(src->material), flags(src->flags), rect(src->rect),
 		brush(src->brush) { }
 
 	void setPicture( int pic );

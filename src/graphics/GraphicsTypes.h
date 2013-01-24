@@ -10,6 +10,7 @@
 #include "Define.h"
 #include "types.h"
 #include "basic_types.h"
+#include "utils/list.h"
 
 #include <string>
 #include <cstdlib>

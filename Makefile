@@ -16,8 +16,9 @@ WIDGETSDIR= widgets/
 INTERFACEDIR= interface/
 MAPDIR = map/
 3RDPARTYDIR= 3rdparty/
+UTILSDIR = utils/
 
-
+UTILS = list.cpp
 CORE = yukkuri.cpp
 UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp ActionTimer.cpp Scope.cpp Unit.cpp \
 		 UnitStatic.cpp UnitDynamic.cpp UnitEntity.cpp UnitCorpse.cpp UnitPlayer.cpp
@@ -38,7 +39,9 @@ MAP = Tiles.cpp Region.cpp Map.cpp
 3RDPARTY = CUData.cpp CUDataUser.cpp CUDataTemplates.cpp LuaPusher.cpp timer/TimerManager.cpp
 
 
+
 SRCS =   main.cpp config.cpp misc.cpp Bindings.cpp BindFunctions.cpp \
+		 $(addprefix $(UTILSDIR), $(UTILS)) \
          $(addprefix $(COREDIR), $(CORE)) \
          $(addprefix $(SCRIPTSDIR), $(SCRIPTS)) \
          $(addprefix $(PHYSICSDIR), $(PHYSICS)) \
@@ -96,9 +99,10 @@ $(PROGNAME) : dirs $(GCH) $(OBJS)
 	$(CC) $(CFLAGS)  -o $(OUTDIR)$(PROGNAME) $(OBJS) $(LIBS)
 
 dirs:
-	mkdir -p $(addprefix $(OBJDIR), $(COREDIR) $(SCRIPTSDIR) $(SCRIPTSDIR)$(SCRIPTSAPIDIR) \
-	 $(GRAPHICSDIR) $(GRAPHICSDIR)render/ $(GRAPHICSDIR)sprite/ $(GRAPHICSDIR)utils/  \
-	 $(UNITSDIR) $(INTERFACEDIR) $(INTERFACEDIR)$(WIDGETSDIR) $(MAPDIR) $(3RDPARTYDIR) \
+	mkdir -p $(addprefix $(OBJDIR), $(UTILSDIR) $(COREDIR) $(SCRIPTSDIR) 	\
+	 $(SCRIPTSDIR)$(SCRIPTSAPIDIR) $(GRAPHICSDIR) $(GRAPHICSDIR)render/		\
+	 $(GRAPHICSDIR)sprite/ $(GRAPHICSDIR)utils/ $(UNITSDIR)					\
+	 $(INTERFACEDIR) $(INTERFACEDIR)$(WIDGETSDIR) $(MAPDIR) $(3RDPARTYDIR) 	\
 	 $(3RDPARTYDIR)timer $(PHYSICSDIR))
 
 

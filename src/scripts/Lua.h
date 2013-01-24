@@ -174,6 +174,12 @@ public:
 	}
 
 	template<typename T>
+	inline bool getValue( int index, T& ret)
+	{
+		return getValue( Lst, index, ret );
+	}
+
+	template<typename T>
 	bool getValue( lua_State* L, int index, T& ret)
 	{
 		if( checkInputParam( L, index, ret ) ){

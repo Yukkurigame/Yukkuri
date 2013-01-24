@@ -44,19 +44,10 @@ namespace {
 
 	list < Sprite* > sprites_array;
 
-	//std::vector < Sprite* > GLSprites;
-
-
 	//////////////////////////////////////////////////
 	// VBO
 
 	GLuint VBOHandle;
-
-	// Returns count of breakings
-	//int VBOHandlesCount;
-	//int VBOHandlesSize;
-	//VBOStructureHandle* VBOHandles;
-
 
 	//////////////////////////////////////////////////
 	// Atlases
@@ -82,27 +73,13 @@ namespace {
 	#endif
 	}
 
-
-	/*
-	void update_sprites(  )
-	{
-		listElement< Sprite* >* it = sprites_array.head;
-		while( it != NULL ){
-			Sprite* s = it->data;
-			s->tex = &textures[s->texid];
-			it = it->next;
-		}
-	}*/
 }
 
 
 void RenderManager::init( )
 {
 	textures = NULL;
-	//verticles = NULL;
-	//verticlesSize = 1; // for success multiplication
 	atlasHandle = 0;
-	// Set first texture info to 0
 	textures = (TextureInfo*)malloc( (unsigned)sizeof(TextureInfo) );
 	texturesCount = 1;
 	memset( &textures[0], 0, (unsigned)sizeof(TextureInfo) );
@@ -285,13 +262,9 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 
 	if( texture_id >= texturesCount ){
 		Debug::debug( Debug::GRAPHICS, "Bad texture id passed.\n" );
-		//sprite->tex = NULL;
-		//sprite->atlas = 0;
 	}else{
-		//sprite->tex = &textures[texture_id];
 		TextureInfo* tex_info = &textures[texture_id];
 		sprite->textures.push_back( tex_info->atlas );
-		//sprite->atlas = sprite->tex->atlas;
 		sprite->addNormalMap( tex_info->normals );
 	}
 
@@ -367,18 +340,9 @@ void RenderManager::DrawGLScene()
 
 	sprites_array.sort( compareSprites );
 
-	listElement< Sprite* >* s = sprites_array.head;
-	while( s ){
-		s3f& p = s->data->brush.vertex_origin;
-		printf("%.1f:%.1f:%.1f ", p.x, p.y, p.z );
-		s = s->next;
-	}
-	printf("\n");
-
 	switch( conf.video.renderMethod ){
 		case rmSingle:
 		{
-			//sort( GLSprites.begin(), GLSprites.end(), compareSprites );
 			list< VBOStructureHandle* > vbos;
 			VBuffer::prepare_handler( &sprites_array, &vbos );
 			VBuffer::setup( VBOHandle );

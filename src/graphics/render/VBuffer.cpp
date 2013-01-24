@@ -75,38 +75,22 @@ inline void apply_textures( list<GLuint>* textures )
 	}
 }
 
-#define CASED_PROGAM( d, location )										\
-	case d:																\
-		shader = mat->programs.location;								\
-		samplers = mat->samplers.location;								\
-		break;
-
 inline void apply_material( UINT matid, int pass )
 {
 	const GLMaterial* mat = GLMaterialManager::get_pointer( matid );
 	if( !mat )
 		return;
-	int shader = glpNone;
-	ShaderConfigStrings* samplers = NULL;
-	switch(pass){
-		CASED_PROGAM( glpDefault, base )
-		CASED_PROGAM( glpSimple, simple )
-		CASED_PROGAM( glpGeometry, geometry )
-		CASED_PROGAM( glpDirLight, directional_light )
-	}
+	int shader = mat->programs[pass];
+	ShaderConfigStrings* samplers = mat->samplers[pass];
 	glUseProgram( shader );
 	if( !shader || !samplers )
 		return;
-
 	for( unsigned int index = 0; index < samplers->count; ++index ){
 		GLint cm = glGetUniformLocation( shader, samplers->data[index] );
 		if( cm >= 0 )
 			glUniform1i( cm, index );
 	}
 }
-
-#undef CASED_PROGAM
-
 
 
 /*	This function draws vertex array object

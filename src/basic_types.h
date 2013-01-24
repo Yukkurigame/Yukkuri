@@ -218,6 +218,15 @@ struct list
 		}
 		return c;
 	}
+	void swap( listElement<T>* prev, listElement<T>* t ){
+		if( !prev || !t || !t->next )
+			return;
+		prev->next = t->next;
+		t->next = t->next->next;
+		prev->next->next = t;
+		if( prev->next == tail )
+			tail = t;
+	}
 	listElement<T>* find( T data ){
 		listElement<T>* t = head;
 		while( t != 0 ){
@@ -227,6 +236,32 @@ struct list
 		}
 		return 0;
 	}
+	template <typename F>
+	void sort( F func ){
+		// Due to list structure it possible only go forward.
+		// Make sure you push new things to the list head and it will
+		// work at ~n. Function will work at n^2 on non-sorted arrays
+		// and require multiple calls to sort it.
+		// Why it was wroten that way? It is enough to sort sprites.
+		if( !head || !head->next )
+			return;
+		listElement<T>* t = head->next;
+		listElement<T>* prev = head;
+		while( t != 0 && t->next != 0 ){
+			if( func( prev->data, t->data ) ){
+				if( t->next == 0 )
+					tail = t;
+				prev = t;
+				t = t->next;
+
+			}else{
+				swap( prev, t );
+				prev = t;
+				t = t->next;
+			}
+		}
+	}
+
 };
 
 

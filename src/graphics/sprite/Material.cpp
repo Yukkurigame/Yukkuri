@@ -65,7 +65,7 @@ UINT GLMaterialManager::get( UINT glflags )
 	return create( glflags );
 }
 
-GLMaterial* GLMaterialManager::get_pointer( UINT id )
+const GLMaterial* GLMaterialManager::get_pointer( UINT id )
 {
 	if( id > materials_count )
 		return NULL;

@@ -298,7 +298,7 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 	sprite->resize( (float)width, (float)height );
 	sprite->setPosition( x, y, z );
 
-	sprites_array.push_back( sprite );
+	sprites_array.push( sprite );
 
 	return sprite;
 }
@@ -312,7 +312,7 @@ Sprite* RenderManager::CreateGLSprite( Sprite* osprite )
 
 	Sprite* sprite = new Sprite(osprite);
 
-	sprites_array.push_back( sprite );
+	sprites_array.push( sprite );
 
 	return sprite;
 }
@@ -320,12 +320,7 @@ Sprite* RenderManager::CreateGLSprite( Sprite* osprite )
 
 void RenderManager::FreeGLSprite( Sprite* sprite )
 {
-	listElement< Sprite* >* it = sprites_array.head;
-	while( it != NULL ){
-		if( it->data == sprite )
-			break;
-		it = it->next;
-	}
+	listElement< Sprite* >* it = sprites_array.find( sprite );
 	sprites_array.remove(it);
 	/* if( it == NULL )
 		debug( GRAPHICS, "Sprite not under control.\n" ); */
@@ -369,6 +364,16 @@ inline bool compareSprites( Sprite* s1, Sprite* s2 )
 void RenderManager::DrawGLScene()
 {
 	Camera::update();
+
+	sprites_array.sort( compareSprites );
+
+	listElement< Sprite* >* s = sprites_array.head;
+	while( s ){
+		s3f& p = s->data->brush.vertex_origin;
+		printf("%.1f:%.1f:%.1f ", p.x, p.y, p.z );
+		s = s->next;
+	}
+	printf("\n");
 
 	switch( conf.video.renderMethod ){
 		case rmSingle:

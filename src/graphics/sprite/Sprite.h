@@ -37,12 +37,11 @@ struct Sprite
 
 	inline void setFixed( ){ CHANGE_MATERIAL_FLAG( material, add_flag, glsFixed ) }
 	inline void clearFixed( ){ CHANGE_MATERIAL_FLAG( material, clear_flag, glsFixed) }
-	inline void setLight( ){CHANGE_MATERIAL_FLAG( material, add_flag, glsLight ) }
+	inline void setLight( ){ CHANGE_MATERIAL_FLAG( material, add_flag, glsLight ) }
 	inline void clearLight( ){ CHANGE_MATERIAL_FLAG( material, clear_flag, glsLight ) }
 
 	inline void addNormalMap( GLuint map ){
 		textures.push_back( map );
-		//normals = map;
 		if( map ){
 			CHANGE_MATERIAL_FLAG( material, add_flag, glsNormals )
 		}
@@ -50,19 +49,16 @@ struct Sprite
 	inline void removeNormalMap( ){
 		// FIXME: will not work with textures after normal map
 		textures.remove( textures.tail );
-		//normals = 0;
 		CHANGE_MATERIAL_FLAG( material, clear_flag, glsNormals )
 	}
 
 	Sprite() : rect(), brush( prQUADS, 0 ) {
-		//tex = NULL;
 		material = GLMaterialManager::get( glsLight );
 		picture = atlas = normals = texid = 0;
 		flags = 1; // visible only
 	}
 
 	Sprite( enum primitives shape, short centered ) : rect(), brush( shape, centered ){
-		//tex = NULL;
 		material = GLMaterialManager::get( glsLight );
 		picture = atlas = normals = texid = 0;
 		flags = 1; // visible only

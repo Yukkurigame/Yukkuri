@@ -83,7 +83,7 @@ inline void apply_textures( list<GLuint>* textures )
 
 inline void apply_material( UINT matid, int pass )
 {
-	GLMaterial* mat = GLMaterialManager::get_pointer( matid );
+	const GLMaterial* mat = GLMaterialManager::get_pointer( matid );
 	if( !mat )
 		return;
 	int shader = glpNone;
@@ -110,14 +110,11 @@ inline void apply_material( UINT matid, int pass )
 
 
 /*	This function draws vertex array object
+ * 	pass - number of pass to draw
  * 	vbostructure - linked list of vao description
  */
-void VBuffer::draw( int pass, list<VBOStructureHandle*>* handler
-		/* VBOStructureHandle* vbostructure */ )
+void VBuffer::draw( int pass, list<VBOStructureHandle*>* handler )
 {
-	//GLuint aprog = 0;
-	//GLuint texture = 0;
-	//GLuint normals = 0;
 	listElement<VBOStructureHandle*>* handler_element = handler->head;
 
 	glEnable(GL_TEXTURE_2D);
@@ -125,121 +122,50 @@ void VBuffer::draw( int pass, list<VBOStructureHandle*>* handler
 		VBOStructureHandle* vbostructure = handler_element->data;
 		apply_textures( &vbostructure->textures );
 		apply_material( vbostructure->material, pass );
-		/*if( aprog != vbostructure->shader ){
-			aprog = vbostructure->shader;
-			glUseProgram( aprog );
-		}
-		if( texture != vbostructure->atlas ){
-			texture = vbostructure->atlas;
-			glActiveTexture( GL_TEXTURE_FROM_INDEX(gltColor) );
-			glBindTexture( GL_TEXTURE_2D, texture );
-		}
-		if( normals != vbostructure->normals ){
-			normals = vbostructure->normals;
-			glActiveTexture( GL_TEXTURE_FROM_INDEX(gltNormal) );
-			glBindTexture( GL_TEXTURE_2D, normals );
-		}
-		*/
 		glDrawElements( vbostructure->method, vbostructure->count, GL_UNSIGNED_INT, vbostructure->indexes );
-		//glDrawArrays(GL_QUADS, vbostructure->indexes, vbostructure->count);
-		//Clean vbos
 		handler_element = handler_element->next;
 	}
 	glUseProgram( 0 );
-	//glActiveTexture( GL_TEXTURE_FROM_INDEX(gltColor) );
-	//glBindTexture(GL_TEXTURE_2D, 0);
-	//glActiveTexture( GL_TEXTURE_FROM_INDEX(gltNormal) );
-	//glBindTexture(GL_TEXTURE_2D, 0);
-
-#ifdef DEBUG_DRAW_RECTANGLES
-	for( int i = 0; i < count; i = i + 4 )
-		glDrawArrays(GL_LINE_LOOP, i, 4);
-#endif
-
 	glDisable(GL_TEXTURE_2D);
 }
 
 
-
-
-inline void vbo_handler( Sprite* s, list<VBOStructureHandle*>* handlers )
-		//VBOStructureHandle*& v, VBOStructureHandle*& first )
+/*	This function make vao array from single sprite
+ *	sprite - pointer of sprite
+ *	handler - pointer to handler list
+  */
+void VBuffer::prepare_handler( Sprite* sprite, list<VBOStructureHandle*>* handler )
 {
-	if( s == NULL || !s->isVisible() )
+	if( sprite == NULL || !sprite->isVisible() )
 		return;
 
 	VBOStructureHandle* v = NULL;
-	if( handlers->head )
-		v = handlers->head->data;
+	if( handler->tail )
+		v = handler->tail->data;
 
 	if( !v || v->type != prQUADS ||
-		v->material != s->material ||
-		!v->textures.cmp( &s->textures ) ){
-		v = new VBOStructureHandle( s->brush.type, &s->textures, s->material );
-		handlers->push_back( v );
-	/*}else if( v->type != prQUADS ||	s->material != v->material ||
-			s->textures
-			s->normals != v->normals || shader != v->shader ){
-		v = new VBOStructureHandle( s->brush.type, &s->textures, s->material );
-		handlers->push_back( v );
-		v->next = new VBOStructureHandle( s->brush.type, s->atlas, s->normals, shader );
-		v = v->next;
-	*/
+		v->material != sprite->material ||
+		!v->textures.cmp( &sprite->textures ) ){
+		v = new VBOStructureHandle( sprite->brush.type, &sprite->textures, sprite->material );
+		handler->push_back( v );
 	}
 
-	v->set_indexes( s->brush.point_index, s->brush.points_count );
-}
-
-
-void VBuffer::prepare_handler( Sprite* sprite, list<VBOStructureHandle*>* handler )
-{
-//VBOStructureHandle* VBuffer::prepare_handler( int pass, Sprite* sprite )
-//{
-	//VBOStructureHandle* v = NULL;
-	//VBOStructureHandle* first = NULL;
-	//int shader = guess_shader( pass, sprite );
-	vbo_handler( sprite, handler /* shader, v, first */ );
-	//return first;
+	v->set_indexes( sprite->brush.point_index, sprite->brush.points_count );
 }
 
 
 /*	This function make vao array from sprite array
- *	pass - id of render pass.
  *	sprites - array of sprites
- *	returns pointer to the first vbo info handler
- */
+ *	handler - pointer to handler list
+  */
 void VBuffer::prepare_handler( list< Sprite* >* sprites, list<VBOStructureHandle*>* handler )
-//VBOStructureHandle* VBuffer::prepare_handler( int pass, list< Sprite* >* sprites )
 {
-	//VBOStructureHandle* v = NULL;
-	//VBOStructureHandle* first = NULL;
 	listElement< Sprite* >* sprites_element = sprites->head;
 	while( sprites_element != NULL ){
-		//Sprite* s = sprites_element->data;
-		//int shader = guess_shader( pass, s );
-		vbo_handler( sprites_element->data, handler /*shader, v, first*/ );
+		prepare_handler( sprites_element->data, handler );
 		sprites_element = sprites_element->next;
 	}
-	//return first;
 }
-
-
-/*	This function make vao array from sprite array
- *	sprites - Pointer to array of sprites
- *	scount - count of sprites in array
- *	returns pointer to the first vbo info handler
-VBOStructureHandle* VBuffer::prepare_handler( Sprite* sprites, unsigned int scount )
-{
-	//int count = 0;
-	VBOStructureHandle* v = NULL;
-	VBOStructureHandle* first = NULL;
-	for( unsigned int i = 0; i < scount; ++i ){
-		Sprite* s = &sprites[i];
-		vbo_handler( s, glpSimple, v, first );
-	}
-	return first;
-}
-*/
 
 
 /*	This function removes all elements from vao handler

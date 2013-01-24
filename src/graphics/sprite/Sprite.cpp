@@ -9,6 +9,7 @@
 
 #include "graphics/sprite/Sprite.h"
 #include "graphics/GraphicsTypes.h"
+#include "graphics/Render.h"
 #include "graphics/utils/gl_shader.h"
 
 

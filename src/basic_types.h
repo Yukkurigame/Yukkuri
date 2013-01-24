@@ -114,7 +114,7 @@ struct list
 	listElement<T>* head;
 	listElement<T>* tail;
 	list( ) : head(0), tail(0) {};
-	list( const list<T>* src ){
+	list( const list<T>* src ) : head(0), tail(0) {
 		listElement<T>* t = src->head;
 		while( t != 0 ){
 			push_back(t->data);
@@ -159,7 +159,7 @@ struct list
 	}
 	inline void push_back( T data )
 	{
-		insert( tail, data );
+		insert( data, tail );
 	}
 	void clear( ){
 		listElement<T>* t = head;

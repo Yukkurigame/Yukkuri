@@ -161,13 +161,9 @@ void getFromLua( lua_State* L, int idx, s4ub& val )
 	}
 }
 
-#include "scripts/LuaScript.h"
-extern LuaScript* luaScript;
-
 template<>
 bool CHINP_TESTER<s4ub>(lua_State* L, int idx)
 {
-	luaScript->StackDumpToLog( L );
 	if( lua_istable( L, idx ) ){
 		for( int i = 1; i < 4; ++i ){
 			lua_pushnumber( L, i );
@@ -261,6 +257,7 @@ void getFromLua( lua_State* L, int idx, ShaderConfigData& val )
 				LUA_GET_TABLE_VALUE( i + 1, val.samplers->data[i] )
 			}
 		}
+		lua_pop( L, 1 );
 	}
 }
 

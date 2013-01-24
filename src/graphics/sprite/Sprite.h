@@ -41,13 +41,16 @@ struct Sprite
 	inline void clearLight( ){ CHANGE_MATERIAL_FLAG( material, clear_flag, glsLight ) }
 
 	inline void addNormalMap( GLuint map ){
-		normals = map;
+		textures.push_back( map );
+		//normals = map;
 		if( map ){
 			CHANGE_MATERIAL_FLAG( material, add_flag, glsNormals )
 		}
 	}
 	inline void removeNormalMap( ){
-		normals = 0;
+		// FIXME: will not work with textures after normal map
+		textures.remove( textures.tail );
+		//normals = 0;
 		CHANGE_MATERIAL_FLAG( material, clear_flag, glsNormals )
 	}
 

@@ -176,13 +176,13 @@ void GBuffer::geometry_pass( )
 
 	glEnable( GL_DEPTH_TEST );
 
-	VBOStructureHandle* vbos = VBuffer::prepare_handler(
-			glpGeometry, RenderManager::GetSpritesArray() );
+	list< VBOStructureHandle* > vbos;
+	VBuffer::prepare_handler( RenderManager::GetSpritesArray(), &vbos );
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 
-	VBuffer::draw( vbos );
+	VBuffer::draw( glpGeometry, &vbos );
 
 	glDisable(GL_BLEND);
 
@@ -217,14 +217,15 @@ void GBuffer::light_pass_directional( )
 
 	glDisable(GL_DEPTH_TEST);
 
-	VBOStructureHandle* vbos = VBuffer::prepare_handler( glpDirLight, combinator );
+	list< VBOStructureHandle* > vbos;
+	VBuffer::prepare_handler( combinator, &vbos );
 
 	//glEnable(GL_BLEND);
 	//glBlendEquation(GL_FUNC_ADD);
 	//glBlendFunc(GL_ONE, GL_ONE);
 
 	Shaders::passUniform2fv( glsFixed, "in_ScreenSize", 1, &window_size.x );
-	VBuffer::draw( vbos );
+	VBuffer::draw( glpDirLight, &vbos );
 
 	//glDisable(GL_BLEND);
 

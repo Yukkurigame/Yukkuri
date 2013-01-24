@@ -20,15 +20,15 @@ namespace VBuffer {
 	void unbind(  );
 	void fill( );
 	void setup( GLuint handle );
-	void draw( VBOStructureHandle* vbostructure );
+	void draw( int pass, list<VBOStructureHandle*>* /*VBOStructureHandle* vbostructure*/ );
 
 	// Structures
-	void prepare_handler( int pass, Sprite* sprite, list<VBOStructureHandle*>* );
-	void prepare_handler( int pass, list< Sprite* >* sprites, list<VBOStructureHandle*>* );
+	void prepare_handler( Sprite* sprite, list<VBOStructureHandle*>* );
+	void prepare_handler( list< Sprite* >* sprites, list<VBOStructureHandle*>* );
 	//VBOStructureHandle* prepare_handler( int pass, Sprite* sprite );
 	//VBOStructureHandle* prepare_handler( int pass, list< Sprite* >* sprites );
 	//VBOStructureHandle* prepare_handler( Sprite* sprites, unsigned int scount );
-	void free_handler( VBOStructureHandle** );
+	void free_handler( list<VBOStructureHandle*>* );
 
 }
 

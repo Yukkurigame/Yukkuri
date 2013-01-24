@@ -49,9 +49,10 @@ void GLMaterialManager::clean( )
 UINT GLMaterialManager::create( UINT params )
 {
 	materials_count++;
-	materials = (GLMaterial*)realloc(materials, sizeof(GLMaterial*) * materials_count );
+	materials = (GLMaterial*)realloc(materials, (unsigned)sizeof(GLMaterial) * materials_count );
+	materials[materials_count - 1].flags = 0;
 	materials[materials_count - 1].init_flags( params );
-	return materials_count;
+	return materials_count - 1;
 }
 
 

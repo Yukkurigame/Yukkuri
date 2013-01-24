@@ -162,8 +162,9 @@ MapChunk::MapChunk( signed int x, signed int y )
 		Sprite* s = &sprites[tile];
 		sprite_list.push( s );
 		s->texid = t.Type->texture;
-		s->tex = RenderManager::GetTextureByNumber( s->texid );
-		s->atlas = s->tex->atlas;
+		TextureInfo* tex = RenderManager::GetTextureByNumber( s->texid );
+		s->textures.push_back( tex->atlas );
+		s->addNormalMap( tex->normals );
 		s->setPosition(
 				(float)( col * conf.mapTileSize + ( row % 2 ? (conf.mapTileSize >> 1) : 0 ) ),
 				(float)( row * conf.mapTileSize - row * ( 3 * (conf.mapTileSize >> 2) ) ) );

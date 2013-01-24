@@ -8,6 +8,7 @@
 #define GRAPHICSTYPES_H_
 
 #include "Define.h"
+#include "types.h"
 #include "basic_types.h"
 
 #include <string>
@@ -94,7 +95,7 @@ struct TextureProxy
 	rect2f atlas; // Relative position in atlas; atlas size
 	Texture* texture;
 
-	TextureProxy( ) : rows(), cols(), id(), image() {}
+	TextureProxy( ) : rows(), cols(), id(), image(), texture(NULL) {}
 
 	inline bool operator < ( const TextureProxy & t ) {
 		return abs < t.abs;
@@ -144,7 +145,7 @@ struct TextureInfo
 	char* id;
 	rect2f pos;
 	TextureInfo () : rows(0), cols(0), swidth(0), sheight(0),
-		twidth(0), theight(0), atlas(0), pos() {}
+		twidth(0), theight(0), atlas(0), normals(0), id(NULL), pos() {}
 
 	void fromTextureProxy( TextureProxy* t ){
 		fromTextureProxy(t, 0);
@@ -203,7 +204,7 @@ struct VBOStructureHandle
 	int count;
 	enum primitives type;
 	GLuint method;
-	GLuint shader;
+	//GLuint shader;
 	list< GLuint > textures;
 	UINT material;
 

@@ -83,6 +83,7 @@ namespace {
 	}
 
 
+	/*
 	void update_sprites(  )
 	{
 		listElement< Sprite* >* it = sprites_array.head;
@@ -91,7 +92,7 @@ namespace {
 			s->tex = &textures[s->texid];
 			it = it->next;
 		}
-	}
+	}*/
 }
 
 
@@ -221,7 +222,7 @@ int RenderManager::PushTexture( TextureProxy* proxy, GLuint atlas, GLuint normal
 	ti.id = new char[proxy->id.size() + 1];
 	ti.normals = normals;
 	strcpy(ti.id, proxy->id.c_str());
-	update_sprites();
+	//update_sprites();
 	return texturesCount++;
 }
 
@@ -239,7 +240,7 @@ void RenderManager::PushTextures( std::vector < TextureProxy* >& tarray, GLuint 
 		strcpy(ti.id, proxy->id.c_str());
 		texturesCount++;
 	}
-	update_sprites();
+	//update_sprites();
 }
 
 
@@ -284,12 +285,14 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 
 	if( texture_id >= texturesCount ){
 		Debug::debug( Debug::GRAPHICS, "Bad texture id passed.\n" );
-		sprite->tex = NULL;
-		sprite->atlas = 0;
+		//sprite->tex = NULL;
+		//sprite->atlas = 0;
 	}else{
-		sprite->tex = &textures[texture_id];
-		sprite->atlas = sprite->tex->atlas;
-		sprite->addNormalMap( sprite->tex->normals );
+		//sprite->tex = &textures[texture_id];
+		TextureInfo* tex_info = &textures[texture_id];
+		sprite->textures.push_back( tex_info->atlas );
+		//sprite->atlas = sprite->tex->atlas;
+		sprite->addNormalMap( tex_info->normals );
 	}
 
 	sprite->resize( (float)width, (float)height );
@@ -371,12 +374,13 @@ void RenderManager::DrawGLScene()
 		case rmSingle:
 		{
 			//sort( GLSprites.begin(), GLSprites.end(), compareSprites );
-			VBOStructureHandle* vbos = VBuffer::prepare_handler( glpDefault, &sprites_array );
+			list< VBOStructureHandle* > vbos;
+			VBuffer::prepare_handler( &sprites_array, &vbos );
 			VBuffer::setup( VBOHandle );
 
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glEnable(GL_BLEND);
-			VBuffer::draw( vbos );
+			VBuffer::draw( glpDefault, &vbos );
 			glDisable(GL_BLEND);
 			VBuffer::unbind( );
 

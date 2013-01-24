@@ -131,9 +131,10 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, l
 
 	glGenBuffers( 1, &VBOHandle );
 
-	VBOStructureHandle* vbostructure = VBuffer::prepare_handler( glpSimple, sprites );
+	list< VBOStructureHandle* > vbostructure;
+	VBuffer::prepare_handler( sprites, &vbostructure );
 	VBuffer::setup( VBOHandle );
-	VBuffer::draw( vbostructure );
+	VBuffer::draw( glpSimple, &vbostructure );
 	VBuffer::unbind( );
 	VBuffer::free_handler( &vbostructure );
 

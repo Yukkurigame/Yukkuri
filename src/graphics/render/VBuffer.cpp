@@ -66,19 +66,66 @@ void VBuffer::setup( GLuint handle )
 	fill( );
 }
 
+inline void apply_textures( list<GLuint>* textures )
+{
+	listElement< GLuint >* texture = textures->head;
+	for( int index = 0; texture != NULL; texture = texture->next, ++index ){
+		glActiveTexture( GL_TEXTURE0 + index );
+		glBindTexture( GL_TEXTURE_2D, texture->data );
+	}
+}
+
+#define CASED_PROGAM( d, location )										\
+	case d:																\
+		shader = mat->programs.location;								\
+		samplers = mat->samplers.location;								\
+		break;
+
+inline void apply_material( UINT matid, int pass )
+{
+	GLMaterial* mat = GLMaterialManager::get_pointer( matid );
+	if( !mat )
+		return;
+	int shader = glpNone;
+	ShaderConfigStrings* samplers = NULL;
+	switch(pass){
+		CASED_PROGAM( glpDefault, base )
+		CASED_PROGAM( glpSimple, simple )
+		CASED_PROGAM( glpGeometry, geometry )
+		CASED_PROGAM( glpDirLight, directional_light )
+	}
+	glUseProgram( shader );
+	if( !shader || !samplers )
+		return;
+
+	for( unsigned int index = 0; index < samplers->count; ++index ){
+		GLint cm = glGetUniformLocation( shader, samplers->data[index] );
+		if( cm >= 0 )
+			glUniform1i( cm, index );
+	}
+}
+
+#undef CASED_PROGAM
+
+
 
 /*	This function draws vertex array object
  * 	vbostructure - linked list of vao description
  */
-void VBuffer::draw( VBOStructureHandle* vbostructure )
+void VBuffer::draw( int pass, list<VBOStructureHandle*>* handler
+		/* VBOStructureHandle* vbostructure */ )
 {
-	GLuint aprog = 0;
-	GLuint texture = 0;
-	GLuint normals = 0;
+	//GLuint aprog = 0;
+	//GLuint texture = 0;
+	//GLuint normals = 0;
+	listElement<VBOStructureHandle*>* handler_element = handler->head;
 
 	glEnable(GL_TEXTURE_2D);
-	while(vbostructure != NULL){
-		if( aprog != vbostructure->shader ){
+	while(handler_element != NULL){
+		VBOStructureHandle* vbostructure = handler_element->data;
+		apply_textures( &vbostructure->textures );
+		apply_material( vbostructure->material, pass );
+		/*if( aprog != vbostructure->shader ){
 			aprog = vbostructure->shader;
 			glUseProgram( aprog );
 		}
@@ -92,16 +139,17 @@ void VBuffer::draw( VBOStructureHandle* vbostructure )
 			glActiveTexture( GL_TEXTURE_FROM_INDEX(gltNormal) );
 			glBindTexture( GL_TEXTURE_2D, normals );
 		}
+		*/
 		glDrawElements( vbostructure->method, vbostructure->count, GL_UNSIGNED_INT, vbostructure->indexes );
 		//glDrawArrays(GL_QUADS, vbostructure->indexes, vbostructure->count);
 		//Clean vbos
-		vbostructure = vbostructure->next;
+		handler_element = handler_element->next;
 	}
 	glUseProgram( 0 );
-	glActiveTexture( GL_TEXTURE_FROM_INDEX(gltColor) );
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glActiveTexture( GL_TEXTURE_FROM_INDEX(gltNormal) );
-	glBindTexture(GL_TEXTURE_2D, 0);
+	//glActiveTexture( GL_TEXTURE_FROM_INDEX(gltColor) );
+	//glBindTexture(GL_TEXTURE_2D, 0);
+	//glActiveTexture( GL_TEXTURE_FROM_INDEX(gltNormal) );
+	//glBindTexture(GL_TEXTURE_2D, 0);
 
 #ifdef DEBUG_DRAW_RECTANGLES
 	for( int i = 0; i < count; i = i + 4 )
@@ -143,29 +191,7 @@ inline void vbo_handler( Sprite* s, list<VBOStructureHandle*>* handlers )
 }
 
 
-#define CASED_PROGAM( d, location )										\
-	case d:																\
-		GLMaterial* mat = GLMaterialManager::get_pointer(s->material);	\
-		if( mat )														\
-			shader = mat->programs.location;							\
-		break;
-
-inline int guess_shader( int pass, const Sprite* s )
-{
-	int shader = glpNone;
-	switch(pass){
-		CASED_PROGAM( glpDefault, base )
-		CASED_PROGAM( glpSimple, simple )
-		CASED_PROGAM( glpGeometry, geometry )
-		CASED_PROGAM( glpDirLight, directional_light )
-	}
-	return shader;
-}
-
-#undef CASED_PROGAM
-
-
-void prepare_handler( int pass, Sprite* sprite, list<VBOStructureHandle*>* handler )
+void VBuffer::prepare_handler( Sprite* sprite, list<VBOStructureHandle*>* handler )
 {
 //VBOStructureHandle* VBuffer::prepare_handler( int pass, Sprite* sprite )
 //{
@@ -182,7 +208,7 @@ void prepare_handler( int pass, Sprite* sprite, list<VBOStructureHandle*>* handl
  *	sprites - array of sprites
  *	returns pointer to the first vbo info handler
  */
-void prepare_handler( int pass, list< Sprite* >* sprites, list<VBOStructureHandle*>* handler )
+void VBuffer::prepare_handler( list< Sprite* >* sprites, list<VBOStructureHandle*>* handler )
 //VBOStructureHandle* VBuffer::prepare_handler( int pass, list< Sprite* >* sprites )
 {
 	//VBOStructureHandle* v = NULL;
@@ -217,16 +243,15 @@ VBOStructureHandle* VBuffer::prepare_handler( Sprite* sprites, unsigned int scou
 
 
 /*	This function removes all elements from vao handler
- *	handler - Pointer to first handler element
+ *	handler - Pointer to handlers list
  */
-void VBuffer::free_handler( VBOStructureHandle** handler )
+void VBuffer::free_handler( list< VBOStructureHandle* >* handler )
 {
-	VBOStructureHandle* first = *handler;
-	VBOStructureHandle* temp;
-	while( first != NULL ){
-		temp = first;
-		first = first->next;
-		delete temp;
+	listElement< VBOStructureHandle* >* handler_element = handler->head;
+	while( handler_element != NULL ){
+		delete handler_element->data;
+		handler_element = handler_element->next;
 	}
-	handler = NULL;
+	handler->clear();
 }
+

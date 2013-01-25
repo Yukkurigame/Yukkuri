@@ -7,6 +7,9 @@
 
 #include "graphics/render/VBuffer.h"
 #include "graphics/utils/VBOArray.h"
+#include "graphics/utils/gl_uniforms.h"
+#include "graphics/Camera.h"
+#include <cstring>
 
 
 void VBuffer::create( GLuint* handle )
@@ -82,13 +85,23 @@ inline void apply_material( UINT matid, int pass )
 		return;
 	int shader = mat->programs[pass];
 	ShaderConfigStrings* samplers = mat->samplers[pass];
+	UniformHandlers* uniforms = mat->uniforms[pass];
 	glUseProgram( shader );
-	if( !shader || !samplers )
+	if( !shader )
 		return;
-	for( unsigned int index = 0; index < samplers->count; ++index ){
-		GLint cm = glGetUniformLocation( shader, samplers->data[index] );
-		if( cm >= 0 )
-			glUniform1i( cm, index );
+
+	if( samplers ){
+		for( unsigned int index = 0; index < samplers->count; ++index ){
+			GLint cm = glGetUniformLocation( shader, samplers->data[index] );
+			if( cm >= 0 )
+				glUniform1i( cm, index );
+		}
+	}
+	if( uniforms ){
+		for( unsigned int index = 0; index < uniforms->count; ++index ){
+			UniformHandler* uniform = &uniforms->handlers[index];
+			UniformsManager::send_data( uniform->location, uniform->index );
+		}
 	}
 }
 

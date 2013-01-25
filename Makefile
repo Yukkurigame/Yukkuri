@@ -26,7 +26,7 @@ PHYSICS = physics.cpp handlers.cpp
 RENDER = Atlas.cpp ElasticBox.cpp GBuffer.cpp GLHelpers.cpp GLTextures.cpp \
 		 VBuffer.cpp TextureArray.cpp
 SPRITE = Sprite.cpp Animation.cpp AnimationDefines.cpp Brush.cpp Material.cpp
-GRAPHUTILS = gl_shader.cpp pngfuncs.c sdl_graphics.cpp VBOArray.cpp
+GRAPHUTILS = gl_shader.cpp gl_uniforms.cpp pngfuncs.c sdl_graphics.cpp VBOArray.cpp
 GRAPHICS = Camera.cpp daytime.cpp Font.cpp gl_extensions.cpp Lighting.cpp Render.cpp Text.cpp \
 		   $(addprefix render/, $(RENDER)) $(addprefix sprite/, $(SPRITE)) $(addprefix utils/, $(GRAPHUTILS))
 SCRIPTSAPI = UnitManagerApi.cpp InterfaceApi.cpp Widgets.cpp ThreadManagerApi.cpp CameraApi.cpp \

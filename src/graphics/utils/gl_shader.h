@@ -3,14 +3,13 @@
  *
  *  Created on: 24.05.2012
  *
- * Want a shader? Create and manage it yourself.
- *
  */
 
 #ifndef GL_SHADER_H_
 #define GL_SHADER_H_
 
 #include "graphics/GraphicsTypes.h"
+#include "graphics/utils/gl_uniforms.h"
 
 
 enum GLSFlags {
@@ -44,7 +43,7 @@ enum GLSLocations {
 
 
 struct ShaderConfigAttributes {
-	GLuint index;
+	GLint index;
 	char* name;
 
 	ShaderConfigAttributes() : index(0), name(NULL) { }
@@ -66,11 +65,14 @@ struct ShaderConfigData {
 	char** output;
 	unsigned int output_count;
 	unsigned int attributes_count;
+	unsigned int uniforms_count;
 	ShaderConfigAttributes* attributes;
 	ShaderConfigStrings* samplers;
+	ShaderConfigAttributes* uniforms;
 
 	ShaderConfigData() : name(NULL), vertex_name(NULL), fragment_name(NULL), output(NULL),
-						output_count(), attributes_count(), attributes(NULL), samplers(NULL) {}
+						output_count(), attributes_count(), attributes(NULL),
+						samplers(NULL), uniforms() {}
 	~ShaderConfigData();
 };
 
@@ -79,6 +81,7 @@ namespace Shaders {
 	//GLuint getProgram( std::string filename );
 	GLuint getProgram( enum GLSPass, enum GLSFlags glflags );
 	ShaderConfigStrings* getSamplers( enum GLSPass, enum GLSFlags glflags );
+	UniformHandlers* getUniforms( enum GLSPass pass, enum GLSFlags glflags );
 	void passUniform2fv( enum GLSFlags, const char* name, int count, float* data);
 	void passUniform3fv( enum GLSFlags, const char* name, int count, float* data);
 	void passUniformMatrix4fv( enum GLSFlags, const char* name,	int count, GLboolean transpose, float* data );

@@ -1,8 +1,8 @@
 
 
 #include "graphics/Camera.h"
+#include "graphics/utils/gl_uniforms.h"
 #include "units/Unit.h"
-#include "graphics/utils/gl_shader.h"
 #include <math.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -27,9 +27,13 @@ namespace Camera {
 		glm::mat4x4 projection;
 		glm::mat4x4 model;
 		glm::mat4x4 model_view;
+		glm::vec3 cam_translation;
+		glm::mat4x4 mvp;
 	};
 
 	list< CameraState* > states;
+	int in_MVP = -1;
+	int in_Offset = -1;
 
 	inline void update_viewport( ){
 		if( !states.head )
@@ -60,6 +64,11 @@ void Camera::push_state( const rect2f* view )
 	state->TargetY = NULL;
 	state->Target = NULL;
 
+	if( in_MVP < 0 )
+		in_MVP = UniformsManager::register_uniform( "in_MVP", gluMat4fv );
+	if( in_Offset < 0 )
+		in_Offset = UniformsManager::register_uniform( "in_Offset", glu3fv );
+
 	glm::vec3 eye(1.0, 1.0, 1.0);
 	glm::vec3 target(0.0, 0.0, 0.0);
 	glm::vec3 up(0.0, 0.0, 1.0);
@@ -83,6 +92,23 @@ void Camera::pop_state( )
 	update_viewport( );
 }
 
+const float* Camera::mvp()
+{
+	if( !states.head )
+		return NULL;
+
+	CameraState* state = states.head->data;
+	return GLM_PTR(state->mvp);
+}
+
+const float* Camera::offset( )
+{
+	if( !states.head )
+		return NULL;
+	CameraState* state = states.head->data;
+	return GLM_PTR(state->cam_translation);
+}
+
 
 void Camera::update( )
 {
@@ -96,13 +122,12 @@ void Camera::update( )
 					state->cam_position.y +(*state->TargetY), 0);
 		}
 	}
+	state->cam_translation = state->cam_position + state->cam_offset;
+	glm::mat4 view = glm::translate(glm::mat4(1.0), state->cam_translation);
+	state->mvp = state->projection * view * state->model;
 
-	glm::vec3 cam_translation = state->cam_position + state->cam_offset;
-	glm::mat4 view = glm::translate(glm::mat4(1.0), cam_translation);
-
-	glm::mat4x4 mvp = state->projection * view * state->model;
-	Shaders::passUniformMatrix4fv( glsAll, "in_MVP", 1, GL_FALSE, GLM_PTR(mvp));
-	Shaders::passUniform3fv( glsFixed, "in_Offset", 1, GLM_PTR(cam_translation));
+	UniformsManager::pass_data( in_MVP, GLM_PTR(state->mvp) );
+	UniformsManager::pass_data( in_Offset, GLM_PTR(state->cam_translation) );
 }
 
 
@@ -123,38 +148,12 @@ s3f Camera::position( )
 float Camera::getX( )
 {
 	return position().x;
-/*	if( !states.head )
-		return 0;
-
-	CameraState* state = states.head->data;
-
-	if( state->TargetX != NULL ){
-		if(  state->TargetMode == ctmCenter ){
-			return * state->TargetX - ( state->cam_view.width / 2 );
-		}
-		return * state->TargetX;
-	}
-	return state->cam_position.x;
-*/
 }
 
 
 float Camera::getY( )
 {
 	return position().y;
-/*	if( !states.head )
-		return 0;
-
-	CameraState* state = states.head->data;
-
-	if( state->TargetY != NULL ){
-		if( state->TargetMode == ctmCenter ){
-			return *state->TargetY - ( state->cam_view.height / 2 );
-		}
-		return *state->TargetY;
-	}
-	return state->cam_position.y;
-*/
 }
 
 

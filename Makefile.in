@@ -10,4 +10,4 @@ DEFS= $(shell sdl-config --cflags)
 INCLUDES= -I/usr/include -Iinclude/ -Isrc/ -I/usr/include/freetype2
 LIBS= $(shell sdl-config --libs) -lpng -lSDL_image -lGL -lGLEW -lfreetype -llua -L./libs/linux/$(_ARCH) -lchipmunk
 DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1 -DGL_GLEXT_PROTOTYPES=1
-CFLAGS= -g -O0 -Wall $(DEFINES)
+CFLAGS= -g -pg -O0 -Wall $(DEFINES)

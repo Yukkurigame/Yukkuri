@@ -35,7 +35,6 @@ ShaderConfigStrings::~ShaderConfigStrings()
 	}
 }
 
-
 ShaderConfigData::~ShaderConfigData()
 {
 	if( vertex_name )
@@ -51,6 +50,8 @@ ShaderConfigData::~ShaderConfigData()
 
 	if( attributes )
 		delete[] attributes;
+	if( uniforms )
+		delete[] uniforms;
 }
 
 
@@ -76,19 +77,10 @@ namespace {
 		return buf; /* Return the buffer */
 	}
 
-	/*
-	static unsigned int pass_index( unsigned int pass ){
-		// Pass enumerated in pow2 order. Obtain its index.
-		if( !pass )
-			return 0;
-		unsigned int index = 1;
-			while( pass >>= 1 ) ++index;
-		return index;
-	}
-	*/
 
 	std::map< enum GLSFlags, GLuint > shaders[glpLast];
 	std::map< enum GLSFlags, ShaderConfigStrings > samplers[glpLast];
+	std::map< enum GLSFlags, UniformHandlers > uniforms[glpLast];
 
 	// TODO: macro from configs
 	#define MACROS_SIZE 3
@@ -232,7 +224,7 @@ GLuint createProgram( enum GLSPass pass, enum GLSFlags glflags )
 	// Get data from config file
 	ShaderConfigData config;
 	samplers[pass][glflags] = ShaderConfigStrings();
-	config.samplers = Shaders::getSamplers(pass, glflags);
+	config.samplers = Shaders::getSamplers( pass, glflags );
 	// Push shader config to stack and load config;
 	LuaConfig* cfg = new LuaConfig();
 	std::string shd_id = "shader_" + citoa(pass);
@@ -296,6 +288,19 @@ GLuint createProgram( enum GLSPass pass, enum GLSFlags glflags )
 	for( unsigned int i = 0; i < config.output_count; ++i )
 		glBindFragDataLocation( shaderprogram, i, config.output[i] );
 
+	UniformHandlers& hdl = uniforms[pass][glflags];
+	hdl.count = config.uniforms_count;
+	if( hdl.count ){
+		hdl.handlers = new UniformHandler[hdl.count];
+		for( unsigned int i = 0; i < config.uniforms_count; ++i ){
+			ShaderConfigAttributes* uattr = &config.uniforms[i];
+			UniformHandler* h = &hdl.handlers[i];
+			h->location = glGetUniformLocation( shaderprogram, uattr->name );
+			h->index = UniformsManager::register_uniform( uattr->name,
+								static_cast<enum UniformTypes>(uattr->index) );
+		}
+	}
+
 	return shaderprogram;
 }
 
@@ -326,6 +331,18 @@ ShaderConfigStrings* Shaders::getSamplers( enum GLSPass pass, enum GLSFlags glfl
 	std::map< enum GLSFlags, ShaderConfigStrings >& samplers_map = samplers[pass];
 	std::map< enum GLSFlags, ShaderConfigStrings >::iterator fit = samplers_map.find( glflags );
 	if( fit != samplers_map.end() )
+		return &fit->second;
+	return NULL;
+}
+
+UniformHandlers* Shaders::getUniforms( enum GLSPass pass, enum GLSFlags glflags )
+{
+	if( pass == glpNone )
+		return NULL;
+
+	std::map< enum GLSFlags, UniformHandlers >& uniforms_map = uniforms[pass];
+	std::map< enum GLSFlags, UniformHandlers >::iterator fit = uniforms_map.find( glflags );
+	if( fit != uniforms_map.end() )
 		return &fit->second;
 	return NULL;
 }

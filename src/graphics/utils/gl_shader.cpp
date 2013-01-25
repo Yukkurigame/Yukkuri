@@ -347,6 +347,7 @@ UniformHandlers* Shaders::getUniforms( enum GLSPass pass, enum GLSFlags glflags 
 	return NULL;
 }
 
+/*
 
 #define PASS_UNIFORM( type, func )													\
 	int pass = 1;																	\
@@ -354,7 +355,7 @@ UniformHandlers* Shaders::getUniforms( enum GLSPass pass, enum GLSFlags glflags 
 		std::map< enum GLSFlags, GLuint >& shaders_map = shaders[pass];	\
 		if( !shaders_map.empty() ){													\
 			FOREACHIT(shaders_map){													\
-				/* flag in flags or flag is glsAll */								\
+				/* flag in flags or flag is glsAll *//*								\
 				if( glflag != glsAll && !(it->first & glflag ) )					\
 					continue;														\
 				int location = glGetUniformLocation( it->second, name );			\
@@ -389,3 +390,5 @@ PASS_UNIFORM_V( 2fv, float* )
 PASS_UNIFORM_MATRIX( 4fv, float* )
 
 #undef PASS_UNIFORM
+
+*/

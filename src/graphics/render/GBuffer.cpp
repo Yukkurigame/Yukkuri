@@ -31,6 +31,8 @@ namespace GBuffer
 
 	s2f window_size;
 
+	int in_ScreenSize = -1;
+
 	const int texture_type = GL_TEXTURE_2D;
 
 	void geometry_pass( );
@@ -58,6 +60,9 @@ bool GBuffer::init()
 {
 	window_size.x = conf.video.windowWidth;
 	window_size.y = conf.video.windowHeight;
+
+	in_ScreenSize = UniformsManager::register_uniform( "in_ScreenSize", glu2fv );
+	UniformsManager::pass_data( in_ScreenSize, &window_size.x );
 
 	// Create the VBO
 	glGenBuffers(1, &VBOHandle);
@@ -224,7 +229,7 @@ void GBuffer::light_pass_directional( )
 	//glBlendEquation(GL_FUNC_ADD);
 	//glBlendFunc(GL_ONE, GL_ONE);
 
-	Shaders::passUniform2fv( glsFixed, "in_ScreenSize", 1, &window_size.x );
+	//Shaders::passUniform2fv( glsFixed, "in_ScreenSize", 1, &window_size.x );
 	VBuffer::draw( glpDirLight, &vbos );
 
 	//glDisable(GL_BLEND);

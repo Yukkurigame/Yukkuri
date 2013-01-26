@@ -65,9 +65,9 @@ void Camera::push_state( const rect2f* view )
 	state->Target = NULL;
 
 	if( in_MVP < 0 )
-		in_MVP = UniformsManager::register_uniform( "in_MVP", gluMat4fv );
+		in_MVP = UniformsManager::register_uniform( "in_MVP", GL_FLOAT_MAT4 );
 	if( in_Offset < 0 )
-		in_Offset = UniformsManager::register_uniform( "in_Offset", glu3fv );
+		in_Offset = UniformsManager::register_uniform( "in_Offset", GL_FLOAT_VEC3 );
 
 	glm::vec3 eye(1.0, 1.0, 1.0);
 	glm::vec3 target(0.0, 0.0, 0.0);

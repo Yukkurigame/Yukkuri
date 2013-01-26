@@ -25,7 +25,7 @@ namespace UniformsManager {
  * type - type of uniform
  * returns uniform id
  */
-UINT UniformsManager::register_uniform( const char* name, enum UniformTypes type )
+UINT UniformsManager::register_uniform( const char* name, UINT type )
 {
 	// Search for already registred uniforms
 	for( UINT i = 0; i < uniforms_count; ++i ){
@@ -44,27 +44,31 @@ UINT UniformsManager::register_uniform( const char* name, enum UniformTypes type
 	return index;
 }
 
-/* Pass data location to uniform
- * This function passes single integer value to uniform
- * id - uniform id
- * data - data
+
+/* Get uinform description
+ * index - index of uniform
  */
-void UniformsManager::pass_data( UINT id, int data )
+const UniformData* UniformsManager::get_uniform( UINT index )
 {
+	if( index > uniforms_count )
+		return NULL;
+	return &uniforms[index];
 }
+
 
 /* Pass data location to uniform
  * This function passes data location to uniform
  * id - uniform id
  * data - data
  */
-void UniformsManager::pass_data( UINT id, float* data )
+void UniformsManager::pass_data( UINT id, void* data )
 {
 	if( id > uniforms_count )
 		return;
 
-	uniforms[id].data = (void*)data;
+	uniforms[id].data = data;
 }
+
 
 /* This function sends data to gl, using perviously passed data pointer
  * location - location of uniform
@@ -81,16 +85,18 @@ void UniformsManager::send_data( int location, UINT id, int count )
 		return;
 
 	switch( uniform->type ){
-		case glu1i:
+		case GL_SAMPLER_1D:
+		case GL_SAMPLER_2D:
+		case GL_SAMPLER_3D:
 			glUniform1i( location, *(int*)uniform->data );
 			break;
-		case glu2fv:
+		case GL_FLOAT_VEC2:
 			glUniform2fv( location, count, (float*)uniform->data );
 			break;
-		case glu3fv:
+		case GL_FLOAT_VEC3:
 			glUniform3fv( location, count, (float*)uniform->data );
 			break;
-		case gluMat4fv:
+		case GL_FLOAT_MAT4:
 			glUniformMatrix4fv( location, count, GL_FALSE, (float*)uniform->data );
 			break;
 	}

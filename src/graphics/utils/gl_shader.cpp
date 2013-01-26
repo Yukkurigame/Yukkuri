@@ -26,6 +26,7 @@ ShaderConfigAttributes::~ShaderConfigAttributes()
 	free( name );
 }
 
+/*
 ShaderConfigStrings::~ShaderConfigStrings()
 {
 	if( data ){
@@ -34,6 +35,7 @@ ShaderConfigStrings::~ShaderConfigStrings()
 		free(data);
 	}
 }
+*/
 
 ShaderConfigData::~ShaderConfigData()
 {
@@ -50,8 +52,6 @@ ShaderConfigData::~ShaderConfigData()
 
 	if( attributes )
 		delete[] attributes;
-	if( uniforms )
-		delete[] uniforms;
 }
 
 
@@ -79,7 +79,7 @@ namespace {
 
 
 	std::map< enum GLSFlags, GLuint > shaders[glpLast];
-	std::map< enum GLSFlags, ShaderConfigStrings > samplers[glpLast];
+	//std::map< enum GLSFlags, ShaderConfigStrings > samplers[glpLast];
 	std::map< enum GLSFlags, UniformHandlers > uniforms[glpLast];
 
 	// TODO: macro from configs
@@ -223,8 +223,6 @@ GLuint createProgram( enum GLSPass pass, enum GLSFlags glflags )
 
 	// Get data from config file
 	ShaderConfigData config;
-	samplers[pass][glflags] = ShaderConfigStrings();
-	config.samplers = Shaders::getSamplers( pass, glflags );
 	// Push shader config to stack and load config;
 	LuaConfig* cfg = new LuaConfig();
 	std::string shd_id = "shader_" + citoa(pass);
@@ -288,17 +286,21 @@ GLuint createProgram( enum GLSPass pass, enum GLSFlags glflags )
 	for( unsigned int i = 0; i < config.output_count; ++i )
 		glBindFragDataLocation( shaderprogram, i, config.output[i] );
 
+	GLint uniforms_count;
+	glGetProgramiv( shaderprogram, GL_ACTIVE_UNIFORMS, &uniforms_count );
+
 	UniformHandlers& hdl = uniforms[pass][glflags];
-	hdl.count = config.uniforms_count;
-	if( hdl.count ){
+	hdl.count = uniforms_count;
+	if( hdl.count )
 		hdl.handlers = new UniformHandler[hdl.count];
-		for( unsigned int i = 0; i < config.uniforms_count; ++i ){
-			ShaderConfigAttributes* uattr = &config.uniforms[i];
-			UniformHandler* h = &hdl.handlers[i];
-			h->location = glGetUniformLocation( shaderprogram, uattr->name );
-			h->index = UniformsManager::register_uniform( uattr->name,
-								static_cast<enum UniformTypes>(uattr->index) );
-		}
+	for( UINT i = 0; i < hdl.count; ++i ){
+	    int name_len = 0, num = 0;
+	    char name[100];
+	    UniformHandler* h = &hdl.handlers[i];
+	    glGetActiveUniform( shaderprogram, i, sizeof(name)-1, &name_len, &num, &h->type, name );
+	    name[name_len] = '\0';
+	    h->location = glGetUniformLocation( shaderprogram, name );
+	    h->index = UniformsManager::register_uniform( name, h->type );
 	}
 
 	return shaderprogram;
@@ -323,6 +325,7 @@ GLuint Shaders::getProgram( enum GLSPass pass, enum GLSFlags glflags )
 	return prog;
 }
 
+/*
 ShaderConfigStrings* Shaders::getSamplers( enum GLSPass pass, enum GLSFlags glflags )
 {
 	if( pass == glpNone )
@@ -334,6 +337,7 @@ ShaderConfigStrings* Shaders::getSamplers( enum GLSPass pass, enum GLSFlags glfl
 		return &fit->second;
 	return NULL;
 }
+*/
 
 UniformHandlers* Shaders::getUniforms( enum GLSPass pass, enum GLSFlags glflags )
 {
@@ -347,48 +351,3 @@ UniformHandlers* Shaders::getUniforms( enum GLSPass pass, enum GLSFlags glflags 
 	return NULL;
 }
 
-/*
-
-#define PASS_UNIFORM( type, func )													\
-	int pass = 1;																	\
-	while( pass < glpLast ){														\
-		std::map< enum GLSFlags, GLuint >& shaders_map = shaders[pass];	\
-		if( !shaders_map.empty() ){													\
-			FOREACHIT(shaders_map){													\
-				/* flag in flags or flag is glsAll *//*								\
-				if( glflag != glsAll && !(it->first & glflag ) )					\
-					continue;														\
-				int location = glGetUniformLocation( it->second, name );			\
-				if( location >= 0 ){												\
-					glUseProgram(it->second);										\
-					func;															\
-				}																	\
-			}																		\
-		}																			\
-		pass++;																	\
-	}																				\
-	glUseProgram(0);
-
-#define PASS_UNIFORM_V( glname, type )												\
-void Shaders::passUniform##glname( enum GLSFlags glflag, const char* name,			\
-		int count, type data )														\
-{																					\
-	PASS_UNIFORM(type, glUniform##glname( location, count, data ));					\
-}
-
-#define PASS_UNIFORM_MATRIX( glname, type )											\
-void Shaders::passUniformMatrix##glname( enum GLSFlags glflag, const char* name,	\
-		int count, GLboolean transpose, type data )									\
-{																					\
-	PASS_UNIFORM(type, glUniformMatrix##glname( location, count, transpose, data ));\
-}
-
-
-PASS_UNIFORM_V( 3fv, float* )
-PASS_UNIFORM_V( 2fv, float* )
-
-PASS_UNIFORM_MATRIX( 4fv, float* )
-
-#undef PASS_UNIFORM
-
-*/

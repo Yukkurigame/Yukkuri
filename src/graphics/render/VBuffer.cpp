@@ -84,22 +84,17 @@ inline void apply_material( UINT matid, int pass )
 	if( !mat )
 		return;
 	int shader = mat->programs[pass];
-	ShaderConfigStrings* samplers = mat->samplers[pass];
 	UniformHandlers* uniforms = mat->uniforms[pass];
 	glUseProgram( shader );
 	if( !shader )
 		return;
 
-	if( samplers ){
-		for( unsigned int index = 0; index < samplers->count; ++index ){
-			GLint cm = glGetUniformLocation( shader, samplers->data[index] );
-			if( cm >= 0 )
-				glUniform1i( cm, index );
-		}
-	}
+	int samplers_index = -1;
 	if( uniforms ){
 		for( unsigned int index = 0; index < uniforms->count; ++index ){
 			UniformHandler* uniform = &uniforms->handlers[index];
+			if( uniform->type == GL_SAMPLER_2D )
+				UniformsManager::pass_data( uniform->index, &(++samplers_index) );
 			UniformsManager::send_data( uniform->location, uniform->index );
 		}
 	}

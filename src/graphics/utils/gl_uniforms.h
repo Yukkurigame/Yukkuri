@@ -20,12 +20,13 @@ enum UniformTypes {
 
 struct UniformData {
 	char* name;
-	enum UniformTypes type;
+	UINT type;
 	void* data;
 };
 
 struct UniformHandler {
 	int location;
+	UINT type;
 	UINT index;
 };
 
@@ -37,9 +38,9 @@ struct UniformHandlers {
 
 namespace UniformsManager {
 
-	UINT register_uniform( const char* name, enum UniformTypes type );
-	void pass_data( UINT id, int data );
-	void pass_data( UINT id, float* data );
+	UINT register_uniform( const char* name, UINT type );
+	const UniformData* get_uniform( UINT index );
+	void pass_data( UINT id, void* data );
 	void send_data( int location, UINT id, int count = 1 );
 
 }

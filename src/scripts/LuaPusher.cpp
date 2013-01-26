@@ -246,6 +246,7 @@ void getFromLua( lua_State* L, int idx, ShaderConfigData& val )
 	lua_pop( L, 1 );					// st: table
 
 	// Only if samplers was allocated
+	/*
 	if( val.samplers != NULL ){
 		lua_pushstring( L, "samplers" );
 		lua_gettable( L, -2 );
@@ -259,23 +260,7 @@ void getFromLua( lua_State* L, int idx, ShaderConfigData& val )
 		}
 		lua_pop( L, 1 );
 	}
-
-	lua_pushstring( L, "uniforms" );
-	lua_gettable( L, -2 );
-	val.uniforms_count = luaL_getn( L, -1 );
-	if( val.uniforms_count ){
-		val.uniforms = new ShaderConfigAttributes[val.uniforms_count];
-		for( unsigned int i = 0; i < val.uniforms_count; ++i ){
-			lua_pushnumber( L, i + 1 );
-			lua_gettable( L, -2 );		// st: table table table{string, int}
-
-			LUA_GET_TABLE_VALUE( 1, val.uniforms[i].name )
-			LUA_GET_TABLE_VALUE( 2, val.uniforms[i].index )
-
-			lua_pop( L, 1 );			// st: table table
-		}
-	}
-	lua_pop( L, 1 );
+	*/
 
 }
 

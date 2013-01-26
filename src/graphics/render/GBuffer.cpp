@@ -61,7 +61,7 @@ bool GBuffer::init()
 	window_size.x = conf.video.windowWidth;
 	window_size.y = conf.video.windowHeight;
 
-	in_ScreenSize = UniformsManager::register_uniform( "in_ScreenSize", glu2fv );
+	in_ScreenSize = UniformsManager::register_uniform( "in_ScreenSize", GL_FLOAT_VEC2 );
 	UniformsManager::pass_data( in_ScreenSize, &window_size.x );
 
 	// Create the VBO

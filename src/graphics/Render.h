@@ -30,20 +30,6 @@ namespace RenderManager
 
 
 	//////////////////////////////////////////////////
-	// Textures
-
-	bool LoadTextures( );
-
-	int PushTexture( TextureProxy*, GLuint atlas, GLuint normals );
-	void PushTextures( std::vector < TextureProxy* >& tarray, GLuint atlas, GLuint normals );
-
-	int GetTextureNumberById( std::string id );
-	TextureInfo* GetTextureByNumber( unsigned int number );
-
-	bool DrawToGLTexture( GLuint ahandle, std::vector< TextureProxy* >* textures );
-
-
-	//////////////////////////////////////////////////
 	// Sprites
 	Sprite* CreateGLSprite( float x, float y, float z, int width, int height, unsigned int texture_id,
 							enum primitives shape, short centered = 0 );

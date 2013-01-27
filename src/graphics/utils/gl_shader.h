@@ -50,15 +50,6 @@ struct ShaderConfigAttributes {
 	~ShaderConfigAttributes();
 };
 
-/*
-struct ShaderConfigStrings {
-	unsigned int count;
-	char** data;
-	ShaderConfigStrings() : count(0), data(NULL) {}
-	~ShaderConfigStrings();
-};
-*/
-
 
 struct ShaderConfigData {
 	char* name;
@@ -68,11 +59,9 @@ struct ShaderConfigData {
 	unsigned int output_count;
 	unsigned int attributes_count;
 	ShaderConfigAttributes* attributes;
-	//ShaderConfigStrings* samplers;
 
 	ShaderConfigData() : name(NULL), vertex_name(NULL), fragment_name(NULL), output(NULL),
 						output_count(), attributes_count(), attributes(NULL) {}
-						//samplers(NULL)
 	~ShaderConfigData();
 };
 

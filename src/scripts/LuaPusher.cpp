@@ -245,23 +245,6 @@ void getFromLua( lua_State* L, int idx, ShaderConfigData& val )
 	}
 	lua_pop( L, 1 );					// st: table
 
-	// Only if samplers was allocated
-	/*
-	if( val.samplers != NULL ){
-		lua_pushstring( L, "samplers" );
-		lua_gettable( L, -2 );
-		val.samplers->count = luaL_getn( L, -1 );
-		if( val.samplers->count ){
-			val.samplers->data = (char**)malloc( (unsigned)sizeof(char*) * val.samplers->count );
-			for( unsigned int i = 0; i < val.samplers->count; ++i ){
-				val.samplers->data[i] = NULL;
-				LUA_GET_TABLE_VALUE( i + 1, val.samplers->data[i] )
-			}
-		}
-		lua_pop( L, 1 );
-	}
-	*/
-
 }
 
 template<>

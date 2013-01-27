@@ -26,17 +26,6 @@ ShaderConfigAttributes::~ShaderConfigAttributes()
 	free( name );
 }
 
-/*
-ShaderConfigStrings::~ShaderConfigStrings()
-{
-	if( data ){
-		for( unsigned int i = 0; i < count; ++i )
-			free(data[i]);
-		free(data);
-	}
-}
-*/
-
 ShaderConfigData::~ShaderConfigData()
 {
 	if( vertex_name )
@@ -79,7 +68,6 @@ namespace {
 
 
 	std::map< enum GLSFlags, GLuint > shaders[glpLast];
-	//std::map< enum GLSFlags, ShaderConfigStrings > samplers[glpLast];
 	std::map< enum GLSFlags, UniformHandlers > uniforms[glpLast];
 
 	// TODO: macro from configs
@@ -325,19 +313,6 @@ GLuint Shaders::getProgram( enum GLSPass pass, enum GLSFlags glflags )
 	return prog;
 }
 
-/*
-ShaderConfigStrings* Shaders::getSamplers( enum GLSPass pass, enum GLSFlags glflags )
-{
-	if( pass == glpNone )
-		return NULL;
-
-	std::map< enum GLSFlags, ShaderConfigStrings >& samplers_map = samplers[pass];
-	std::map< enum GLSFlags, ShaderConfigStrings >::iterator fit = samplers_map.find( glflags );
-	if( fit != samplers_map.end() )
-		return &fit->second;
-	return NULL;
-}
-*/
 
 UniformHandlers* Shaders::getUniforms( enum GLSPass pass, enum GLSFlags glflags )
 {

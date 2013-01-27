@@ -34,12 +34,6 @@ extern MainConfig conf;
 namespace {
 
 	//////////////////////////////////////////////////
-	// Textures
-
-	unsigned int texturesCount;
-	TextureInfo* textures;
-
-	//////////////////////////////////////////////////
 	// Sprites
 
 	list < Sprite* > sprites_array;
@@ -78,15 +72,15 @@ namespace {
 
 void RenderManager::init( )
 {
-	textures = NULL;
+	//textures = NULL;
 	atlasHandle = 0;
-	textures = (TextureInfo*)malloc( (unsigned)sizeof(TextureInfo) );
-	texturesCount = 1;
-	memset( &textures[0], 0, (unsigned)sizeof(TextureInfo) );
+	//textures = (TextureInfo*)malloc( (unsigned)sizeof(TextureInfo) );
+	//texturesCount = 1;
+	//memset( &textures[0], 0, (unsigned)sizeof(TextureInfo) );
 
-	std::string n = "0";
-	textures[0].id = new char[2];
-	strcpy(textures[0].id, n.c_str());
+	//std::string n = "0";
+	//textures[0].id = new char[2];
+	//strcpy(textures[0].id, n.c_str());
 
 	AnimDef::init();
 }
@@ -97,11 +91,7 @@ void RenderManager::clean( )
 	glDeleteBuffers( 1, &VBOHandle );
 
 	TextureAtlas::clean( );
-	if( textures ){
-		for( unsigned int i = 0; i < texturesCount; ++i )
-			delete[] textures[i].id;
-		free(textures);
-	}
+	Textures::clean( );
 	GLTextures::clearCache();
 	CleanFonts();
 	VBOArray::clean( );
@@ -144,100 +134,23 @@ bool RenderManager::openglSetup( int wwidth, int wheight )
 
 	TextureAtlas::init( );
 
-	// Create blank texture
-	glGenTextures(1, &textures[0].atlas);
-	glBindTexture(GL_TEXTURE_2D, textures[0].atlas);
-	//GIMP says it is white
 	char color[4] = { '\377','\377', '\377', '\377' };
-	glTexImage2D( GL_TEXTURE_2D, 0, 4, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, color );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-	glBindTexture(GL_TEXTURE_2D, 0);
+	Textures::create( &textures[0].atlas, 1, 1, color );
+
+	// Create blank texture
+	//glGenTextures(1, &textures[0].atlas);
+	//glBindTexture(GL_TEXTURE_2D, textures[0].atlas);
+	//GIMP says it is white
+	//glTexImage2D( GL_TEXTURE_2D, 0, 4, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, color );
+	//glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	//glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	//glBindTexture(GL_TEXTURE_2D, 0);
 
 	rect2f view( 0.0, 0.0, conf.video.windowWidth, conf.video.windowHeight );
 	Camera::push_state( &view );
 
 	return true;
 }
-
-
-//////////////////////////////////////////////////
-// Textures
-
-bool RenderManager::LoadTextures( )
-{
-	LuaConfig* lc = new LuaConfig;
-	std::vector< std::string > names;
-	int textures_count;
-	std::string config = "sprite";
-
-	lc->getSubconfigsLength(config, textures_count);
-
-	Debug::debug( Debug::GRAPHICS, citoa(textures_count) + " textures found.\n" );
-
-	if( !textures_count ){
-		delete lc;
-		return false;
-	}
-
-	lc->getSubconfigsList(config, names);
-
-	FOREACHIT( names )
-		TextureAtlas::addTexture( *it );
-
-	delete lc;
-	// load basic textures to main atlas
-	return TextureAtlas::create( &atlasHandle, &normalsHandle, atlasWidth, atlasHeight );
-}
-
-
-int RenderManager::PushTexture( TextureProxy* proxy, GLuint atlas, GLuint normals )
-{
-	textures = (TextureInfo*)realloc(textures, (unsigned)sizeof(TextureInfo) * ( 1 + texturesCount ) );
-	TextureInfo& ti = textures[texturesCount];
-	ti.fromTextureProxy( proxy, atlas );
-	ti.id = new char[proxy->id.size() + 1];
-	ti.normals = normals;
-	strcpy(ti.id, proxy->id.c_str());
-	//update_sprites();
-	return texturesCount++;
-}
-
-
-void RenderManager::PushTextures( std::vector < TextureProxy* >& tarray, GLuint atlas, GLuint normals )
-{
-	int tcount = tarray.size();
-	textures = (TextureInfo*)realloc(textures, (unsigned)sizeof(TextureInfo) * ( tcount + texturesCount ) );
-	for( int i = 0; i < tcount; ++i ){
-		TextureProxy* proxy = tarray.at( i );
-		TextureInfo& ti = textures[texturesCount];
-		ti.fromTextureProxy( proxy, atlas );
-		ti.id = new char[proxy->id.size() + 1];
-		ti.normals = normals;
-		strcpy(ti.id, proxy->id.c_str());
-		texturesCount++;
-	}
-	//update_sprites();
-}
-
-
-int RenderManager::GetTextureNumberById( std::string id )
-{
-	for( unsigned int i = 0; i < texturesCount; ++i ){
-		if( id.compare(textures[i].id) == 0 )
-			return i;
-	}
-	return 0;
-}
-
-
-TextureInfo* RenderManager::GetTextureByNumber( unsigned int number )
-{
-	if( number < texturesCount )
-		return &textures[number];
-	return NULL;
-}
-
 
 
 //////////////////////////////////////////////////
@@ -260,10 +173,10 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 	Sprite* sprite = new Sprite( shape, centered );
 	sprite->texid = texture_id;
 
-	if( texture_id >= texturesCount ){
+	TextureInfo* tex_info = Textures::get_pointer( texture_id );
+	if( !tex_info ){
 		Debug::debug( Debug::GRAPHICS, "Bad texture id passed.\n" );
 	}else{
-		TextureInfo* tex_info = &textures[texture_id];
 		sprite->textures.push_back( tex_info->atlas );
 		sprite->addNormalMap( tex_info->normals );
 	}

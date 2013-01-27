@@ -17,7 +17,6 @@
  *	ahandle - pointer to texture id
  *	width, height - texture size
  *	returns boolean
- */
 bool GLHelpers::CreateTexture( GLuint* ahandle, int width, int height )
 {
 	// Texture generation and setup.
@@ -37,7 +36,7 @@ bool GLHelpers::CreateTexture( GLuint* ahandle, int width, int height )
 
 	return true;
 }
-
+ */
 
 /*	This function setups view for drawing
  * 	width, height - view size

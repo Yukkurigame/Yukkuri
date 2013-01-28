@@ -7,16 +7,16 @@
 #ifndef SDL_GRAPHICS_H_
 #define SDL_GRAPHICS_H_
 
-#include "Define.h"
-#include "SDL/SDL.h"
+//#include "Define.h"
+//#include "SDL/SDL.h"
 
-
+/*
 namespace SDLGraphics {
 
 	bool SetScreen( SDL_Surface* s );
 	SDL_Surface* GetScreen();
 
-	GLuint CreateGlTexture( SDL_Surface* );
+	void CreateGlTexture( SDL_Surface*, GLint*, GLenum* );
 
 	SDL_Surface* LoadImage( const char*, bool force=true );
 	SDL_Surface* OpenImage( const char* );
@@ -25,6 +25,7 @@ namespace SDLGraphics {
 
 
 }
+*/
 
 namespace Screenshot
 {

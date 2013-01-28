@@ -7,6 +7,7 @@
 
 #include "graphics/render/TextureArray.h"
 #include "graphics/render/GLHelpers.h"
+#include "graphics/render/GLTextures.h"
 #include "graphics/render/VBuffer.h"
 #include "graphics/utils/gl_shader.h"
 #include "graphics/Camera.h"
@@ -62,7 +63,7 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, GLuint* nhandle, int wid
 	GLuint FBOHandle = 0;
 
 	// A FBO will be used to draw textures. FBO creation and setup.
-	if( !GLHelpers::CreateTexture( ahandle, width, height ) ||
+	if( !GLTextures::generate( ahandle, width, height ) ||
 		!GLHelpers::BindTextureToFBO( *ahandle, FBOHandle ) ||
 		!GLHelpers::SetUpView( width, height ) )
 		return false;
@@ -74,7 +75,7 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, GLuint* nhandle, int wid
 		draw_proxy_quad( t );
 
 		if( nhandle && !*nhandle && t->texture && t->texture->normals ){
-			if( !GLHelpers::CreateTexture( nhandle, width, height ) )
+			if( !GLTextures::generate( nhandle, width, height ) )
 				Debug::debug( Debug::GRAPHICS, "Cannot create normal map for textures.\n" );
 		}
 
@@ -116,7 +117,7 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, l
 	GLuint VBOHandle = 0;
 
 	// A FBO will be used to draw textures. FBO creation and setup.
-	if( !GLHelpers::CreateTexture( ahandle, width, height ) ||
+	if( !GLTextures::generate( ahandle, width, height ) ||
 		!GLHelpers::BindTextureToFBO( *ahandle, FBOHandle ) )
 		return false;
 

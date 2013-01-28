@@ -11,7 +11,7 @@
 #include "units/unitmanager.h"
 #include "basic_types.h"
 
-#include "graphics/Render.h"
+#include "graphics/render/Textures.h"
 
 #include "scripts/LuaScript.h"
 
@@ -53,7 +53,7 @@ bool Widget::load( lua_State* L )
 		GET_NAMED_VALUE( "picture", picture )
 		GET_NAMED_VALUE( "bgcolor", bgcolor )
 		if( imgname != "" || bgcolor.a ){
-			setBackground( RenderManager::GetTextureNumberById( imgname ), picture );
+			setBackground( Textures::get_by_name( imgname.c_str() ), picture );
 			if( bgcolor.a )
 				setBackgroundColor( bgcolor );
 		}

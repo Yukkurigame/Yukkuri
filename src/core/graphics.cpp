@@ -9,7 +9,8 @@
 
 #include "core/yukkuri.h"
 #include "graphics/Render.h"
-#include "graphics/utils/sdl_graphics.h"
+#include "graphics/render/Textures.h"
+//#include "graphics/utils/sdl_graphics.h"
 #include "graphics/daytime.h"
 #include "config.h"
 #include "debug.h"
@@ -51,8 +52,8 @@ bool Yukkuri::InitGraphics( )
 	RenderManager::openglInit( );
 
 	// Attempt to create a window with the specified height and width.
-	if( !SDLGraphics::SetScreen( SDL_SetVideoMode(
-			conf.video.windowWidth, conf.video.windowHeight, 0, videoFlags ) ) ) {
+	if( !SDL_SetVideoMode(
+			conf.video.windowWidth, conf.video.windowHeight, 0, videoFlags ) ) {
 		Debug::debug( Debug::NONE, "[FAIL]\n" );
 		Debug::debug( Debug::MAIN, "Unable to set up video: " + static_cast<std::string>(SDL_GetError( )) + "\n" );
 		return false;
@@ -73,7 +74,7 @@ bool Yukkuri::InitGraphics( )
 
 	Debug::debug( Debug::MAIN, "Load sprites.\n" );
 
-	if( !RenderManager::LoadTextures( ) ){
+	if( !Textures::load() ){
 		Debug::debug( Debug::MAIN, "Sprites loading failed.\n" );
 		return false;
 	}

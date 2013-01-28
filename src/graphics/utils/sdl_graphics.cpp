@@ -8,7 +8,7 @@
 #include "Define.h"
 
 #include "sdl_graphics.h"
-#include "SDL/SDL_image.h"
+//#include "SDL/SDL_image.h"
 #include "safestring.h"
 #include "config.h"
 #include "debug.h"
@@ -24,8 +24,9 @@ extern "C" {
 }
 #endif
 
-
+/*
 extern MainConfig conf;
+
 
 namespace {
 
@@ -48,37 +49,39 @@ SDL_Surface* SDLGraphics::GetScreen() {
 
 
 
-GLuint SDLGraphics::CreateGlTexture( SDL_Surface* surface )
+void SDLGraphics::CreateGlTexture( SDL_Surface* surface, GLint* internalFormat, GLenum* texture_format )
 {
 	GLuint image;
 	GLint  nOfColors;
-	GLenum texture_format = 0;
+	//GLenum texture_format = 0;
 
 	if( surface == NULL )
-		return 0;
+		return;
 
-	/*if( surface->format->colorkey != 0 ){
+	*//*if( surface->format->colorkey != 0 ){
 		//FIXME: Indexed images support.
 		debug( 1, "BIDA while loading " + name + "! Indexed images not supported yet!\n" );
 		texture_format = GL_COLOR_INDEX;
-	}else{*/
+	}else{*//*
 		nOfColors = surface->format->BytesPerPixel;
 
 		if( nOfColors == 4 ){     // contains an alpha channel
 			if( surface->format->Rmask == 0x000000ff )
-				texture_format = GL_RGBA;
+				*texture_format = GL_RGBA;
 			else
-				texture_format = GL_BGRA;
+				*texture_format = GL_BGRA;
 		}else if( nOfColors == 3 ){     // no alpha channel
 			if (surface->format->Rmask == 0x000000ff)
-				texture_format = GL_RGB;
+				*texture_format = GL_RGB;
 			else
-				texture_format = GL_BGR;
+				*texture_format = GL_BGR;
 		}else{
 			debug( GRAPHICS, "Image is not truecolor.. this will probably break.\n" );
 			// this error should not go unhandled
 		}
 	//}
+*/
+	/*	*internalFormat = nOfColors;
 
 	// Have OpenGL generate a texture object handle for us
 	glGenTextures( 1, &image );
@@ -96,9 +99,10 @@ GLuint SDLGraphics::CreateGlTexture( SDL_Surface* surface )
 
 	return image;
 
+
 }
 
-
+*//*
 SDL_Surface* SDLGraphics::LoadImage( const char* name, bool force )
 {
 	SDL_Surface* pImg = NULL;
@@ -186,6 +190,7 @@ void SDLGraphics::DrawSurface( SDL_Surface* surface )
 	//glEnable( GL_TEXTURE_2D );
 
 }
+*/
 
 
 bool Screenshot::Save( )
@@ -204,7 +209,7 @@ bool Screenshot::Save( )
 		return false;
 	}
 
-	screen = SDLGraphics::GetScreen();
+	screen = NULL; // SDLGraphics::GetScreen();
 	if( screen == NULL ){
 		debug( GRAPHICS, "Screen not exists.\n" );
 		return false;

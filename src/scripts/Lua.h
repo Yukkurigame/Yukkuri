@@ -48,6 +48,10 @@ extern "C" {
 	getFromLua( L, -1, val );							\
 	lua_pop(L, 1);					/* st: table		*/
 
+#define LUA_PUSH_VALUE( type, name, val )				\
+		lua_pushstring( L, name );						\
+		lua_push##type( L, val );						\
+		lua_settable(L, -3);
 
 
 struct LuaRet {

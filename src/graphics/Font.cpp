@@ -7,6 +7,7 @@
 #include "Font.h"
 #include "Render.h"
 #include "graphics/render/Atlas.h"
+#include "graphics/render/Textures.h"
 
 #include "safestring.h"
 #include "debug.h"
@@ -156,7 +157,7 @@ bool font_data::load( const char * fname, unsigned int height ) {
 	delete tex;
 
 	// Get texture id for font
-	texture = RenderManager::GetTextureNumberById( name );
+	texture = Textures::get_by_name( name );
 
 	delete[] name;
 

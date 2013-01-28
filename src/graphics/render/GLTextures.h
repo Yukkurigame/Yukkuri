@@ -17,12 +17,20 @@ namespace GLTextures
 
 	void add( std::string name, Texture* texture );
 	void free( Texture* tex );
+	void clean( );
 
 	Texture* get( std::string name );
 	Texture* load( std::string name );
+	Texture* create( std::string name, GLuint texture, int width, int height );
 
-	void clearCache( );
-
+	bool generate( GLuint* ahandle, GLenum target, GLint internalformat, GLsizei width, GLsizei height,
+					GLenum format, GLenum type, const GLvoid *pixels );
+	inline bool generate( GLuint* ahandle, int width, int height ){
+		return generate( ahandle, GL_TEXTURE_2D, GL_RGBA, width, height, GL_RGBA, GL_UNSIGNED_INT, NULL );
+	}
+	inline bool generate( GLuint* ahandle, int width, int height, const void* data ){
+		return generate( ahandle, GL_TEXTURE_2D, GL_RGBA, width, height, GL_RGBA, GL_UNSIGNED_INT, data );
+	}
 }
 
 

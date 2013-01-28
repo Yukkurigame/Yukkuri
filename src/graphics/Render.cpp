@@ -13,11 +13,14 @@
 #include "graphics/render/Atlas.h"
 #include "graphics/render/GBuffer.h"
 #include "graphics/render/GLHelpers.h"
+#include "graphics/render/Textures.h"
 #include "graphics/render/VBuffer.h"
 #include "graphics/render/GLTextures.h"
 #include "graphics/utils/VBOArray.h"
 
+
 #include "scripts/LuaConfig.h"
+#include "SDL/SDL.h"
 
 #include <algorithm>
 
@@ -47,13 +50,13 @@ namespace {
 	// Atlases
 
 	int atlasWidth, atlasHeight;
-	GLuint atlasHandle;
-	GLuint normalsHandle;
+	//GLuint atlasHandle;
+	//GLuint normalsHandle;
 
 	void TestDrawAtlas(int x, int y, GLuint atlas)
 	{
-		if( !atlas )
-			atlas = atlasHandle;
+		//if( !atlas )
+		//	atlas = atlasHandle;
 
 		GLHelpers::DrawToQuad( atlas, 0, 0, atlasWidth, atlasHeight );
 
@@ -73,7 +76,6 @@ namespace {
 void RenderManager::init( )
 {
 	//textures = NULL;
-	atlasHandle = 0;
 	//textures = (TextureInfo*)malloc( (unsigned)sizeof(TextureInfo) );
 	//texturesCount = 1;
 	//memset( &textures[0], 0, (unsigned)sizeof(TextureInfo) );
@@ -92,7 +94,7 @@ void RenderManager::clean( )
 
 	TextureAtlas::clean( );
 	Textures::clean( );
-	GLTextures::clearCache();
+	GLTextures::clean();
 	CleanFonts();
 	VBOArray::clean( );
 	GBuffer::clean( );
@@ -135,8 +137,14 @@ bool RenderManager::openglSetup( int wwidth, int wheight )
 	TextureAtlas::init( );
 
 	char color[4] = { '\377','\377', '\377', '\377' };
-	Textures::create( &textures[0].atlas, 1, 1, color );
 
+	GLuint nt = 0;
+	TextureProxy first;
+	GLTextures::generate( &nt, 1, 1, color );
+	first.texture = GLTextures::create( "", nt, 1, 1 );
+	Textures::push( &first, nt, 0 );
+
+	//Textures::push( &first, first. );
 	// Create blank texture
 	//glGenTextures(1, &textures[0].atlas);
 	//glBindTexture(GL_TEXTURE_2D, textures[0].atlas);

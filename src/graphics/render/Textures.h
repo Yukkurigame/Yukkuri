@@ -16,32 +16,18 @@ namespace Textures {
 
 	void clean( );
 
-	inline bool create( GLuint* ahandle, int width, int height ){
-		return create( ahandle, GL_TEXTURE_2D, GL_RGBA, width, height, GL_RGBA, GL_UNSIGNED_INT, NULL );
-	}
-	inline bool create( GLuint* ahandle, int width, int height, const void* data ){
-		return create( ahandle, GL_TEXTURE_2D, GL_RGBA, width, height, GL_RGBA, GL_UNSIGNED_INT, data );
-	}
-	bool create( GLuint* ahandle, GLenum target, GLint internalformat, GLsizei width, GLsizei height,
-					GLenum format, GLenum type, const GLvoid *pixels );
+	UINT get_by_name( const char* id );
+	TextureInfo* get_pointer( UINT number );
 
 	UINT get_active( UINT id );
 
-	TextureInfo* get_pointer( UINT number );
 
+	bool load( );
 
-	//////////////////////////////////////////////////
-	// Textures
-
-	bool LoadTextures( );
-
-	int push( TextureProxy*, GLuint atlas, GLuint normals );
+	UINT push( TextureProxy*, GLuint atlas, GLuint normals );
 	void push( list< TextureProxy* >& tarray, GLuint atlas, GLuint normals );
 
-	int GetTextureNumberById( std::string id );
-
-
-	bool DrawToGLTexture( GLuint ahandle, list< TextureProxy* >* textures );
+	//bool DrawToGLTexture( GLuint ahandle, list< TextureProxy* >* textures );
 
 }
 

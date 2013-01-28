@@ -9,7 +9,7 @@
 
 #include "graphics/sprite/Sprite.h"
 #include "graphics/GraphicsTypes.h"
-#include "graphics/Render.h"
+#include "graphics/render/Textures.h"
 #include "graphics/utils/gl_shader.h"
 
 
@@ -19,7 +19,7 @@ void Sprite::setPicture( int pic )
 	VertexV2FT2FC4UI* points = brush.points();
 	if( !points || brush.points_count < 4 )
 		return;
-	TextureInfo* tex = RenderManager::GetTextureByNumber( texid );
+	TextureInfo* tex = Textures::get_pointer( texid );
 	if( texid && tex ){
 		tex->getSubTexture(pic, points, brush.points_count);
 	}else{

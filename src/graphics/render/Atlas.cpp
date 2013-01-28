@@ -22,7 +22,7 @@
 #include "hacks.h"
 
 
-std::vector < TextureProxy* > internalTextures;
+list< TextureProxy* > internalTextures;
 
 namespace {
 
@@ -52,10 +52,11 @@ int TextureAtlas::getAtlasMax( )
 
 void TextureAtlas::addTexture( std::string name ){
 	LuaConfig* lc = new LuaConfig;
-	std::string config = "sprite";
 	TextureProxy* t = new TextureProxy();
+	lc->pushSubconfig( name, "sprite" );
+	lc->LuaMain::get( -1, *t );
 
-	lc->getValue("id", name, config, t->id);
+	/*lc->getValue("id", name, config, t->id);
 	lc->getValue("image", name, config, t->image);
 	lc->getValue("width", name, config, t->abs.width);
 	lc->getValue("height", name, config, t->abs.height);
@@ -63,6 +64,7 @@ void TextureAtlas::addTexture( std::string name ){
 	lc->getValue("columns", name, config, t->cols);
 	lc->getValue("offsetx", name, config, t->offset.x);
 	lc->getValue("offsety", name, config, t->offset.y);
+	*/
 
 	t->texture = GLTextures::load( t->image );
 
@@ -86,16 +88,18 @@ void TextureAtlas::addTexture( std::string id, Texture* tex, int width, int heig
 	internalTextures.push_back(t);
 }
 
+
 bool TextureAtlas::buildMap( int& width, int& height )
 {
 	ElasticBox box = ElasticBox( minAtlasSize, maxAtlasSize );
 
 	// Push all textures in ElasticBox packer
-	FOREACHIT( internalTextures ){
-		if ( ! box.InsertItem(
-				&((*it)->abs.x), &((*it)->abs.y),
-				(*it)->abs.width, (*it)->abs.height ) )
+	listElement< TextureProxy* >* t = internalTextures.head;
+	while( t != NULL ){
+		TextureProxy* tp = t->data;
+		if ( ! box.InsertItem( &(tp->abs.x), &(tp->abs.y), tp->abs.width, tp->abs.height ) )
 			return false;
+		t = t->next;
 	}
 
 	width = box.Width;
@@ -114,12 +118,14 @@ bool TextureAtlas::buildRelativeMap( float width, float height ){
 	texelH = texelH / height;
 
 	// Build relative map
-	for( unsigned int i = 0; i < internalTextures.size(); i++ ){
-		TextureProxy* tex = internalTextures[i];
+	listElement< TextureProxy* >* t = internalTextures.head;
+	while( t != NULL ){
+		TextureProxy* tex = t->data;
 		tex->atlas.x = static_cast<float>(tex->abs.x) * texelW;
 		tex->atlas.y = static_cast<float>(tex->abs.y) * texelH;
 		tex->atlas.width = static_cast<float>(tex->abs.width) * texelW;
 		tex->atlas.height = static_cast<float>(tex->abs.height) * texelH;
+		t = t->next;
 	}
 
 	return true;
@@ -158,7 +164,8 @@ bool TextureAtlas::create( GLuint* ahandle, GLuint* nhandle, int& width, int& he
 	}
 
 	// Push textures to render and clear array
-	RenderManager::PushTextures( internalTextures, *ahandle, nhandle ? *nhandle : 0 );
+	Textures::push( internalTextures, *ahandle, nhandle ? *nhandle : 0 );
+
 	clear_vector( &internalTextures );
 
 	return true;

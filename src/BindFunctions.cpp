@@ -10,7 +10,7 @@
 #include "core/yukkuri.h"
 #include "units/unitmanager.h"
 #include "units/UnitPlayer.h"
-#include "graphics/utils/sdl_graphics.h"
+#include "graphics/utils/Image.h"
 
 #include "debug.h"
 
@@ -94,7 +94,7 @@ void Binds::playerEat( short down )
 
 void Binds::screenshot( short down )
 {
-	Screenshot::Save( );
+	Image::save( );
 }
 
 void Binds::exit( short down )

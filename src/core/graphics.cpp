@@ -100,13 +100,7 @@ void Yukkuri::CleanGraphics()
 void Yukkuri::Render( )
 {
 	RenderManager::CleanGLScene( );
-
-	// Display slick graphics on screen
-	//Map::onDraw( );
-
-	//Draw to screen
 	RenderManager::DrawGLScene( );
-
 }
 
 void Yukkuri::SetTitle( const char* title )

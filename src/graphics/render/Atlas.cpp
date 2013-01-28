@@ -9,7 +9,6 @@
 
 #include "graphics/render/Atlas.h"
 #include "graphics/render/ElasticBox.h"
-#include "graphics/render/TextureArray.h"
 #include "graphics/render/GLTextures.h"
 #include "graphics/render/Textures.h"
 #include "graphics/Render.h"
@@ -57,17 +56,6 @@ void TextureAtlas::addTexture( std::string name ){
 	lc->pushSubconfig( name, "sprite" );
 	lc->LuaMain::get( -1, *t );
 	lc->pop( 1 );
-
-	/*lc->getValue("id", name, config, t->id);
-	lc->getValue("image", name, config, t->image);
-	lc->getValue("width", name, config, t->abs.width);
-	lc->getValue("height", name, config, t->abs.height);
-	lc->getValue("rows", name, config, t->rows);
-	lc->getValue("columns", name, config, t->cols);
-	lc->getValue("offsetx", name, config, t->offset.x);
-	lc->getValue("offsety", name, config, t->offset.y);
-	*/
-
 	t->texture = GLTextures::load( t->image );
 
 	internalTextures.push_back(t);
@@ -140,7 +128,7 @@ inline Sprite* sprite_from_proxy( const TextureProxy* t )
 	float dx = static_cast<float>(t->abs.width) / static_cast<float>(t->texture->w);
 	float dy = static_cast<float>(t->abs.height) / static_cast<float>(t->texture->h);
 
-	//qcRT=0, qcRB, qcLT, qcLB
+	// Order: qcRT=0, qcRB, qcLT, qcLB
 
 	s2f coords[4] = {
 			s2f(x + dx, y + dy),
@@ -162,19 +150,6 @@ inline Sprite* sprite_from_proxy( const TextureProxy* t )
 	}
 	s->textures.push( t->texture->tex );
 	return s;
-
-	//Bottom-left vertex
-	glTexCoord2f(x, y);
-	glVertex2i(t->abs.x, t->abs.y);
-	//Bottom-right vertex
-	glTexCoord2f(x + dx, y);
-	glVertex2i(t->abs.x + t->abs.width, t->abs.y);
-	//Top-right vertex
-	glTexCoord2f(x + dx, y + dy);
-	glVertex2i(t->abs.x + t->abs.width, t->abs.y + t->abs.height);
-	//Top-left vertex
-	glTexCoord2f(x, y + dy);
-	glVertex2i(t->abs.x, t->abs.y + t->abs.height);
 }
 
 
@@ -185,7 +160,9 @@ bool TextureAtlas::build( GLuint* ahandle, GLuint* nhandle, int width, int heigh
 		sprites.push_back( sprite_from_proxy(it->data) );
 	}
 
-	bool status = TextureArray::drawToNewGLTexture( ahandle, width, height, &sprites );
+	sprites.sort( compareSprites );
+
+	bool status = GLTextures::draw( ahandle, width, height, &sprites );
 
 	ITER_LIST( Sprite*, sprites ){
 		delete it->data;

@@ -240,21 +240,6 @@ list< Sprite* >* RenderManager::GetSpritesArray( )
 //////////////////////////////////////////////////
 // Scene
 
-
-inline bool compareSprites( Sprite* s1, Sprite* s2 )
-{
-	s3f* o1 = &s1->brush.vertex_origin;
-	s3f* o2 = &s2->brush.vertex_origin;
-	if( o1->z == o2->z ){
-		if( o1->y == o2->y ){
-			return ( o1->x > o2->x );
-		}
-		return ( o1->y > o2->y );
-	}
-	return ( o1->z < o2->z );
-}
-
-
 void RenderManager::DrawGLScene()
 {
 	Camera::update();

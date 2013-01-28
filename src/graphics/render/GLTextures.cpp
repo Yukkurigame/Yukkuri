@@ -7,15 +7,18 @@
 
 
 #include "graphics/render/GLTextures.h"
-//#include "graphics/utils/sdl_graphics.h"
+#include "graphics/render/GLHelpers.h"
+#include "graphics/render/VBuffer.h"
 #include "graphics/utils/Image.h"
+#include "graphics/Camera.h"
+
 #include <map>
 
 #include "hacks.h"
 #include "debug.h"
 
 
-namespace {
+namespace GLTextures {
 
 	std::map < std::string, Texture* > texturesCache;
 
@@ -32,6 +35,16 @@ void GLTextures::add( std::string name, Texture* texture )
 		return;
 	GLTextures::free( cached );
 	texturesCache[name] = texture;
+}
+
+
+void GLTextures::clean( )
+{
+	FOREACHIT( texturesCache ){
+		GLTextures::free( it->second );
+		it->second = NULL;
+	}
+	texturesCache.clear();
 }
 
 
@@ -82,57 +95,6 @@ Texture* GLTextures::load( std::string name )
 		Debug::debug( Debug::GRAPHICS, name + " normals loaded.\n" );
 		tex->normals = normals;
 	}
-
-
-	/*
-	Texture* tex;
-	SDL_Surface* surface;
-	SDL_Surface* normals;
-
-	if( name == "" )
-		return NULL;
-
-	tex = get( name );
-
-	if( !tex ){
-
-		surface = SDLGraphics::LoadImage( name.c_str() );
-		normals = SDLGraphics::LoadImage( ("normals/" + name).c_str(), false );
-
-
-		if( !surface ){
-			Debug::debug( Debug::GRAPHICS, name + " not loaded.\n" );
-			return NULL;
-		}
-
-		if( normals )
-			Debug::debug( Debug::GRAPHICS, name + " normals loaded.\n" );
-
-		tex = new Texture();
-		tex->tex = tex->normals = 0;
-		GLint sifmt, nifmt;
-		GLenum stfmt, ntfmt;
-		SDLGraphics::CreateGlTexture( surface, &sifmt, &stfmt );
-		SDLGraphics::CreateGlTexture( surface, &nifmt, &ntfmt );
-		generate( &tex->tex, GL_TEXTURE_2D, sifmt, surface->w, surface->h,
-					stfmt, GL_UNSIGNED_INT, surface->pixels );
-		if( normals )
-			generate( &tex->normals, GL_TEXTURE_2D, nifmt, normals->w, normals->h,
-					ntfmt, GL_UNSIGNED_INT, normals->pixels );
-		//tex->tex = SDLGraphics::CreateGlTexture( surface );
-		//tex->normals = SDLGraphics::CreateGlTexture( normals );
-		tex->w = surface->w;
-		tex->h = surface->h;
-
-		add( name, tex );
-
-		if( surface )
-			SDL_FreeSurface( surface );
-		if( normals )
-			SDL_FreeSurface( normals );
-	}
-	*/
-
 	return tex;
 }
 
@@ -178,12 +140,54 @@ bool GLTextures::generate( GLuint* ahandle, GLenum target, GLint internalformat,
 
 
 
-void GLTextures::clean( )
-{
-	FOREACHIT( texturesCache ){
-		GLTextures::free( it->second );
-		it->second = NULL;
-	}
-	texturesCache.clear();
-}
 
+
+
+/* This function render sprites array into new opengl texture (or clear it).
+ * ahandle - pointer on opengl texture, if points to 0 new texture will be generated;
+ * width, height - width and height of new texture;
+ * sprites - array of sprites to draw;
+ * returns boolean
+ */
+bool GLTextures::draw( GLuint* ahandle, int width, int height, list< Sprite* >* sprites, bool invert )
+{
+	GLuint FBOHandle = 0;
+	GLuint VBOHandle = 0;
+
+	// A FBO will be used to draw textures. FBO creation and setup.
+	if( !generate( ahandle, width, height ) ||
+		!GLHelpers::BindTextureToFBO( *ahandle, FBOHandle ) )
+		return false;
+
+	glClear( GL_COLOR_BUFFER_BIT );
+
+	rect2f new_camera;
+	if( invert )
+		new_camera = rect2f(0, height, width, -height);
+	else
+		new_camera = rect2f(0, 0, width, height);
+	Camera::push_state( &new_camera );
+	Camera::update();
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+
+	glGenBuffers( 1, &VBOHandle );
+
+	list< VBOStructureHandle* > vbostructure;
+	VBuffer::prepare_handler( sprites, &vbostructure );
+	VBuffer::setup( VBOHandle );
+	VBuffer::draw( glpSimple, &vbostructure );
+	VBuffer::unbind( );
+	VBuffer::free_handler( &vbostructure );
+
+	glDeleteBuffers( 1, &VBOHandle );
+	glDisable(GL_BLEND);
+
+	Camera::pop_state();
+
+	//GLHelpers::ClearView( );
+
+	// Reset FBO
+	return  GLHelpers::UnbindFBO( FBOHandle );
+}

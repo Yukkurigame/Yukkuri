@@ -12,7 +12,7 @@ namespace Image
 {
 	unsigned int load( const char*, int* width, int* height, bool force=true );
 	unsigned int open( const char*, int* width, int* height );
+	bool save( );
 }
-
 
 #endif /* IMAGE_H_ */

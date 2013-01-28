@@ -13,7 +13,33 @@
 #include "debug.h"
 #include <cstdlib>
 
+#include <sys/stat.h>
+
+
 extern MainConfig conf;
+
+
+namespace Image {
+	int exists( char *name )
+	{
+		struct stat dummy;
+		if( stat( name, &dummy ) == 0 )
+			return 1;
+		return 0;
+	}
+
+	void generate_name( char* name )
+	{
+		int iter = 0;
+		do{
+			snprintf( name, 50, "screenshot%03d.bmp", ++iter );
+		}while( exists( name ) && iter < 1000 );
+		if( exists( name ) ){
+			name[0] = '\0';
+		}
+	}
+}
+
 
 
 unsigned int Image::load( const char* name, int* width, int* height, bool force )
@@ -46,4 +72,19 @@ unsigned int Image::open( const char* filename, int* width, int* height )
 		Debug::debug( Debug::GRAPHICS, dbg );
 	}
 	return tex_2d;
+}
+
+
+// TODO: SOIL save to png
+bool Image::save( )
+{
+	char filename[52];
+	generate_name( filename );
+	if( filename[0] == '\0' ){
+		Debug::debug( Debug::OS, "Can not get screenshot name. Too many screenshots in folder.\n" );
+		return false;
+	}
+
+	return SOIL_save_screenshot( filename, SOIL_SAVE_TYPE_BMP, 0, 0,
+			conf.video.windowWidth, conf.video.windowHeight );
 }

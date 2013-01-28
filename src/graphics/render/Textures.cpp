@@ -37,6 +37,12 @@ namespace Textures {
 		textures = (TextureInfo*)realloc(textures, (UINT)sizeof(TextureInfo) * textures_count );
 	}
 
+	//////////////////////////////////////////////////
+	// Active textures
+	GLint active_limit = 32;
+	GLuint* active_textures = NULL;
+	UINT next_active = 0;
+
 }
 
 /* Remove all allocated textures */
@@ -70,7 +76,20 @@ UINT Textures::get_by_name( const char* name )
 
 UINT Textures::get_active( UINT id )
 {
-	return 0;
+	for( int i = 0; i < active_limit; ++i ){
+		if( active_textures[i] == id )
+			return i;
+	}
+	int active = next_active;
+	if( ++next_active >= active_limit )
+		next_active = 0;
+
+	// Bind texture
+	active_textures[active] = id;
+	glActiveTexture( GL_TEXTURE0 + active );
+	glBindTexture( GL_TEXTURE_2D, id );
+
+	return active;
 }
 
 
@@ -100,6 +119,10 @@ void Textures::push( list< TextureProxy* >& tarray, GLuint atlas, GLuint normals
 
 bool Textures::load( )
 {
+	//glGetIntegerv( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &active_limit );
+	active_textures = (GLuint*)malloc( sizeof(GLuint) * active_limit );
+	memset( active_textures, 0, sizeof(GLuint) * active_limit );
+
 	LuaConfig* lc = new LuaConfig;
 	std::vector< std::string > names;
 	int textures_count;
@@ -123,3 +146,4 @@ bool Textures::load( )
 	// load basic textures to main atlas
 	return TextureAtlas::create( &atlasHandle, &normalsHandle, atlasWidth, atlasHeight );
 }
+

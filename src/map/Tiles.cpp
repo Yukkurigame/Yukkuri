@@ -8,7 +8,6 @@
 #include "map/Tiles.h"
 #include "map/Region.h"
 #include "map/Map.h"
-#include "graphics/render/TextureArray.h"
 #include "graphics/render/GLTextures.h"
 #include "graphics/render/GLHelpers.h"
 #include "graphics/render/Textures.h"
@@ -180,13 +179,12 @@ MapChunk::MapChunk( signed int x, signed int y )
 	tex.w = ChunkManager.chunkSize.x;
 	tex.h = ChunkManager.chunkSize.y;
 	tex.tex = 0;
-	TextureArray::drawToNewGLTexture( &tex.tex, ChunkManager.chunkSize.x,
-					ChunkManager.chunkSize.y, &sprite_list, true );
+	GLTextures::draw( &tex.tex, ChunkManager.chunkSize.x, ChunkManager.chunkSize.y,
+						&sprite_list, true );
 	GLHelpers::UpdateTexture( ChunkManager.atlas, &tex, (int)atlasPos.x, (int)atlasPos.y );
 	delete[] sprites;
 
 }
-
 
 
 MapChunk::~MapChunk()

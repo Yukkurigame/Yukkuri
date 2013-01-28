@@ -248,21 +248,4 @@ bool Screenshot::Save( )
 	return true;
 }
 
-int Screenshot::Exists( char *name )
-{
-	struct stat dummy;
-	if( stat( name, &dummy ) == 0 )
-		return 1;
-	return 0;
-}
 
-void Screenshot::GenerateName( char* name )
-{
-	int iter = 0;
-	do{
-		snprintf( name, 50, "screenshot%03d.png", ++iter );
-	}while( Exists( name ) && iter < 1000 );
-	if( Exists( name ) ){
-		name[0] = '\0';
-	}
-}

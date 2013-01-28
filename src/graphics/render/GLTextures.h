@@ -9,6 +9,8 @@
 #define GLTEXTURES_H_
 
 #include "graphics/GraphicsTypes.h"
+#include "graphics/sprite/Sprite.h"
+#include "utils/list.h"
 #include <string>
 
 
@@ -31,6 +33,9 @@ namespace GLTextures
 	inline bool generate( GLuint* ahandle, int width, int height, const void* data ){
 		return generate( ahandle, GL_TEXTURE_2D, GL_RGBA, width, height, GL_RGBA, GL_UNSIGNED_INT, data );
 	}
+
+
+	bool draw( GLuint* ahandle, int width, int height, list< Sprite* >* sprites, bool invert = false );
 }
 
 

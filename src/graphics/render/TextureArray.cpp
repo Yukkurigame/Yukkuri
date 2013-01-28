@@ -107,12 +107,7 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, GLuint* nhandle, int wid
 }
 */
 
-/* This function render sprites array into new opengl texture (or clear it).
- * ahandle - pointer on opengl texture, if points to 0 new texture will be generated;
- * width, height - width and height of new texture;
- * sprites - array of sprites to draw;
- * returns boolean
- */
+
 bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, list< Sprite* >* sprites, bool invert )
 {
 	GLuint FBOHandle = 0;

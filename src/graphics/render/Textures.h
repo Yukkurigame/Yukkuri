@@ -21,13 +21,12 @@ namespace Textures {
 
 	UINT get_active( UINT id );
 
+	// Textures storage
 
 	bool load( );
 
 	UINT push( TextureProxy*, GLuint atlas, GLuint normals );
 	void push( list< TextureProxy* >& tarray, GLuint atlas, GLuint normals );
-
-	//bool DrawToGLTexture( GLuint ahandle, list< TextureProxy* >* textures );
 
 }
 

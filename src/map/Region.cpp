@@ -9,6 +9,7 @@
 #include "map/Tiles.h"
 #include "scripts/LuaConfig.h"
 #include "graphics/Render.h"
+#include "graphics/render/Textures.h"
 
 #include "config.h"
 #include "safestring.h"
@@ -53,7 +54,7 @@ bool Region::init( )
 		tile.id = Subconfig["id"];
 		if( Subconfig.count("image") ){
 			std::string image = Subconfig["image"];
-			tile.texture = RenderManager::GetTextureNumberById( image );
+			tile.texture = Textures::get_by_name( image.c_str() );
 		}
 		tile.picture = Subconfig.count("picture") ? atoi(Subconfig["picture"].c_str()) : 0;
 		// FIXME: useless

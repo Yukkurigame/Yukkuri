@@ -8,6 +8,12 @@
 
 #include "graphics/utils/Image.h"
 #include "SOIL.h"
+#include "config.h"
+#include "safestring.h"
+#include "debug.h"
+#include <cstdlib>
+
+extern MainConfig conf;
 
 
 unsigned int Image::load( const char* name, int* width, int* height, bool force )

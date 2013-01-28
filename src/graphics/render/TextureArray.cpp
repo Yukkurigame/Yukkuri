@@ -20,7 +20,7 @@
 #include "debug.h"
 #include "hacks.h"
 
-
+/*
 inline void draw_proxy_quad( TextureProxy* t, bool normal = false )
 {
 	if( t && t->texture ){
@@ -50,7 +50,7 @@ inline void draw_proxy_quad( TextureProxy* t, bool normal = false )
 		glEnd();
 	}
 }
-
+*/
 
 /* This function render textures array into new opengl texture (or clear it).
  * ahandle - pointer on opengl texture, if points to 0 new texture will be generated;
@@ -58,6 +58,7 @@ inline void draw_proxy_quad( TextureProxy* t, bool normal = false )
  * textures - array of textures coordinates to draw;
  * returns boolean
  */
+/*
 bool TextureArray::drawToNewGLTexture( GLuint* ahandle, GLuint* nhandle, int width, int height, std::vector< TextureProxy* >& textures )
 {
 	GLuint FBOHandle = 0;
@@ -104,6 +105,7 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, GLuint* nhandle, int wid
 	return  GLHelpers::ClearView( ) &&
 			GLHelpers::UnbindFBO( FBOHandle );
 }
+*/
 
 /* This function render sprites array into new opengl texture (or clear it).
  * ahandle - pointer on opengl texture, if points to 0 new texture will be generated;
@@ -111,7 +113,7 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, GLuint* nhandle, int wid
  * sprites - array of sprites to draw;
  * returns boolean
  */
-bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, list< Sprite* >* sprites )
+bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, list< Sprite* >* sprites, bool invert )
 {
 	GLuint FBOHandle = 0;
 	GLuint VBOHandle = 0;
@@ -123,7 +125,11 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, l
 
 	glClear( GL_COLOR_BUFFER_BIT );
 
-	rect2f new_camera(0, height, width, -height);
+	rect2f new_camera;
+	if( invert )
+		new_camera = rect2f(0, height, width, -height);
+	else
+		new_camera = rect2f(0, 0, width, height);
 	Camera::push_state( &new_camera );
 	Camera::update();
 
@@ -149,26 +155,3 @@ bool TextureArray::drawToNewGLTexture( GLuint* ahandle, int width, int height, l
 	// Reset FBO
 	return  GLHelpers::UnbindFBO( FBOHandle );
 }
-
-
-
-/* This function render textures array into opengl texture.
- * ahandle - an opengl texture id, it must be generated previously;
- * textures - an array of textures coordinates to draw;
- * returns boolean
-
-bool TextureArray::drawToGLTexture( GLuint ahandle, std::vector< TextureProxy* >& textures )
-{
-
-	// Отрисовка текстур в атлас.
-	glEnable(GL_TEXTURE_2D);
-	for( unsigned int i = 0; i < textures.size(); i++ ){
-		//TextureProxy* t = textures->at(i);
-		//UpdateGLTextureFromTexture( ahandle, t->texture, t->offset, t->abs.x, t->abs.y,
-		//							t->abs.width, t->abs.height );
-	}
-	glDisable(GL_TEXTURE_2D);
-
-	return true;
-}
- */

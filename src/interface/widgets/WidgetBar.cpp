@@ -7,6 +7,7 @@
 
 #include "interface/widgets/WidgetBar.h"
 #include "graphics/Render.h"
+#include "graphics/render/Textures.h"
 #include "scripts/LuaConfig.h"
 
 #include "safestring.h"
@@ -70,7 +71,7 @@ void WidgetBar::createBar( std::string name, int picture, s4ub color )
 	}
 	if( name != "" ){
 		TopSprite = RenderManager::CreateGLSprite( Top.x,  Top.y, 1.1, Top.width, Top.height,
-						RenderManager::GetTextureNumberById(name), picture );
+						Textures::get_by_name( name.c_str() ), picture );
 		TopSprite->setFixed();
 		TopSprite->clearLight();
 	}

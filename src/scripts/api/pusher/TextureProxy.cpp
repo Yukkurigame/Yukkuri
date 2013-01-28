@@ -32,21 +32,13 @@ int pushToLua( lua_State* L, TextureProxy const& val )
 	return 1;
 }
 
-template<>
-TextureProxy const getFromLua( lua_State* L, int idx )
-{
-	TextureProxy ret;
-	getFromLua( L, idx, ret );
-	return ret;
-}
 
 template<>
 void getFromLua( lua_State* L, int idx, TextureProxy& val )
 {
-	const int* p[4] = { &val.abs.width, &val.abs.height, &val.rows, &val.cols };
+	int* p[4] = { &val.abs.width, &val.abs.height, &val.rows, &val.cols };
 	const char* pc[4] = { "width", "height", "rows", "columns" };
 
-	lua_newtable(L);
 	LUA_GET_VALUE( "id", val.id );
 	LUA_GET_VALUE( "image", val.image );
 
@@ -57,6 +49,15 @@ void getFromLua( lua_State* L, int idx, TextureProxy& val )
 	LUA_GET_VALUE( "offsety", val.offset.y );
 
 }
+
+template<>
+TextureProxy const getFromLua( lua_State* L, int idx )
+{
+	TextureProxy ret;
+	getFromLua( L, idx, ret );
+	return ret;
+}
+
 
 template<>
 bool CHINP_TESTER<TextureProxy>(lua_State* L, int idx)

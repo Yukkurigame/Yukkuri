@@ -7,6 +7,7 @@
 #include "interface/widgets/Widget.h"
 
 #include "graphics/Render.h"
+#include "graphics/render/Textures.h"
 #include "scripts/LuaConfig.h"
 #include "config.h"
 
@@ -90,7 +91,7 @@ bool Widget::load( std::string id )
 		cfg->getValue( "picture", baseID, picture );
 		cfg->getValue( "bgcolor", baseID, bgcolor );
 		if( imgname != "" || bgcolor.a ){
-			setBackground( RenderManager::GetTextureNumberById( imgname ), picture );
+			setBackground( Textures::get_by_name( imgname.c_str() ), picture );
 			if( bgcolor.a )
 				setBackgroundColor( bgcolor );
 		}

@@ -9,11 +9,12 @@
 #include "map/Region.h"
 #include "map/Map.h"
 #include "graphics/render/TextureArray.h"
+#include "graphics/render/GLTextures.h"
 #include "graphics/render/GLHelpers.h"
+#include "graphics/render/Textures.h"
 #include "graphics/render/ElasticBox.h"
 #include "graphics/render/Atlas.h"
 #include "graphics/Render.h"
-#include "graphics/utils/gl_shader.h"
 
 #include "config.h"
 #include "debug.h"
@@ -104,8 +105,8 @@ void MapChunkManager::init(){
 		tp.atlas.height = static_cast<float>(tp.abs.height) / static_cast<float>(box.Height);
 		tp.atlas.x = tp.atlas.y = 0.0;
 	}
-	GLHelpers::CreateTexture( &atlas, box.Width, box.Height );
-	texture = RenderManager::PushTexture( &tp, atlas, 0 );
+	GLTextures::generate( &atlas, box.Width, box.Height );
+	texture = Textures::push( &tp, atlas, 0 );
 }
 
 // You must call this for request a new free space, not only checking for
@@ -118,7 +119,7 @@ signed int MapChunkManager::getFreeSpace( s2f& pos ){
 		if( p > chunksCount ) // No free space
 			return -1;
 	}
-	TextureInfo* texinfo = RenderManager::GetTextureByNumber( texture );
+	TextureInfo* texinfo = Textures::get_pointer( texture );
 	texinfo->getTexturePosition( pos, p );
 	state |= c; // Set free space as occupied
 	return p;
@@ -162,7 +163,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 		Sprite* s = &sprites[tile];
 		sprite_list.push( s );
 		s->texid = t.Type->texture;
-		TextureInfo* tex = RenderManager::GetTextureByNumber( s->texid );
+		TextureInfo* tex = Textures::get_pointer( s->texid );
 		s->textures.push_back( tex->atlas );
 		s->addNormalMap( tex->normals );
 		s->setPosition(
@@ -180,7 +181,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 	tex.h = ChunkManager.chunkSize.y;
 	tex.tex = 0;
 	TextureArray::drawToNewGLTexture( &tex.tex, ChunkManager.chunkSize.x,
-					ChunkManager.chunkSize.y, &sprite_list );
+					ChunkManager.chunkSize.y, &sprite_list, true );
 	GLHelpers::UpdateTexture( ChunkManager.atlas, &tex, (int)atlasPos.x, (int)atlasPos.y );
 	delete[] sprites;
 

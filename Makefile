@@ -8,6 +8,7 @@ VPATH= src/
 PROGNAME= Yukkuri
 COREDIR= core/
 SCRIPTSAPIDIR= api/
+PUSHERAPIDIR = pusher/
 SCRIPTSDIR= scripts/
 UNITSDIR= units/
 PHYSICSDIR= $(UNITSDIR)physics/
@@ -24,13 +25,15 @@ UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp ActionTimer.cpp Scope.cpp
 		 UnitStatic.cpp UnitDynamic.cpp UnitEntity.cpp UnitCorpse.cpp UnitPlayer.cpp
 PHYSICS = physics.cpp handlers.cpp
 RENDER = Atlas.cpp ElasticBox.cpp GBuffer.cpp GLHelpers.cpp GLTextures.cpp \
-		 VBuffer.cpp TextureArray.cpp
+		 VBuffer.cpp TextureArray.cpp Textures.cpp
 SPRITE = Sprite.cpp Animation.cpp AnimationDefines.cpp Brush.cpp Material.cpp
-GRAPHUTILS = gl_shader.cpp gl_uniforms.cpp pngfuncs.c sdl_graphics.cpp VBOArray.cpp
+GRAPHUTILS = gl_shader.cpp gl_uniforms.cpp pngfuncs.c sdl_graphics.cpp VBOArray.cpp Image.cpp
 GRAPHICS = Camera.cpp daytime.cpp Font.cpp gl_extensions.cpp Lighting.cpp Render.cpp Text.cpp \
 		   $(addprefix render/, $(RENDER)) $(addprefix sprite/, $(SPRITE)) $(addprefix utils/, $(GRAPHUTILS))
+PUSHERAPI = TextureProxy.cpp
 SCRIPTSAPI = UnitManagerApi.cpp InterfaceApi.cpp Widgets.cpp ThreadManagerApi.cpp CameraApi.cpp \
-			 BindingsApi.cpp Units.cpp PathsApi.cpp RegionApi.cpp YOBA.cpp
+			 BindingsApi.cpp Units.cpp PathsApi.cpp RegionApi.cpp YOBA.cpp \
+			 $(addprefix $(PUSHERAPIDIR), $(PUSHERAPI))
 SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp LuaPusher.cpp \
 		  proto.cpp api.cpp $(addprefix $(SCRIPTSAPIDIR), $(SCRIPTSAPI))
 WIDGETS = Widget.cpp WidgetText.cpp WidgetBar.cpp
@@ -69,7 +72,7 @@ HEADERS = $(OBJECTS:.o=.h) $(addprefix $(OBJDIR), $(UNIQHEADERS))
  
  
 GCHOLD = $(HEADERS:.h=.h.gch)
-GCH = $(shell echo $(GCHOLD) | sed -e "s/[^ ]\+\/\(main\|LuaRegister\|api\/Widgets\|api\/Units\|api\/YOBA\|scripts\/LuaPusher\).h.gch //g")
+GCH = $(shell echo $(GCHOLD) | sed -e "s/[^ ]\+\/\(main\|LuaRegister\|api\/Widgets\|api\/Units\|api\/YOBA\|scripts\/LuaPusher\|scripts\/api\/pusher\/TextureProxy\).h.gch //g")
 
 
 #.cpp.o:
@@ -100,7 +103,7 @@ $(PROGNAME) : dirs $(GCH) $(OBJS)
 
 dirs:
 	mkdir -p $(addprefix $(OBJDIR), $(UTILSDIR) $(COREDIR) $(SCRIPTSDIR) 	\
-	 $(SCRIPTSDIR)$(SCRIPTSAPIDIR) $(GRAPHICSDIR) $(GRAPHICSDIR)render/		\
+	 $(SCRIPTSDIR)$(SCRIPTSAPIDIR)$(PUSHERAPIDIR) $(GRAPHICSDIR) $(GRAPHICSDIR)render/		\
 	 $(GRAPHICSDIR)sprite/ $(GRAPHICSDIR)utils/ $(UNITSDIR)					\
 	 $(INTERFACEDIR) $(INTERFACEDIR)$(WIDGETSDIR) $(MAPDIR) $(3RDPARTYDIR) 	\
 	 $(3RDPARTYDIR)timer $(PHYSICSDIR))

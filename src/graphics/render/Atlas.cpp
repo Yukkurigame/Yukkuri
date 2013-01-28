@@ -11,15 +11,13 @@
 #include "graphics/render/ElasticBox.h"
 #include "graphics/render/TextureArray.h"
 #include "graphics/render/GLTextures.h"
+#include "graphics/render/Textures.h"
 #include "graphics/Render.h"
 
 #include "scripts/LuaConfig.h"
 
-#include <algorithm>
-
 #include "safestring.h"
 #include "debug.h"
-#include "hacks.h"
 
 
 list< TextureProxy* > internalTextures;
@@ -40,7 +38,10 @@ void TextureAtlas::init( )
 
 void TextureAtlas::clean( )
 {
-	clear_vector( &internalTextures );
+	ITER_LIST( TextureProxy*, internalTextures ){
+		delete it->data;
+	}
+	internalTextures.clear();
 }
 
 
@@ -55,6 +56,7 @@ void TextureAtlas::addTexture( std::string name ){
 	TextureProxy* t = new TextureProxy();
 	lc->pushSubconfig( name, "sprite" );
 	lc->LuaMain::get( -1, *t );
+	lc->pop( 1 );
 
 	/*lc->getValue("id", name, config, t->id);
 	lc->getValue("image", name, config, t->image);
@@ -94,12 +96,10 @@ bool TextureAtlas::buildMap( int& width, int& height )
 	ElasticBox box = ElasticBox( minAtlasSize, maxAtlasSize );
 
 	// Push all textures in ElasticBox packer
-	listElement< TextureProxy* >* t = internalTextures.head;
-	while( t != NULL ){
-		TextureProxy* tp = t->data;
+	ITER_LIST( TextureProxy*, internalTextures ){
+		TextureProxy* tp = it->data;
 		if ( ! box.InsertItem( &(tp->abs.x), &(tp->abs.y), tp->abs.width, tp->abs.height ) )
 			return false;
-		t = t->next;
 	}
 
 	width = box.Width;
@@ -132,9 +132,66 @@ bool TextureAtlas::buildRelativeMap( float width, float height ){
 }
 
 
+inline Sprite* sprite_from_proxy( const TextureProxy* t )
+{
+	Sprite* s = new Sprite( );
+	float x = static_cast<float>(t->offset.x) / static_cast<float>(t->texture->w);
+	float y = static_cast<float>(t->offset.y) / static_cast<float>(t->texture->h);
+	float dx = static_cast<float>(t->abs.width) / static_cast<float>(t->texture->w);
+	float dy = static_cast<float>(t->abs.height) / static_cast<float>(t->texture->h);
+
+	//qcRT=0, qcRB, qcLT, qcLB
+
+	s2f coords[4] = {
+			s2f(x + dx, y + dy),
+			s2f(x + dx, y),
+			s2f(x, y + dy),
+			s2f(x, y),
+	};
+	s3f vertx[4] = {
+			s3f(t->abs.x + t->abs.width, t->abs.y + t->abs.height, 0),
+			s3f(t->abs.x + t->abs.width, t->abs.y, 0),
+			s3f(t->abs.x, t->abs.y + t->abs.height, 0),
+			s3f(t->abs.x, t->abs.y, 0)
+	};
+
+	VertexV2FT2FC4UI* pts = s->brush.points();
+	for( int i = 0; i < s->brush.points_count; ++i ){
+		pts[i].coordinates = coords[i];
+		pts[i].verticles = vertx[i];
+	}
+	s->textures.push( t->texture->tex );
+	return s;
+
+	//Bottom-left vertex
+	glTexCoord2f(x, y);
+	glVertex2i(t->abs.x, t->abs.y);
+	//Bottom-right vertex
+	glTexCoord2f(x + dx, y);
+	glVertex2i(t->abs.x + t->abs.width, t->abs.y);
+	//Top-right vertex
+	glTexCoord2f(x + dx, y + dy);
+	glVertex2i(t->abs.x + t->abs.width, t->abs.y + t->abs.height);
+	//Top-left vertex
+	glTexCoord2f(x, y + dy);
+	glVertex2i(t->abs.x, t->abs.y + t->abs.height);
+}
+
+
 bool TextureAtlas::build( GLuint* ahandle, GLuint* nhandle, int width, int height )
 {
-	return TextureArray::drawToNewGLTexture( ahandle, nhandle, width, height, internalTextures );
+	list< Sprite* > sprites;
+	ITER_LIST( TextureProxy*, internalTextures ){
+		sprites.push_back( sprite_from_proxy(it->data) );
+	}
+
+	bool status = TextureArray::drawToNewGLTexture( ahandle, width, height, &sprites );
+
+	ITER_LIST( Sprite*, sprites ){
+		delete it->data;
+	}
+
+	return status;
 }
 
 
@@ -147,12 +204,12 @@ inline bool compareTextureProxies( TextureProxy* t1, TextureProxy* t2 )
 
 bool TextureAtlas::create( GLuint* ahandle, GLuint* nhandle, int& width, int& height )
 {
-	if( internalTextures.size() < 1 ){
+	if( internalTextures.head == NULL ){
 		Debug::debug( Debug::GRAPHICS, "Textures is missing.\n" );
 		return false;
 	}
 	// Sort textures in buffer
-	sort( internalTextures.begin(), internalTextures.end(), compareTextureProxies );
+	internalTextures.sort( compareTextureProxies );
 	// Calculate texture positions and draw to texture
 	if( !buildMap( width, height ) ){
 		Debug::debug( Debug::GRAPHICS, "Cannot build atlas map.\n" );
@@ -165,8 +222,7 @@ bool TextureAtlas::create( GLuint* ahandle, GLuint* nhandle, int& width, int& he
 
 	// Push textures to render and clear array
 	Textures::push( internalTextures, *ahandle, nhandle ? *nhandle : 0 );
-
-	clear_vector( &internalTextures );
+	clean();
 
 	return true;
 }

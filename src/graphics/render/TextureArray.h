@@ -9,12 +9,12 @@
 #define TEXTUREARRAY_H_
 
 #include "graphics/sprite/Sprite.h"
-#include <vector>
+
 
 namespace TextureArray
 {
-	bool drawToNewGLTexture( GLuint* ahandle, GLuint* nhandle, int width, int height, std::vector< TextureProxy* >& textures );
-	bool drawToNewGLTexture( GLuint* ahandle, int width, int height, list< Sprite* >* sprites );
+	//bool drawToNewGLTexture( GLuint* ahandle, GLuint* nhandle, int width, int height, std::vector< TextureProxy* >& textures );
+	bool drawToNewGLTexture( GLuint* ahandle, int width, int height, list< Sprite* >* sprites, bool invert = false );
 	//bool drawToGLTexture( GLuint ahandle, std::vector< TextureProxy* >& textures );
 
 }

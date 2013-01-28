@@ -6,7 +6,7 @@
  */
 #include "graphics/sprite/Animation.h"
 #include "graphics/Render.h"
-#include "graphics/utils/gl_shader.h"
+#include "graphics/render/Textures.h"
 #include "scripts/LuaConfig.h"
 
 #include "hacks.h"
@@ -64,7 +64,7 @@ bool Animation::init(  std::string subconfig, std::string config)
 	}
 
 	sprite = RenderManager::CreateGLSprite( 0, 0, 0, width, height,
-					RenderManager::GetTextureNumberById( image ), picture , 1 );
+					Textures::get_by_name( image.c_str() ), picture , 1 );
 	//sprite->setCentered();
 	sprite->setPicture( picture );
 	//sprite->shader = Shaders::getProgram( "lighting" );

@@ -6,7 +6,6 @@
  */
 
 #include "graphics/render/VBuffer.h"
-#include "graphics/render/Textures.h"
 #include "graphics/utils/VBOArray.h"
 #include "graphics/utils/gl_uniforms.h"
 #include "graphics/Camera.h"
@@ -70,18 +69,16 @@ void VBuffer::setup( GLuint handle )
 	fill( );
 }
 
-inline void apply_textures( list<GLuint>* textures, list< UINT >* active )
+inline void apply_textures( list<GLuint>* textures )
 {
 	listElement< GLuint >* texture = textures->head;
-	active->clear();
 	for( int index = 0; texture != NULL; texture = texture->next, ++index ){
-		active->push_back( Textures::get_active( texture->data ) );
-		//glActiveTexture( GL_TEXTURE0 + index );
-		//glBindTexture( GL_TEXTURE_2D, texture->data );
+		glActiveTexture( GL_TEXTURE0 + index );
+		glBindTexture( GL_TEXTURE_2D, texture->data );
 	}
 }
 
-inline void apply_material( UINT matid, list< UINT >* samplers, int pass )
+inline void apply_material( UINT matid, int pass )
 {
 	const GLMaterial* mat = GLMaterialManager::get_pointer( matid );
 	if( !mat )
@@ -92,14 +89,12 @@ inline void apply_material( UINT matid, list< UINT >* samplers, int pass )
 	if( !shader )
 		return;
 
-	listElement< UINT >* sampler = samplers->head;
+	int samplers_index = -1;
 	if( uniforms ){
 		for( unsigned int index = 0; index < uniforms->count; ++index ){
 			UniformHandler* uniform = &uniforms->handlers[index];
-			if( uniform->type == GL_SAMPLER_2D && sampler != NULL ){
-				UniformsManager::pass_data( uniform->index, &(sampler->data) );
-				sampler = sampler->next;
-			}
+			if( uniform->type == GL_SAMPLER_2D )
+				UniformsManager::pass_data( uniform->index, &(++samplers_index) );
 			UniformsManager::send_data( uniform->location, uniform->index );
 		}
 	}
@@ -115,11 +110,10 @@ void VBuffer::draw( int pass, list<VBOStructureHandle*>* handler )
 	listElement<VBOStructureHandle*>* handler_element = handler->head;
 
 	glEnable(GL_TEXTURE_2D);
-	list< UINT > samplers;
 	while(handler_element != NULL){
 		VBOStructureHandle* vbostructure = handler_element->data;
-		apply_textures( &vbostructure->textures, &samplers );
-		apply_material( vbostructure->material, &samplers, pass );
+		apply_textures( &vbostructure->textures );
+		apply_material( vbostructure->material, pass );
 		glDrawElements( vbostructure->method, vbostructure->count, GL_UNSIGNED_INT, vbostructure->indexes );
 		handler_element = handler_element->next;
 	}

@@ -19,7 +19,9 @@ namespace Textures {
 	UINT get_by_name( const char* id );
 	TextureInfo* get_pointer( UINT number );
 
+	// TODO:
 	UINT get_active( UINT id );
+	void unbind( UINT id );
 
 	// Textures storage
 

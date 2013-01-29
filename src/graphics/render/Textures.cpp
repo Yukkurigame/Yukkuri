@@ -39,9 +39,9 @@ namespace Textures {
 
 	//////////////////////////////////////////////////
 	// Active textures
-	GLint active_limit = 32;
+	GLint active_limit = 16;
 	GLuint* active_textures = NULL;
-	UINT next_active = 0;
+	int next_active = 0;
 
 }
 
@@ -76,13 +76,22 @@ UINT Textures::get_by_name( const char* name )
 
 UINT Textures::get_active( UINT id )
 {
+	int blank = -1;
 	for( int i = 0; i < active_limit; ++i ){
 		if( active_textures[i] == id )
 			return i;
+		else if( blank < 0 && !active_textures[i] )
+			blank = i;
 	}
-	int active = next_active;
-	if( ++next_active >= active_limit )
-		next_active = 0;
+
+	int active;
+	if( blank < 0 ){
+		active = next_active;
+		if( ++next_active >= active_limit )
+			next_active = 0;
+	}else{
+		active = blank;
+	}
 
 	// Bind texture
 	active_textures[active] = id;
@@ -92,6 +101,19 @@ UINT Textures::get_active( UINT id )
 	return active;
 }
 
+
+void Textures::unbind( UINT id )
+{
+	for( int i = 0; i < active_limit; ++i ){
+		if( active_textures[i] != id )
+			continue;
+
+		// Unbind texture from active slot
+		glActiveTexture( GL_TEXTURE0 + i );
+		glBindTexture( GL_TEXTURE_2D, 0 );
+		active_textures[i] = 0;
+	}
+}
 
 
 UINT Textures::push( TextureProxy* proxy, GLuint atlas, GLuint normals )

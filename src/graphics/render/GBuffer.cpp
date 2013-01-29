@@ -7,8 +7,8 @@
 
 #include "graphics/render/GBuffer.h"
 #include "graphics/render/VBuffer.h"
-#include "graphics/gl_extensions.h"
-#include "graphics/utils/gl_shader.h"
+#include "graphics/render/Textures.h"
+#include "graphics/utils/gl_uniforms.h"
 #include "graphics/Lighting.h"
 #include "graphics/Render.h"
 
@@ -43,7 +43,7 @@ namespace GBuffer
 
 	inline void texture_to_fbo( GLuint tex_id, int int_format, int format, int type, int attach )
 	{
-		glBindTexture( texture_type, tex_id );
+		Textures::bind( tex_id, 0, texture_type );
 		glTexImage2D( texture_type, 0, int_format, window_size.x, window_size.y,
 						0, format, type, NULL );
 		glTexParameterf( texture_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
@@ -61,6 +61,10 @@ bool GBuffer::init()
 	window_size.x = conf.video.windowWidth;
 	window_size.y = conf.video.windowHeight;
 
+	combinator = new Sprite( );
+	combinator->resize( window_size.x, window_size.y );
+	combinator->setFixed();
+
 	in_ScreenSize = UniformsManager::register_uniform( "in_ScreenSize", GL_FLOAT_VEC2 );
 	UniformsManager::pass_data( in_ScreenSize, &window_size.x );
 
@@ -76,8 +80,24 @@ bool GBuffer::init()
 	glGenTextures( 1, &depth_texture );
 	glGenTextures( 1, &final_texture );
 
-	for( unsigned int i = 0 ; i < gbufLast; i++ ){
+	// FIXME: WTF is all this shit?
+	UINT indexes[gbufLast];
+	const char* names[gbufLast] = { "in_gNoLightMap", "in_gPositionMap", "in_gNormalMap", "in_gColorMap" };
+	for( UINT i = 0 ; i < gbufLast; i++ ){
 		texture_to_fbo( textures[i], GL_RGBA, GL_RGBA, GL_UNSIGNED_INT, GL_COLOR_ATTACHMENT0 + i );
+		indexes[i] = UniformsManager::register_uniform( names[i], GL_SAMPLER_2D );
+	}
+
+	const GLMaterial* mat = GLMaterialManager::get_pointer( combinator->material );
+	UniformHandlers* uniforms = mat->uniforms[glpDirLight];
+	for( UINT i = 0, index = 0; i < uniforms->count; ++i ){
+		UniformHandler* h = &(uniforms->handlers[i]);
+		if( h->type != GL_SAMPLER_2D || index >= gbufLast )
+			continue;
+		for( UINT j = 0 ; j < gbufLast; ++j ){
+			if( h->index == indexes[j] )
+				combinator->textures.push_back( textures[j] );
+		}
 	}
 
 	// Depth texture
@@ -95,12 +115,8 @@ bool GBuffer::init()
 	}
 
 	// restore default FBO
-	glBindTexture( texture_type, 0 );
+	Textures::unbind( );
 	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
-
-	combinator = new Sprite( );
-	combinator->resize( window_size.x, window_size.y );
-	combinator->setFixed();
 
 	return true;
 }
@@ -214,11 +230,6 @@ void GBuffer::light_pass_point( LightSource* )
 void GBuffer::light_pass_directional( )
 {
 	glDrawBuffer( GL_COLOR_ATTACHMENT4 );
-
-	for (unsigned int i = 0 ; i < gbufLast; i++) {
-		glActiveTexture( GL_TEXTURE2 + i );
-		glBindTexture( texture_type, textures[i] );
-	}
 
 	glDisable(GL_DEPTH_TEST);
 

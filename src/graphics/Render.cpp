@@ -75,15 +75,7 @@ namespace {
 
 void RenderManager::init( )
 {
-	//textures = NULL;
-	//textures = (TextureInfo*)malloc( (unsigned)sizeof(TextureInfo) );
-	//texturesCount = 1;
-	//memset( &textures[0], 0, (unsigned)sizeof(TextureInfo) );
-
-	//std::string n = "0";
-	//textures[0].id = new char[2];
-	//strcpy(textures[0].id, n.c_str());
-
+	Textures::init();
 	AnimDef::init();
 }
 
@@ -143,16 +135,6 @@ bool RenderManager::openglSetup( int wwidth, int wheight )
 	GLTextures::generate( &nt, 1, 1, color );
 	first.texture = GLTextures::create( "", nt, 1, 1 );
 	Textures::push( &first, nt, 0 );
-
-	//Textures::push( &first, first. );
-	// Create blank texture
-	//glGenTextures(1, &textures[0].atlas);
-	//glBindTexture(GL_TEXTURE_2D, textures[0].atlas);
-	//GIMP says it is white
-	//glTexImage2D( GL_TEXTURE_2D, 0, 4, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, color );
-	//glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-	//glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-	//glBindTexture(GL_TEXTURE_2D, 0);
 
 	rect2f view( 0.0, 0.0, conf.video.windowWidth, conf.video.windowHeight );
 	Camera::push_state( &view );

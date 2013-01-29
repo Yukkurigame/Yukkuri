@@ -9,6 +9,7 @@
 #include "graphics/render/GLTextures.h"
 #include "graphics/render/GLHelpers.h"
 #include "graphics/render/VBuffer.h"
+#include "graphics/render/Textures.h"
 #include "graphics/utils/Image.h"
 #include "graphics/Camera.h"
 
@@ -128,13 +129,13 @@ bool GLTextures::generate( GLuint* ahandle, GLenum target, GLint internalformat,
 	}
 	if( *ahandle == 0 )
 		glGenTextures(1, ahandle);
-	glBindTexture( target, *ahandle );
+	Textures::bind( *ahandle, 0, target );
 	glTexImage2D( target, 0, internalformat, width, height, 0, format, type, pixels );
 	glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 	glTexParameteri( target, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 	glTexParameteri( target, GL_TEXTURE_WRAP_S, GL_CLAMP );
 	glTexParameteri( target, GL_TEXTURE_WRAP_T, GL_CLAMP );
-	glBindTexture( target, 0 );
+	Textures::unbind( *ahandle, target );
 	return true;
 }
 

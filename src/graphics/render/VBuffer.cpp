@@ -6,6 +6,7 @@
  */
 
 #include "graphics/render/VBuffer.h"
+#include "graphics/render/Textures.h"
 #include "graphics/utils/VBOArray.h"
 #include "graphics/utils/gl_uniforms.h"
 #include "graphics/Camera.h"
@@ -69,15 +70,6 @@ void VBuffer::setup( GLuint handle )
 	fill( );
 }
 
-inline void apply_textures( list<GLuint>* textures )
-{
-	listElement< GLuint >* texture = textures->head;
-	for( int index = 0; texture != NULL; texture = texture->next, ++index ){
-		glActiveTexture( GL_TEXTURE0 + index );
-		glBindTexture( GL_TEXTURE_2D, texture->data );
-	}
-}
-
 inline void apply_material( UINT matid, int pass )
 {
 	const GLMaterial* mat = GLMaterialManager::get_pointer( matid );
@@ -112,7 +104,7 @@ void VBuffer::draw( int pass, list<VBOStructureHandle*>* handler )
 	glEnable(GL_TEXTURE_2D);
 	while(handler_element != NULL){
 		VBOStructureHandle* vbostructure = handler_element->data;
-		apply_textures( &vbostructure->textures );
+		Textures::apply( &vbostructure->textures );
 		apply_material( vbostructure->material, pass );
 		glDrawElements( vbostructure->method, vbostructure->count, GL_UNSIGNED_INT, vbostructure->indexes );
 		handler_element = handler_element->next;

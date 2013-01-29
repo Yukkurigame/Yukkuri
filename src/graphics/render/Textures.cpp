@@ -39,11 +39,19 @@ namespace Textures {
 
 	//////////////////////////////////////////////////
 	// Active textures
-	GLint active_limit = 16;
+	UINT active_limit = 16;
 	GLuint* active_textures = NULL;
 	int next_active = 0;
 
 }
+
+void Textures::init( )
+{
+	//glGetIntegerv( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &active_limit );
+	active_textures = (GLuint*)malloc( sizeof(GLuint) * active_limit );
+	memset( active_textures, 0, sizeof(GLuint) * active_limit );
+}
+
 
 /* Remove all allocated textures */
 void Textures::clean( )
@@ -73,7 +81,7 @@ UINT Textures::get_by_name( const char* name )
 	return 0;
 }
 
-
+/*
 UINT Textures::get_active( UINT id )
 {
 	int blank = -1;
@@ -100,18 +108,57 @@ UINT Textures::get_active( UINT id )
 
 	return active;
 }
+*/
 
-
-void Textures::unbind( UINT id )
+/* Bind texture to active location
+ * id - texture id
+ * location - active location
+ * target - binding target
+ */
+void Textures::bind( UINT id, UINT location, GLenum target )
 {
-	for( int i = 0; i < active_limit; ++i ){
+	if( location > active_limit ||
+		active_textures[location] == id )
+		return;
+	active_textures[location] = id;
+	glActiveTexture( GL_TEXTURE0 + location );
+	glBindTexture( target, id );
+}
+
+
+void Textures::unbind( UINT id, GLenum target )
+{
+	for( UINT i = 0; i < active_limit; ++i ){
 		if( active_textures[i] != id )
 			continue;
 
 		// Unbind texture from active slot
 		glActiveTexture( GL_TEXTURE0 + i );
+		glBindTexture( target, 0 );
+		active_textures[i] = 0;
+	}
+}
+
+
+// Unbind all textures
+void Textures::unbind( )
+{
+	for( UINT i = 0; i < active_limit; ++i ){
+		if( !active_textures[i] )
+			continue;
+		// Unbind texture from active slot
+		glActiveTexture( GL_TEXTURE0 + i );
 		glBindTexture( GL_TEXTURE_2D, 0 );
 		active_textures[i] = 0;
+	}
+}
+
+
+void Textures::apply( list<GLuint>* textures )
+{
+	listElement< GLuint >* texture = textures->head;
+	for( int index = 0; texture != NULL; texture = texture->next, ++index ){
+		bind( texture->data, index );
 	}
 }
 
@@ -141,10 +188,6 @@ void Textures::push( list< TextureProxy* >& tarray, GLuint atlas, GLuint normals
 
 bool Textures::load( )
 {
-	//glGetIntegerv( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &active_limit );
-	active_textures = (GLuint*)malloc( sizeof(GLuint) * active_limit );
-	memset( active_textures, 0, sizeof(GLuint) * active_limit );
-
 	LuaConfig* lc = new LuaConfig;
 	std::vector< std::string > names;
 	int textures_count;

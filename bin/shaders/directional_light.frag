@@ -1,8 +1,9 @@
 #version 130
 
+uniform sampler2D in_gNoLightMap;
 uniform sampler2D in_gPositionMap;
-uniform sampler2D in_gColorMap;
 uniform sampler2D in_gNormalMap;
+uniform sampler2D in_gColorMap;
 uniform vec2 in_ScreenSize;
 
 struct Light
@@ -22,7 +23,6 @@ out vec4 out_Color;
 vec4 calculate_light(Light light, vec3 position, vec3 normal)
 {
 	vec4 ambient = vec4(0.4, 0.4, 0.4, 1.0);
-	//if()
 	//vec4 ambient = vec4(light.color, 1.0f) * light.ambient;
 	float df = dot(normal, -light.direction);
 	vec4 diffuse  = vec4(0, 0, 0, 0);
@@ -50,8 +50,9 @@ vec2 get_TexCoord() {
 void main() {
 	vec2 tex_coord = get_TexCoord();
 	vec4 color = texture2D(in_gColorMap, tex_coord.st);
+	vec4 lightless = texture2D(in_gNoLightMap, tex_coord.st);
 	vec3 position = texture2D(in_gPositionMap, tex_coord.st).rgb;
 	vec3 normal = normalize(texture2D(in_gNormalMap, tex_coord.st).rgb);
 
-	out_Color = color * calculate_light(in_Light, position, normal);
+	out_Color = mix(color * calculate_light(in_Light, position, normal), lightless, lightless.a );
 }

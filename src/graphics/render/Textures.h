@@ -14,14 +14,20 @@
 
 namespace Textures {
 
+	void init( );
 	void clean( );
 
 	UINT get_by_name( const char* id );
 	TextureInfo* get_pointer( UINT number );
 
 	// TODO:
-	UINT get_active( UINT id );
-	void unbind( UINT id );
+	//UINT get_active( UINT id );
+
+	void bind( UINT id, UINT location, GLenum target = GL_TEXTURE_2D );
+	void unbind( UINT id, GLenum target = GL_TEXTURE_2D );
+	void unbind(  );
+
+	void apply( list<GLuint>* textures );
 
 	// Textures storage
 

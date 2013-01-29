@@ -7,41 +7,17 @@
 
 #include "graphics/render/GLHelpers.h"
 #include "graphics/utils/VBOArray.h"
+#include "graphics/render/Textures.h"
 #include "graphics/utils/gl_shader.h"
 #include "graphics/gl_extensions.h"
 
 #include "debug.h"
 
 
-/*	This function creates new opengl texture. If texture is exists it will be cleared.
- *	ahandle - pointer to texture id
- *	width, height - texture size
- *	returns boolean
-bool GLHelpers::CreateTexture( GLuint* ahandle, int width, int height )
-{
-	// Texture generation and setup.
-	if( ahandle == NULL ){
-		Debug::debug( Debug::GRAPHICS, "Bad texture for generation.\n" );
-		return false;
-	}
-	if( *ahandle == 0 )
-		glGenTextures(1, ahandle);
-	glBindTexture( GL_TEXTURE_2D, *ahandle );
-	glTexImage2D( GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
-	glBindTexture( GL_TEXTURE_2D, 0 );
-
-	return true;
-}
- */
-
 /*	This function setups view for drawing
  * 	width, height - view size
  * 	returns true
- */
+
 bool GLHelpers::SetUpView( int width, int height, short vflip )
 {
 	glPushAttrib(GL_COLOR_BUFFER_BIT); // ClearColor saving
@@ -67,11 +43,11 @@ bool GLHelpers::SetUpView( int width, int height, short vflip )
 
 	return true;
 }
-
+ */
 
 /*	This function clears view
  * 	returns true
- */
+
 bool GLHelpers::ClearView( )
 {
 	glMatrixMode(GL_PROJECTION);
@@ -85,6 +61,7 @@ bool GLHelpers::ClearView( )
 	glPopAttrib();
 	return true;
 }
+ */
 
 
 /* This function creates new FBO and bind texture to it
@@ -120,7 +97,8 @@ bool GLHelpers::BindTextureToFBO( GLuint ahandle, GLuint& FBOHandle )
 bool GLHelpers::UnbindFBO( GLuint& FBOHandle )
 {
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	Textures::unbind( );
+	//glBindTexture(GL_TEXTURE_2D, 0);
 	// Возвращаем как было.
 	glDisable(GL_TEXTURE_2D);
 	glDeleteFramebuffersEXT(1, &FBOHandle);
@@ -141,10 +119,9 @@ bool GLHelpers::UpdateTexture( GLuint basetex, Texture* copysrc, int posx, int p
 	if( !BindTextureToFBO( copysrc->tex, FBOHandle ) )
 		return false;
 
-	glBindTexture( GL_TEXTURE_2D, basetex );
+	Textures::bind( basetex, 0, GL_TEXTURE_2D );
 	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, posx, posy, 0, 0, copysrc->w, copysrc->h );
-
-	glBindTexture( GL_TEXTURE_2D, 0 );
+	Textures::unbind( basetex, GL_TEXTURE_2D );
 
 	return GLHelpers::UnbindFBO( FBOHandle );
 }
@@ -158,9 +135,9 @@ bool GLHelpers::UpdateTexture( GLuint basetex, Texture* copysrc, int posx, int p
  */
 bool GLHelpers::GenerateMipmap( GLuint ahandle )
 {
-	glBindTexture( GL_TEXTURE_2D, ahandle );
+	Textures::bind( ahandle, 0, GL_TEXTURE_2D );
 	glGenerateMipmapEXT( GL_TEXTURE_2D );
-	glBindTexture( GL_TEXTURE_2D, 0 );
+	Textures::unbind( ahandle, GL_TEXTURE_2D );
 	return true;
 }
 
@@ -208,7 +185,7 @@ bool GLHelpers::UpdateGLTextureFromTexture(
 	int bufferofset = (ty * copysrc->w + tx ) * bpp;
 
 	// Update subimage form pixbuffer
-	glBindTexture( GL_TEXTURE_2D, basetex );
+	Textures::bind( basetex, 0, GL_TEXTURE_2D );
 	glTexSubImage2D( GL_TEXTURE_2D, 0, (GLint)offset.x, (GLint)offset.y, w, h, GL_RGBA,
 					GL_UNSIGNED_BYTE, BUFFER_OFFSET(bufferofset) );
 
@@ -235,11 +212,11 @@ void GLHelpers::DrawGLTextureToPBO( GLuint tex, GLuint buf, int size, void* buff
 	// Not sure if this needed
 	glActiveTexture( GL_TEXTURE0 );
 	// Bind texture and write its data to buffer
-	glBindTexture( GL_TEXTURE_2D, tex );
+	Textures::bind(tex, 0, GL_TEXTURE_2D );
 	glGetTexImage( GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer );
 	// Unbind buffer and texture
 	glBindBuffer( GL_PIXEL_PACK_BUFFER_ARB, 0 );
-	glBindTexture( GL_TEXTURE_2D, 0 );
+	Textures::unbind( tex, GL_TEXTURE_2D );
 }
 
 

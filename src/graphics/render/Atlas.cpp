@@ -8,9 +8,9 @@
  */
 
 #include "graphics/render/Atlas.h"
-#include "graphics/render/ElasticBox.h"
 #include "graphics/render/GLTextures.h"
 #include "graphics/render/Textures.h"
+#include "graphics/utils/ElasticBox.h"
 #include "graphics/Render.h"
 
 #include "scripts/LuaConfig.h"

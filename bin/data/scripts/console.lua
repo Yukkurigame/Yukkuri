@@ -26,7 +26,8 @@ function Console:widget()
 					align = bit.bor(constants.waLEFT, constants.waTOP),
 				}
 			})
-			console:resize(configs:getById('windows_width', 'config_general') - 1, 300)
+			local conf_video = configs:get( 'video', 'config_general', 'config' )
+			console:resize(conf_video['window_width'] - 1, 300)
 			console:toggle()
 		end
 		self.console = console

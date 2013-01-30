@@ -13,8 +13,8 @@
 namespace LightingManager {
 	list<LightSource*> point_lights;
 	list<LightSource*> direction_lights;
-	float point_count = 0;
-	float direction_count = 0;
+	int point_count = 0;
+	int direction_count = 0;
 
 	inline list<LightSource*>* array_by_type( enum LightType type )
 	{
@@ -62,9 +62,9 @@ namespace LightingManager {
 		sprintf( name, location, prefix, old_count );
 
 		pass_data( name, "direction", GL_FLOAT_VEC3, &source->direction );
-		pass_data( name, "color", GL_INT_VEC4, &source->color );
-		pass_data( name, "ambient", GL_FLOAT, &source->ambient_intensity );
-		pass_data( name, "diffuse", GL_FLOAT, &source->diffuse_intensity );
+		pass_data( name, "color", GL_FLOAT_VEC3, &source->color );
+		pass_data( name, "ambient", GL_FLOAT, &source->ambient );
+		pass_data( name, "diffuse", GL_FLOAT, &source->diffuse );
 	}
 }
 
@@ -86,9 +86,8 @@ void LightingManager::init()
 LightSource* LightingManager::add_light( enum LightType type )
 {
 	list<LightSource*>* light_array = array_by_type( type );
-	LightSource* new_light = new LightSource();
+	LightSource* new_light = new LightSource( type );
 	light_array->push( new_light );
-	new_light->type = type;
 	register_light(new_light);
 	return new_light;
 }

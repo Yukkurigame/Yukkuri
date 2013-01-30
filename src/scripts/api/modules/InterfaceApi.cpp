@@ -6,7 +6,7 @@
  */
 
 #include "interface/Interface.h"
-#include "scripts/api/InterfaceApi.h"
+#include "scripts/api/modules/InterfaceApi.h"
 #include "scripts/LuaUtils.h"
 
 #include "types.h"

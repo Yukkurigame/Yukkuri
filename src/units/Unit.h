@@ -59,7 +59,7 @@ public:
 	bool setUnitName( std::string type );
 	void setUnitType( enum unitType type );
 	virtual void setUnitPos( float x, float y );
-	inline void setUnitPos( const s2f& pos ) { setUnitPos( pos.x, pos.y ); }
+	inline void setUnitPos( s2f pos ) { setUnitPos( pos.x, pos.y ); }
 	void setUnitSize( float size );
 	inline void setUnitX( float x ) { setUnitPos( x, (float)physBody->p.y ); }
 	inline void setUnitY( float y ) { setUnitPos( (float)physBody->p.x, y ); }
@@ -83,7 +83,7 @@ public:
 	GET_PARAM( std::string, Name, UnitName )
 	GET_PARAM( std::string, TypeName, TypeName )
 	GET_PARAM( enum unitType, Type, UnitType )
-	GET_PARAM( const s2f, Pos, s2f(physBody->p.x, physBody->p.y) )
+	GET_PARAM( s2f, Pos, s2f(physBody->p.x, physBody->p.y) )
 	GET_PARAM( const float, X, (const float)physBody->p.x )
 	GET_PARAM( const float, Y, (const float)physBody->p.y )
 	GET_PARAM( const float, Z, Image.getDepth() )

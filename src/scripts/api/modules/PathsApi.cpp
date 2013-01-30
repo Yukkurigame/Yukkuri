@@ -5,7 +5,7 @@
  *
  */
 
-#include "scripts/api/PathsApi.h"
+#include "scripts/api/modules/PathsApi.h"
 #include "misc.h"
 
 

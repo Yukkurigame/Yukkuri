@@ -23,14 +23,19 @@ int pushToLua(lua_State* L, T const & val);
 
 /// Returns the value of type T located on lua stack
 /// @param idx is the position of value on lua stack
-template <typename T>
-T getFromLua(lua_State* L, int idx);
-
-/// Returns the value of type T located on lua stack
-/// @param idx is the position of value on lua stack
 /// @param[out] val is the returned value
 template <typename T>
 void getFromLua(lua_State* L, int idx, T& val);
+
+/// Returns the value of type T located on lua stack
+/// @param idx is the position of value on lua stack
+template <typename T>
+T getFromLua(lua_State* L, int idx)
+{
+	T new_t;
+	getFromLua( L, idx, new_t );
+	return new_t;
+}
 
 template <typename T>
 T returnFromLua(lua_State* L, int idx, T& val);

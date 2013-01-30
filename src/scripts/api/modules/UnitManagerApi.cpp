@@ -4,7 +4,7 @@
  *  Created on: 19.05.2012
  *
  */
-#include "scripts/api/UnitManagerApi.h"
+#include "scripts/api/modules/UnitManagerApi.h"
 #include "scripts/LuaUtils.h"
 #include "units/unitmanager.h"
 

@@ -25,20 +25,26 @@ class LightSource : public CUDataUser
 public:
 	// Base
 	enum LightType type;
-	s4ub color;
-	float ambient_intensity;
-	float diffuse_intensity;
+	s3fc color;
+	// Intensities
+	float ambient;
+	float diffuse;
 	// Directional && Spot
 	s3f direction;
 	// Point && Spot
 	s3f position;
 	struct {
-		float Constant;
-		float Linear;
-		float Exp;
-	} Attenuation;
+		float constant;
+		float linear;
+		float exp;
+	} attenuation;
 	// Spot
 	float cut_off;
+
+	LightSource( enum LightType t ) : type(t), color(), ambient(), diffuse(),
+			direction(), position(), cut_off() {
+		attenuation.constant = attenuation.linear = attenuation.exp = 0;
+	}
 
 protected:
 	virtual CUData* createUData();

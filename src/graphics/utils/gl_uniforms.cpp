@@ -104,10 +104,6 @@ void UniformsManager::send_data( int location, UINT id, int count )
 			glUniform3fv( location, count, (float*)uniform->data );
 			break;
 
-		case GL_INT_VEC4:
-			glUniform4iv( location, count, (int*)uniform->data );
-			break;
-
 		case GL_FLOAT_MAT4:
 			glUniformMatrix4fv( location, count, GL_FALSE, (float*)uniform->data );
 			break;

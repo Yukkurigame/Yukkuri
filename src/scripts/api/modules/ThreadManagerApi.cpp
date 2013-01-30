@@ -5,7 +5,7 @@
  *
  */
 
-#include "scripts/api/ThreadManagerApi.h"
+#include "scripts/api/modules/ThreadManagerApi.h"
 #include "scripts/LuaThread.h"
 
 #include "3rdparty/timer/TimerManager.h"

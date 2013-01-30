@@ -42,6 +42,18 @@ struct s4ub
 	}
 };
 
+// For colors, normalized version
+struct s3fc {
+	float r;
+	float g;
+	float b;
+	s3fc( ) : r(1.0f), g(1.0f), b(1.0f) {}
+	s3fc( const s4ub& clr ){
+		r = clr.r / 255.0f;
+		g = clr.g / 255.0f;
+		b = clr.b / 255.0f;
+	}
+};
 
 
 enum primitives {

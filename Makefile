@@ -29,12 +29,12 @@ SPRITE = Sprite.cpp Animation.cpp AnimationDefines.cpp Brush.cpp Material.cpp
 GRAPHUTILS = gl_shader.cpp gl_uniforms.cpp VBOArray.cpp Image.cpp ElasticBox.cpp
 GRAPHICS = Camera.cpp daytime.cpp Font.cpp gl_extensions.cpp Lighting.cpp Render.cpp Text.cpp \
 		   $(addprefix render/, $(RENDER)) $(addprefix sprite/, $(SPRITE)) $(addprefix utils/, $(GRAPHUTILS))
-PUSHERAPI = TextureProxy.cpp
-SCRIPTSAPI = LightsApi.cpp UnitManagerApi.cpp InterfaceApi.cpp Widgets.cpp ThreadManagerApi.cpp \
-			 CameraApi.cpp BindingsApi.cpp Units.cpp PathsApi.cpp RegionApi.cpp YOBA.cpp \
-			 $(addprefix $(PUSHERAPIDIR), $(PUSHERAPI))
-SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp LuaPusher.cpp \
-		  proto.cpp api.cpp $(addprefix $(SCRIPTSAPIDIR), $(SCRIPTSAPI))
+PUSHERAPI = TextureProxy.cpp ShaderConfigData.cpp GraphicsTypes.cpp
+SCRIPTSAPI = $(addprefix modules/, LightsApi.cpp UnitManagerApi.cpp InterfaceApi.cpp	\
+			 ThreadManagerApi.cpp  CameraApi.cpp BindingsApi.cpp PathsApi.cpp RegionApi.cpp) \
+			 Widgets.cpp Units.cpp  YOBA.cpp $(addprefix $(PUSHERAPIDIR), $(PUSHERAPI))
+SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp proto.cpp \
+		  api.cpp $(addprefix $(SCRIPTSAPIDIR), $(SCRIPTSAPI))
 WIDGETS = Widget.cpp WidgetText.cpp WidgetBar.cpp
 INTERFACE = Interface.cpp $(addprefix $(WIDGETSDIR), $(WIDGETS))
 MAP = Tiles.cpp Region.cpp Map.cpp
@@ -111,8 +111,8 @@ pch: $(GCH)
 
 dirs:
 	mkdir -p $(addprefix $(OBJDIR), $(UTILSDIR) $(COREDIR) $(SCRIPTSDIR) 	\
-	 $(SCRIPTSDIR)$(SCRIPTSAPIDIR)$(PUSHERAPIDIR) $(GRAPHICSDIR) $(GRAPHICSDIR)render/		\
-	 $(GRAPHICSDIR)sprite/ $(GRAPHICSDIR)utils/ $(UNITSDIR)					\
+	 $(SCRIPTSDIR)$(SCRIPTSAPIDIR)$(PUSHERAPIDIR) $(SCRIPTSDIR)$(SCRIPTSAPIDIR)/modules \
+	 $(GRAPHICSDIR) $(GRAPHICSDIR)render/ $(GRAPHICSDIR)sprite/ $(GRAPHICSDIR)utils/ $(UNITSDIR) \
 	 $(INTERFACEDIR) $(INTERFACEDIR)$(WIDGETSDIR) $(MAPDIR) $(3RDPARTYDIR) 	\
 	 $(3RDPARTYDIR)timer $(PHYSICSDIR))
 

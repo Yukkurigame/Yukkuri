@@ -13,14 +13,14 @@
 #include "3rdparty/CUDataTemplates.h"
 
 #include "scripts/api.h"
-#include "scripts/api/LightsApi.h"
-#include "scripts/api/UnitManagerApi.h"
-#include "scripts/api/InterfaceApi.h"
-#include "scripts/api/ThreadManagerApi.h"
-#include "scripts/api/CameraApi.h"
-#include "scripts/api/BindingsApi.h"
-#include "scripts/api/PathsApi.h"
-#include "scripts/api/RegionApi.h"
+#include "scripts/api/modules/LightsApi.h"
+#include "scripts/api/modules/UnitManagerApi.h"
+#include "scripts/api/modules/InterfaceApi.h"
+#include "scripts/api/modules/ThreadManagerApi.h"
+#include "scripts/api/modules/CameraApi.h"
+#include "scripts/api/modules/BindingsApi.h"
+#include "scripts/api/modules/PathsApi.h"
+#include "scripts/api/modules/RegionApi.h"
 
 #include "interface/widgets/Widget.h"
 

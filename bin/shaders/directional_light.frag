@@ -28,13 +28,13 @@ vec4 general_ambient = vec4(0.2, 0.2, 0.2, 1.0);
 
 vec4 calculate_light(Light light, vec3 position, vec3 normal)
 {
-	vec4 ambient = vec4(light.color, 1.0f) * light.ambient;
+	vec4 ambient = vec4(light.color, 1.0) * light.ambient;
 	float df = dot(normal, -light.direction);
 	vec4 diffuse  = vec4(0, 0, 0, 0);
 	vec4 specular = vec4(0, 0, 0, 0);
 
 	if (df > 0) {
-		diffuse = vec4(light.color, 1.0f) * light.diffuse * df;
+		diffuse = vec4(light.color, 1.0) * light.diffuse * df;
 
 		//vec3 VertexToEye = normalize(gEyeWorldPos - WorldPos);
 		//vec3 LightReflect = normalize(reflect(LightDirection, Normal));
@@ -60,10 +60,12 @@ void main() {
 	vec3 position = texture2D(in_gPositionMap, tex_coord.st).rgb;
 	vec3 normal = normalize(texture2D(in_gNormalMap, tex_coord.st).rgb);
 
-	vec4 dir_lighting = color * general_ambient;
-	for( int i = 0; i < dir_lights; ++i ){
-		dir_lighting += color * calculate_light(in_dir_Light[i], position, normal);
+	vec4 dir_lighting = vec4(0.0, 0.0, 0.0, 1.0);
+	for( int i = 0; i < dir_lights; i++ ){
+		dir_lighting += calculate_light(in_dir_Light[i], position, normal);
 	}
+
+	dir_lighting = color * clamp(dir_lighting, general_ambient, vec4(1.0));
 
 	out_Color = mix(dir_lighting, lightless, lightless.a );
 }

@@ -5,7 +5,7 @@
  *
  */
 
-#include "scripts/api/LightsApi.h"
+#include "scripts/api/modules/LightsApi.h"
 #include "graphics/Lighting.h"
 
 

@@ -4,7 +4,7 @@
  *  Created on: 12.12.2012
  */
 
-#include "scripts/api/RegionApi.h"
+#include "scripts/api/modules/RegionApi.h"
 #include "map/Region.h"
 #include "map/Map.h"
 

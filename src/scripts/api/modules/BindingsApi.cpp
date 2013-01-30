@@ -5,7 +5,7 @@
  *
  */
 
-#include "scripts/api/BindingsApi.h"
+#include "scripts/api/modules/BindingsApi.h"
 #include "scripts/LuaScript.h"
 #include "Bindings.h"
 

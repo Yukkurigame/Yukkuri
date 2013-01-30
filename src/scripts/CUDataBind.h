@@ -188,7 +188,14 @@ void RegisterAllTypeMetatables(lua_State* L)
 
 
 // LightSource
-#define DECL_LIGHTSOURCE_METH
+#define DECL_LIGHTSOURCE_METH							\
+		GETSET_METHOD_DECL(color)						\
+		GETSET_METHOD_DECL(ambient)						\
+		GETSET_METHOD_DECL(diffuse)						\
+		GETSET_METHOD_DECL(direction)					\
+		GETSET_METHOD_DECL(position)
+
+
 
 
 DECL_UNIT_METH
@@ -287,7 +294,12 @@ DECL_LIGHTSOURCE_METH
 
 
 // LightSource
-#define LIGHTSOURCE_METH_ENTRY(ID)
+#define LIGHTSOURCE_METH_ENTRY(ID)				\
+		GETSET_METHOD_ENTRY(ID, color)			\
+		GETSET_METHOD_ENTRY(ID, ambient)		\
+		GETSET_METHOD_ENTRY(ID, diffuse)		\
+		GETSET_METHOD_ENTRY(ID, direction)		\
+		GETSET_METHOD_ENTRY(ID, position)
 
 
 

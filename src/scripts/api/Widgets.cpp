@@ -121,17 +121,11 @@ bool WidgetBar::load( lua_State* L )
 	IS_TABLE( "bar" ){
 		GET_VALUE( Bar );
 		GET_NAMED_VALUE( "color", color )
-		//GET_NAMED_VALUE( "barheight", Bar.height )
-		//GET_NAMED_VALUE( "barwidth", Bar.width )
-		//GET_NAMED_VALUE( "barx", Bar.x )
-		//GET_NAMED_VALUE( "bary", Bar.y )
 	}
 	lua_pop(L, 1);
 
 	IS_TABLE( "top" ){
 		GET_VALUE( Top );
-		//GET_NAMED_VALUE( "barcoverx", Top.x )
-		//GET_NAMED_VALUE( "barcovery", Top.y )
 		GET_NAMED_VALUE( "image", imgname )
 		GET_NAMED_VALUE( "picture", picture )
 	}

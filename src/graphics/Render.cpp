@@ -17,6 +17,7 @@
 #include "graphics/render/VBuffer.h"
 #include "graphics/render/GLTextures.h"
 #include "graphics/utils/VBOArray.h"
+#include "graphics/Lighting.h"
 
 
 #include "scripts/LuaConfig.h"
@@ -132,12 +133,14 @@ bool RenderManager::openglSetup( int wwidth, int wheight )
 
 	GLuint nt = 0;
 	TextureProxy first;
-	GLTextures::generate( &nt, 1, 1, color );
+	GLTextures::generate( &nt, 1, 1, GL_UNSIGNED_BYTE, color );
 	first.texture = GLTextures::create( "", nt, 1, 1 );
 	Textures::push( &first, nt, 0 );
 
 	rect2f view( 0.0, 0.0, conf.video.windowWidth, conf.video.windowHeight );
 	Camera::push_state( &view );
+
+	LightingManager::init( );
 
 	return true;
 }

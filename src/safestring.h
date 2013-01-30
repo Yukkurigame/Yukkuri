@@ -10,6 +10,7 @@
 #include <string>
 #include <cstring>
 #include <sstream>
+#include <cstdio>
 #include "types.h"
 
 //TODO: strcat, strcpy

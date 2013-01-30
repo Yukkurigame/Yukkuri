@@ -36,7 +36,7 @@ extern "C" {
 #define LUA_GET_TABLE_VALUE_DEFAULT( idx, val, dflt )	\
 	lua_pushnumber( L, idx );							\
 	lua_gettable( L, -2 );								\
-	if( lua_isnone( L, -1 ) )							\
+	if( lua_isnoneornil( L, -1 ) )						\
 		val = dflt;										\
 	else												\
 		getFromLua( L, -1, val );						\

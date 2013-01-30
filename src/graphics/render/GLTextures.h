@@ -30,8 +30,8 @@ namespace GLTextures
 	inline bool generate( GLuint* ahandle, int width, int height ){
 		return generate( ahandle, GL_TEXTURE_2D, GL_RGBA, width, height, GL_RGBA, GL_UNSIGNED_INT, NULL );
 	}
-	inline bool generate( GLuint* ahandle, int width, int height, const void* data ){
-		return generate( ahandle, GL_TEXTURE_2D, GL_RGBA, width, height, GL_RGBA, GL_UNSIGNED_INT, data );
+	inline bool generate( GLuint* ahandle, int width, int height, GLenum type, const void* data ){
+		return generate( ahandle, GL_TEXTURE_2D, GL_RGBA, width, height, GL_RGBA, type, data );
 	}
 
 

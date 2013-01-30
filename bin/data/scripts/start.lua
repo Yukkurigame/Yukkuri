@@ -62,7 +62,7 @@ local hpbar = Interface.addChild(stats, "barwidget_phpbar_121678",
 		text = { base = "HP: ", size = 18, align = constants.waLEFT,
 			face = "./LiberationSerif-Regular.ttf",
 		},
-		bar = { color = {255}, width = 133, height = 8, y = -5 },
+		bar = { color = {255,0,0}, width = 133, height = 8, y = -5 },
 		top = { x = -7, y = -5, width = 145, height = 17,
 				image = "sprite_bar_cover_693493" }
 })
@@ -90,7 +90,7 @@ local expbar = Interface.addChild(stats, "barwidget_pexpbar_361877",
 		text = { base = "Exp: ", size = 18, align = constants.waLEFT,
 			face = "./LiberationSerif-Regular.ttf",
 		},
-		bar = { color = {0,255}, width = 133, height = 8, y = -5 },
+		bar = { color = {0,255,0}, width = 133, height = 8, y = -5 },
 		top = { x = -7, y = -5, width = 145, height = 17,
 				image = "sprite_bar_cover_693493" }
 })

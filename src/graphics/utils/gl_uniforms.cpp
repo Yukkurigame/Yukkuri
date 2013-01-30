@@ -85,17 +85,29 @@ void UniformsManager::send_data( int location, UINT id, int count )
 		return;
 
 	switch( uniform->type ){
+		case GL_FLOAT:
+			glUniform1f( location, *(float*)uniform->data );
+			break;
+
+		case GL_INT:
 		case GL_SAMPLER_1D:
 		case GL_SAMPLER_2D:
 		case GL_SAMPLER_3D:
 			glUniform1i( location, *(int*)uniform->data );
 			break;
+
 		case GL_FLOAT_VEC2:
 			glUniform2fv( location, count, (float*)uniform->data );
 			break;
+
 		case GL_FLOAT_VEC3:
 			glUniform3fv( location, count, (float*)uniform->data );
 			break;
+
+		case GL_INT_VEC4:
+			glUniform4iv( location, count, (int*)uniform->data );
+			break;
+
 		case GL_FLOAT_MAT4:
 			glUniformMatrix4fv( location, count, GL_FALSE, (float*)uniform->data );
 			break;

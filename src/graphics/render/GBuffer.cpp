@@ -96,7 +96,7 @@ bool GBuffer::init()
 			continue;
 		for( UINT j = 0 ; j < gbufLast; ++j ){
 			if( h->index == indexes[j] )
-				combinator->textures.push_back( textures[j] );
+				combinator->textures.push( textures[j] );
 		}
 	}
 

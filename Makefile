@@ -30,8 +30,8 @@ GRAPHUTILS = gl_shader.cpp gl_uniforms.cpp VBOArray.cpp Image.cpp ElasticBox.cpp
 GRAPHICS = Camera.cpp daytime.cpp Font.cpp gl_extensions.cpp Lighting.cpp Render.cpp Text.cpp \
 		   $(addprefix render/, $(RENDER)) $(addprefix sprite/, $(SPRITE)) $(addprefix utils/, $(GRAPHUTILS))
 PUSHERAPI = TextureProxy.cpp
-SCRIPTSAPI = UnitManagerApi.cpp InterfaceApi.cpp Widgets.cpp ThreadManagerApi.cpp CameraApi.cpp \
-			 BindingsApi.cpp Units.cpp PathsApi.cpp RegionApi.cpp YOBA.cpp \
+SCRIPTSAPI = LightsApi.cpp UnitManagerApi.cpp InterfaceApi.cpp Widgets.cpp ThreadManagerApi.cpp \
+			 CameraApi.cpp BindingsApi.cpp Units.cpp PathsApi.cpp RegionApi.cpp YOBA.cpp \
 			 $(addprefix $(PUSHERAPIDIR), $(PUSHERAPI))
 SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp LuaPusher.cpp \
 		  proto.cpp api.cpp $(addprefix $(SCRIPTSAPIDIR), $(SCRIPTSAPI))
@@ -42,7 +42,7 @@ MAP = Tiles.cpp Region.cpp Map.cpp
 
 
 
-SRCS =   main.cpp config.cpp misc.cpp Bindings.cpp BindFunctions.cpp \
+SRCS =   main.cpp config.cpp misc.cpp Bindings.cpp BindFunctions.cpp utf.cpp \
 		 $(addprefix $(UTILSDIR), $(UTILS)) \
          $(addprefix $(COREDIR), $(CORE)) \
          $(addprefix $(SCRIPTSDIR), $(SCRIPTS)) \
@@ -51,8 +51,9 @@ SRCS =   main.cpp config.cpp misc.cpp Bindings.cpp BindFunctions.cpp \
          $(addprefix $(GRAPHICSDIR), $(GRAPHICS)) \
          $(addprefix $(INTERFACEDIR), $(INTERFACE)) \
          $(addprefix $(MAPDIR), $(MAP)) \
-         $(addprefix $(3RDPARTYDIR), $(3RDPARTY)) \
-         utf.cpp
+         $(addprefix $(3RDPARTYDIR), $(3RDPARTY))
+         
+
 
 OBJ = $(SRCS:.cpp=.o)
 OBJECTS = $(addprefix $(OBJDIR), $(OBJ:.c=.o)) 
@@ -61,20 +62,24 @@ UNICSOURCES = $(addprefix $(COREDIR), game.cpp graphics.cpp input.cpp)
 
 OBJS = $(addprefix $(OBJDIR), $(UNICSOURCES:.cpp=.o)) $(OBJECTS)
 
-UNIQHEADERS = $(SCRIPTSDIR)LuaScriptConfig.h $(UNITSDIR)YOBA.h $(MAPDIR)Waypoint.h \
-         	$(addprefix $(3RDPARTYDIR), TypeList.h timer/InternalTimerEvent.h \
-         	timer/InternalTimerEvent.h timer/TimerEvent.h timer/ITimerEventPerformer.h ) \
-         	Define.h debug.h hacks.h safestring.h basic_types.h types.h
+UNIQHEADERS = $(addsuffix .h, \
+	 	$(SCRIPTSDIR)LuaScriptConfig $(UNITSDIR)YOBA $(MAPDIR)Waypoint \
+		$(addprefix $(3RDPARTYDIR), TypeList \
+			$(addprefix timer/, InternalTimerEvent InternalTimerEvent TimerEvent \
+			ITimerEventPerformer )) \
+		 Define debug hacks safestring basic_types types )
 
 
 HEADERS = $(OBJECTS:.o=.h) $(addprefix $(OBJDIR), $(UNIQHEADERS))
- 
- 
-GCHOLD = $(HEADERS:.h=.h.gch)
-GCH = $(shell echo $(GCHOLD) | sed -e "s/[^ ]\+\/\(main\|LuaRegister\|api\/Widgets\|api\/Units\|api\/YOBA\|scripts\/LuaPusher\|scripts\/api\/pusher\/TextureProxy\).h.gch //g")
+MISSINGHEADERS = $(addprefix $(OBJDIR), $(addsuffix .h, main \
+		$(addprefix $(SCRIPTSDIR), LuaRegister LuaPusher \
+			$(addprefix $(SCRIPTSAPIDIR), Widgets Units YOBA pusher/TextureProxy)	\
+		)))
+
+GHEADERS = $(filter-out $(MISSINGHEADERS), $(HEADERS)) 
+GCH = $(GHEADERS:.h=.h.gch)
 
 
-#.cpp.o:
 #FIXME: only gnu make?
 $(OBJDIR)%.h.gch: %.h
 	$(rm) $@
@@ -89,7 +94,6 @@ $(OBJDIR)%.o: %.c
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 
-#$*.cpp
 
 .PHONY: all clean
 
@@ -97,8 +101,13 @@ all: $(PROGNAME)
 
 rebuild: cleanprog all
 
-$(PROGNAME) : dirs $(GCH) $(OBJS)	
+$(PROGNAME) : dirs $(OBJS)	
 	$(CC) $(CFLAGS)  -o $(OUTDIR)$(PROGNAME) $(OBJS) $(LIBS)
+
+
+# Precompiled headers ~ 800mb on x86_64 and 400 on x86
+pch: $(GCH)
+
 
 dirs:
 	mkdir -p $(addprefix $(OBJDIR), $(UTILSDIR) $(COREDIR) $(SCRIPTSDIR) 	\
@@ -109,6 +118,7 @@ dirs:
 
 
 clean: cleanheaders cleanobjs cleanprog cleandirs
+
 
 cleanheaders:
 	$(rm) $(GCH)

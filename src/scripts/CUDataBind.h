@@ -54,9 +54,13 @@
 #include "interface/widgets/WidgetText.h"
 #include "interface/widgets/WidgetBar.h"
 
+/* Different */
+#include "units/YOBA.h"
+#include "graphics/Lighting.h"
+
 // Typelist with all types, that can be passed to lua as userdata
-typedef TYPELIST_10( Unit, UnitStatic, UnitDynamic, Entity, Corpse, Player,
-		Widget, WidgetText, WidgetBar, CharBuild ) ClassesList;
+typedef TYPELIST_11( Unit, UnitStatic, UnitDynamic, Entity, Corpse, Player,
+		Widget, WidgetText, WidgetBar, CharBuild, LightSource ) ClassesList;
 
 
 
@@ -75,6 +79,7 @@ UDATA_CREATOR_FUNC_DECL(WidgetText);
 UDATA_CREATOR_FUNC_DECL(WidgetBar);
 
 UDATA_CREATOR_FUNC_DECL(CharBuild);
+UDATA_CREATOR_FUNC_DECL(LightSource);
 
 
 
@@ -100,6 +105,7 @@ void RegisterAllTypeMetatables(lua_State* L)
 	RegisterTypeMetatable<WidgetBar>(L);
 
 	RegisterTypeMetatable<CharBuild>(L);
+	RegisterTypeMetatable<LightSource>(L);
 
 }
 
@@ -181,6 +187,9 @@ void RegisterAllTypeMetatables(lua_State* L)
 		EXEC_METHOD_DECL(set)
 
 
+// LightSource
+#define DECL_LIGHTSOURCE_METH
+
 
 DECL_UNIT_METH
 DECL_UNITDYNAMIC_METH
@@ -191,6 +200,7 @@ DECL_WIDGET_METH
 DECL_WIDGETTEXT_METH
 DECL_WIDGETBAR_METH
 DECL_CHARBUILD_METH
+DECL_LIGHTSOURCE_METH
 
 
 // Metatable records
@@ -276,6 +286,10 @@ DECL_CHARBUILD_METH
 		EXEC_METHOD_ENTRY(ID, set)
 
 
+// LightSource
+#define LIGHTSOURCE_METH_ENTRY(ID)
+
+
 
 // Meta methods
 const size_t METAMETHODS_MAX_COUNT = 70;
@@ -328,6 +342,11 @@ static const struct luaL_reg ud_meta[TL::Length<ClassesList>::value][METAMETHODS
 	{
 		STD_METHODS(9),
 		CHARBUILD_METH_ENTRY(9)
+		END
+	},
+	{
+		STD_METHODS(10),
+		LIGHTSOURCE_METH_ENTRY(10)
 		END
 	},
 

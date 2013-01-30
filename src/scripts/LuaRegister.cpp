@@ -8,17 +8,19 @@
 #include "Lua.h"
 
 #include "graphics/utils/gl_shader.h"
+#include "graphics/Lighting.h"
 
 #include "3rdparty/CUDataTemplates.h"
 
-#include "api.h"
-#include "api/UnitManagerApi.h"
-#include "api/InterfaceApi.h"
-#include "api/ThreadManagerApi.h"
-#include "api/CameraApi.h"
-#include "api/BindingsApi.h"
-#include "api/PathsApi.h"
-#include "api/RegionApi.h"
+#include "scripts/api.h"
+#include "scripts/api/LightsApi.h"
+#include "scripts/api/UnitManagerApi.h"
+#include "scripts/api/InterfaceApi.h"
+#include "scripts/api/ThreadManagerApi.h"
+#include "scripts/api/CameraApi.h"
+#include "scripts/api/BindingsApi.h"
+#include "scripts/api/PathsApi.h"
+#include "scripts/api/RegionApi.h"
 
 #include "interface/widgets/Widget.h"
 
@@ -59,6 +61,7 @@ void LuaMain::RegisterApi( lua_State* L )
 	lua_pop( L, 1 );
 
 	// Libraries
+	REGAPI( "Lights", LightsApi )
 	REGAPI( "Interface", IfaceApi )
 	REGAPI( "UnitManager", UMApi )
 	REGAPI( "Input", BindingsApi )
@@ -134,6 +137,12 @@ void LuaMain::RegisterApi( lua_State* L )
 		FIELD(glpGeometry)
 		FIELD(glpPointLight)
 		FIELD(glpDirLight)
+		// Lights
+		FIELD(ltAmbient)
+		FIELD(ltDirectional)
+		FIELD(ltPoint)
+		FIELD(ltSpot)
+
 
 		// Unit Types
 		FIELD(utStatic)

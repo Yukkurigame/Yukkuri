@@ -35,5 +35,6 @@ void main()
 	frag_LightlessMap = vec4(0.0, 0.0, 0.0, 0.0);
 #else
 	frag_LightlessMap = color;
+	frag_ColorMap = vec4(0.0, 0.0, 0.0, 0.0);
 #endif
 }

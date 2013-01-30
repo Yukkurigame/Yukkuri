@@ -141,16 +141,6 @@ int pushToLua( lua_State* L, s4ub const& val )
 	return 1;
 }
 
-template<>
-s4ub const getFromLua( lua_State* L, int idx )
-{
-	s4ub ret;
-	GLubyte* r[4] = { &ret.r, &ret.g, &ret.b, &ret.a };
-	for( int i = 0; i < 4; ++i ){
-		LUA_GET_TABLE_VALUE( i + 1, *r[i] )
-	}
-	return ret;
-}
 
 template<>
 void getFromLua( lua_State* L, int idx, s4ub& val )
@@ -161,6 +151,17 @@ void getFromLua( lua_State* L, int idx, s4ub& val )
 	}
 }
 
+
+template<>
+s4ub const getFromLua( lua_State* L, int idx )
+{
+	s4ub ret;
+	getFromLua( L, idx, ret );
+	return ret;
+}
+
+
+
 template<>
 bool CHINP_TESTER<s4ub>(lua_State* L, int idx)
 {
@@ -169,7 +170,7 @@ bool CHINP_TESTER<s4ub>(lua_State* L, int idx)
 			lua_pushnumber( L, i );
 			lua_gettable( L, -2 );
 			if( !lua_isnumber( L, -1 ) &&
-				!lua_isnone( L, -1 ) ){
+				!lua_isnoneornil( L, -1 ) ){
 					lua_pop(L, 1);
 					return false;
 			}

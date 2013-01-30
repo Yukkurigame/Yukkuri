@@ -8,18 +8,23 @@
 #define LIGHTING_H_
 
 #include "graphics/GraphicsTypes.h"
+#include "3rdparty/CUDataUser.h"
 #include "basic_types.h"
 
 
-enum LigthType {
-	ltAmbient = 1, ltDirectional = 2, ltPoint = 4, ltSpot = 8
+class CUData;
+
+
+enum LightType {
+	ltAmbient = 1, ltDirectional, ltPoint, ltSpot
 };
 
 
-struct LightSource
+class LightSource : public CUDataUser
 {
+public:
 	// Base
-	enum LigthType type;
+	enum LightType type;
 	s4ub color;
 	float ambient_intensity;
 	float diffuse_intensity;
@@ -27,22 +32,27 @@ struct LightSource
 	s3f direction;
 	// Point && Spot
 	s3f position;
-    struct {
-        float Constant;
-        float Linear;
-        float Exp;
-    } Attenuation;
-    // Spot
-    float cut_off;
+	struct {
+		float Constant;
+		float Linear;
+		float Exp;
+	} Attenuation;
+	// Spot
+	float cut_off;
+
+protected:
+	virtual CUData* createUData();
 };
 
 
 
 namespace LightingManager
 {
-	LightSource* addLight( enum LigthType type );
-	void freeLight( LightSource* );
-	listElement<LightSource*>* first( enum LigthType type );
+	void init( );
+
+	LightSource* add_light( enum LightType type );
+	void remove_light( LightSource* );
+	listElement<LightSource*>* first( enum LightType type );
 }
 
 

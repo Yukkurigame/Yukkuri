@@ -248,6 +248,9 @@ GLuint createProgram( enum GLSPass pass, enum GLSFlags glflags )
 	/* Attribute locations must be setup before calling glLinkProgram. */
 	for( unsigned int i = 0; i < config.attributes_count; ++i )
 		glBindAttribLocation( shaderprogram, config.attributes[i].index, config.attributes[i].name );
+	/* Bind fragment outputs indexes to locations */
+	for( unsigned int i = 0; i < config.output_count; ++i )
+		glBindFragDataLocation( shaderprogram, i, config.output[i] );
 
 	/* Link our program */
 	/* At this stage, the vertex and fragment programs are inspected, optimized and a binary code is generated for the shader. */
@@ -271,9 +274,6 @@ GLuint createProgram( enum GLSPass pass, enum GLSFlags glflags )
 		return 0;
 	}
 
-	for( unsigned int i = 0; i < config.output_count; ++i )
-		glBindFragDataLocation( shaderprogram, i, config.output[i] );
-
 	GLint uniforms_count;
 	glGetProgramiv( shaderprogram, GL_ACTIVE_UNIFORMS, &uniforms_count );
 
@@ -282,13 +282,13 @@ GLuint createProgram( enum GLSPass pass, enum GLSFlags glflags )
 	if( hdl.count )
 		hdl.handlers = new UniformHandler[hdl.count];
 	for( UINT i = 0; i < hdl.count; ++i ){
-	    int name_len = 0, num = 0;
-	    char name[100];
-	    UniformHandler* h = &hdl.handlers[i];
-	    glGetActiveUniform( shaderprogram, i, sizeof(name)-1, &name_len, &num, &h->type, name );
-	    name[name_len] = '\0';
-	    h->location = glGetUniformLocation( shaderprogram, name );
-	    h->index = UniformsManager::register_uniform( name, h->type );
+		int name_len = 0, num = 0;
+		char name[100];
+		UniformHandler* h = &hdl.handlers[i];
+		glGetActiveUniform( shaderprogram, i, sizeof(name)-1, &name_len, &num, &h->type, name );
+		name[name_len] = '\0';
+		h->location = glGetUniformLocation( shaderprogram, name );
+		h->index = UniformsManager::register_uniform( name, h->type );
 	}
 
 	return shaderprogram;

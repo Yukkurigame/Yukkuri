@@ -35,10 +35,10 @@ namespace GBuffer
 
 	const int texture_type = GL_TEXTURE_2D;
 
-	void geometry_pass( );
+	void geometry_pass( list<VBOStructureHandle*>* handler  );
 	void stencil_pass( LightSource* );
 	void light_pass_point( LightSource* );
-	void light_pass_directional( );
+	void light_pass_directional( list<VBOStructureHandle*>* handler );
 	void final_pass( );
 
 	inline void texture_to_fbo( GLuint tex_id, int int_format, int format, int type, int attach )
@@ -52,6 +52,7 @@ namespace GBuffer
 	}
 
 	Sprite* combinator;
+	list< VBOStructureHandle* > combinator_handler;
 }
 
 
@@ -99,6 +100,10 @@ bool GBuffer::init()
 				combinator->textures.push_back( textures[j] );
 		}
 	}
+
+	// Prepare combinator to rendering
+	VBuffer::prepare_handler( combinator, &combinator_handler );
+
 
 	// Depth texture
 	texture_to_fbo( depth_texture, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, GL_DEPTH_ATTACHMENT );
@@ -150,7 +155,10 @@ void GBuffer::render()
 
 	VBuffer::setup( VBOHandle );
 
-	geometry_pass( );
+	list< VBOStructureHandle* > vbos;
+	VBuffer::prepare_handler( RenderManager::GetSpritesArray(), &vbos );
+	geometry_pass( &vbos );
+	VBuffer::free_handler( &vbos );
 
 	glEnable(GL_STENCIL_TEST);
 
@@ -163,9 +171,10 @@ void GBuffer::render()
 
 	glDisable(GL_STENCIL_TEST);
 
-	light_pass_directional( );
+	light_pass_directional( &combinator_handler );
 
 	VBuffer::unbind( );
+
 
 	// Draw to final texture
 	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
@@ -179,7 +188,7 @@ void GBuffer::render()
 
 }
 
-void GBuffer::geometry_pass( )
+void GBuffer::geometry_pass( list<VBOStructureHandle*>* handler )
 {
 	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, fbo );
 
@@ -197,17 +206,12 @@ void GBuffer::geometry_pass( )
 
 	glEnable( GL_DEPTH_TEST );
 
-	list< VBOStructureHandle* > vbos;
-	VBuffer::prepare_handler( RenderManager::GetSpritesArray(), &vbos );
-
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 
-	VBuffer::draw( glpGeometry, &vbos );
+	VBuffer::draw( glpGeometry, handler );
 
 	glDisable(GL_BLEND);
-
-	VBuffer::free_handler( &vbos );
 
 	// When we get here the depth buffer is already populated and the stencil pass
 	// depends on it, but it does not write to it.
@@ -227,25 +231,19 @@ void GBuffer::light_pass_point( LightSource* )
 }
 
 
-void GBuffer::light_pass_directional( )
+void GBuffer::light_pass_directional( list<VBOStructureHandle*>* handler )
 {
 	glDrawBuffer( GL_COLOR_ATTACHMENT4 );
 
 	glDisable(GL_DEPTH_TEST);
 
-	list< VBOStructureHandle* > vbos;
-	VBuffer::prepare_handler( combinator, &vbos );
-
 	//glEnable(GL_BLEND);
 	//glBlendEquation(GL_FUNC_ADD);
 	//glBlendFunc(GL_ONE, GL_ONE);
 
-	//Shaders::passUniform2fv( glsFixed, "in_ScreenSize", 1, &window_size.x );
-	VBuffer::draw( glpDirLight, &vbos );
+	VBuffer::draw( glpDirLight, handler );
 
 	//glDisable(GL_BLEND);
-
-	VBuffer::free_handler( &vbos );
 
 }
 

@@ -91,16 +91,6 @@ bool WidgetText::load( lua_State* L )
 	}
 	lua_pop(L, 1);
 
-	/*GET_NAMED_VALUE( "text", BaseText )
-	GET_NAMED_VALUE( "textx", TextPos.x )
-	GET_NAMED_VALUE( "texty", TextPos.y )
-	GET_NAMED_VALUE( "textalign", TextAlign )
-	GET_NAMED_VALUE( "font", font )
-	GET_NAMED_VALUE( "fontsize", fontsize )
-	GET_NAMED_VALUE( "fontcolor", vcolor )
-	GET_NAMED_VALUE( "lineheight", lineheight )
-	*/
-
 	TextSprite.setPosition( TextPos.x, TextPos.x, getZ() );
 	TextSprite.setFont( font, fontsize );
 	TextSprite.setFixed( true );

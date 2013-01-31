@@ -1,6 +1,8 @@
 
 function toggle_interface()
-	local stats = Interface.getWidgetByName("stats")
-	stats:toggle()
+	local stats = GUI:getWidget('stats')
+	if stats ~= nil then
+		stats:toggle()
+	end
 end
 

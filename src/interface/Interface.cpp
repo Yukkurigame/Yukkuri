@@ -56,7 +56,7 @@ namespace
 
 void Interface::init( )
 {
-	DayTime::loadInterface();
+	//DayTime::loadInterface();
 }
 
 

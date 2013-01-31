@@ -39,32 +39,64 @@ namespace LightingManager {
 		UniformsManager::pass_data( location, data );
 	}
 
-	static void register_light( LightSource* source )
+
+	void get_source_info( enum LightType type, char*& name, int*& count_ptr )
+	{
+		const char* prefix;
+		const char* location = "in_%s_Light[%d]";
+
+		switch( type ){
+			case ltDirectional:
+				count_ptr = &direction_count;
+				prefix = "dir";
+				break;
+			default:
+				count_ptr = &point_count;
+				return;
+				break;
+		}
+		name = new char[ strlen(location) + strlen(prefix) + 3 ];
+		sprintf( name, location, prefix, *count_ptr );
+	}
+
+	void register_light( LightSource* source )
 	{
 		if( !source )
 			return;
 
-		UINT old_count;
-		const char* prefix;
-		const char* location = "in_%s_Light[%d]";
+		int* count_ptr = NULL;
+		char* name = NULL;
+		get_source_info( source->type, name, count_ptr );
 
-		switch( source->type ){
-			case ltDirectional:
-				old_count = direction_count++;
-				prefix = "dir";
-				break;
-			default:
-				return;
-				break;
-		}
-
-		char* name = (char*)malloc( (UINT)sizeof(char) * (strlen(location) + strlen(prefix) + 3) );
-		sprintf( name, location, prefix, old_count );
+		// Add one light source
+		(*count_ptr)++;
 
 		pass_data( name, "direction", GL_FLOAT_VEC3, &source->direction );
 		pass_data( name, "color", GL_FLOAT_VEC3, &source->color );
 		pass_data( name, "ambient", GL_FLOAT, &source->ambient );
 		pass_data( name, "diffuse", GL_FLOAT, &source->diffuse );
+
+		delete[] name;
+	}
+
+	void unregister_light( LightSource* source )
+	{
+		if( !source )
+			return;
+
+		int* count_ptr = NULL;
+		char* name = NULL;
+		get_source_info( source->type, name, count_ptr );
+
+		// Remove one light source
+		(*count_ptr)++;
+
+		pass_data( name, "direction", GL_FLOAT_VEC3, NULL );
+		pass_data( name, "color", GL_FLOAT_VEC3, NULL );
+		pass_data( name, "ambient", GL_FLOAT, NULL );
+		pass_data( name, "diffuse", GL_FLOAT, NULL );
+
+		delete[] name;
 	}
 }
 
@@ -97,6 +129,7 @@ LightSource* LightingManager::add_light( enum LightType type )
 void LightingManager::remove_light( LightSource* source )
 {
 	list<LightSource*>* light_array = array_by_type( source->type );
+	unregister_light( source );
 	light_array->remove( source );
 	delete source;
 }

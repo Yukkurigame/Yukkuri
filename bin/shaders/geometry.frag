@@ -7,7 +7,6 @@ in vec3 vert_WorldPos;
 in vec2 vert_TexCoord;
 in vec4 vert_Color;
 
-
 out vec4 frag_LightlessMap;
 out vec4 frag_WorldPos;
 out vec4 frag_Normal;

@@ -1,12 +1,12 @@
 
 Environment = {
-	day_length = 240000,
+	day_length = 48000,
 	day_period = 200,
 	latitude = 10,
 	longitude = 130,
 	gtm_delta = 11,
-	time = 10,
-	day = 0,
+	time = 8,
+	day = 340,
 }
 Environment.__index = Environment
 
@@ -15,8 +15,8 @@ local RADIANS = math.pi / 180
 function Environment:setup(params)
 	self.ltsm = ( self.longitude - 15.0 * self.gtm_delta )
 	self.sun = Lights.create(constants.ltDirectional)
-	self.sun:color({1,1,1,1})
-	self.sun:diffuse(1)
+	self.sun:color({1,1,1})
+	self.sun:diffuse(2)
 	if self.thread == nil then
 		self.thread = Thread.newThread(function()
 			while true do
@@ -77,6 +77,8 @@ function Environment:update(dt)
 	else
 		self:setText("Noon")
 	end
+	hours, seconds = math.modf(time)
+	self:setText(string.format("%d:%d", hours, seconds * 60))
 
 	self:update_weather()
 end
@@ -110,8 +112,7 @@ function Environment:sun_direction( )
 	local ret = {
 		math.cos(Elevation) * math.sin(Azimuth),
 		math.sin(Elevation) * math.sin(Azimuth),
-		math.sin(Elevation)
+		-math.sin(Elevation)
 	}
-	print(table.dump(ret))
 	return ret
 end

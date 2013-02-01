@@ -6,42 +6,39 @@ uniform sampler2D in_NormalMap;
 in vec2 vert_TexCoords;
 in vec4 vert_Color;
 
-
-#ifdef _YLIGHT
-	varying vec3 vert_normal;
-	struct lightSource {
-		vec4 position;
-		vec4 color;
-	};
-	uniform lightSource lights;
-
-	vec3 scene_ambient = vec3(0.4, 0.4, 0.4);
-#endif
-
-
 out vec4 out_FragColor;
 
 
-void main(void)
-{
-	vec4 color = texture2D(in_ColorMap, vert_TexCoords);
 
 #ifdef _YLIGHT
-	vec3 frag_normal = vec3(0.0, 0.0, 1.0);
-	vec3 light_normal = normalize(lights.position.xyz);
+	in vec3 vert_normal;
 
-	#ifdef _YNORMALS
-		vec3 ncolor = normalize((texture2D(in_NormalMap, vert_TexCoords).rgb - 0.5) * 2.0);
-		frag_normal = normalize(ncolor.rgb + frag_normal);
-	#endif
+	const int max_dir_lights = 3;
+	uniform int dir_lights;
 
-	float d = dot(frag_normal, light_normal);
+	struct Light
+	{
+		vec3 direction;
+		vec3 color;
+		// Intensity
+		float ambient;
+		float diffuse;
+	};
 
-	float emissive_contribution = 0.01;
-	float ambient_contribution  = 1.0;
-	float diffuse_contribution  = 0.8;
-	float specular_contribution = 0.9;
+	uniform Light in_dir_Light[max_dir_lights];
 
+	vec3 general_ambient = vec3(0.2, 0.2, 0.2);
+
+	vec3 calculate_light(Light light, vec3 normal)
+{
+	//vec3 light_normal = normalize(lights.position.xyz);
+
+	float d = dot(normal, -light.direction);
+
+	//float emissive_contribution = 0.01;
+	//float ambient_contribution  = 1.0;
+	//float diffuse_contribution  = 0.8;
+	//float specular_contribution = 0.9;
 	//bool facing = d > 0.0;
 	//vec4 frag_color = emissive_color * emissive_contribution +
 	//        ambient_color * ambient_contribution  * c +
@@ -50,11 +47,35 @@ void main(void)
 	//        specular_color * specular_contribution * c * pow(max(0,dot(normal1, halfway_vector1)), 200.0) :
 	//        vec4(0.0, 0.0, 0.0, 0.0));
 
-	vec3 frag_color = scene_ambient * ambient_contribution +				// Ambient
-					lights.color.rgb * max(0.0, d) * diffuse_contribution;	// Diffuse
-	vec4 result_color = vec4(frag_color * color.rgb, color.a);
+	return light.color * light.ambient +				// Ambient
+			light.color * max(0.0, d) * light.diffuse;	// Diffuse
+}
+#endif
+
+
+
+void main(void)
+{
+	vec4 color = texture2D(in_ColorMap, vert_TexCoords);
+
+#ifdef _YLIGHT
+	vec3 frag_normal = vec3(0.0, 0.0, 1.0);
+	#ifdef _YNORMALS
+		vec3 ncolor = normalize((texture2D(in_NormalMap, vert_TexCoords).rgb - 0.5) * 2.0);
+		frag_normal = normalize(ncolor.rgb + frag_normal);
+	#endif
+
+	//vec3 color_accum = vec3(0.0);
+	//for(int i = 0; i < max_dir_lights; i++){
+	vec3 color_accum = calculate_light(in_dir_Light[0], frag_normal);
+	//color_accum += calculate_light(in_dir_Light[1], frag_normal);
+	//color_accum += calculate_light(in_dir_Light[2], frag_normal);
+	//}
+	color_accum = clamp(color_accum, general_ambient, vec3(1.0));
+	vec4 result_color = vec4(color_accum * color.rgb, color.a);
 #else
 	vec4 result_color = color;
 #endif
+
 	out_FragColor = vert_Color * result_color;
 }

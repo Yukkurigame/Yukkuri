@@ -29,6 +29,14 @@ namespace Camera {
 		glm::mat4x4 model_view;
 		glm::vec3 cam_translation;
 		glm::mat4x4 mvp;
+
+		CameraState() :	TargetMode(ctmNormal), TargetX(NULL), TargetY(NULL), Target(NULL) {}
+		CameraState( const CameraState* src ) :	TargetMode(src->TargetMode),
+				TargetX(src->TargetX), TargetY(src->TargetY), Target(src->Target),
+				cam_view(src->cam_view), rotation(src->rotation), cam_position(src->cam_position),
+				cam_offset(src->cam_offset), projection(src->projection), model(src->model),
+				model_view(src->model_view), cam_translation(src->cam_translation), mvp(src->mvp) {}
+
 	};
 
 	list< CameraState* > states;
@@ -81,6 +89,14 @@ void Camera::push_state( const rect2f* view )
 	states.push( state );
 	update_viewport( );
 }
+
+void Camera::push_state( )
+{
+	if( !states.head )
+		return;
+	states.push( new CameraState(states.head->data) );
+}
+
 
 void Camera::pop_state( )
 {

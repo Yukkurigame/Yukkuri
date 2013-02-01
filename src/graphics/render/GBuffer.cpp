@@ -220,8 +220,24 @@ void GBuffer::geometry_pass( list<VBOStructureHandle*>* handler )
 }
 
 
+inline float point_light_area( const s3fc& color, float intensity )
+{
+	float c = fmax(fmax(color.r, color.g), color.b) * intensity;
+	return (8.0f * sqrtf(c) + 1.0f);
+}
+
 void GBuffer::stencil_pass( LightSource* )
 {
+	glDrawBuffer(GL_NONE);
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
+	glClear(GL_STENCIL_BUFFER_BIT);
+	// We need the stencil test to be enabled but we want it
+	// to succeed always. Only the depth test matters.
+	glStencilFunc(GL_ALWAYS, 0, 0);
+	glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR, GL_KEEP);
+	glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR, GL_KEEP);
+
 
 }
 

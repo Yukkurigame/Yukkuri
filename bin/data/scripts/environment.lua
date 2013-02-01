@@ -1,6 +1,6 @@
 
 Environment = {
-	day_length = 48000,
+	day_length = 240000,
 	day_period = 200,
 	latitude = 10,
 	longitude = 130,
@@ -20,8 +20,8 @@ function Environment:setup(params)
 	if self.thread == nil then
 		self.thread = Thread.newThread(function()
 			while true do
-				Environment:update(200)
-				Thread.wait(200)
+				Environment:update()
+				Thread.wait(Environment.day_period)
 			end
 		end, true)
 	end
@@ -37,7 +37,8 @@ function Environment:setText(text)
 end
 
 
-function Environment:update(dt)
+function Environment:update()
+	local dt = self.day_period
 	local hours = 24 * dt / self.day_length
 	self.time = (self.time + hours) % 24
 	local time = self.time
@@ -77,8 +78,8 @@ function Environment:update(dt)
 	else
 		self:setText("Noon")
 	end
-	hours, seconds = math.modf(time)
-	self:setText(string.format("%d:%d", hours, seconds * 60))
+	--hours, seconds = math.modf(time)
+	--self:setText(string.format("%d:%d", hours, seconds * 60))
 
 	self:update_weather()
 end

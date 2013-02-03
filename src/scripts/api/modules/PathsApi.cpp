@@ -6,11 +6,11 @@
  */
 
 #include "scripts/api/modules/PathsApi.h"
-#include "misc.h"
+#include "utils/path.h"
 
 
 int PathsApi::app( lua_State* L ){
-	lua_pushstring( L, Paths::app() );
+	lua_pushstring( L, Path::app() );
 	return 1;
 }
 

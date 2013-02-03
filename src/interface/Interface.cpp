@@ -85,11 +85,11 @@ Widget* Interface::CreateWidget( std::string id, enum wType type )
 
 void Interface::LoadAllWidgets( )
 {
-	std::vector< std::string > v;
+	list< std::string > v;
 	LuaConfig* lc = new LuaConfig;
 	lc->getSubconfigsList( "widget", v );
-	FOREACHIT( v ){
-		LoadWidget( (*it) );
+	ITER_LIST( std::string, v ){
+		LoadWidget( it->data );
 	}
 	delete lc;
 }
@@ -111,7 +111,7 @@ Widget* Interface::LoadWidget( std::string id )
 
 	std::string stype;
 	enum wType type = wtNone;
-	conf->getValue( "type", id, stype );
+	conf->getValue( "type", id.c_str(), stype );
 	if( stype == "Widget" ){
 		type = wtBlank;
 	}else if( stype == "TextWidget" ){
@@ -135,7 +135,7 @@ Widget* Interface::LoadWidget( std::string id )
 	widgets.push_back(w);
 
 	std::vector < std::string > childs;
-	conf->getValue("children", id, childs);
+	conf->getValue("children", id.c_str(), childs);
 	FOREACHIT( childs ){
 		Widget* cld = LoadWidget( *it );
 		w->addChild(cld);

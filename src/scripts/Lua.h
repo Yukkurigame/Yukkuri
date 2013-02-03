@@ -17,6 +17,8 @@ extern "C" {
 	#include "lualib.h"
 }
 
+#include "utils/list.h"
+
 #include <map>
 #include <vector>
 #include <string>
@@ -219,6 +221,31 @@ public:
 
 	template<typename T>
 	bool getValue( lua_State* L, int index, std::vector<T>& ret )
+	{
+		// stack:
+		if(!lua_istable(L, index))
+			return false;
+
+		LuaStackChecker sc(L, __FILE__, __LINE__);
+
+		lua_pushvalue(L, index); // stack: vector
+
+		const int count = luaL_getn(L, -1);
+		for(int i = 1; count >= i; ++i)	{
+			lua_pushnumber(L, i);
+			lua_gettable(L, -2);
+			T value;
+			getValue(L, -1, value);
+			ret.push_back(value);
+			lua_pop(L, 1); // stack: vector
+		}
+		lua_pop(L, 1); // stack:
+
+		return true;
+	}
+
+	template<typename T>
+	bool getValue( lua_State* L, int index, list<T>& ret )
 	{
 		// stack:
 		if(!lua_istable(L, index))

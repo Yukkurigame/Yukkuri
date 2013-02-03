@@ -27,13 +27,17 @@ struct MainConfig
 	int maxSpawn;
 	int maxEdibles;
 	int playerDies;
-	std::string imagePath;
-	std::string defaultImage;
-	std::string fontsPath;
-	std::string scriptsPath;
-	std::string configsPath;
-	std::string protoPath;
-	std::string shadersPath;
+	std::string default_image;
+	struct {
+		std::string configs;
+		std::string scripts;
+		std::string image;
+		std::string normals;
+		std::string fonts;
+		std::string proto;
+		std::string shaders;
+		std::string meshes;
+	} path;
 
 	float _tileAngle;
 };

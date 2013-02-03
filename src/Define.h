@@ -10,9 +10,26 @@
 #define INPUT_INTERVAL 100
 #define MILISECONDS 1000.0
 
-#ifndef MAX_PATH
-	#define MAX_PATH 4096
+
+#if defined(WIN32)
+	#define SEP '\\'
+	#define ALTSEP '/'
+	#define MAXPATHLEN 256
 #endif
+
+/* Filename separator */
+#ifndef SEP
+	#define SEP '/'
+#endif
+
+#ifndef MAXPATHLEN
+	#if defined(PATH_MAX) && PATH_MAX > 1024
+		#define MAXPATHLEN PATH_MAX
+	#else
+		#define MAXPATHLEN 1024
+	#endif
+#endif
+
 
 // FIXME: MOVE TO GRAPHICS
 #ifdef WIN32

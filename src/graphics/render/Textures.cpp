@@ -188,11 +188,11 @@ void Textures::push( list< TextureProxy* >& tarray, GLuint atlas, GLuint normals
 bool Textures::load( )
 {
 	LuaConfig* lc = new LuaConfig;
-	std::vector< std::string > names;
+	list< std::string > names;
 	int textures_count;
-	std::string config = "sprite";
+	const char* config = "sprite";
 
-	lc->getSubconfigsLength(config, textures_count);
+	lc->getSubconfigsLength( config, textures_count );
 
 	Debug::debug( Debug::GRAPHICS, citoa(textures_count) + " textures found.\n" );
 
@@ -201,10 +201,10 @@ bool Textures::load( )
 		return false;
 	}
 
-	lc->getSubconfigsList(config, names);
+	lc->getSubconfigsList( config, names );
 
-	FOREACHIT( names )
-		TextureAtlas::addTexture( *it );
+	ITER_LIST( std::string, names )
+		TextureAtlas::addTexture( it->data );
 
 	delete lc;
 	// load basic textures to main atlas

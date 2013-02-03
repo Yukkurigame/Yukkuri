@@ -3,11 +3,12 @@
  *
  *  Created on: 19.03.2012
  */
+
 #include "Render.h"
 #include "graphics/gl_extensions.h"
 #include "graphics/utils/gl_shader.h"
-#include "graphics/utils/sdl_graphics.h"
 #include "graphics/sprite/AnimationDefines.h"
+#include "graphics/sprite/Mesh.h"
 #include "graphics/Camera.h"
 #include "graphics/Text.h"
 #include "graphics/render/Atlas.h"
@@ -19,11 +20,7 @@
 #include "graphics/utils/VBOArray.h"
 #include "graphics/Lighting.h"
 
-
-#include "scripts/LuaConfig.h"
 #include "SDL/SDL.h"
-
-#include <algorithm>
 
 #include "config.h"
 
@@ -78,6 +75,7 @@ void RenderManager::init( )
 {
 	Textures::init();
 	AnimDef::init();
+	MeshManager::init();
 }
 
 
@@ -91,6 +89,7 @@ void RenderManager::clean( )
 	CleanFonts();
 	VBOArray::clean( );
 	GBuffer::clean( );
+	MeshManager::clean();
 	ftDone();
 }
 

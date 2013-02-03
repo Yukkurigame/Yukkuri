@@ -214,7 +214,7 @@ GLuint createProgram( enum GLSPass pass, enum GLSFlags glflags )
 	// Push shader config to stack and load config;
 	LuaConfig* cfg = new LuaConfig();
 	std::string shd_id = "shader_" + citoa(pass);
-	cfg->pushSubconfig( shd_id, "shader");
+	cfg->pushSubconfig( shd_id.c_str(), "shader");
 	int conf_loaded = cfg->LuaMain::getValue( -1, config );
 	// Remove shader config from stack;
 	cfg->pop( 1 );
@@ -223,9 +223,9 @@ GLuint createProgram( enum GLSPass pass, enum GLSFlags glflags )
 	if( !conf_loaded )
 		return 0;
 
-	GLint vertex = create_shader( (conf.shadersPath + config.vertex_name).c_str(),
+	GLint vertex = create_shader( (conf.path.shaders + config.vertex_name).c_str(),
 									GL_VERTEX_SHADER, defines );
-	GLint fragment = create_shader( (conf.shadersPath + config.fragment_name).c_str(),
+	GLint fragment = create_shader( (conf.path.shaders + config.fragment_name).c_str(),
 									GL_FRAGMENT_SHADER, defines );
 
 	free( defines );

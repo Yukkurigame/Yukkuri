@@ -39,14 +39,14 @@ bool WidgetText::load( std::string id )
 	s4ub vcolor( 0,0,0,0 );
 	LuaConfig* cfg = new LuaConfig;
 
-	cfg->getValue( "text", id, BaseText );
-	cfg->getValue( "textx", id, TextPos.x );
-	cfg->getValue( "texty", id, TextPos.y );
-	cfg->getValue( "textalign", id, TextAlign );
-	cfg->getValue( "font", id, font );
-	cfg->getValue( "fontsize", id, fontsize );
-	cfg->getValue( "fontcolor", id, vcolor );
-	cfg->getValue( "lineheight", id, lineheight );
+	cfg->getValue( "text", id.c_str(), BaseText );
+	cfg->getValue( "textx", id.c_str(), TextPos.x );
+	cfg->getValue( "texty", id.c_str(), TextPos.y );
+	cfg->getValue( "textalign", id.c_str(), TextAlign );
+	cfg->getValue( "font", id.c_str(), font );
+	cfg->getValue( "fontsize", id.c_str(), fontsize );
+	cfg->getValue( "fontcolor", id.c_str(), vcolor );
+	cfg->getValue( "lineheight", id.c_str(), lineheight );
 	if( !lineheight )
 		lineheight = 1.0;
 

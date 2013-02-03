@@ -68,17 +68,17 @@ bool Widget::load( std::string id )
 	std::string align;
 	std::string valign;
 
-	if( !cfg->getValue( "name", id, Name ) )
+	if( !cfg->getValue( "name", id.c_str(), Name ) )
 		return false;
 
-	cfg->getValue( "x", baseID, Position.x );
-	cfg->getValue( "y", baseID, Position.y );
-	cfg->getValue( "width", baseID, Rect.width );
-	cfg->getValue( "height", baseID, Rect.height );
-	cfg->getValue( "align", baseID, Align );
+	cfg->getValue( "x", baseID.c_str(), Position.x );
+	cfg->getValue( "y", baseID.c_str(), Position.y );
+	cfg->getValue( "width", baseID.c_str(), Rect.width );
+	cfg->getValue( "height", baseID.c_str(), Rect.height );
+	cfg->getValue( "align", baseID.c_str(), Align );
 
 	float z = 0;
-	cfg->getValue("depth", baseID, z );
+	cfg->getValue("depth", baseID.c_str(), z );
 	setWidgetRealZ( z );
 
 	redraw( );
@@ -87,9 +87,9 @@ bool Widget::load( std::string id )
 		std::string imgname;
 		int picture = 0;
 		s4ub bgcolor(0,0,0,0);
-		cfg->getValue( "image", baseID, imgname );
-		cfg->getValue( "picture", baseID, picture );
-		cfg->getValue( "bgcolor", baseID, bgcolor );
+		cfg->getValue( "image", baseID.c_str(), imgname );
+		cfg->getValue( "picture", baseID.c_str(), picture );
+		cfg->getValue( "bgcolor", baseID.c_str(), bgcolor );
 		if( imgname != "" || bgcolor.a ){
 			setBackground( Textures::get_by_name( imgname.c_str() ), picture );
 			if( bgcolor.a )

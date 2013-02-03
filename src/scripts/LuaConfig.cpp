@@ -49,11 +49,11 @@ std::string LuaConfig::getRandom( std::string field, std::string config )
 
 /*	Returns subconfig names list
  */
-bool LuaConfig::getSubconfigsList( std::string config, std::vector< std::string >& ret )
+bool LuaConfig::getSubconfigsList( std::string config, list< std::string >& ret )
 {
 	const int prmsz = 1;
 	const char* prm[prmsz] = { config.c_str() };
-	bool res = execFunction("configs:getSubconfigsList", prm, prmsz, ret);
+	bool res = execFunction( "configs:getSubconfigsList", prm, prmsz, ret );
 	return res;
 }
 

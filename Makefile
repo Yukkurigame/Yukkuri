@@ -19,13 +19,13 @@ MAPDIR = map/
 3RDPARTYDIR= 3rdparty/
 UTILSDIR = utils/
 
-UTILS = list.cpp
+UTILS = list.cpp path.cpp  utf.cpp
 CORE = yukkuri.cpp
 UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp ActionTimer.cpp Scope.cpp Unit.cpp \
 		 UnitStatic.cpp UnitDynamic.cpp UnitEntity.cpp UnitCorpse.cpp UnitPlayer.cpp
 PHYSICS = physics.cpp handlers.cpp
 RENDER = Atlas.cpp GBuffer.cpp GLHelpers.cpp GLTextures.cpp VBuffer.cpp Textures.cpp
-SPRITE = Sprite.cpp Animation.cpp AnimationDefines.cpp Brush.cpp Material.cpp
+SPRITE = Sprite.cpp Animation.cpp AnimationDefines.cpp Brush.cpp Material.cpp Mesh.cpp
 GRAPHUTILS = gl_shader.cpp gl_uniforms.cpp VBOArray.cpp Image.cpp ElasticBox.cpp
 GRAPHICS = Camera.cpp daytime.cpp Font.cpp gl_extensions.cpp Lighting.cpp Render.cpp Text.cpp \
 		   $(addprefix render/, $(RENDER)) $(addprefix sprite/, $(SPRITE)) $(addprefix utils/, $(GRAPHUTILS))
@@ -38,11 +38,12 @@ SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp prot
 WIDGETS = Widget.cpp WidgetText.cpp WidgetBar.cpp
 INTERFACE = Interface.cpp $(addprefix $(WIDGETSDIR), $(WIDGETS))
 MAP = Tiles.cpp Region.cpp Map.cpp
-3RDPARTY = CUData.cpp CUDataUser.cpp CUDataTemplates.cpp LuaPusher.cpp timer/TimerManager.cpp
+3RDPARTY = CUData.cpp CUDataUser.cpp CUDataTemplates.cpp LuaPusher.cpp timer/TimerManager.cpp \
+		   $(addprefix objTester/, list.cpp obj_parser.cpp string_extra.cpp)
 
 
 
-SRCS =   main.cpp config.cpp misc.cpp Bindings.cpp BindFunctions.cpp utf.cpp \
+SRCS =   main.cpp config.cpp Bindings.cpp BindFunctions.cpp  \
 		 $(addprefix $(UTILSDIR), $(UTILS)) \
          $(addprefix $(COREDIR), $(CORE)) \
          $(addprefix $(SCRIPTSDIR), $(SCRIPTS)) \
@@ -113,7 +114,7 @@ dirs:
 	mkdir -p $(addprefix $(OBJDIR), $(UTILSDIR) $(COREDIR) $(SCRIPTSDIR) 	\
 	 $(SCRIPTSDIR)$(SCRIPTSAPIDIR)$(PUSHERAPIDIR) $(SCRIPTSDIR)$(SCRIPTSAPIDIR)/modules \
 	 $(GRAPHICSDIR) $(GRAPHICSDIR)render/ $(GRAPHICSDIR)sprite/ $(GRAPHICSDIR)utils/ $(UNITSDIR) \
-	 $(INTERFACEDIR) $(INTERFACEDIR)$(WIDGETSDIR) $(MAPDIR) $(3RDPARTYDIR) 	\
+	 $(INTERFACEDIR) $(INTERFACEDIR)$(WIDGETSDIR) $(MAPDIR) $(3RDPARTYDIR) $(3RDPARTYDIR)objTester	\
 	 $(3RDPARTYDIR)timer $(PHYSICSDIR))
 
 

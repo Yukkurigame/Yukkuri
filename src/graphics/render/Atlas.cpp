@@ -53,7 +53,7 @@ int TextureAtlas::getAtlasMax( )
 void TextureAtlas::addTexture( std::string name ){
 	LuaConfig* lc = new LuaConfig;
 	TextureProxy* t = new TextureProxy();
-	lc->pushSubconfig( name, "sprite" );
+	lc->pushSubconfig( name.c_str(), "sprite" );
 	lc->LuaMain::get( -1, *t );
 	lc->pop( 1 );
 	t->texture = GLTextures::load( t->image );

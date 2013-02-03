@@ -7,6 +7,7 @@
 
 
 #include "graphics/utils/Image.h"
+#include "utils/path.h"
 #include "SOIL.h"
 #include "config.h"
 #include "safestring.h"
@@ -45,13 +46,12 @@ namespace Image {
 unsigned int Image::load( const char* name, int* width, int* height, bool force )
 {
 	unsigned int img = 0;
-	char* path = (char*)malloc( (unsigned int)conf.imagePath.size( ) + strlen( name ) + 1 );
-	sprintf( path, "%s%s", conf.imagePath.c_str(), name );
+	char* path = Path::join( conf.path.image.c_str(), name );
 	img = open( path, width, height );
 	if( !img && force ){
 		//Not loaded. Try again with default path if path is not default already.
-		if( strcmp( name, conf.defaultImage.c_str() ) ){
-			sprintf( path, "%s", conf.defaultImage.c_str() );
+		if( strcmp( name, conf.default_image.c_str() ) ){
+			sprintf( path, "%s", conf.default_image.c_str() );
 			img = load( path, width, height );
 		}
 	}

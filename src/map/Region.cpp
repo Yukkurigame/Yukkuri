@@ -86,7 +86,7 @@ void Region::load( std::string name )
 	}
 	LuaConfig* cfg = new LuaConfig;
 	std::vector< std::map< std::string, std::string > > Tiles;
-	cfg->getValue( "tiles", name, "region", Tiles );
+	cfg->getValue( "tiles", name.c_str(), "region", Tiles );
 	for( std::vector< std::map< std::string, std::string > >::iterator it = Tiles.begin(), end = Tiles.end();
 			it != end; ++it ){
 		if( it->count( "tile" ) > 0 ){

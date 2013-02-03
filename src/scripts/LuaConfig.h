@@ -8,12 +8,7 @@
 #define LUACONFIG_H_
 
 #include "Lua.h"
-
-//#include <sys/types.h>
 #include <string>
-#include <vector>
-
-#include "debug.h"
 
 class LuaConfig : public LuaMain
 {
@@ -26,51 +21,40 @@ public:
 
 	std::string getRandom( std::string field, std::string config );
 
-	bool getSubconfigsList( std::string config, std::vector< std::string >& ret );
+	bool getSubconfigsList( std::string config, list< std::string >& ret );
 
 	bool getSubconfigsLength( std::string config, int& len );
 
-	bool pushSubconfig( std::string subconfig, std::string config ){
+	bool pushSubconfig( const char* subconfig, const char* config ){
 		const int prmsz = 2;
-		const char* prm[prmsz] = { subconfig.c_str(), config.c_str() };
+		const char* prm[prmsz] = { subconfig, config };
 		return execFunction("configs:getSubconfig", prm, prmsz) > 0;
 	}
 
 	// Get value by subconfig-config
 	template<typename T>
-	bool getValue( std::string field, std::string subconfig, std::string config, T& ret)
-	{
-		const int prmsz = 3;
-		const char* prm[prmsz] = { field.c_str(), subconfig.c_str(), config.c_str() };
-		bool res = execFunction("configs:get", prm, prmsz, ret);
-		return res;
-	}
-	template<typename T>
 	bool getValue( const char* field, const char* subconfig, const char* config, T& ret)
 	{
 		const int prmsz = 3;
 		const char* prm[prmsz] = { field, subconfig, config };
-		bool res = execFunction("configs:get", prm, prmsz, ret);
-		return res;
+		return execFunction("configs:get", prm, prmsz, ret);
 	}
 
 	// Get value by id
 	template<typename T>
-	bool getValue( std::string field, std::string id, T& ret)
+	bool getValue( const char* field, const char* id, T& ret)
 	{
 		const int prmsz = 2;
-		const char* prm[prmsz] = { field.c_str(), id.c_str()};
-		bool res = execFunction("configs:getById", prm, prmsz, ret);
-		return res;
+		const char* prm[prmsz] = { field, id };
+		return execFunction("configs:getById", prm, prmsz, ret);
 	}
 
 	template<typename T>
-	bool getSubconfigs( std::string config, T& ret)
+	bool getSubconfigs( const char* config, T& ret)
 	{
 		const int prmsz = 1;
-		const char* prm[prmsz] = { config.c_str() };
-		bool res = execFunction("configs:getSubconfigs", prm, prmsz, ret);
-		return res;
+		const char* prm[prmsz] = { config };
+		return execFunction("configs:getSubconfigs", prm, prmsz, ret);
 	}
 
 };

@@ -42,15 +42,6 @@ int pushToLua( lua_State* L, MainConfig* const& val )
 
 
 template<>
-MainConfig const getFromLua( lua_State* L, int idx )
-{
-	MainConfig ret;
-	// NOT IMPLEMENTED.
-	return ret;
-}
-
-
-template<>
 void getFromLua( lua_State* L, int idx, MainConfig& val )
 {
 	lua_pushstring( L, "video" );	/* st: table string	*/	\
@@ -62,13 +53,19 @@ void getFromLua( lua_State* L, int idx, MainConfig& val )
 	LUA_GET_VALUE( "render_method", val.video.renderMethod )
 	lua_pop( L, 1 );
 
-	LUA_GET_VALUE( "images_path", val.imagePath )
-	LUA_GET_VALUE( "default_image_name", val.defaultImage )
-	LUA_GET_VALUE( "fonts_path", val.fontsPath )
-	LUA_GET_VALUE( "scripts_path", val.scriptsPath )
-	LUA_GET_VALUE( "configs_path", val.configsPath )
-	LUA_GET_VALUE( "proto_path", val.protoPath )
-	LUA_GET_VALUE( "shaders_path", val.shadersPath )
+	lua_pushstring( L, "paths" );	/* st: table string	*/	\
+	lua_gettable( L, -2 );			/* st: table val	*/	\
+	LUA_GET_VALUE( "images", val.path.image )
+	LUA_GET_VALUE( "normals", val.path.normals )
+	LUA_GET_VALUE( "fonts", val.path.fonts )
+	LUA_GET_VALUE( "scripts", val.path.scripts )
+	LUA_GET_VALUE( "configs", val.path.configs )
+	LUA_GET_VALUE( "proto", val.path.proto )
+	LUA_GET_VALUE( "shaders", val.path.shaders )
+	LUA_GET_VALUE( "meshes", val.path.meshes )
+	lua_pop( L, 1 );
+
+	LUA_GET_VALUE( "default_image_name", val.default_image )
 
 	LUA_GET_VALUE( "widgets_z", val.widgetsPosZ )
 

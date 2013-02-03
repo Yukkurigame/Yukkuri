@@ -56,7 +56,7 @@ int ProtoManager::LoadPrototype( std::string name )
 
 	p->name = name;
 	p->id = -1;
-	std::string path = conf.protoPath + name + ".proto";
+	std::string path = conf.path.proto + name + ".proto";
 
 	Debug::debug( Debug::PROTO, "Loading proto: " + name + ".\n");
 

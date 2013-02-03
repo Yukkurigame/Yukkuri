@@ -5,16 +5,29 @@
  *
  */
 
-#include "misc.h"
+#include "utils/path.h"
 #include "Define.h"
 #include "debug.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-namespace {
+
+namespace Path {
 	char* path_app;
+
+
+	/* determine if "ch" is a separator character */
+	int is_sep( char ch ){
+	#ifdef ALTSEP
+	    return ch == SEP || ch == ALTSEP;
+	#else
+	    return ch == SEP;
+	#endif
+	}
+
 }
+
 
 
 #ifndef WIN32
@@ -30,14 +43,14 @@ namespace {
 #endif
 
 
-const char* Paths::app( )
+const char* Path::app( )
 {
 	return path_app;
 }
 
 
 
-int Paths::change_dir( const char* path )
+int Path::change_dir( const char* path )
 {
 #ifdef WIN32
 	return _chdir(path);
@@ -47,17 +60,17 @@ int Paths::change_dir( const char* path )
 }
 
 
-void Paths::init(  )
+void Path::init(  )
 {
-	path_app = new char[ MAX_PATH ];
+	path_app = new char[ MAXPATHLEN ];
 
 #ifdef WIN32
 	// application
-	GetModuleFileName( GetModuleHandle(0), path_app, MAX_PATH );
+	GetModuleFileName( GetModuleHandle(0), path_app, MAXPATHLEN );
 	path_app = dirname( path_app );
 	change_dir( path_app );
 
-	GetCurrentDirectory( MAX_PATH, path_app );
+	GetCurrentDirectory( MAXPATHLEN, path_app );
 	strcat( path_app, "\\" );
 
 #elif defined(__APPLE__)
@@ -75,7 +88,7 @@ void Paths::init(  )
 
 #elif defined(__linux__)
 	// TODO: Метод  только для linux. Поменять для других *nix-систем.
-	ssize_t count = readlink("/proc/self/exe", path_app, MAX_PATH );
+	ssize_t count = readlink("/proc/self/exe", path_app, MAXPATHLEN );
 	if( count > 0 ){
 		path_app[count] = 0;
 		path_app = dirname( path_app );
@@ -87,8 +100,8 @@ void Paths::init(  )
 		exit( EXIT_FAILURE );
 	}
 #elif defined(__FreeBSD__)
-	memset( path_app, 0, MAX_PATH );
-	bool res = readlink( "/proc/curproc/file", path_app, MAX_PATH ) > 0;
+	memset( path_app, 0, MAXPATHLEN );
+	bool res = readlink( "/proc/curproc/file", path_app, MAXPATHLEN ) > 0;
 
 	if( !res ){
 		puts( "readlink failed. Trying to use sysctl" );
@@ -97,7 +110,7 @@ void Paths::init(  )
 		mib[1] = KERN_PROC;
 		mib[2] = KERN_PROC_PATHNAME;
 		mib[3] = -1;
-		size_t cb = MAX_PATH;
+		size_t cb = MAXPATHLEN;
 		res = sysctl(mib, 4, path_app, &cb, NULL, 0) == 0;
 	}
 
@@ -115,5 +128,40 @@ void Paths::init(  )
 	#error Unsupported platform.
 #endif // WIN32
 
+}
+
+
+
+char* Path::join( const char* first, const char* sec )
+{
+	size_t f, n, k;
+	f = strlen(first);
+	k = strlen(sec);
+
+	char* ret = (char*)malloc( sizeof(char) * ( f + k + 3 ) );
+	strncpy( ret, first, f );
+	ret[f] = '\0';
+
+    if( is_sep(sec[0]) ){
+        n = 0;
+	}else{
+        n = strlen( ret );
+        if( n > 0 && !is_sep(ret[n-1]) && n < MAXPATHLEN )
+            ret[n++] = SEP;
+    }
+
+    if( n > MAXPATHLEN ){
+        Debug::debug( Debug::OS, "Source path longer than maximum path length.\n" );
+        free(ret);
+        return NULL;
+    }
+
+    if( n + k > MAXPATHLEN )
+        k = MAXPATHLEN - n;
+
+    strncpy( ret + n, sec, k );
+    ret[n+k] = '\0';
+
+	return ret;
 }
 

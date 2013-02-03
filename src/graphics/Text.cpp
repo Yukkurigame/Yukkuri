@@ -54,7 +54,7 @@ font_data* GetFont( std::string name, int size  )
 {
 	extern MainConfig conf;
 	if( !LoadedFonts.count(name) || !LoadedFonts[name].count(size) ){
-		if( !LoadTTFont( conf.fontsPath, name, size ) ){
+		if( !LoadTTFont( conf.path.fonts, name, size ) ){
 			Debug::debug( Debug::GRAPHICS, "Cannot load font " + name + ".\n" );
 			return NULL;
 		}

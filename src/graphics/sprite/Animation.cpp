@@ -43,11 +43,11 @@ bool Animation::init(  std::string subconfig, std::string config)
 	LuaConfig* cfg = new LuaConfig;
 
 	std::string image;
-	cfg->getValue( "height", subconfig, config, height );
-	cfg->getValue( "width", subconfig, config, width );
-	cfg->getValue( "image", subconfig, config, image );
-	cfg->getValue( "picture", subconfig, config, picture );
-	cfg->getValue( "animation", subconfig, config, anim );
+	cfg->getValue( "height", subconfig.c_str(), config.c_str(), height );
+	cfg->getValue( "width", subconfig.c_str(), config.c_str(), width );
+	cfg->getValue( "image", subconfig.c_str(), config.c_str(), image );
+	cfg->getValue( "picture", subconfig.c_str(), config.c_str(), picture );
+	cfg->getValue( "animation", subconfig.c_str(), config.c_str(), anim );
 
 	delete cfg;
 
@@ -67,7 +67,6 @@ bool Animation::init(  std::string subconfig, std::string config)
 					Textures::get_by_name( image.c_str() ), picture , 1 );
 	//sprite->setCentered();
 	sprite->setPicture( picture );
-	//sprite->shader = Shaders::getProgram( "lighting" );
 	count = 0;
 
 

@@ -62,7 +62,7 @@ bool Unit::Create( int id, std::string proto )
 
 	if( proto == "" ){
 		LuaConfig* cfg = new LuaConfig;
-		cfg->getValue( "proto", UnitName, TypeName, proto );
+		cfg->getValue( "proto", UnitName.c_str(), TypeName.c_str(), proto );
 		delete cfg;
 	}
 	if( proto == "" ){
@@ -398,10 +398,10 @@ bool Unit::update( const Frame& frame )
 				break;
 			LuaConfig* cfg = new LuaConfig;
 			if( param.intData < uCharIntLast )
-				cfg->getValue( frame.params[1].stringData, UnitName, TypeName,
+				cfg->getValue( frame.params[1].stringData, UnitName.c_str(), TypeName.c_str(),
 								Char.getRef( (enum character)param.intData ) );
 			else
-				cfg->getValue( frame.params[1].stringData, UnitName, TypeName,
+				cfg->getValue( frame.params[1].stringData, UnitName.c_str(), TypeName.c_str(),
 								Char.getRef( (enum character_float)param.intData ) );
 			delete cfg;
 			break;
@@ -419,10 +419,10 @@ bool Unit::update( const Frame& frame )
 				}
 				int psparam = Actions.params.PopInt();
 				if( psparam < uCharIntLast )
-					cfg->getValue( Actions.params.PopString(), UnitName, TypeName,
+					cfg->getValue( Actions.params.PopString().c_str(), UnitName.c_str(), TypeName.c_str(),
 							Char.getRef( (enum character)psparam ) );
 				else
-					cfg->getValue( Actions.params.PopString(), UnitName, TypeName,
+					cfg->getValue( Actions.params.PopString().c_str(), UnitName.c_str(), TypeName.c_str(),
 							Char.getRef( (enum character_float)psparam ) );
 			}
 			delete cfg;

@@ -13,10 +13,10 @@
 #include "scripts/LuaThread.h"
 #include "scripts/proto.h"
 #include "units/unitmanager.h"
+#include "utils/path.h"
 #include "Bindings.h"
 #include "config.h"
 #include "debug.h"
-#include "misc.h"
 #include "time.h"
 
 
@@ -40,7 +40,7 @@ bool Yukkuri::Init()
 
 	srand(time(NULL));
 
-	Paths::init();
+	Path::init();
 
 	// Load key names for register in api
 	Bindings::init();

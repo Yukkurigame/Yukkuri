@@ -11,6 +11,7 @@
 #include "graphics/utils/gl_uniforms.h"
 #include "graphics/Lighting.h"
 #include "graphics/Render.h"
+#include <math.h>
 
 
 #include "config.h"
@@ -223,8 +224,9 @@ void GBuffer::geometry_pass( list<VBOStructureHandle*>* handler )
 inline float point_light_area( const s3fc& color, float intensity )
 {
 	float c = fmax(fmax(color.r, color.g), color.b) * intensity;
-	return (8.0f * sqrtf(c) + 1.0f);
+	return (8.0f * sqrt(c) + 1.0f);
 }
+
 
 void GBuffer::stencil_pass( LightSource* )
 {

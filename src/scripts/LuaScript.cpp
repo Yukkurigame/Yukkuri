@@ -28,7 +28,7 @@ LuaScript::LuaScript( )
 bool LuaScript::OpenFile( std::string name )
 {
 	extern MainConfig conf;
-	return LuaMain::OpenFile( ( ( conf.scriptsPath != "" ) ? conf.scriptsPath : "data/scripts/" ) + name + ".lua" );
+	return LuaMain::OpenFile( ( ( conf.path.scripts != "" ) ? conf.path.scripts : "data/scripts/" ) + name + ".lua" );
 }
 
 

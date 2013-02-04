@@ -11,13 +11,14 @@
 #include "interface/widgets/Widget.h"
 #include "graphics/Text.h"
 
+
 class WidgetText: public Widget
 {
 public:
 	WidgetText( );
 	~WidgetText( );
 
-	bool load( std::string id );
+	//bool load( std::string id );
 
 	void redraw( );
 

@@ -16,7 +16,6 @@ struct GLBrush
 	enum primitives type;
 	s3f vertex_origin;
 	int point_index;
-	//s3f* vertices;
 	signed int points_count;
 	int flags;
 	GLBrush( enum primitives t, short centered );
@@ -35,9 +34,9 @@ struct GLBrush
 		move( x - vertex_origin.x, y - vertex_origin.y, z - vertex_origin.z );
 	}
 
-	inline VertexV2FT2FC4UI* points(  ){
-		return VBOArray::pointer( point_index );
-	}
+	VertexV2FT2FC4UI* points(  );
+
+/*
 
 	// Set of quad functions
 	// TODO: get rid of this
@@ -55,6 +54,8 @@ struct GLBrush
 	CORNER(rb, qcRB);
 
 #undef CORNER
+*/
+
 };
 
 

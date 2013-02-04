@@ -95,6 +95,8 @@ bool CHINP_TESTER<s3f>( lua_State* L, int idx )
 
 
 // rect2f
+template<> void initValue( rect2f& ret ) { ret = rect2f(); }
+
 template <>
 int pushToLua(lua_State* L, rect2f const& val)
 {
@@ -139,6 +141,8 @@ bool CHINP_TESTER<rect2f>(lua_State* L, int idx)
 
 
 // s4ub
+template<> void initValue( s4ub& ret ) { ret = s4ub(); }
+
 template <>
 int pushToLua( lua_State* L, s4ub const& val )
 {

@@ -51,7 +51,7 @@ public:
 
 	bool create( std::string id );
 
-	virtual bool load( std::string id );
+	//virtual bool load( std::string id );
 
 	void setType( wType t ){ Type = t; }
 

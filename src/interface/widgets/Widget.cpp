@@ -61,7 +61,7 @@ bool Widget::create( std::string id )
 	return true;
 }
 
-
+/*
 bool Widget::load( std::string id )
 {
 	LuaConfig* cfg = new LuaConfig;
@@ -101,7 +101,7 @@ bool Widget::load( std::string id )
 
 	return true;
 }
-
+*/
 
 void Widget::setBackground( int texture, int picture )
 {

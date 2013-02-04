@@ -27,7 +27,7 @@ WidgetText::~WidgetText( )
 
 }
 
-
+/*
 bool WidgetText::load( std::string id )
 {
 	std::string font;
@@ -65,6 +65,7 @@ bool WidgetText::load( std::string id )
 
 	return true;
 }
+*/
 
 void WidgetText::redraw( )
 {

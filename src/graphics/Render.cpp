@@ -86,11 +86,10 @@ void RenderManager::clean( )
 	TextureAtlas::clean( );
 	Textures::clean( );
 	GLTextures::clean();
-	CleanFonts();
+	clean_fonts();
 	VBOArray::clean( );
 	GBuffer::clean( );
 	MeshManager::clean();
-	ftDone();
 }
 
 

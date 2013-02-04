@@ -5,8 +5,10 @@
  *
  */
 
-#include "Text.h"
-#include "Render.h"
+#include "graphics/Text.h"
+#include "graphics/Render.h"
+#include "graphics/Font.h"
+
 #include "config.h"
 #include "debug.h"
 #include "hacks.h"
@@ -14,12 +16,14 @@
 
 #include "safestring.h" // strdup
 
+
+
 #define ITER_SPRITES ITER_LIST( Sprite*, sprites )
 
 static std::map < std::string, std::map< int, font_data* > > LoadedFonts;
 
 
-void CleanFonts( )
+void clean_fonts( )
 {
 	Debug::debug( Debug::MAIN, "Cleaning fonts.\n" );
 	FOREACHIT( LoadedFonts ){
@@ -30,6 +34,8 @@ void CleanFonts( )
 		it->second.clear();
 	}
 	LoadedFonts.clear();
+
+	ftDone();
 }
 
 bool LoadTTFont( std::string dir, std::string name, int size )
@@ -83,7 +89,13 @@ Text::~Text( )
 }
 
 
-void Text::setFont( std::string name, int size )
+int Text::getLineSize( )
+{
+	return (int)((float)font->cellHeight * lineHeight);
+}
+
+
+void Text::setFont( const char* name, int size )
 {
 	font = GetFont( name, size );
 }
@@ -205,25 +217,30 @@ void Text::setCursorPosition( unsigned int pos )
 	cursorPosition = pos;
 	// \n was not added when string was build so remove it
 	pos += 1 - Lines;
+
+	listElement<Sprite*>* prev = sprites.head;
+	for( UINT i = 0; i < pos; ++i ){
+		if(!prev->next){
+			cursorPosition = i - 1;
+			break;
+		}
+		prev = prev->next;
+	}
+	if( !prev || prev->data->brush.type != prQUADS )
+		return;
+
 	if( cursor == NULL ){
-		Char* tmpc = font->getChar('|');
-		cursorBearing = (tmpc->metrics.horiBearingX >> 6) + 2;
-		cursor = RenderManager::CreateGLSprite(
-				position.x, position.y, position.z,
-				font->cellWidth, font->cellHeight, font->texture, tmpc->pic );
-		cursor->setFixed();
-		cursor->clearLight();
+			Char* tmpc = font->getChar('|');
+			cursorBearing = (tmpc->metrics.horiBearingX >> 6) + 2;
+			cursor = RenderManager::CreateGLSprite(
+					position.x, position.y, position.z,
+					font->cellWidth, font->cellHeight, font->texture, tmpc->pic );
+			cursor->setFixed();
+			cursor->clearLight();
+		cursor->setVisible();
 	}
-	Sprite* next = NULL;
-	if( pos >= sprites.count() ){
-		next = sprites.tail->data;
-		cursorPosition = sprites.count() - 1;
-	}else{
-		next = sprites[pos];
-	}
-	if(next){
-		s3f* lb = next->brush.lb();
-		cursor->setPosition( lb->x - cursorBearing, lb->y );
-	}
-	cursor->setVisible();
+
+	s3f position = prev->data->brush.vertex_origin;
+	position.x -= (prev->data->rect.width / 2 + cursorBearing);
+	cursor->setPosition( position.x, position.y, position.z );
 }

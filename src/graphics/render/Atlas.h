@@ -8,8 +8,8 @@
 #ifndef ATLAS_H_
 #define ATLAS_H_
 
-#include <string>
 #include "graphics/GraphicsTypes.h"
+
 
 namespace TextureAtlas
 {
@@ -18,10 +18,10 @@ namespace TextureAtlas
 
 	int getAtlasMax( );
 
-	void addTexture( std::string name );
-	void addTexture( std::string id, Texture* tex, int width, int height,
+	void addTexture( const char* name );
+	void addTexture( const char* id, Texture* tex, int width, int height,
 						int cols, int rows, int ax, int ay );
-	void addTexture( std::string id, TextureInfo* tex, int picture );
+	//void addTexture( const char* id, TextureInfo* tex, int picture );
 
 	bool buildMap( int& width, int& height );
 	bool buildRelativeMap( float width, float height );

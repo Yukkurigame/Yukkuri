@@ -11,7 +11,7 @@
 #include "graphics/Render.h"
 #include "graphics/render/Textures.h"
 //#include "graphics/utils/sdl_graphics.h"
-#include "graphics/daytime.h"
+//#include "graphics/daytime.h"
 #include "config.h"
 #include "debug.h"
 
@@ -78,7 +78,7 @@ bool Yukkuri::InitGraphics( )
 		return false;
 	}
 
-	DayTime::init();
+	//DayTime::init();
 
 #ifdef DEBUG
 	// Make explicit swap call to split initialization and rendering
@@ -91,7 +91,7 @@ bool Yukkuri::InitGraphics( )
 void Yukkuri::CleanGraphics()
 {
 	RenderManager::clean();
-	DayTime::clean();
+	//DayTime::clean();
 	SDL_Quit();
 }
 

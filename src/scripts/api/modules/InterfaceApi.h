@@ -14,16 +14,16 @@
 
 namespace IfaceApi {
 
-	int loadAllWidgets( lua_State* L );
-	int loadWidget( lua_State* L );
+	//int loadAllWidgets( lua_State* L );
+	//int loadWidget( lua_State* L );
 	int createWidget( lua_State* L );
 	int getWidget( lua_State* L );
 	int getWidgetByName( lua_State* L );
 	int addChild( lua_State* L );
 
 	const luaL_reg methods[] = {
-		LUALIBFIELD( loadAllWidgets )
-		LUALIBFIELD( loadWidget )
+		//LUALIBFIELD( loadAllWidgets )
+		//LUALIBFIELD( loadWidget )
 		LUALIBFIELD( createWidget )
 		LUALIBFIELD( getWidget )
 		LUALIBFIELD( getWidgetByName )

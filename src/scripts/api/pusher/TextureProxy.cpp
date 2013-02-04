@@ -52,15 +52,6 @@ void getFromLua( lua_State* L, int idx, TextureProxy& val )
 }
 
 template<>
-TextureProxy const getFromLua( lua_State* L, int idx )
-{
-	TextureProxy ret;
-	getFromLua( L, idx, ret );
-	return ret;
-}
-
-
-template<>
 bool CHINP_TESTER<TextureProxy>(lua_State* L, int idx)
 {
 	if( lua_istable( L, idx ) ){

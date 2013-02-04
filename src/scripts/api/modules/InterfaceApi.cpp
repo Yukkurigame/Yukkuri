@@ -14,6 +14,7 @@
 #include "safestring.h"
 
 
+/*
 int IfaceApi::loadAllWidgets( lua_State* L )
 {
 	return 0;
@@ -34,6 +35,7 @@ int IfaceApi::loadWidget( lua_State* L )
 	}
 	return 1;
 }
+*/
 
 
 int IfaceApi::createWidget( lua_State* L )

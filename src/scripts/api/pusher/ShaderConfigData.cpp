@@ -11,6 +11,9 @@
 
 
 // ShaderConfigData
+template<> void initValue( ShaderConfigData& ret ) { }
+
+
 template <>
 int pushToLua( lua_State* L, ShaderConfigData* const& val )
 {

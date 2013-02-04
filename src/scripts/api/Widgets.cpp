@@ -92,7 +92,7 @@ bool WidgetText::load( lua_State* L )
 	lua_pop(L, 1);
 
 	TextSprite.setPosition( TextPos.x, TextPos.x, getZ() );
-	TextSprite.setFont( font, fontsize );
+	TextSprite.setFont( font.c_str(), fontsize );
 	TextSprite.setFixed( true );
 	TextSprite.setLineHeight( lineheight );
 	setWidgetText( "" );

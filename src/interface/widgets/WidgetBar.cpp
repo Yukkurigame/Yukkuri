@@ -29,7 +29,7 @@ WidgetBar::~WidgetBar( )
 	RenderManager::FreeGLSprite( TopSprite );
 }
 
-
+/*
 bool WidgetBar::load( std::string id )
 {
 	if( !WidgetText::load( id ) )
@@ -59,6 +59,7 @@ bool WidgetBar::load( std::string id )
 
 	return true;
 }
+*/
 
 
 void WidgetBar::createBar( std::string name, int picture, const s4ub& color )

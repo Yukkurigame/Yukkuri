@@ -8,13 +8,18 @@
 #ifndef TEXT_H_
 #define TEXT_H_
 
-#include "graphics/Font.h"
 #include "graphics/sprite/Sprite.h"
 #include "graphics/GraphicsTypes.h"
 #include "utils/list.h"
 
 
-void CleanFonts();
+struct Char;
+struct font_data;
+
+
+
+void clean_fonts();
+
 
 class Text
 {
@@ -25,10 +30,10 @@ public:
 	inline int width(){ return Width; }
 	inline int height(){ return Height; }
 	inline int getLines( ){ return Lines; }
-	inline int getLineSize( ){ return (int)((float)font->cellHeight * lineHeight); }
 	inline float getLineHeight( ){ return lineHeight; }
+	int getLineSize( );
 
-	void setFont( std::string name, int size );
+	void setFont( const char* name, int size );
 	void setPosition( float x, float y, float z );
 	void setText( const char* text );
 	void setColor( int r, int g, int b );
@@ -46,7 +51,7 @@ public:
 	inline unsigned char isCursorVisible()	{ if( cursor ) return cursor->isVisible(); return 0; }
 	inline void setCursorVisible()			{ if( cursor ) cursor->setVisible(); }
 	inline void clearCursorVisible()		{ if( cursor ) cursor->clearVisible(); }
-	void setCursorPosition( unsigned int pos );
+	void setCursorPosition( UINT pos );
 	inline int getCursorPosition() { return cursorPosition; }
 
 	void clear( );

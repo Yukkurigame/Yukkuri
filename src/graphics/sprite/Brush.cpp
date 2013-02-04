@@ -130,3 +130,9 @@ s4ub GLBrush::get_color(  )
 	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
 	return arr[0].color;
 }
+
+
+VertexV2FT2FC4UI* GLBrush::points(  )
+{
+	return VBOArray::pointer( point_index );
+}

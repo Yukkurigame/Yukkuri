@@ -27,9 +27,9 @@ PHYSICS = physics.cpp handlers.cpp
 RENDER = Atlas.cpp GBuffer.cpp GLHelpers.cpp GLTextures.cpp VBuffer.cpp Textures.cpp
 SPRITE = Sprite.cpp Animation.cpp AnimationDefines.cpp Brush.cpp Material.cpp Mesh.cpp
 GRAPHUTILS = gl_shader.cpp gl_uniforms.cpp VBOArray.cpp Image.cpp ElasticBox.cpp
-GRAPHICS = Camera.cpp daytime.cpp Font.cpp gl_extensions.cpp Lighting.cpp Render.cpp Text.cpp \
+GRAPHICS = Camera.cpp Font.cpp gl_extensions.cpp Lighting.cpp Render.cpp Text.cpp \
 		   $(addprefix render/, $(RENDER)) $(addprefix sprite/, $(SPRITE)) $(addprefix utils/, $(GRAPHUTILS))
-PUSHERAPI = TextureProxy.cpp ShaderConfigData.cpp GraphicsTypes.cpp
+PUSHERAPI = TextureProxy.cpp ShaderConfigData.cpp GraphicsTypes.cpp Tiles.cpp
 SCRIPTSAPI = $(addprefix modules/, LightsApi.cpp UnitManagerApi.cpp InterfaceApi.cpp	\
 			 ThreadManagerApi.cpp  CameraApi.cpp BindingsApi.cpp PathsApi.cpp RegionApi.cpp) \
 			 Widgets.cpp Units.cpp  YOBA.cpp $(addprefix $(PUSHERAPIDIR), $(PUSHERAPI))

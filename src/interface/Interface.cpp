@@ -82,7 +82,7 @@ Widget* Interface::CreateWidget( const char* id, UINT type )
 	return w;
 }
 
-
+/*
 void Interface::LoadAllWidgets( )
 {
 	list< char* > v;
@@ -146,6 +146,7 @@ Widget* Interface::LoadWidget( const char* id )
 
 	return w;
 }
+*/
 
 Widget* Interface::GetWidget( UINT id )
 {

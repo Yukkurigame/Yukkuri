@@ -19,9 +19,15 @@ struct TileInfo
 {
 	unsigned int picture;
 	float passability;
-	std::string id;
 	int texture;
+	char* id;
 	TileInfo() : picture(), passability(), texture() {};
+};
+
+struct RegionTile
+{
+	s2f postion;
+	char* id;
 };
 
 

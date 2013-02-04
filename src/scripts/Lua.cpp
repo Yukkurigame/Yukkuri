@@ -3,9 +3,10 @@
  *
  *  Created on: 13.07.2010
  */
+
 #include "Lua.h"
-#include "graphics/GraphicsTypes.h"
-#include "graphics/utils/gl_shader.h"
+#include "types.h"
+
 #include <cstring>
 #include <cstdlib>
 
@@ -91,9 +92,7 @@ template<> void initValue( unsigned int& ret ) { ret = 0; }
 template<> void initValue( int& ret ) { ret = 0; }
 template<> void initValue( std::string& ret ) { ret = ""; }
 template<> void initValue( char*& ret ) { ret = '\0'; }
-template<> void initValue( rect2f& ret ) { ret = rect2f(); }
-template<> void initValue( s4ub& ret ) { ret = s4ub(); }
-template<> void initValue( ShaderConfigData& ret ) { }
+
 
 
 int LuaMain::execFunction( const char* function )

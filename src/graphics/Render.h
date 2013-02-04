@@ -10,7 +10,6 @@
 #include "graphics/sprite/Sprite.h"
 
 
-
 enum RenderMethod {
 	rmSingle = 0,
 	rmGBuffer = 1

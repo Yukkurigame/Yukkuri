@@ -13,6 +13,7 @@
 #include "stddef.h"
 
 
+
 struct Sprite
 {
 	unsigned int texid;

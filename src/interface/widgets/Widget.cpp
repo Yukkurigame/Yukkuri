@@ -61,47 +61,6 @@ bool Widget::create( std::string id )
 	return true;
 }
 
-/*
-bool Widget::load( std::string id )
-{
-	LuaConfig* cfg = new LuaConfig;
-	std::string align;
-	std::string valign;
-
-	if( !cfg->getValue( "name", id.c_str(), Name ) )
-		return false;
-
-	cfg->getValue( "x", baseID.c_str(), Position.x );
-	cfg->getValue( "y", baseID.c_str(), Position.y );
-	cfg->getValue( "width", baseID.c_str(), Rect.width );
-	cfg->getValue( "height", baseID.c_str(), Rect.height );
-	cfg->getValue( "align", baseID.c_str(), Align );
-
-	float z = 0;
-	cfg->getValue("depth", baseID.c_str(), z );
-	setWidgetRealZ( z );
-
-	redraw( );
-
-	{
-		std::string imgname;
-		int picture = 0;
-		s4ub bgcolor(0,0,0,0);
-		cfg->getValue( "image", baseID.c_str(), imgname );
-		cfg->getValue( "picture", baseID.c_str(), picture );
-		cfg->getValue( "bgcolor", baseID.c_str(), bgcolor );
-		if( imgname != "" || bgcolor.a ){
-			setBackground( Textures::get_by_name( imgname.c_str() ), picture );
-			if( bgcolor.a )
-				setBackgroundColor( bgcolor );
-		}
-	}
-
-	delete cfg;
-
-	return true;
-}
-*/
 
 void Widget::setBackground( int texture, int picture )
 {

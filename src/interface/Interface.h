@@ -19,9 +19,6 @@ namespace Interface
 
 	Widget* CreateWidget( const char* id, UINT type );
 
-	//void LoadAllWidgets();
-	//Widget* LoadWidget( const char* id );
-
 	Widget* GetWidget( UINT id );
 	Widget* GetWidget( const char* name, Widget* parent );
 

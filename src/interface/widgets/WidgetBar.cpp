@@ -29,37 +29,7 @@ WidgetBar::~WidgetBar( )
 	RenderManager::FreeGLSprite( TopSprite );
 }
 
-/*
-bool WidgetBar::load( std::string id )
-{
-	if( !WidgetText::load( id ) )
-		return false;
 
-	std::string imgname;
-	int picture;
-	s4ub color;
-	std::vector<unsigned int> vcolor;
-	LuaConfig* cfg = new LuaConfig;
-
-	//Order: topimgx, topimgy, barheight, r, g, b
-	//Ya, it's cruve, but it's simple
-	cfg->getValue( "barheight", id.c_str(), Bar.height );
-	cfg->getValue( "barwidth", id.c_str(), Bar.width );
-	cfg->getValue( "barx", id.c_str(), Bar.x );
-	cfg->getValue( "bary", id.c_str(), Bar.y );
-	cfg->getValue( "topimage", id.c_str(), imgname );
-	cfg->getValue( "toppicture", id.c_str(), picture );
-	cfg->getValue( "barcoverx", id.c_str(), Top.x );
-	cfg->getValue( "barcovery", id.c_str(), Top.y );
-	cfg->getValue( "barcolor", id.c_str(), color );
-
-	createBar( imgname, picture, color );
-
-	delete cfg;
-
-	return true;
-}
-*/
 
 
 void WidgetBar::createBar( std::string name, int picture, const s4ub& color )

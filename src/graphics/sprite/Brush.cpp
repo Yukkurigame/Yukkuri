@@ -5,6 +5,7 @@
  */
 
 #include "graphics/sprite/Brush.h"
+#include "graphics/utils/VBOArray.h"
 #include "Define.h" // FIXME: GL functions in define
 #include <cstring>
 

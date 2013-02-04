@@ -27,45 +27,6 @@ WidgetText::~WidgetText( )
 
 }
 
-/*
-bool WidgetText::load( std::string id )
-{
-	std::string font;
-	std::string text;
-	std::string talign;
-	std::string tvalign;
-	int fontsize = 12;
-	float lineheight;
-	s4ub vcolor( 0,0,0,0 );
-	LuaConfig* cfg = new LuaConfig;
-
-	cfg->getValue( "text", id.c_str(), BaseText );
-	cfg->getValue( "textx", id.c_str(), TextPos.x );
-	cfg->getValue( "texty", id.c_str(), TextPos.y );
-	cfg->getValue( "textalign", id.c_str(), TextAlign );
-	cfg->getValue( "font", id.c_str(), font );
-	cfg->getValue( "fontsize", id.c_str(), fontsize );
-	cfg->getValue( "fontcolor", id.c_str(), vcolor );
-	cfg->getValue( "lineheight", id.c_str(), lineheight );
-	if( !lineheight )
-		lineheight = 1.0;
-
-	delete cfg;
-
-	TextSprite.setPosition( TextPos.x, TextPos.x, getZ() );
-	TextSprite.setFont( font, fontsize );
-	TextSprite.setFixed( true );
-	TextSprite.setLineHeight( lineheight );
-	setWidgetText( "" );
-
-	setFontColor( vcolor );
-
-	if( !Widget::load( id ) )
-		return false;
-
-	return true;
-}
-*/
 
 void WidgetText::redraw( )
 {
@@ -112,10 +73,12 @@ void WidgetText::redraw( )
 	TextSprite.setPosition( posx, posy, getZ( ) + 0.1f );
 }
 
+
 void WidgetText::setFontColor( const s4ub& clr )
 {
 	TextSprite.setColor( clr.r, clr.g, clr.b );
 }
+
 
 void WidgetText::setWidgetText( std::string text )
 {
@@ -126,12 +89,14 @@ void WidgetText::setWidgetText( std::string text )
 	redraw();
 }
 
+
 void WidgetText::setTextPosition( float x, float y )
 {
 	TextPos.x = x;
 	TextPos.y = y;
 	redraw();
 }
+
 
 void WidgetText::Update( )
 {
@@ -159,6 +124,7 @@ void WidgetText::Update( )
 	snprintf(d, 6, format, BindedCache);
 	setWidgetText( d );
 }
+
 
 void WidgetText::toggleVisibility( )
 {

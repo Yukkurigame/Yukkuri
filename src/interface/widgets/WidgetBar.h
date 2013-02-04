@@ -16,8 +16,6 @@ public:
 	WidgetBar( );
 	~WidgetBar( );
 
-	//bool load( std::string id );
-
 	void createBar( std::string name, int picture, const s4ub& color );
 	void setBarValue( float val );
 

@@ -18,8 +18,6 @@ public:
 	WidgetText( );
 	~WidgetText( );
 
-	//bool load( std::string id );
-
 	void redraw( );
 
 	void setFontColor( const s4ub& clr );

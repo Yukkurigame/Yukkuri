@@ -66,43 +66,6 @@ bool Region::init( )
 			tiles[0] = tile;
 	}
 
-	/*
-	//FIXME: И тут, внезапно, в функцию врываются костыли.
-	typedef std::map < std::string, std::string > scfg;
-	list< scfg > Subconfigs;
-	if( !cfg->getSubconfigs( "tile", Subconfigs ) || ! Subconfigs.head ){
-		Debug::debug( Debug::CONFIG, "Tiles configs opening error or no tiles found.\n");
-		return false;
-	}else{
-		TileTypesCount = Subconfigs.count();
-		Debug::debug( Debug::MAP, "Tiles found: %d.\n", TileTypesCount );
-	}
-
-
-	ITER_LIST( scfg, Subconfigs ){
-		scfg& subconfig = it->data;
-		TileInfo& tile = tiles[++counter];
-
-		if( subconfig.count("id") < 1 ){
-			Debug::debug( Debug::MAP, "Tile have no id.\n" );
-			continue;
-		}
-
-		tile.id = subconfig["id"];
-
-		if( subconfig.count("image") ){
-			std::string image = Subconfig["image"];
-			tile.texture = Textures::get_by_name( image.c_str() );
-		}
-
-		tile.picture = subconfig.count("picture") ? atoi(Subconfig["picture"].c_str()) : 0;
-		// FIXME: useless
-		tile.passability = (float)(Subconfig.count("passability") ? atoi(Subconfig["passability"].c_str()) : 0);
-		if( tile.id == conf.mapDefaultTile )
-			tiles[0] = tile;
-	}
-	*/
-
 	// One for default tile;
 	TileTypesCount++;
 
@@ -143,30 +106,6 @@ void Region::load( const char* name )
 		}
 		free( it->data.id );
 	}
-
-
-	//std::vector< std::map< std::string, std::string > > Tiles;
-		/*
-	for( std::vector< std::map< std::string, std::string > >::iterator it = Tiles.begin(), end = Tiles.end();
-			it != end; ++it ){
-		if( it->count( "tile" ) > 0 ){
-			int x, y;
-			std::string type;
-			x = y = 0;
-			type = (*it)["tile"];
-			if( it->count( "x" ) > 0 )
-				x = atoi( (*it)["x"].c_str() );
-			if( it->count( "y" ) > 0 )
-				y = atoi( (*it)["y"].c_str() );
-			for( unsigned int tile = 1; tile < TileTypesCount; ++tile ){
-				if( tiles[tile].id == type ){
-					RegionDump[x][y] = &tiles[tile];
-					break;
-				}
-			}
-		}
-	}
-	*/
 
 	delete cfg;
 }

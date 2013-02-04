@@ -94,7 +94,7 @@ void MeshManager::load( GLBrush* brush )
 void MeshManager::load_brush( GLBrush* brush, obj_scene_data* data )
 {
 	brush->resize_verticles( data->vertex_count );
-	VertexV2FT2FC4UI* arr = VBOArray::pointer( brush->point_index );
+	VertexV2FT2FC4UI* arr = brush->points();
 	for( int i=0; i < data->vertex_count; ++i ){
 		obj_vector* p = data->vertex_list[i];
 		arr[i].verticles = s3f(p->e[0], p->e[1], p->e[2]);

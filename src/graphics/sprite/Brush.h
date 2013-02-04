@@ -8,7 +8,7 @@
 #define GLBRUSH_H_
 
 #include "basic_types.h"
-#include "graphics/utils/VBOArray.h"
+#include "graphics/GraphicsTypes.h"
 
 
 struct GLBrush
@@ -18,6 +18,7 @@ struct GLBrush
 	int point_index;
 	signed int points_count;
 	int flags;
+
 	GLBrush( enum primitives t, short centered );
 	~GLBrush( );
 
@@ -35,27 +36,6 @@ struct GLBrush
 	}
 
 	VertexV2FT2FC4UI* points(  );
-
-/*
-
-	// Set of quad functions
-	// TODO: get rid of this
-#define CORNER(name, index)			\
-	s3f* name( ){					\
-		if( points_count < index )	\
-			return 0;				\
-		VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index ); \
-		return &arr[index].verticles;	\
-	}
-
-	CORNER(lt, qcLT);
-	CORNER(lb, qcLB);
-	CORNER(rt, qcRT);
-	CORNER(rb, qcRB);
-
-#undef CORNER
-*/
-
 };
 
 

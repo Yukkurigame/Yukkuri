@@ -14,7 +14,7 @@
 
 #include "safestring.h" // strdup
 
-#define ITER_SPRITES FOREACHIT( sprites )
+#define ITER_SPRITES ITER_LIST( Sprite*, sprites )
 
 static std::map < std::string, std::map< int, font_data* > > LoadedFonts;
 
@@ -55,7 +55,7 @@ font_data* GetFont( std::string name, int size  )
 	extern MainConfig conf;
 	if( !LoadedFonts.count(name) || !LoadedFonts[name].count(size) ){
 		if( !LoadTTFont( conf.path.fonts, name, size ) ){
-			Debug::debug( Debug::GRAPHICS, "Cannot load font " + name + ".\n" );
+			Debug::debug( Debug::GRAPHICS, "Cannot load font %s.\n", name.c_str() );
 			return NULL;
 		}
 	}
@@ -97,7 +97,7 @@ void Text::setPosition( float x, float y, float z )
 	position.y = y;
 	position.z = z;
 	ITER_SPRITES{
-		(*it)->move( dx, dy, dz );
+		it->data->move( dx, dy, dz );
 	}
 }
 
@@ -154,7 +154,7 @@ void Text::setColor( int r, int g, int b )
 {
 	color.set( r, g, b, 255 );
 	ITER_SPRITES{
-		(*it)->brush.set_color( color );
+		it->data->brush.set_color( color );
 	}
 }
 
@@ -163,10 +163,10 @@ void Text::set##name( bool v )				\
 {											\
 	if( v ){								\
 		flags |= flag;						\
-		ITER_SPRITES (*it)->set##name();	\
+		ITER_SPRITES it->data->set##name();	\
 	}else{									\
 		flags &= ~flag;						\
-		ITER_SPRITES (*it)->clear##name();	\
+		ITER_SPRITES it->data->clear##name();	\
 	}										\
 }
 
@@ -215,9 +215,9 @@ void Text::setCursorPosition( unsigned int pos )
 		cursor->clearLight();
 	}
 	Sprite* next = NULL;
-	if( pos >= sprites.size() ){
-		next = sprites.back();
-		cursorPosition = sprites.size() - 1;
+	if( pos >= sprites.count() ){
+		next = sprites.tail->data;
+		cursorPosition = sprites.count() - 1;
 	}else{
 		next = sprites[pos];
 	}

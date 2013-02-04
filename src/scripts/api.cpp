@@ -68,14 +68,13 @@ int scriptApi::GetCWD( lua_State* L )
 
 int scriptApi::Debug( lua_State* L )
 {
-	enum Debug::dbg_level level;
-	std::string str;
 	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Debug level expected." );
 	luaL_argcheck( L, lua_isstring( L, 2 ), 2, "Debug string expected." );
 
-	level = static_cast<enum Debug::dbg_level>(lua_tointeger( L, 1 ));
-	str = lua_tostring( L, 2 );
-	Debug::debug( level, str + "\n" );
+	enum Debug::dbg_level level = static_cast<enum Debug::dbg_level>(lua_tointeger( L, 1 ));
+	const char* str = lua_tostring( L, 2 );
+	Debug::debug( level, "%s\n", str );
 	lua_pop( L, lua_gettop( L ) );
+
 	return 0;
 }

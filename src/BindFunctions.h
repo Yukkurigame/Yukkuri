@@ -8,9 +8,9 @@
 #ifndef BINDFUNCTIONS_H_
 #define BINDFUNCTIONS_H_
 
-#include <string>
 
 typedef void (*BindCFunction)( short );
+
 
 namespace Binds
 {

@@ -11,6 +11,8 @@
 #include "assert.h"
 #include "hacks.h"
 #include "safestring.h"
+#include "utils/path.h"
+#include "utils/list.h"
 
 #include <cstdlib>
 #include <stack>
@@ -20,21 +22,22 @@ int ProtoManager::Count = 0;
 
 //FIXME: This is vector but proto id is element number, so it cannot be removed after pushing.
 //TODO: make vector a c-array of prototypes
-std::vector<Proto*> Prototypes;
+list< Proto* > Prototypes;
 
 
 void clean_prototypes( )
 {
-	std::vector< Frame* > deleted;
-	FOREACHIT( Prototypes ){
-		FOREACH( ait, (*it)->Actions ){
+	list< Frame* > deleted;
+	ITER_LIST( Proto*, Prototypes ){
+		FOREACH( ait, it->data->Actions ){
 			Frame* f = ait->second.frames;
-			if( f != NULL && std::find( deleted.begin(), deleted.end(), f ) == deleted.end() )
+			if( f != NULL && !deleted.find( f ) )
 				deleted.push_back( f );
 		}
-		delete *it, *it = NULL;
+		delete it->data;
 	}
-	clear_cvector( &deleted );
+	ITER_LIST( Frame*, deleted )
+		delete it->data;
 }
 
 
@@ -56,9 +59,9 @@ int ProtoManager::LoadPrototype( std::string name )
 
 	p->name = name;
 	p->id = -1;
-	std::string path = conf.path.proto + name + ".proto";
+	char* path = Path::join( conf.path.proto.c_str(), (name + ".proto").c_str() );
 
-	Debug::debug( Debug::PROTO, "Loading proto: " + name + ".\n");
+	Debug::debug( Debug::PROTO, "Loading proto: %s.\n", name.c_str() );
 
 	// Файл протоипа будет выполнен в защищенном окружении, чтобы не запороть что-нить глобальное.
 	// Окружение создается как здесь: http://community.livejournal.com/ru_lua/402.html
@@ -69,10 +72,10 @@ int ProtoManager::LoadPrototype( std::string name )
 	lua_setmetatable( Lst, -2 );		// Стек: env
 
 
-	if( luaL_loadfile( Lst, path.c_str()) ){
+	if( luaL_loadfile( Lst, path ) ){
 		// Стек: env err
-		Debug::debug( Debug::PROTO, "While trying to load proto '" + name + "' (" +
-				path + "): " + lua_tostring( Lst, -1 ) + ".\n");
+		Debug::debug( Debug::PROTO, "While trying to load proto '%s' (%s): %s.\n",
+				name.c_str(), path, lua_tostring( Lst, -1 ) );
 		lua_pop( Lst, 2 );	// Стек:
 		return 0;
 	}
@@ -82,8 +85,8 @@ int ProtoManager::LoadPrototype( std::string name )
 
 	if( lua_pcall( Lst, 0, 0, 0 ) ){
 		// Какая-то ошибка выполнения файла
-		Debug::debug( Debug::PROTO, "While trying to execute proto file: " + std::string(lua_tostring( Lst, -1 )) + ".\n" ); // Стек: env err
-		Debug::debug( Debug::PROTO, "Unable to load proto '" + name + "'.\n" );
+		Debug::debug( Debug::PROTO, "While trying to execute proto file: %s.\n", lua_tostring( Lst, -1 ) ); // Стек: env err
+		Debug::debug( Debug::PROTO, "Unable to load proto '%s'.\n", name.c_str() );
 		lua_pop( Lst, 2 );	// Стек:
 
 		return 0;
@@ -101,6 +104,8 @@ int ProtoManager::LoadPrototype( std::string name )
 
 	Prototypes.push_back(p);
 
+	free( path );
+
 	return ++Count;
 }
 
@@ -108,21 +113,23 @@ int ProtoManager::LoadPrototype( std::string name )
 
 Proto* ProtoManager::GetProtoById( int id )
 {
-	if( id >= 0 && id < (int)Prototypes.size() )
-		return Prototypes[id];
+	ITER_LIST( Proto*, Prototypes ){
+		if( id == it->data->id  )
+			return it->data;
+	}
 	return NULL;
 }
 
 
 Proto* ProtoManager::GetProtoByName( std::string name )
 {
-	FOREACHIT( Prototypes ){
-		if( (*it)->name == name )
-			return Prototypes[(*it)->id];
+	ITER_LIST( Proto*, Prototypes ){
+		if( it->data->name == name )
+			return it->data;
 	}
 	int loaded = LoadPrototype( name );
 	if( loaded )
-		return Prototypes[loaded - 1];
+		return Prototypes.tail->data;
 	return NULL;
 }
 
@@ -262,9 +269,9 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 									conditions.push( &a->frames[j] );
 								else if( command == acEnd ){
 									if( conditions.empty() )
-										Debug::debug( Debug::PROTO, "Unexpected acEnd command at frame " + citoa(j) +
-												" in action '" + Action::getName(a->id) +
-												"' of proto '" + proto->name + "'. Skipping.\n");
+										Debug::debug( Debug::PROTO,
+												"Unexpected acEnd command at frame %d in action '%s' of proto '%s'. Skipping.\n",
+												j, Action::getName(a->id).c_str(), proto->name.c_str() );
 									else{
 										conditions.top()->condition_end = j;
 										conditions.pop();
@@ -282,10 +289,8 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 
 							}else{
 								Debug::debug( Debug::PROTO,
-									"In proto '" + proto->name +
-									"', action '" + Action::getName(a->id) + "' " +
-									"frame " + citoa(j) + " - " + lua_typename(L, lua_type(L, -1)) +
-									": Frame loading canceled (not a table).\n");
+									"In proto '%s', action '%s' frame %d  - %s: Frame loading canceled (not a table).\n",
+									proto->name.c_str(), Action::getName(a->id).c_str(), j, lua_typename(L, lua_type(L, -1)) );
 								a->framesCount = 0;
 							}
 							//lua_pop(L, 1);	// Стек: env actions key actions[key] frames key
@@ -294,30 +299,32 @@ void ProtoManager::LoadActions(lua_State* L, Proto* proto)
 						while( !conditions.empty() ){
 							Frame* f = conditions.top();
 							Debug::debug( Debug::PROTO,
-									"End of " + citoa(f->command) + " condition expected. In proto '" + proto->name +
-									"', action '" + Action::getName(a->id) + "'.\n");
+								"End of %d condition expected. In proto '%s', action '%s'.\n",
+								f->command, proto->name.c_str(), Action::getName(a->id).c_str() );
 							f->condition_end = a->framesCount;
 							conditions.pop();
 						}
 					}else{
-						Debug::debug( Debug::PROTO, "There are no frames in action '" +
-								Action::getName(a->id) + "' of proto '" + proto->name + "'. Skipping.\n");
+						Debug::debug( Debug::PROTO,
+							"There are no frames in action '%s' of proto '%s'. Skipping.\n",
+							Action::getName(a->id).c_str(), proto->name.c_str() );
 						a->framesCount = 0;
 					}
 
 					// Стек: env actions key actions[key] frames
 
 				}else{ // if (lua_istable(L, -1))	frames
-					Debug::debug( Debug::PROTO, "Action '" + Action::getName(a->id) +
-							"' in proto '" + proto->name + "' have no frames table. Skipping.\n");
+					Debug::debug( Debug::PROTO,
+						"Action '%s' in proto '%s' have no frames table. Skipping.\n",
+						Action::getName(a->id).c_str(), proto->name.c_str() );
 					a->framesCount = 0;
 				}
 
 				// Стек: env animations key animations[key] frames
 				lua_pop(L, 1);	// Стек: env actions key actions[key]
 			}else{
-				Debug::debug( Debug::PROTO, "In proto '" + proto->name + "' actions[" +
-						citoa(i) + "] is " + lua_typename(L, lua_type(L, -1)) );
+				Debug::debug( Debug::PROTO, "In proto '%s' actions[%d] is %s.\n",
+						proto->name.c_str(), i, lua_typename(L, lua_type(L, -1)) );
 			}
 
 		} // for

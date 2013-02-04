@@ -9,6 +9,7 @@
 #include "3rdparty/LuaPusher.h"
 #include "scripts/Lua.h"
 #include "graphics/GraphicsTypes.h"
+#include "string.h"
 
 
 // TextureProxy

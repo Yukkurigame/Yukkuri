@@ -9,8 +9,6 @@
 
 #include "graphics/sprite/Sprite.h"
 
-#include <string>
-#include <vector>
 
 
 enum RenderMethod {
@@ -44,7 +42,7 @@ namespace RenderManager
 	}
 	Sprite* CreateGLSprite( Sprite* osprite );
 	void FreeGLSprite( Sprite* sprite );
-	void FreeGLSprites( std::vector< Sprite* >* sprites );
+	void FreeGLSprites( list< Sprite* >* sprites );
 
 	list< Sprite* >* GetSpritesArray( );
 

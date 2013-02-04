@@ -86,11 +86,9 @@ void font_data::clean() {
 }
 
 
-bool font_data::load( const char * fname, unsigned int height ) {
-
-	char fs[4];
-	snprintf( fs, 4, "%d", height );
-	debug( GRAPHICS, "Loading font " +  (std::string)fname + ". Size: " + fs + "\n" );
+bool font_data::load( const char * fname, unsigned int height )
+{
+	debug( GRAPHICS, "Loading font %s. Size: %d.\n", fname, height );
 
 	//Allocate some memory to store the texture ids.
 	//textures = new GLuint[CHARSIZE];
@@ -100,7 +98,7 @@ bool font_data::load( const char * fname, unsigned int height ) {
 	//Create and initilize a freetype font library.
 	if( !ftLoaded ){
 		if( FT_Init_FreeType( &library ) ){
-			debug( GRAPHICS, "FT_Init_FreeType failed in " +  (std::string)fname + "\n" );
+			debug( GRAPHICS, "FT_Init_FreeType failed on %s.\n", fname );
 			return false;
 		}
 		ftLoaded = true;
@@ -110,7 +108,9 @@ bool font_data::load( const char * fname, unsigned int height ) {
 	//Of all the places where the code might die, this is the most likely,
 	//as FT_New_Face will die if the font file does not exist or is somehow broken.
 	if( FT_New_Face( library, fname, 0, &face ) ){
-		debug( GRAPHICS, "FT_New_Face failed in " + (std::string)fname + " (there is probably a problem with your font file)\n" );
+		debug( GRAPHICS,
+				"FT_New_Face failed on %s (there is probably a problem with your font file).\n",
+				fname );
 		return false;
 	}
 

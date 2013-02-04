@@ -8,10 +8,10 @@
 #ifndef TEXT_H_
 #define TEXT_H_
 
-#include <vector>
 #include "graphics/Font.h"
 #include "graphics/sprite/Sprite.h"
 #include "graphics/GraphicsTypes.h"
+#include "utils/list.h"
 
 
 void CleanFonts();
@@ -66,7 +66,7 @@ private:
 	int cursorBearing;
 	int cursorPosition;
 	Sprite* cursor;
-	std::vector< Sprite* > sprites;
+	list< Sprite* > sprites;
 
 	void addSprite( int x, int y, Char* c );
 };

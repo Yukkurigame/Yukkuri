@@ -20,9 +20,9 @@ namespace Path {
 	/* determine if "ch" is a separator character */
 	int is_sep( char ch ){
 	#ifdef ALTSEP
-	    return ch == SEP || ch == ALTSEP;
+		return ch == SEP || ch == ALTSEP;
 	#else
-	    return ch == SEP;
+		return ch == SEP;
 	#endif
 	}
 
@@ -76,14 +76,14 @@ void Path::init(  )
 #elif defined(__APPLE__)
 	uint32_t size = sizeof(path_app);
 	if (_NSGetExecutablePath(path_app, &size) == 0){
-		Debug( Debug::OS, "Executable path is " + path_app + "\n" );
+		Debug( Debug::OS, "Executable path is %s.\n", path_app );
 		path_app = dirname( path_app );
 		path_app[ strlen(path_app) - 1 ] = 0;
 		strcat( path_app, "/" );
-		Debug( Debug::OS, "Working path will be " + path_app + "\n" );
+		Debug( Debug::OS, "Working path will be %s.\n", path_app );
 		change_dir( path_app );
 	}else{
-		printf( "buffer too small; need size %u\n", size );
+		Debug( Debug::OS, "Buffer is too small; need size %u\n", size );
 	}
 
 #elif defined(__linux__)
@@ -94,7 +94,7 @@ void Path::init(  )
 		path_app = dirname( path_app );
 		change_dir( path_app );
 		strcat( path_app, "/" );
-		Debug::debug( Debug::OS, std::string("path_app: ") + path_app + "\n" );
+		Debug::debug( Debug::OS, "path_app: %s\n", path_app );
 	}else{
 		Debug::debug( Debug::OS, "Error getting application path.\n" );
 		exit( EXIT_FAILURE );
@@ -115,11 +115,11 @@ void Path::init(  )
 	}
 
 	if( res ){
-		Debug( Debug::OS, "Executable path is " + path_app + "\n" );
+		Debug( Debug::OS, "Executable path is %s.\n", path_app );
 		path_app = dirname( path_app );
 		strcat( path_app, "/" );
 		change_dir(path_app);
-		Debug( Debug::OS, "path_app: " + path_app + "\n" );
+		Debug( Debug::OS, "path_app: %s.\n", path_app );
 	}else{
 		Debug::debug( Debug::OS, "Error getting application path.\n" );
 		exit( EXIT_FAILURE );
@@ -142,25 +142,25 @@ char* Path::join( const char* first, const char* sec )
 	strncpy( ret, first, f );
 	ret[f] = '\0';
 
-    if( is_sep(sec[0]) ){
-        n = 0;
+	if( is_sep(sec[0]) ){
+		n = 0;
 	}else{
-        n = strlen( ret );
-        if( n > 0 && !is_sep(ret[n-1]) && n < MAXPATHLEN )
-            ret[n++] = SEP;
-    }
+		n = strlen( ret );
+		if( n > 0 && !is_sep(ret[n-1]) && n < MAXPATHLEN )
+			ret[n++] = SEP;
+	}
 
-    if( n > MAXPATHLEN ){
-        Debug::debug( Debug::OS, "Source path longer than maximum path length.\n" );
-        free(ret);
-        return NULL;
-    }
+	if( n > MAXPATHLEN ){
+		Debug::debug( Debug::OS, "Source path longer than maximum path length.\n" );
+		free(ret);
+		return NULL;
+	}
 
-    if( n + k > MAXPATHLEN )
-        k = MAXPATHLEN - n;
+	if( n + k > MAXPATHLEN )
+		k = MAXPATHLEN - n;
 
-    strncpy( ret + n, sec, k );
-    ret[n+k] = '\0';
+	strncpy( ret + n, sec, k );
+	ret[n+k] = '\0';
 
 	return ret;
 }

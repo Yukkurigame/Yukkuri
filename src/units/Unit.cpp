@@ -66,8 +66,7 @@ bool Unit::Create( int id, std::string proto )
 		delete cfg;
 	}
 	if( proto == "" ){
-		Debug::debug( Debug::UNIT, "Unit with blank prototype, creation failed. UID: "
-						+ citoa(UnitId) + ".\n" );
+		Debug::debug( Debug::UNIT, "Unit with blank prototype, creation failed. UID: %d.\n", UnitId );
 		return false;
 	}
 
@@ -77,8 +76,9 @@ bool Unit::Create( int id, std::string proto )
 		Actions.setAction( Action::getId("init") );
 		delete pm;
 		if( !Actions.loaded ){
-				Debug::debug( Debug::UNIT, "Unit with invalid prototype '" + proto +
-					"'. Creation failed. UID: " + citoa(UnitId) + ".\n" );
+				Debug::debug( Debug::UNIT,
+						"Unit with invalid prototype '%s'. Creation failed. UID: %d.\n",
+						proto.c_str(), UnitId );
 				return false;
 		}
 	}
@@ -98,8 +98,7 @@ bool Unit::Create( int id, std::string proto )
 	if( Actions.proto->physicsType >= 0 && Actions.proto->physicsType < potLast )
 		phys.type = (enum PhysObectType)Actions.proto->physicsType;
 	else{
-		Debug::debug( Debug::UNIT, "Bad physics object type: "
-				+ citoa( Actions.proto->physicsType ) + ".\n" );
+		Debug::debug( Debug::UNIT, "Bad physics object type: %d.\n", Actions.proto->physicsType );
 		phys.type = potNone;
 	}
 
@@ -165,10 +164,10 @@ void Unit::update( const int& dt )
 			int ret_val = luaScript->ExecChunkFromReg( frame.func, 1 );
 			if( ret_val == -1 )	{
 				Debug::debug( Debug::PROTO,
-					"An error occurred while executing a local function. obj id  " +
-					citoa(UnitId) + ", proto_name '" + Actions.proto->name + "', action '" +
-					Action::getName(Actions.action->id)  + "', frame " + citoa(Actions.frame) +
-					": " + luaScript->getString( -1 ) + ".\n" );
+					"An error occurred while executing a local function. Id: %d, proto_name '%s', action '%s', frame %d: %s.\n",
+					UnitId, Actions.proto->name.c_str(),
+					Action::getName(Actions.action->id).c_str(), Actions.frame,
+					luaScript->getChar(-1) );
 			}
 
 			for(int i = 0; i > ret_val; ++i ){
@@ -413,8 +412,7 @@ bool Unit::update( const Frame& frame )
 			LuaConfig* cfg = new LuaConfig;
 			for( int i = 0; i < param.intData; i++ ){
 				if( !Actions.params.CheckParamTypes( 2, stInt, stString ) ){
-					Debug::debug( Debug::PROTO, "acLoadPraramBunch wrong " +
-							citoa(i+1) + " parameter set.\n" );
+					Debug::debug( Debug::PROTO, "acLoadPraramBunch wrong %d parameter set.\n", i+1 );
 					continue;
 				}
 				int psparam = Actions.params.PopInt();
@@ -518,7 +516,7 @@ bool Unit::setUnitName( std::string type )
 {
 	//FIXME: it's bad.
 	LuaConfig* cfg = new LuaConfig;
-	UnitName = cfg->getRandom("meeting", type);
+	UnitName = std::string(cfg->getRandom("meeting", type.c_str()));
 	delete cfg;
 	if( UnitName == "" )
 		return false;

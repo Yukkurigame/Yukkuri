@@ -61,7 +61,7 @@ int ThreadApi::wait( lua_State* L )
 	if( lua_pushthread( L ) ){
 		// lua_pushthread вернет true, если мы пытаемся остановить основной поток
 		luaL_where( L, 0 );
-		Debug::debug( Debug::SCRIPT, std::string(lua_tostring(L, -1)) + " attempting to Wait on main thread.\n");
+		Debug::debug( Debug::SCRIPT, "%s attempting to Wait on main thread.\n", lua_tostring(L, -1) );
 		lua_pop(L, lua_gettop(L));
 		return 0;
 	}else{

@@ -37,21 +37,29 @@ void MeshManager::init( )
 {
 	// Push shader config to stack and load config;
 	LuaConfig* cfg = new LuaConfig();
-	list< std::string > names;
+	list< char* > names;
 	cfg->getSubconfigsList( "mesh", names );
 	lua_State* L = cfg->getState();
-	ITER_LIST( std::string, names ){
+	ITER_LIST( char*, names ){
 		Mesh* m = new Mesh();
-		cfg->pushSubconfig( it->data.c_str(), "mesh" );
+		cfg->pushSubconfig( it->data, "mesh" );
 		LUA_GET_VALUE( "file", m->filename );
 		LUA_GET_VALUE( "location", m->location );
 		cfg->pop( 1 );
+		free( it->data );
 
 		char* path = Path::join( conf.path.meshes.c_str(), m->filename );
-		parse_obj_scene( &m->data,  path );
-		free( path );
 
-		Meshes.push( m );
+		if( parse_obj_scene( &m->data,  path ) ){
+			Debug::debug( Debug::GRAPHICS, "Mesh %s loaded.\n", m->filename );
+			Meshes.push( m );
+		}else{
+			free(m->filename);
+			delete m;
+			Debug::debug( Debug::GRAPHICS, "Cannot load mesh %s.\n", m->filename );
+		}
+
+		free( path );
 	}
 	delete cfg;
 }
@@ -75,7 +83,7 @@ void MeshManager::load( GLBrush* brush )
 	}
 
 	if( !data ){
-		Debug::debug( Debug::GRAPHICS, "No mesh file for mesh type " + citoa(brush->type) + ".\n" );
+		Debug::debug( Debug::GRAPHICS, "No mesh file for mesh type %d.\n", brush->type );
 		return;
 	}
 

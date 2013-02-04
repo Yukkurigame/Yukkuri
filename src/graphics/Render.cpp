@@ -207,10 +207,10 @@ void RenderManager::FreeGLSprite( Sprite* sprite )
 }
 
 
-void RenderManager::FreeGLSprites( std::vector< Sprite* >* sprites )
+void RenderManager::FreeGLSprites( list< Sprite* >* sprites )
 {
-	FOREACHPIT(sprites)
-		FreeGLSprite(*it);
+	ITER_LISTP( Sprite*, sprites )
+		FreeGLSprite(it->data);
 	sprites->clear();
 }
 

@@ -11,19 +11,23 @@
 #include "Bindings.h"
 #include "scripts/LuaScript.h"
 #include "scripts/LuaScriptConfig.h"
+#include "utils/list.h"
 #include <cstring>
 #include <cstdlib>
 
+#include <map>
 #include "hacks.h"
 
+
 extern LuaScript* luaScript;
+
 
 namespace {
 
 	BindFunction BindedFunctions[ MAXKEYS ];
 	const char* KeyNames[ MAXKEYS ];
 	const char* Current;
-	std::vector < UINT > BindedKeys;
+	list< UINT > BindedKeys;
 	LuaRegRef Reciever;
 
 	const char* none_string = "\0";
@@ -292,7 +296,7 @@ LuaRegRef& Bindings::getReciever( ) {
 
 void Bindings::loadKeys( const char* subconfig )
 {
-	Debug::debug( Debug::INPUT, "Loading bindings set " + std::string(subconfig) + ".\n" );
+	Debug::debug( Debug::INPUT, "Loading bindings set %s.\n", subconfig );
 	freeKeys();
 	Current = subconfig;
 	BindedKeys.clear();
@@ -316,6 +320,6 @@ void Bindings::loadKeys( const char* subconfig )
 
 void Bindings::freeKeys( )
 {
-	FOREACHIT( BindedKeys )
-		BindedFunctions[*it].type = NOTAFUNC;
+	ITER_LIST( UINT, BindedKeys )
+		BindedFunctions[it->data].type = NOTAFUNC;
 }

@@ -31,7 +31,7 @@ int Binds::getFunction( enum func_numbers name, BindCFunction* f )
 		*f = func_refs[name];
 		return 1;
 	}
-	Debug::debug( Debug::INPUT, "Bind function not found: " + std::string(getFunctionName(name)) + ".\n" );
+	Debug::debug( Debug::INPUT, "Bind function not found: %s.\n", getFunctionName(name) );
 
 	return 0;
 }

@@ -8,7 +8,7 @@
 #define LUACONFIG_H_
 
 #include "Lua.h"
-#include <string>
+
 
 class LuaConfig : public LuaMain
 {
@@ -16,14 +16,14 @@ public:
 	LuaConfig( );
 	~LuaConfig( );
 
-	bool OpenConfig( std::string );
-	bool LoadAll( std::string );
+	bool OpenConfig( const char* );
+	bool LoadAll( const char* );
 
-	std::string getRandom( std::string field, std::string config );
+	char* getRandom( const char* field, const char* config );
 
-	bool getSubconfigsList( std::string config, list< std::string >& ret );
+	bool getSubconfigsList( const char* config, list< char* >& ret );
 
-	bool getSubconfigsLength( std::string config, int& len );
+	bool getSubconfigsLength( const char* config, int& len );
 
 	bool pushSubconfig( const char* subconfig, const char* config ){
 		const int prmsz = 2;

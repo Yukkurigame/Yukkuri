@@ -76,10 +76,9 @@ int Unit::emitEvent( lua_State* L )
 	int ret_val = luaScript->ExecChunkFromReg( events.function, argcount + top );
 	if( ret_val == -1 )
 		Debug::debug( Debug::PROTO,
-			"An error occurred while executing a local event function '" + name +
-			"'. obj id  " + citoa(UnitId) + ", proto_name '" + Actions.proto->name +
-			"', action '" + Action::getName(Actions.action->id)  + "', frame " + citoa(Actions.frame) +
-			": " + luaScript->getString( -1 ) + ".\n" );
+			"An error occurred while executing a local event function '%s'. obj id %d, proto_name '%s', action '%s', frame %d: %s.\n",
+			name.c_str(), UnitId, Actions.proto->name.c_str(),
+			Action::getName(Actions.action->id).c_str(), Actions.frame, luaScript->getChar(-1) );
 
 	return ret_val;
 }

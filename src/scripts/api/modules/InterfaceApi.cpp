@@ -6,6 +6,7 @@
  */
 
 #include "interface/Interface.h"
+#include "interface/widgets/Widget.h"
 #include "scripts/api/modules/InterfaceApi.h"
 #include "scripts/LuaUtils.h"
 
@@ -21,11 +22,9 @@ int IfaceApi::loadAllWidgets( lua_State* L )
 
 int IfaceApi::loadWidget( lua_State* L )
 {
-	std::string wname;
-
 	luaL_argcheck( L, lua_isstring( L, 1 ), 1, "Widget name not given." );
 
-	wname = lua_tostring( L, 1 );
+	const char* wname = lua_tostring( L, 1 );
 	Widget* w = Interface::LoadWidget( wname );
 	lua_pop( L, lua_gettop( L ) );
 	if( !w ){
@@ -39,14 +38,11 @@ int IfaceApi::loadWidget( lua_State* L )
 
 int IfaceApi::createWidget( lua_State* L )
 {
-	std::string wname;
-	enum wType type;
-
 	luaL_argcheck( L, lua_isstring( L, 1 ), 1, "Widget name not given." );
 	luaL_argcheck( L, lua_isnumber( L, 2 ), 2, "Widget type not given." );
 
-	wname = lua_tostring( L, 1 );
-	type = (enum wType)lua_tointeger( L, 2 );
+	const char* wname = lua_tostring( L, 1 );
+	enum wType type = (enum wType)lua_tointeger( L, 2 );
 	Widget* w = Interface::CreateWidget( wname, type );
 
 	if( lua_istable( L, 3 ) ){
@@ -54,7 +50,8 @@ int IfaceApi::createWidget( lua_State* L )
 		lua_pushvalue( L, 3 );
 		lua_insert( L, 1 );
 		if( !w->load( L ) )
-			Debug::debug( Debug::INTERFACE, "Cannot load widget parameters for widget " + w->getWidgetName() + ".\n" );
+			Debug::debug( Debug::INTERFACE,
+					"Cannot load widget parameters for widget %s.\n", w->getWidgetName().c_str() );
 		// TODO: stack order changed
 	}
 
@@ -76,7 +73,7 @@ int IfaceApi::getWidget( lua_State* L )
 	if( w )
 		return w->pushUData(L);
 
-	Debug::debug( Debug::UNIT, "getUnit: unit with id " + citoa(id) + " does not exist.\n" );
+	Debug::debug( Debug::UNIT, "getUnit: unit with id %d does not exist.\n", id );
 	return 0;
 }
 
@@ -87,16 +84,11 @@ int IfaceApi::getWidgetByName( lua_State* L )
 	luaL_argcheck( L, lua_isnumber( L, 2 ) || lua_isuserdata( L, 2 ) || \
 			lua_isnoneornil( L, 2 ), 2, "Parent widget or nil expected" );
 
-	std::string wname;
+
+	const char* wname = lua_tostring( L, 1 );
 	Widget* parent = NULL;
 
-	wname = lua_tostring( L, 1 );
-
-	if( lua_isnumber( L, 2 ) ){
-		UINT id = static_cast<UINT>( lua_tointeger(L, 2) );
-		parent = Interface::GetWidget( id );
-	}else if( lua_isuserdata( L, 2 ) )
-		parent = reinterpret_cast<Widget*>( getUserData( L, 2 ) );
+	OBJECT_FROM_LUA( 2, Interface::GetWidget, Widget*, parent )
 
 	Widget* w = Interface::GetWidget( wname, parent );
 	if( w )
@@ -120,13 +112,6 @@ int IfaceApi::addChild( lua_State* L )
 	Widget* children = NULL;
 
 	OBJECT_FROM_LUA( 1, Interface::GetWidget, Widget*, parent )
-	/*
-	if( lua_isnumber( L, 1 ) ){
-		UINT id = static_cast<UINT>( lua_tointeger(L, 1) );
-		parent = Interface::GetWidget( id );
-	}else if( lua_isuserdata( L, 1 ) )
-		parent = reinterpret_cast<Widget*>( getUserData( L, 1 ) );
-	*/
 
 	if( !parent )
 		return 0;

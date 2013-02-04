@@ -107,7 +107,7 @@ char* generate_defines( enum GLSFlags glflags )
 
 
 
-bool check_shader( GLuint object, int status_name, std::string name )
+bool check_shader( GLuint object, int status_name, const char* name )
 {
 	// TODO: rewrite
 	GLint status;
@@ -150,11 +150,11 @@ bool check_shader( GLuint object, int status_name, std::string name )
 				glGetProgramInfoLog( object, log_length, &log_length, info_log );
 				break;
 			default:
-				Debug::debug( Debug::GRAPHICS, "Wrong shader operation");
+				Debug::debug( Debug::GRAPHICS, "Wrong shader operation.\n");
 				return false;
 		}
 
-		Debug::debug( Debug::GRAPHICS, name + ": " + std::string(info_log) );
+		Debug::debug( Debug::GRAPHICS, "%s: %s.\n", name, info_log );
 
 		/* Handle the error in an appropriate way such as displaying a message or writing to a log file. */
 		/* In this simple program, we'll just leave */
@@ -170,7 +170,7 @@ GLint create_shader( const char* filename, int type, const char* defines )
 	/* Pointer will receive the contents of our shader source code files */
 	char* buffer = filetobuf( filename );
 	if( buffer == NULL ){
-		Debug::debug( Debug::OS, "Shader file not found: " + std::string(filename) + "\n" );
+		Debug::debug( Debug::OS, "Shader file not found: %s.\n", filename );
 		return -1;
 	}
 
@@ -269,7 +269,11 @@ GLuint createProgram( enum GLSPass pass, enum GLSFlags glflags )
 	/* and fragment shaders. It might be that you have surpassed your GPU's abilities. Perhaps too many ALU operations or */
 	/* too many texel fetch instructions or too many interpolators or dynamic loops. */
 
-	if( !check_shader( shaderprogram, GL_LINK_STATUS, (std::string)"Shader program " + config.name ) ){
+	char program_string[ strlen(config.name) + 17 ];
+	sprintf( program_string, "Shader program %s", config.name );
+
+
+	if( !check_shader( shaderprogram, GL_LINK_STATUS, program_string ) ){
 		glDeleteProgram( shaderprogram );
 		return 0;
 	}

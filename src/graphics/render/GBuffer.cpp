@@ -240,8 +240,8 @@ void GBuffer::stencil_pass( LightSource* )
 	glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR, GL_KEEP);
 	glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR, GL_KEEP);
 
-
 }
+
 
 
 void GBuffer::light_pass_point( LightSource* )

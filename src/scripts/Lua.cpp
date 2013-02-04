@@ -63,21 +63,21 @@ bool LuaMain::init( )
 }
 
 
-bool LuaMain::OpenFile( std::string name )
+bool LuaMain::OpenFile( const char* name )
 {
 	int result;
 
-	result = luaL_loadfile( Lst, name.c_str() );
+	result = luaL_loadfile( Lst, name );
 	if( result ){
-		std::string e = lua_tostring( Lst, -1 );
-		debug( SCRIPT, "Open " + name + " failed " + e + "\n" );
+		debug( SCRIPT, "Open %s failed: %s.\n", name, lua_tostring( Lst, -1 ) );
+		lua_pop( Lst, 1 );
 		return false;
 	}
 
 	result = lua_pcall( Lst, 0, 0, 0);
 	if( result ){
-		std::string e = lua_tostring( Lst, -1 );
-		debug( SCRIPT, "Execute " + name + " failed: " + e + "\n" );
+		debug( SCRIPT, "Execute of %s failed: %s.\n", name, lua_tostring( Lst, -1 ) );
+		lua_pop( Lst, 1 );
 		return false;
 	}
 
@@ -96,30 +96,30 @@ template<> void initValue( s4ub& ret ) { ret = s4ub(); }
 template<> void initValue( ShaderConfigData& ret ) { }
 
 
-int LuaMain::execFunction( std::string function )
+int LuaMain::execFunction( const char* function )
 {
-	int cnum;
+	//int cnum;
 	int szadd = 0;
-	char* funcname = (char*)malloc( (unsigned)(sizeof(char) * function.length()) );
-	char* subfuncname = (char*)malloc( (unsigned)(sizeof(char) * function.length()) );
+	UINT fnsize = sizeof(char) * strlen(function);
+	char* funcname = (char*)malloc( fnsize );
+	char* subfuncname = (char*)malloc( fnsize );
 	char delimetr = '\0';
 
+	memset( funcname, '\0', fnsize );
+	memset( subfuncname, '\0', fnsize );
+
 	//FIXME: needs refactoring
-	cnum = function.find('.');
-	if( cnum >= 0 ){
-		delimetr = '.';
+	const char* sptr = strchr( function, '.' );
+	if( !sptr )
+		sptr = strchr( function, ':' );
+
+	if( sptr ){
+		delimetr = sptr[0];
+		strncpy( funcname, function, (UINT)(sptr - function) );
+		sptr++;
+		strncpy( subfuncname, sptr, strlen(sptr) );
 	}else{
-		cnum = function.find(':');
-		if( cnum >= 0 ){
-			delimetr = ':';
-		}
-	}
-	if( delimetr != '\0' ){
-		// FIXME: strdup?
-		strcpy(funcname, function.substr( 0, cnum ).c_str( ));
-		strcpy(subfuncname, function.substr( cnum +1, function.length( ) ).c_str( ));
-	}else{
-		strcpy(funcname, function.c_str( ));
+		strncpy( funcname, function, fnsize );
 	}
 
 	lua_getfield( Lst, LUA_GLOBALSINDEX, funcname );

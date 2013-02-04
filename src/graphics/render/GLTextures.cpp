@@ -86,14 +86,14 @@ Texture* GLTextures::load( std::string name )
 	unsigned int normals = Image::load( ("normals/" + name).c_str(), &nw, &nh, false );
 
 	if( !surface ){
-		Debug::debug( Debug::GRAPHICS, name + " not loaded.\n" );
+		Debug::debug( Debug::GRAPHICS, "Image %s not loaded.\n", name.c_str() );
 		return NULL;
 	}
 
 	tex = create( name, surface, sw, sh );
 
 	if( normals ){
-		Debug::debug( Debug::GRAPHICS, name + " normals loaded.\n" );
+		Debug::debug( Debug::GRAPHICS, "Normals %s loaded.\n", name.c_str() );
 		tex->normals = normals;
 	}
 	return tex;

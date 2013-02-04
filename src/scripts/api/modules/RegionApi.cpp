@@ -23,9 +23,8 @@ int RegionApi::active( lua_State *L )
 
 int RegionApi::loadRegion( lua_State *L )
 {
-	std::string name;
 	luaL_argcheck( L, lua_isstring( L, 1 ), 1, "Parameter not given." );
-	name = lua_tostring( L, 1 );
+	const char* name = lua_tostring( L, 1 );
 	Region::load( name );
 	return 0;
 }

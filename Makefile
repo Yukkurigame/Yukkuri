@@ -43,7 +43,7 @@ MAP = Tiles.cpp Region.cpp Map.cpp
 
 
 
-SRCS =   main.cpp config.cpp Bindings.cpp BindFunctions.cpp  \
+SRCS =   main.cpp config.cpp Bindings.cpp BindFunctions.cpp debug.cpp \
 		 $(addprefix $(UTILSDIR), $(UTILS)) \
          $(addprefix $(COREDIR), $(CORE)) \
          $(addprefix $(SCRIPTSDIR), $(SCRIPTS)) \
@@ -68,7 +68,7 @@ UNIQHEADERS = $(addsuffix .h, \
 		$(addprefix $(3RDPARTYDIR), TypeList \
 			$(addprefix timer/, InternalTimerEvent InternalTimerEvent TimerEvent \
 			ITimerEventPerformer )) \
-		 Define debug hacks safestring basic_types types )
+		 Define hacks safestring basic_types types )
 
 
 HEADERS = $(OBJECTS:.o=.h) $(addprefix $(OBJDIR), $(UNIQHEADERS))

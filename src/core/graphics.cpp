@@ -23,14 +23,14 @@ extern MainConfig conf;
 
 bool Yukkuri::InitGraphics( )
 {
-	Debug::debug( Debug::MAIN, "Initializing SDL...	" );
+	Debug::debug( Debug::MAIN, "Initializing SDL...	\n" );
 	// Register SDL_Quit to be called at exit; makes sure things are cleaned up when we quit.
 	atexit( SDL_Quit );
 
 	// Initialize SDL's subsystems - in this case, only video.
 	if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) < 0 ) {
 		Debug::debug( Debug::NONE, "[FAIL]\n" );
-		Debug::debug( Debug::MAIN, "Couldn't initialize SDL: " + static_cast<std::string>(SDL_GetError( )) + "\n" );
+		Debug::debug( Debug::MAIN, "Couldn't initialize SDL: %s.\n", SDL_GetError( ) );
 		return false;
 	}
 
@@ -41,9 +41,8 @@ bool Yukkuri::InitGraphics( )
 
 	videoInfo = SDL_GetVideoInfo( );
 
-	if( !videoInfo ) {
-		Debug::debug( Debug::MAIN, "Video query failed: " + static_cast<std::string>(SDL_GetError( )) + "\n" );
-	}
+	if( !videoInfo )
+		Debug::debug( Debug::MAIN, "Video query failed: %s.\n", SDL_GetError( ) );
 
 	videoFlags = SDL_OPENGL; // Enable OpenGL in SDL
 	videoFlags |= SDL_HWPALETTE; // Store the palette in hardware
@@ -55,7 +54,7 @@ bool Yukkuri::InitGraphics( )
 	if( !SDL_SetVideoMode(
 			conf.video.windowWidth, conf.video.windowHeight, 0, videoFlags ) ) {
 		Debug::debug( Debug::NONE, "[FAIL]\n" );
-		Debug::debug( Debug::MAIN, "Unable to set up video: " + static_cast<std::string>(SDL_GetError( )) + "\n" );
+		Debug::debug( Debug::MAIN, "Unable to set up video: %s.\n", SDL_GetError( ) );
 		return false;
 	}
 	GLenum err = glewInit();
@@ -70,7 +69,7 @@ bool Yukkuri::InitGraphics( )
 	if( !RenderManager::openglSetup( Window.width, Window.height ) )
 		return false;
 
-	Debug::debug( Debug::NONE, "Done\n" );
+	Debug::debug( Debug::NONE, "[DONE]\n" );
 
 	Debug::debug( Debug::MAIN, "Load sprites.\n" );
 

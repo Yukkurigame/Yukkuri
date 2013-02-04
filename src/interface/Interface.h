@@ -7,8 +7,9 @@
 #ifndef INTERFACE_H_
 #define INTERFACE_H_
 
-#include <string>
-#include "widgets/Widget.h"
+#include "types.h"
+
+class Widget;
 
 
 namespace Interface
@@ -16,15 +17,14 @@ namespace Interface
 	void init( );
 	void clean();
 
-	Widget* CreateWidget( std::string id, enum wType type );
+	Widget* CreateWidget( const char* id, UINT type );
 
 	void LoadAllWidgets();
-	Widget* LoadWidget( std::string id );
+	Widget* LoadWidget( const char* id );
 
-	Widget* GetWidget( unsigned int id );
-	Widget* GetWidget( std::string name, Widget* parent );
+	Widget* GetWidget( UINT id );
+	Widget* GetWidget( const char* name, Widget* parent );
 
-	//void Update( );
 
 };
 

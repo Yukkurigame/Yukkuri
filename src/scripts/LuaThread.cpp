@@ -23,14 +23,14 @@ static int threadsCounter = 0;
 
 static std::list<LuaThread*> threads;
 
-static std::string getDebugInfo( lua_State* L )
+static char* lua_debug_info( lua_State* L )
 {
 	lua_Debug ar;
 	//FIXME: it's cruve.
-	char d[65];
+	char* d = (char*)malloc( (UINT)sizeof(char) * 65 );
 	lua_getinfo(L, ">S", &ar);
-	snprintf(d, 65, "%s line %d", ar.short_src, ar.linedefined );
-	return (std::string)d;
+	snprintf( d, 65, "%s line %d", ar.short_src, ar.linedefined );
+	return d;
 }
 
 LuaThread::LuaThread( )
@@ -57,7 +57,9 @@ LuaRegRef threadsManager::NewThread( lua_State* L )
 	if( !L )
 		return 0;
 	if( lua_gettop( L ) < 1 || lua_gettop( L ) > 2 ){
-		debug( SCRIPT, "Wrong arguments count passed:" + getDebugInfo( L ) + ".\n");
+		char* debuginfo = lua_debug_info( L );
+		debug( SCRIPT, "Wrong arguments count passed: %s.\n", debuginfo );
+		free( debuginfo );
 		return 0;
 	}
 
@@ -68,7 +70,9 @@ LuaRegRef threadsManager::NewThread( lua_State* L )
 	}
 
 	if( !lua_isfunction( L, 1 ) || lua_iscfunction( L, 1 ) ){
-		debug( SCRIPT, "Wrong first argument passed:" + getDebugInfo( L ) + ". Function expected.\n" );
+		char* debuginfo = lua_debug_info( L );
+		debug( SCRIPT, "Wrong first argument passed: %s. Function expected.\n", debuginfo );
+		free( debuginfo );
 		return 0;
 	}
 
@@ -165,8 +169,8 @@ int threadsManager::ResumeThread( ThreadIter it, lua_State* L )
 
 	if( lua_status( lt->Thread ) != LUA_YIELD ){
 		if( lua_status( lt->Thread ) != 0 ){		// Errors
-			std::string err = lua_tostring( lt->Thread, -1 );
-			debug( SCRIPT, "Thread resumption failed: " + err + ".\n" );
+			const char* err = lua_tostring( lt->Thread, -1 );
+			debug( SCRIPT, "Thread resumption failed: %s.\n", err );
 		}
 		RemoveThread( it );
 	}
@@ -181,8 +185,8 @@ int threadsManager::ThreadWait( lua_State* L )
 
 	if( lua_pushthread(L) ){
 		luaL_where(L, 0);
-		debug( SCRIPT, "Main thread is not a coroutine: " + getDebugInfo( L ) +
-				lua_tostring(L, -1) + ".\n" );
+		debug( SCRIPT, "Main thread is not a coroutine: %s.\n",
+				lua_debug_info( L ), lua_tostring(L, -1) );
 		lua_pop(L, lua_gettop(L));
 		return 0;
 	}else{
@@ -205,7 +209,7 @@ void threadsManager::RemoveThread( ThreadIter it )
 	if( thread != NULL ){
 		Timer::DeleteTimerEvent( thread->refKey );
 		luaScript->RemoveFromRegistry( thread->refKey );
-		Debug::debug( Debug::SCRIPT, "Lua thread " + citoa(thread->ThreadId) + " removed.\n");
+		Debug::debug( Debug::SCRIPT, "Lua thread %d removed.\n", thread->ThreadId);
 		delete thread, thread = NULL;
 	}
 	threads.erase(it);

@@ -25,11 +25,9 @@ bool Yukkuri::InitInput( )
 #ifdef JOYSTICKENABLE
 	if( SDL_NumJoysticks() > 0 ){
 		int jnum = SDL_NumJoysticks();
-		char d[3]; //100 joystics, lol
-		snprintf( d, 2, "%d", jnum );
-		debug( Debug::INPUT, std::string(d) + " joysticks were found:\n" );
+		debug( Debug::INPUT, "%d joysticks were found:\n", jnum );
 		for( int i=0; i < jnum; i++ )
-			debug( Debug::INPUT, std::string(SDL_JoystickName(i)) + "\n" );
+			debug( Debug::INPUT, "%s\n", SDL_JoystickName(i) );
 		SDL_JoystickEventState(SDL_ENABLE);
 		joystick = SDL_JoystickOpen(0);
 	}

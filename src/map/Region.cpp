@@ -41,7 +41,7 @@ bool Region::init( )
 		return false;
 	}else{
 		TileTypesCount = Subconfigs.size();
-		Debug::debug( Debug::MAP, "Tiles found: " + citoa(TileTypesCount) + ".\n" );
+		Debug::debug( Debug::MAP, "Tiles found: %d.\n", TileTypesCount );
 	}
 	tiles = new TileInfo[TileTypesCount + 1];
 	for( unsigned int i = 0; i < TileTypesCount; ++i ){
@@ -77,16 +77,16 @@ void Region::clean( )
 	delete[] tiles;
 }
 
-void Region::load( std::string name )
+void Region::load( const char* name )
 {
-	Debug::debug( Debug::MAP, "Loading region " + name + ".\n" );
+	Debug::debug( Debug::MAP, "Loading region %s.\n", name );
 	if( !TilesLoaded ){
-		Debug::debug( Debug::MAP, "Cannot load region " + name + " without tiles.\n");
+		Debug::debug( Debug::MAP, "Cannot load region %s without tiles.\n", name );
 		return;
 	}
 	LuaConfig* cfg = new LuaConfig;
 	std::vector< std::map< std::string, std::string > > Tiles;
-	cfg->getValue( "tiles", name.c_str(), "region", Tiles );
+	cfg->getValue( "tiles", name, "region", Tiles );
 	for( std::vector< std::map< std::string, std::string > >::iterator it = Tiles.begin(), end = Tiles.end();
 			it != end; ++it ){
 		if( it->count( "tile" ) > 0 ){

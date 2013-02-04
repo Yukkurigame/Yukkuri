@@ -7,6 +7,7 @@
 #include "3rdparty/LuaPusher.h"
 #include "scripts/Lua.h"
 #include "graphics/utils/gl_shader.h"
+#include "string.h"
 
 
 // ShaderConfigData

@@ -5,31 +5,31 @@
  */
 
 #include "Interface.h"
+#include "widgets/Widget.h"
 #include "widgets/WidgetText.h"
 #include "widgets/WidgetBar.h"
 #include "scripts/LuaConfig.h"
-#include "graphics/daytime.h"
+#include "utils/list.h"
 
-#include "hacks.h"
 #include "debug.h"
 #include "safestring.h"
 
 
 namespace
 {
-	std::vector< Widget* > widgets;
+	list< Widget* > widgets;
 	static unsigned int LastWidgetId = 1;
 
 
-	void DeleteWidget( std::string name ){
+	void DeleteWidget( const char* name ){
 		//FIXME: why this function is empty?
 	}
 
-	Widget* NewWidget( std::string id, enum wType type ){
+	Widget* NewWidget( const char* id, enum wType type ){
 		Widget* w = NULL;
 		switch( type ){
 			default:
-				debug( Debug::INTERFACE, "Widget with id " + id + " have bad type " + citoa(type) + ".\n" );
+				debug( Debug::INTERFACE, "Widget with id %s have bad type: %d.\n", id, type );
 				type = wtNone;
 				// No break. Create blank widget by default.
 			case wtBlank:
@@ -64,20 +64,20 @@ void Interface::clean( )
 {
 	Debug::debug( Debug::INTERFACE, "Remove widgets.\n" );
 
-	FOREACHIT( widgets ){
-		delete (*it);
+	ITER_LIST( Widget*, widgets ){
+		delete it->data;
 	}
 }
 
 
-Widget* Interface::CreateWidget( std::string id, enum wType type )
+Widget* Interface::CreateWidget( const char* id, UINT type )
 {
 	Widget* w;
-	debug( Debug::INTERFACE, "Creating widget " + id + "\n" );
-	w = NewWidget(id, type);
+	debug( Debug::INTERFACE, "Creating widget %s.\n", id );
+	w = NewWidget( id, static_cast<enum wType>(type) );
 	if( w != NULL ){
 		w->setId( LastWidgetId++ );
-		widgets.push_back(w);
+		widgets.push_back( w );
 	}
 	return w;
 }
@@ -85,22 +85,22 @@ Widget* Interface::CreateWidget( std::string id, enum wType type )
 
 void Interface::LoadAllWidgets( )
 {
-	list< std::string > v;
+	list< char* > v;
 	LuaConfig* lc = new LuaConfig;
 	lc->getSubconfigsList( "widget", v );
-	ITER_LIST( std::string, v ){
+	ITER_LIST( char*, v ){
 		LoadWidget( it->data );
 	}
 	delete lc;
 }
 
 
-Widget* Interface::LoadWidget( std::string id )
+Widget* Interface::LoadWidget( const char* id )
 {
 	Widget* w;
 	LuaConfig* conf = new LuaConfig;
 
-	debug( Debug::INTERFACE, "Loading widget " + id + "\n" );
+	debug( Debug::INTERFACE, "Loading widget %s.\n", id );
 
 	//Prevent loop inheritance.
 	//w = GetWidget( name );
@@ -111,7 +111,7 @@ Widget* Interface::LoadWidget( std::string id )
 
 	std::string stype;
 	enum wType type = wtNone;
-	conf->getValue( "type", id.c_str(), stype );
+	conf->getValue( "type", id, stype );
 	if( stype == "Widget" ){
 		type = wtBlank;
 	}else if( stype == "TextWidget" ){
@@ -134,11 +134,12 @@ Widget* Interface::LoadWidget( std::string id )
 	//Add in cache;
 	widgets.push_back(w);
 
-	std::vector < std::string > childs;
-	conf->getValue("children", id.c_str(), childs);
-	FOREACHIT( childs ){
-		Widget* cld = LoadWidget( *it );
-		w->addChild(cld);
+	list< char* > childs;
+	conf->getValue( "children", id, childs );
+	ITER_LIST( char*, childs ){
+		Widget* cld = LoadWidget( it->data );
+		w->addChild( cld );
+		free( it->data );
 	}
 
 	delete conf;
@@ -146,32 +147,24 @@ Widget* Interface::LoadWidget( std::string id )
 	return w;
 }
 
-Widget* Interface::GetWidget( unsigned int id )
+Widget* Interface::GetWidget( UINT id )
 {
 	if( id > 0 && id < LastWidgetId  ){
-		FOREACHIT( widgets ){
-			if( (*it)->getWidgetId( ) == id )
-				return (*it);
+		ITER_LIST( Widget*, widgets ){
+			if( it->data->getWidgetId( ) == id )
+				return it->data;
 		}
 	}
 	return NULL;
 }
 
-Widget* Interface::GetWidget( std::string name, Widget* parent )
+Widget* Interface::GetWidget( const char* name, Widget* parent )
 {
 	if( parent != NULL )
 		return parent->getChild( name );
-	FOREACHIT( widgets ){
-		if( (*it)->getParent() == NULL && (*it)->getWidgetName() == name )
-			return (*it);
+	ITER_LIST( Widget*, widgets ){
+		if( it->data->getParent() == NULL && it->data->getWidgetName() == name )
+			return it->data;
 	}
 	return NULL;
 }
-
-/*
-void Interface::Update( )
-{
-	FOREACHIT( widgets )
-		(*it)->Update( );
-}
-*/

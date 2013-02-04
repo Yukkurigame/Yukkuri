@@ -60,9 +60,11 @@ function Configs:load( filename )
 end
 
 function Configs:loadAll( type )
-	path = self:get("configs_path", "config_general", "config")
-	if path == nil then
+	local path = configs:get('paths', 'config_general', 'config')
+	if path == nil or path.configs == nil then
 		path = getcwd() .. "/" .. "data/defs/"
+	else
+		path = path.configs
 	end
 	listing = readdir(path)
 	if listing == nil then

@@ -157,7 +157,7 @@ bool Timer::SuspendTimerEvent( UINT id )
 		}
 	}
 	if( tit == timerEvents.end() ){
-		Debug::debug( Debug::MAIN, "Timer event " + citoa(id) + " not found.\n" );
+		Debug::debug( Debug::MAIN, "Timer event %d not found.\n", id );
 		return false;
 	}
 
@@ -183,7 +183,7 @@ bool Timer::ResumeTimerEvent( UINT id )
 	}
 
 	if( h == NULL || h->data == NULL ){
-		Debug::debug( Debug::MAIN, "Timer event " + citoa(id) + " not suspended.\n" );
+		Debug::debug( Debug::MAIN, "Timer event %d is not suspended.\n", id );
 		return false;
 	}
 

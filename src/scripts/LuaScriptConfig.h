@@ -27,7 +27,7 @@ public:
 
 	//TODO: exec without returned values
 	template<typename T1, typename T2>
-	bool execFunction( std::string function, const char* params[], const int sz, T1& ret1, T2& ret2)
+	bool execFunction( const char* function, const char* params[], const int sz, T1& ret1, T2& ret2)
 	{
 		LuaStackChecker sc(Lst, __FILE__, __LINE__);
 
@@ -37,9 +37,9 @@ public:
 			lua_pushstring( Lst, params[i] );
 		}
 		if( lua_pcall( Lst, sz + szadd, 1, 0 ) ){
-			std::string err;
+			char* err = NULL;
 			LuaScript::getValue( Lst, -1, err );
-			debug( Debug::SCRIPT, "Lua function '" + function + "' execute error: " + err + "\n" );
+			debug( Debug::SCRIPT, "Lua function '%s' execute error: %s.\n", function, err );
 			lua_pop( Lst, 1 + szadd );
 			return false;
 		}

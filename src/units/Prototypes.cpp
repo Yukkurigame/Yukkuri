@@ -111,8 +111,9 @@ void ActionManager::setParentAction( int id )
 		proto = proto->parent;
 	action = proto->getAction( id );
 	if( action == NULL )
-		Debug::debug( Debug::PROTO, "Action " + citoa(id) + " not found in parent prototypes of " +
-				proto->name + " prototype.\n" );
+		Debug::debug( Debug::PROTO,
+				"Action %d not found in parent prototypes of %s prototype.\n",
+				id, proto->name.c_str() );
 	frame = -1;
 	done = false;
 }
@@ -220,8 +221,9 @@ bool ActionManager::checkFrameParams( const Frame& fr, int num, enum StackElemen
 			( setp == stIntOrNone    && (el == stInt    || el == stNone) ) ||
 			( setp == stStringOrNone && (el == stString || el == stNone) ) ||
 			( setp == stTableOrNone  && (el == stTable  || el == stNone) )  ) ){
-			Debug::debug( Debug::PROTO, "Wrong set of parameters of frame with action " +
-					citoa( fr.command ) + ".\n" );
+			Debug::debug( Debug::PROTO,
+					"Wrong set of parameters of frame with action %d.\n",
+					fr.command );
 			return false;
 		}
 		// TODO: warning: ‘StackElementType’ is promoted to ‘int’ when passed through ‘...’

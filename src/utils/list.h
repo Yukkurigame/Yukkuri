@@ -19,6 +19,8 @@ struct listElement
 
 #define ITER_LIST( type, list )		\
 	for( listElement< type >* it = list.head; it != 0; it = it->next )
+#define ITER_LISTP( type, list )		\
+	for( listElement< type >* it = list->head; it != 0; it = it->next )
 
 
 template< typename T >

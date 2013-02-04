@@ -20,7 +20,6 @@ extern "C" {
 #include "utils/list.h"
 
 #include <map>
-#include <vector>
 #include <string>
 #include <utility>
 
@@ -96,7 +95,7 @@ public:
 	void RegisterApi( lua_State* L );
 	void RegisterLib( std::string name, const luaL_Reg* functions );
 
-	bool OpenFile( std::string name );
+	bool OpenFile( const char* name );
 
 	template <typename T>
 	inline void get( int idx, T& val ){
@@ -114,7 +113,7 @@ public:
 
 
 	// This function may leave something on stack.
-	int execFunction( std::string function, const char* params[], const int sz)
+	int execFunction( const char* function, const char* params[], const int sz)
 	{
 		int szadd = execFunction( function );
 
@@ -122,9 +121,9 @@ public:
 			lua_pushstring( Lst, params[i] );
 
 		if( lua_pcall( Lst, sz + szadd, 1, 0 ) ){
-			std::string err;
+			char* err = NULL;
 			getValue( Lst, -1, err );
-			debug( Debug::SCRIPT, "Lua function '" + function + "' execute error: " + err + "\n" );
+			debug( Debug::SCRIPT, "Lua function '%s' execute error: %s.\n", function, err );
 			lua_pop( Lst, 1 + szadd );
 			return -1;
 		}
@@ -136,7 +135,7 @@ public:
 
 	// This function MUST NOT leave anything on stack
 	template<typename T>
-	bool execFunction( std::string function, const char* params[], const int sz, T& ret)
+	bool execFunction( const char* function, const char* params[], const int sz, T& ret)
 	{
 		LuaStackChecker sc(Lst, __FILE__, __LINE__);
 
@@ -218,7 +217,7 @@ public:
 		return true;
 	}
 
-
+/*
 	template<typename T>
 	bool getValue( lua_State* L, int index, std::vector<T>& ret )
 	{
@@ -235,6 +234,32 @@ public:
 			lua_pushnumber(L, i);
 			lua_gettable(L, -2);
 			T value;
+			getValue(L, -1, value);
+			ret.push_back(value);
+			lua_pop(L, 1); // stack: vector
+		}
+		lua_pop(L, 1); // stack:
+
+		return true;
+	}
+*/
+
+	template<typename T>
+	bool getValue( lua_State* L, int index, list<T*>& ret )
+	{
+		// stack:
+		if(!lua_istable(L, index))
+			return false;
+
+		LuaStackChecker sc(L, __FILE__, __LINE__);
+
+		lua_pushvalue(L, index); // stack: vector
+
+		const int count = luaL_getn(L, -1);
+		for(int i = 1; count >= i; ++i)	{
+			lua_pushnumber(L, i);
+			lua_gettable(L, -2);
+			T* value = NULL;
 			getValue(L, -1, value);
 			ret.push_back(value);
 			lua_pop(L, 1); // stack: vector
@@ -306,7 +331,7 @@ public:
 
 
 protected:
-	int execFunction( std::string );
+	int execFunction( const char* );
 	static lua_State* Lst;
 
 private:

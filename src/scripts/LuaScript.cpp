@@ -5,11 +5,14 @@
  */
 
 #include "LuaScript.h"
-#include "api.h"
+#include "scripts/api.h"
 #include "config.h"
 #include "debug.h"
-#include "safestring.h"
 #include "assert.h" //WHY?
+
+#include "utils/path.h"
+#include "stdlib.h"
+
 
 //FIXME: Архитектуропроблемы
 LuaScript* luaScript = new LuaScript();
@@ -28,7 +31,12 @@ LuaScript::LuaScript( )
 bool LuaScript::OpenFile( std::string name )
 {
 	extern MainConfig conf;
-	return LuaMain::OpenFile( ( ( conf.path.scripts != "" ) ? conf.path.scripts : "data/scripts/" ) + name + ".lua" );
+
+	char* path = Path::join( ((conf.path.scripts != "") ? conf.path.scripts : "data/scripts/").c_str(),
+			(name + ".lua").c_str());
+	bool ret = LuaMain::OpenFile(path);
+	free(path);
+	return ret;
 }
 
 
@@ -108,8 +116,9 @@ void LuaScript::ReleaseObject( LuaRegRef* procref )
 
 	assert(it->second > 0);
 	if(it->second <= 0){
-		Debug::debug( Debug::SCRIPT, "LuaScript::ReleaseObject: procref " +
-				citoa(*procref) + " references count is " + citoa(it->second) + ".\n" );
+		Debug::debug( Debug::SCRIPT,
+				"LuaScript::ReleaseObject: procref %d references count is %d.\n",
+				*procref, it->second );
 		it->second = 1;
 	}
 
@@ -126,8 +135,8 @@ int LuaScript::ExecChunk( UINT args )
 {
 	int level = lua_gettop( Lst )  - args - 1; //Верх стека - аргументы - одна функция
 	if( lua_pcall( Lst, args, LUA_MULTRET, 0 ) ){
-		std::string err = lua_tostring( Lst, -1 );
-		Debug::debug( Debug::SCRIPT, "In ExecChunk(): " + err + ".\n" );
+		const char* err = lua_tostring( Lst, -1 );
+		Debug::debug( Debug::SCRIPT, "In ExecChunk(): %s.\n", err );
 		return -1;
 	}
 	return lua_gettop( Lst ) - level; //Новый верх стека - старый = количество результатов

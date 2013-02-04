@@ -15,7 +15,9 @@
 
 #define MAXKEYS SDLK_LAST+20
 
+
 enum func_t { NOTAFUNC=0, CFUNC, LUAFUNC };
+
 
 struct BindFunction {
 	enum func_t type;

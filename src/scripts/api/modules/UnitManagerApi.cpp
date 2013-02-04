@@ -81,7 +81,7 @@ int UMApi::getUnit( lua_State* L )
 	if( u )
 		return u->pushUData(L);
 
-	Debug::debug( Debug::UNIT, "getUnit: unit with id " + citoa(id) + " does not exist.\n" );
+	Debug::debug( Debug::UNIT, "getUnit: unit with id %d does not exist.\n", id );
 	return 0;
 
 }

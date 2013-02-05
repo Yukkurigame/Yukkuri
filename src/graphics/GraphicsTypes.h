@@ -235,11 +235,11 @@ struct VBOStructureHandle
 	}
 
 	// FIXME: QUADS TO TRIANGLES CONVERTION
-	void set_indexes( int first, int c ){
-		int quad_to_triangles = 0;
-		if( type == prQUADS )
-			quad_to_triangles = QUAD_TRIANGLES_POINTS;
-		int new_count = count + c + quad_to_triangles;
+	void set_indexes( int first, int c, int* face_indexes ){
+		//int quad_to_triangles = 0;
+		//if( type == prQUADS )
+		//	quad_to_triangles = QUAD_TRIANGLES_POINTS;
+		int new_count = count + c; // + quad_to_triangles;
 
 		while( new_count >= indexes_alloc ){
 			indexes_alloc <<= 1;
@@ -247,12 +247,9 @@ struct VBOStructureHandle
 		}
 
 		for( int i = 0; i < c; ++i ){
-			indexes[i + count] = first + i;
+			indexes[i + count] = first + face_indexes[i];
 		}
-		if( quad_to_triangles ){
-			indexes[c + count] = indexes[c + count - 2];
-			indexes[c + count + 1] = indexes[c + count - 3];
-		}
+
 		count = new_count;
 	}
 };

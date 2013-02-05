@@ -123,6 +123,16 @@ void LuaMain::RegisterApi( lua_State* L )
 		// Core bind points
 		FIELD(gbpFPS)
 
+		// Primitives
+		FIELD(prPOINTS)
+		FIELD(prLINES)
+		FIELD(prLINELOOP)
+		FIELD(prTRIANGLES)
+		FIELD(prTRIANGLESTRIP)
+		FIELD(prTRIANGLESFAN)
+		FIELD(prQUADS)
+		FIELD(prPOLYGON)
+
 		// Shaders attrib
 		FIELD(gllPosition)
 		FIELD(gllTexCoord)

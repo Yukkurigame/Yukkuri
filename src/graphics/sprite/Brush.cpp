@@ -5,9 +5,8 @@
  */
 
 #include "graphics/sprite/Brush.h"
+#include "graphics/sprite/Mesh.h"
 #include "graphics/utils/VBOArray.h"
-#include "Define.h" // FIXME: GL functions in define
-#include <cstring>
 
 
 GLBrush::GLBrush( enum primitives t, short centered ) : type(t), vertex_origin(), flags()
@@ -15,9 +14,11 @@ GLBrush::GLBrush( enum primitives t, short centered ) : type(t), vertex_origin()
 	//vertices = NULL;
 	point_index = 0;
 	points_count = 0;
+	indices_count = 0;
 	if( centered )
 		flags |= 1;
-	switch(t){
+	MeshManager::load( this );
+	/*switch(t){
 		case prQUADS:
 		{
 			resize_verticles(4);
@@ -56,6 +57,7 @@ GLBrush::GLBrush( enum primitives t, short centered ) : type(t), vertex_origin()
 		default:
 			break;
 	}
+	*/
 }
 
 

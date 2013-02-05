@@ -17,6 +17,8 @@ struct GLBrush
 	s3f vertex_origin;
 	int point_index;
 	signed int points_count;
+	int* indices_list;
+	int indices_count;
 	int flags;
 
 	GLBrush( enum primitives t, short centered );

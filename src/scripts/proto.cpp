@@ -37,7 +37,7 @@ void clean_prototypes( )
 		delete it->data;
 	}
 	ITER_LIST( Frame*, deleted )
-		delete it->data;
+		free(it->data);
 }
 
 

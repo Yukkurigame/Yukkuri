@@ -162,12 +162,18 @@ obj_light_disc* obj_parse_light_disc(obj_growable_scene_data *scene)
 	return obj;
 }
 
+
+inline double next_tok(  ){
+	char* t = strtok(NULL, WHITESPACE);
+	return ( t ? atof(t) : 0 );
+}
+
 obj_vector* obj_parse_vector()
 {
 	obj_vector *v = (obj_vector*)malloc(sizeof(obj_vector));
-	v->e[0] = atof( strtok(NULL, WHITESPACE));
-	v->e[1] = atof( strtok(NULL, WHITESPACE));
-	v->e[2] = atof( strtok(NULL, WHITESPACE));
+	v->e[0] = next_tok();
+	v->e[1] = next_tok();
+	v->e[2] = next_tok();
 	return v;
 }
 

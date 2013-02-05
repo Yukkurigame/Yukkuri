@@ -38,29 +38,27 @@ void clean_fonts( )
 	ftDone();
 }
 
-bool LoadTTFont( std::string dir, std::string name, int size )
+bool load_ttfont( std::string dir, std::string name, int size )
 {
-	font_data* font;
-	std::string filename;
+	std::string filename = dir + name;
+	font_data* font = new font_data();
 
-	filename = dir + name;
 
-	font = new font_data();
-	//FIXME: it's cruved;
-	if( font->load( filename.c_str() , size ) ){
-		LoadedFonts[name][size] = font;
-	}else{
+	if( !font->load( filename.c_str() , size ) ){
 		delete font;
 		return false;
 	}
+
+	LoadedFonts[name][size] = font;
 	return true;
 }
 
-font_data* GetFont( std::string name, int size  )
+
+font_data* get_font( std::string name, int size  )
 {
 	extern MainConfig conf;
 	if( !LoadedFonts.count(name) || !LoadedFonts[name].count(size) ){
-		if( !LoadTTFont( conf.path.fonts, name, size ) ){
+		if( !load_ttfont( conf.path.fonts, name, size ) ){
 			Debug::debug( Debug::GRAPHICS, "Cannot load font %s.\n", name.c_str() );
 			return NULL;
 		}
@@ -97,8 +95,9 @@ int Text::getLineSize( )
 
 void Text::setFont( const char* name, int size )
 {
-	font = GetFont( name, size );
+	font = get_font( name, size );
 }
+
 
 void Text::setPosition( float x, float y, float z )
 {
@@ -113,6 +112,16 @@ void Text::setPosition( float x, float y, float z )
 	}
 }
 
+
+Sprite* create_sprite( s3f& position, Char* c, font_data* font )
+{
+	Sprite* s = RenderManager::CreateGLSprite( position.x, position.y, position.z,
+						font->cellWidth, font->cellHeight, font->texture, c->pic );
+	s->clearLight();
+	return s;
+}
+
+
 void Text::setText(const char* str)
 {
 	float lineheight;
@@ -123,13 +132,17 @@ void Text::setText(const char* str)
 	if( (content && str) && !strcmp( str, content ) )
 		return;
 
-	clear();
+	//clear();
+	Width = Height = 0;
 
 	if( content )
 		free(content);
 	content = strdup( str );
 
 	char* text = strdup( str );
+
+	listElement< Sprite* >* slist = sprites.head;
+
 
 	char* token;
 	Lines = 0;
@@ -145,7 +158,22 @@ void Text::setText(const char* str)
 			if(!tmpc)
 				continue;
 			int kerning = font->getKerning(prev, tmpc->index);
-			addSprite(tmpwidth + kerning, tmpheight, tmpc);
+
+			s3f pos(position.x + tmpwidth + kerning,
+					position.y - tmpheight,
+					position.z);
+
+			if( slist != NULL ){
+				slist->data->setPosition( &pos );
+				slist->data->setPicture( tmpc->pic );
+				slist->data->setVisible();
+				slist = slist->next;
+			}else{
+				Sprite* s = create_sprite( pos, tmpc, font );
+				s->brush.set_color( color );
+				sprites.push_back(s);
+			}
+
 			tmpwidth += kerning + tmpc->horiAdvance;
 			prev = tmpc->index;
 		}
@@ -155,6 +183,13 @@ void Text::setText(const char* str)
 	}
 	Height = (int)(Lines * lineheight);
 	free(text);
+
+	// Hide sprites
+	while( slist != NULL ){
+		RenderManager::FreeGLSprite( slist->data );
+		slist = sprites.remove( slist );
+	}
+
 
 	// FIXME: 1>yukkuri\graphics\text.cpp(140): warning C4800: 'unsigned char' :
 	//          forcing value to bool 'true' or 'false' (performance warning)
@@ -200,16 +235,6 @@ void Text::clear( )
 }
 
 
-void Text::addSprite( int x, int y, Char* c )
-{
-	Sprite* s = RenderManager::CreateGLSprite( position.x + static_cast<float>(x),
-		position.y - static_cast<float>(y), position.z, font->cellWidth,
-		font->cellHeight, font->texture, c->pic );
-	s->brush.set_color( color );
-	s->clearLight();
-	sprites.push_back(s);
-}
-
 void Text::setCursorPosition( unsigned int pos )
 {
 	if(!font)
@@ -240,7 +265,6 @@ void Text::setCursorPosition( unsigned int pos )
 		cursor->setVisible();
 	}
 
-	s3f position = prev->data->brush.vertex_origin;
-	position.x -= (prev->data->rect.width / 2 + cursorBearing);
-	cursor->setPosition( position.x, position.y, position.z );
+	s3f& position = prev->data->brush.vertex_origin;
+	cursor->setPosition( position.x - cursorBearing, position.y, position.z );
 }

@@ -73,6 +73,10 @@ struct Sprite
 		brush.move( dx, dy, dz );
 	}
 
+	inline void setPosition( const s3f* pos ){
+		brush.set_position( pos->x, pos->y, pos->z );
+	}
+
 	inline void setPosition( float x, float y, float z ){
 		brush.set_position( x, y, z );
 	}

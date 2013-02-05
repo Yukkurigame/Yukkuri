@@ -214,22 +214,19 @@ struct TextureInfo
 struct VBOStructureHandle
 {
 	GLuint* indexes;
+	int indexes_alloc;
 	int count;
 	enum primitives type;
 	GLuint method;
-	//GLuint shader;
 	list< GLuint > textures;
 	UINT material;
 
 	VBOStructureHandle( enum primitives t, list< GLuint >* tex, UINT mat ) : textures(tex) {
 		type = t;
 		method = gl_methods[type];
-		//atlas = tex;
-		//normals = n;
-		//shader = shd;
 		indexes = NULL;
 		count = 0;
-		//next = NULL;
+		indexes_alloc = 1;
 		material = mat;
 	}
 	~VBOStructureHandle( ){
@@ -243,7 +240,12 @@ struct VBOStructureHandle
 		if( type == prQUADS )
 			quad_to_triangles = QUAD_TRIANGLES_POINTS;
 		int new_count = count + c + quad_to_triangles;
-		indexes = (GLuint*)realloc( indexes, (unsigned)sizeof(GLuint) * new_count );
+
+		while( new_count >= indexes_alloc ){
+			indexes_alloc <<= 1;
+			indexes = (GLuint*)realloc( indexes, (unsigned)sizeof(GLuint) * indexes_alloc );
+		}
+
 		for( int i = 0; i < c; ++i ){
 			indexes[i + count] = first + i;
 		}

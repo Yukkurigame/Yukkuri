@@ -72,8 +72,6 @@ private:
 	int cursorPosition;
 	Sprite* cursor;
 	list< Sprite* > sprites;
-
-	void addSprite( int x, int y, Char* c );
 };
 
 

@@ -12,6 +12,7 @@
 #include "basic_types.h"
 #include "utils/list.h"
 
+#include "string.h"
 #include <string>
 #include <cstdlib>
 
@@ -117,17 +118,24 @@ struct TextureProxy
 };
 
 enum quad_corners {
-	qcRT=0, qcRB, qcLT, qcLB, qcLAST
+	qcRight=1, qcBottom=2
+	//qcRT=1, qcRB=2, qcLT=4, qcLB=8
 };
 
 
-inline void init_coords( VertexV2FT2FC4UI* points, const rect2f* rect )
+inline void init_coords( VertexV2FT2FC4UI* points, const rect2f* rect, UINT indices[4] )
 {
 	// Textures are inverted in gl space, so invert it in render space back
 	// FIXME: just make some glPerspective, lol
-	for( int i=0; i < qcLAST; ++i ){
+	for( int i=0; i < 4; ++i ){
 		s2f& coords = points[i].coordinates;
-		switch(i){
+		coords.x = rect->x;
+		coords.y = rect->y;
+		if( indices[i] & qcRight )
+			coords.x += rect->width;
+		if( indices[i] & qcBottom )
+			coords.y += rect->height;
+/*		switch(i){
 			case qcRB:
 				coords = s2f(rect->x + rect->width, rect->y + rect->height);
 				break;
@@ -141,6 +149,7 @@ inline void init_coords( VertexV2FT2FC4UI* points, const rect2f* rect )
 				coords = s2f(rect->x, rect->y);
 				break;
 		}
+*/
 	}
 }
 
@@ -186,13 +195,13 @@ struct TextureInfo
 			tpos.y = pos.y + row * sheight;
 		}
 	}
-	inline void getSubTexture( int pic, VertexV2FT2FC4UI* rect, int count ){
+	inline void getSubTexture( int pic, VertexV2FT2FC4UI* rect, int count, UINT indices[4] ){
 		int row = pic / cols;
 		int col = pic - row * cols;
-		getSubTexture( col, row, rect, count );
+		getSubTexture( col, row, rect, count, indices );
 	}
-	inline void getSubTexture( int col, int row, VertexV2FT2FC4UI* rect, int count ){
-		if( count < qcLAST )
+	inline void getSubTexture( int col, int row, VertexV2FT2FC4UI* coords, int count, UINT indices[4] ){
+		if( count < 4 )
 			return;
 		rect2f s(0.0, 0.0, 1.0, 1.0);
 		if( cols > 0 || rows > 0 ){
@@ -203,7 +212,7 @@ struct TextureInfo
 			s.width = twidth;
 			s.height = theight;
 		}
-		init_coords( rect, &s );
+		init_coords( coords, &s, indices );
 	}
 };
 
@@ -234,21 +243,15 @@ struct VBOStructureHandle
 			free(indexes);
 	}
 
-	// FIXME: QUADS TO TRIANGLES CONVERTION
-	void set_indexes( int first, int c, int* face_indexes ){
-		//int quad_to_triangles = 0;
-		//if( type == prQUADS )
-		//	quad_to_triangles = QUAD_TRIANGLES_POINTS;
-		int new_count = count + c; // + quad_to_triangles;
+	void set_indexes( const UINT* face_indexes, UINT c ){
+		int new_count = count + c;
 
 		while( new_count >= indexes_alloc ){
 			indexes_alloc <<= 1;
 			indexes = (GLuint*)realloc( indexes, (unsigned)sizeof(GLuint) * indexes_alloc );
 		}
 
-		for( int i = 0; i < c; ++i ){
-			indexes[i + count] = first + face_indexes[i];
-		}
+		memcpy( &indexes[count], face_indexes, c * (UINT)sizeof(UINT) );
 
 		count = new_count;
 	}

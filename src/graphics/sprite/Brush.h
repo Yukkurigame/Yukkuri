@@ -15,11 +15,12 @@ struct GLBrush
 {
 	enum primitives type;
 	s3f vertex_origin;
-	int point_index;
-	signed int points_count;
-	int* indices_list;
-	int indices_count;
-	int flags;
+	UINT flags;
+	UINT points_count;
+	UINT point_index;
+	UINT indices_count;
+	UINT* indices_list;
+	UINT texture_indices[4];
 
 	GLBrush( enum primitives t, short centered );
 	~GLBrush( );
@@ -28,7 +29,7 @@ struct GLBrush
 
 	void resize_verticles( int size );
 	void scale( float x, float y );
-	void set_quad( s3f lb, s3f lt, s3f rt, s3f rb );
+	//void set_quad( s3f lb, s3f lt, s3f rt, s3f rb );
 	void move( float dx, float dy, float dz );
 	void set_color( const s4ub& color );
 	s4ub get_color(  );

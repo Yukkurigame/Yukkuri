@@ -21,10 +21,10 @@ void Sprite::setPicture( int pic )
 		return;
 	TextureInfo* tex = Textures::get_pointer( texid );
 	if( texid && tex ){
-		tex->getSubTexture(pic, points, brush.points_count);
+		tex->getSubTexture(pic, points, brush.points_count, brush.texture_indices );
 	}else{
 		rect2f s(0.0, 0.0, 1.0, 1.0);
-		init_coords( points, &s );
+		init_coords( points, &s, brush.texture_indices );
 	}
 }
 

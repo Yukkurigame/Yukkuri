@@ -134,7 +134,7 @@ void VBuffer::prepare_handler( Sprite* sprite, list<VBOStructureHandle*>* handle
 		handler->push_back( v );
 	}
 
-	v->set_indexes( sprite->brush.point_index, sprite->brush.indices_count, sprite->brush.indices_list );
+	v->set_indexes( sprite->brush.indices_list, sprite->brush.indices_count );
 }
 
 

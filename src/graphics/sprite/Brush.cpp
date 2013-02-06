@@ -11,53 +11,13 @@
 
 GLBrush::GLBrush( enum primitives t, short centered ) : type(t), vertex_origin(), flags()
 {
-	//vertices = NULL;
 	point_index = 0;
 	points_count = 0;
 	indices_count = 0;
+	indices_list = NULL;
 	if( centered )
 		flags |= 1;
 	MeshManager::load( this );
-	/*switch(t){
-		case prQUADS:
-		{
-			resize_verticles(4);
-			VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
-			for( int i=0; i < 4; ++i ){
-				s3f& vrt = arr[i].verticles;
-				switch(i){
-					case qcRB:
-						if( centered )
-							vrt = s3f(0.5, -0.5, 1.0);
-						else
-							vrt = s3f(1.0, 0.0, 1.0);
-						break;
-					case qcRT:
-						if( centered )
-							vrt = s3f(0.5, 0.5, 1.0);
-						else
-							vrt = s3f(1.0, 1.0, 1.0);
-						break;
-					case qcLB:
-						if( centered )
-							vrt = s3f(-0.5, -0.5, 1.0);
-						else
-							vrt = s3f(0.0, 0.0, 1.0);
-						break;
-					case qcLT:
-						if( centered )
-							vrt = s3f(-0.5, 0.5, 1.0);
-						else
-							vrt = s3f(0.0, 1.0, 1.0);
-						break;
-				}
-			}
-			break;
-		}
-		default:
-			break;
-	}
-	*/
 }
 
 
@@ -90,14 +50,14 @@ void GLBrush::scale( float x, float y )
 	if( points_count < 2 )
 		return;
 	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
-	for( int i=0; i < points_count; ++i ){
+	for( UINT i = 0; i < points_count; ++i ){
 		s3f* v = &arr[i].verticles;
 		v->x = vertex_origin.x + (v->x - vertex_origin.x) * x;
 		v->y = vertex_origin.y + (v->y - vertex_origin.y) * y;
 	}
 }
 
-
+/*
 void GLBrush::set_quad( s3f lb, s3f lt, s3f rt, s3f rb )
 {
 	if( points_count != 4 )
@@ -108,6 +68,7 @@ void GLBrush::set_quad( s3f lb, s3f lt, s3f rt, s3f rb )
 	arr[qcRT].verticles = rt + vertex_origin;
 	arr[qcRB].verticles = rb + vertex_origin;
 }
+*/
 
 
 void GLBrush::move( float dx, float dy, float dz )
@@ -115,7 +76,7 @@ void GLBrush::move( float dx, float dy, float dz )
 	s3f delta( dx, dy, dz );
 	vertex_origin += delta;
 	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
-	for( int i=0; i < points_count; ++i ){
+	for( UINT i = 0; i < points_count; ++i ){
 		arr[i].verticles += delta;
 	}
 }
@@ -124,7 +85,7 @@ void GLBrush::move( float dx, float dy, float dz )
 void GLBrush::set_color( const s4ub& color )
 {
 	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
-	for( int i=0; i < points_count; ++i )
+	for( UINT i=0; i < points_count; ++i )
 		arr[i].color.set(color);
 }
 

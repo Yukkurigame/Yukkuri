@@ -129,7 +129,7 @@ inline Sprite* sprite_from_proxy( const TextureProxy* t )
 	float dy = static_cast<float>(t->abs.height) / static_cast<float>(t->texture->h);
 
 	// Order: qcRT=0, qcRB, qcLT, qcLB
-
+/*
 	s2f coords[4] = {
 			s2f(x + dx, y + dy),
 			s2f(x + dx, y),
@@ -142,11 +142,22 @@ inline Sprite* sprite_from_proxy( const TextureProxy* t )
 			s3f(t->abs.x, t->abs.y + t->abs.height, 0),
 			s3f(t->abs.x, t->abs.y, 0)
 	};
+*/
 
-	VertexV2FT2FC4UI* pts = s->brush.points();
-	for( int i = 0; i < s->brush.points_count; ++i ){
-		pts[i].coordinates = coords[i];
-		pts[i].verticles = vertx[i];
+	GLBrush* brush = &s->brush;
+	VertexV2FT2FC4UI* pts = brush->points();
+	for( UINT i = 0; i < brush->points_count; ++i ){
+		s3f& vtx = pts[i].verticles;
+		s2f& coords = pts[i].coordinates;
+		UINT vindex = brush->vertex_indices[i];
+		UINT tindex = brush->texture_indices[i];
+
+		vtx.x = t->abs.x + ( vindex & qcRight ? t->abs.width : 0 );
+		vtx.y = t->abs.y + ( vindex & qcBottom ? t->abs.height : 0 );
+		vtx.z = 0;
+
+		coords.x = x + ( tindex & qcRight ? dx : 0 );
+		coords.y = y + ( vindex & qcBottom ? dy : 0 );
 	}
 	s->textures.push( t->texture->tex );
 	return s;

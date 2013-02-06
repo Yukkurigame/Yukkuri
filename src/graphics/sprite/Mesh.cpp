@@ -90,6 +90,36 @@ void MeshManager::load( GLBrush* brush )
 	load_brush( brush, data );
 }
 
+
+// FIXME: Looks like shit
+#define SET_INDEX( tgt, src, loc, type )	\
+	if( tgt > src )					\
+		loc |= type;
+
+inline void init_brush_indices( GLBrush* brush, s3f& vmin, s2f& tmin )
+{
+	if( brush->type != prQUADS )
+		return;
+
+	VertexV2FT2FC4UI* arr = brush->points();
+	for( int i = 0; i < 4; ++i ){
+		const s3f& vetx = arr[i].verticles;
+		const s2f& coords = arr[i].coordinates;
+		brush->vertex_indices[i] = 0;
+		brush->texture_indices[i] = 0;
+
+		SET_INDEX( vetx.x, vmin.x, brush->vertex_indices[i], qcRight )
+		SET_INDEX( vetx.y, vmin.y, brush->vertex_indices[i], qcBottom )
+		SET_INDEX( vetx.x, vmin.z, brush->vertex_indices[i], qcFront )
+
+		SET_INDEX( coords.x, tmin.x, brush->texture_indices[i], qcRight )
+		SET_INDEX( coords.y, tmin.y, brush->texture_indices[i], qcBottom )
+	}
+}
+
+#undef SET_INDEX
+
+
 void MeshManager::load_brush( GLBrush* brush, const obj_scene_data* data )
 {
 	brush->resize_verticles( data->vertex_count );
@@ -105,6 +135,11 @@ void MeshManager::load_brush( GLBrush* brush, const obj_scene_data* data )
 	brush->indices_list = (UINT*)malloc( list_size );
 
 	s2f tmin(0.0f, 0.0f);
+	s3f vmin(0.0f, 0.0f, 0.0f);
+
+#define CHECK_MIN( dst, tgt )	\
+	if( dst > tgt )		\
+		dst = tgt;
 
 	brush->indices_count = 0;
 	for( int i = 0; i < data->face_count; ++i ){
@@ -122,23 +157,17 @@ void MeshManager::load_brush( GLBrush* brush, const obj_scene_data* data )
 			arr[vindex].verticles = s3f( v->e[0], v->e[1], v->e[2] );
 			arr[tindex].coordinates = s2f( t->e[0], t->e[1] );
 
-			if( tmin.x > t->e[0] )
-				tmin.x = t->e[0];
-			if( tmin.y > t->e[1] )
-				tmin.y = t->e[1];
+			CHECK_MIN( vmin.x, v->e[0] )
+			CHECK_MIN( vmin.y, v->e[1] )
+			CHECK_MIN( vmin.z, v->e[2] )
+			CHECK_MIN( tmin.x, t->e[0] )
+			CHECK_MIN( tmin.y, t->e[1] )
 		}
 	}
 
-	if( brush->type != prQUADS )
-		return;
+#undef CHECK_MIN
 
-	for( int i = 0; i < 4; ++i ){
-		s2f& coords = arr[i].coordinates;
-		brush->texture_indices[i] = 0;
-		if( coords.x > tmin.x )
-			brush->texture_indices[i] |= qcRight;
-		if( coords.y > tmin.y )
-			brush->texture_indices[i] |= qcBottom;
-	}
+	init_brush_indices( brush, vmin, tmin );
 
 }
+

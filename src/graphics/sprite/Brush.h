@@ -21,6 +21,7 @@ struct GLBrush
 	UINT indices_count;
 	UINT* indices_list;
 	UINT texture_indices[4];
+	UINT vertex_indices[4];
 
 	GLBrush( enum primitives t, short centered );
 	~GLBrush( );

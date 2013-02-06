@@ -118,7 +118,7 @@ struct TextureProxy
 };
 
 enum quad_corners {
-	qcRight=1, qcBottom=2
+	qcRight=1, qcBottom=2, qcFront=4,
 	//qcRT=1, qcRB=2, qcLT=4, qcLB=8
 };
 

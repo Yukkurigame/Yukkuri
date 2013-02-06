@@ -153,9 +153,22 @@ void Textures::unbind( )
 }
 
 
-void Textures::apply( list<GLuint>* textures )
+void Textures::apply( list<GLuint>* textures, int flags )
 {
 	listElement< GLuint >* texture = textures->head;
+
+	if( !texture ){
+		if( flags & 1 ){
+			glDisable( GL_TEXTURE_2D );
+			flags &= ~1;
+		}
+		// No textures needs to be applied
+		return;
+	}else if( !(flags & 1) ){
+		glEnable( GL_TEXTURE_2D );
+		flags &= 1;
+	}
+
 	for( int index = 0; texture != NULL; texture = texture->next, ++index ){
 		bind( texture->data, index );
 	}

@@ -27,6 +27,7 @@ enum GLSPass {
 	glpDefault,
 	glpSimple,
 	glpGeometry,
+	glpStencil,
 	glpPointLight,
 	glpDirLight,
 	glpLast,

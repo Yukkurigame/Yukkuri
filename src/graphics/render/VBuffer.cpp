@@ -101,16 +101,20 @@ void VBuffer::draw( int pass, list<VBOStructureHandle*>* handler )
 {
 	listElement<VBOStructureHandle*>* handler_element = handler->head;
 
-	glEnable(GL_TEXTURE_2D);
+	int flags = 0; // TEXTURE_2D - 1
+
+	//glEnable(GL_TEXTURE_2D);
 	while(handler_element != NULL){
 		VBOStructureHandle* vbostructure = handler_element->data;
-		Textures::apply( &vbostructure->textures );
+		Textures::apply( &vbostructure->textures, flags );
 		apply_material( vbostructure->material, pass );
 		glDrawElements( vbostructure->method, vbostructure->count, GL_UNSIGNED_INT, vbostructure->indexes );
 		handler_element = handler_element->next;
 	}
 	glUseProgram( 0 );
-	glDisable(GL_TEXTURE_2D);
+
+	if( flags & 1 )
+		glDisable(GL_TEXTURE_2D);
 }
 
 

@@ -58,13 +58,13 @@ struct s3fc {
 
 
 enum primitives {
-	prPOINTS = 0, prLINES, prLINELOOP, prTRIANGLES,
-	prTRIANGLESTRIP, prTRIANGLESFAN, prQUADS, prPOLYGON, prLAST
+	prPOINTS = 0, prLINES, prLINELOOP, prTRIANGLES, prTRIANGLESTRIP,
+	prTRIANGLESFAN, prQUADS, prSPHERE, prPOLYGON, prLAST
 };
 
 static const GLuint gl_methods[prLAST] = {
-	GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_TRIANGLES,
-	GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_TRIANGLES, GL_POLYGON
+	GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_TRIANGLES, GL_TRIANGLE_STRIP,
+	GL_TRIANGLE_FAN, GL_TRIANGLES, GL_TRIANGLES, GL_POLYGON
 };
 
 
@@ -119,37 +119,15 @@ struct TextureProxy
 
 enum quad_corners {
 	qcRight=1, qcBottom=2, qcFront=4,
-	//qcRT=1, qcRB=2, qcLT=4, qcLB=8
 };
 
 
 inline void init_coords( VertexV2FT2FC4UI* points, const rect2f* rect, UINT indices[4] )
 {
-	// Textures are inverted in gl space, so invert it in render space back
-	// FIXME: just make some glPerspective, lol
 	for( int i=0; i < 4; ++i ){
 		s2f& coords = points[i].coordinates;
-		coords.x = rect->x;
-		coords.y = rect->y;
-		if( indices[i] & qcRight )
-			coords.x += rect->width;
-		if( indices[i] & qcBottom )
-			coords.y += rect->height;
-/*		switch(i){
-			case qcRB:
-				coords = s2f(rect->x + rect->width, rect->y + rect->height);
-				break;
-			case qcRT:
-				coords = s2f(rect->x + rect->width, rect->y);
-				break;
-			case qcLB:
-				coords = s2f(rect->x, rect->y + rect->height);
-				break;
-			case qcLT:
-				coords = s2f(rect->x, rect->y);
-				break;
-		}
-*/
+		coords.x = rect->x + ( indices[i] & qcRight ? rect->width : 0 );
+		coords.y = rect->y + ( indices[i] & qcBottom ? rect->height : 0 );
 	}
 }
 

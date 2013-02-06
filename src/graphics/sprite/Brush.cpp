@@ -9,14 +9,12 @@
 #include "graphics/utils/VBOArray.h"
 
 
-GLBrush::GLBrush( enum primitives t, short centered ) : type(t), vertex_origin(), flags()
+GLBrush::GLBrush( enum primitives t ) : type(t), vertex_origin(), flags()
 {
 	point_index = 0;
 	points_count = 0;
 	indices_count = 0;
 	indices_list = NULL;
-	if( centered )
-		flags |= 1;
 	MeshManager::load( this );
 }
 
@@ -27,6 +25,54 @@ GLBrush::~GLBrush( )
 }
 
 
+inline s3f size( VertexV2FT2FC4UI* arr, UINT count )
+{
+	s3f distance[2];
+
+#define CHK( p )				\
+	if( vtx.p < distance[0].p )	\
+		distance[0].p = vtx.p;	\
+	if( vtx.p > distance[1].p )	\
+		distance[1].p = vtx.p;
+
+	for( UINT i = 0; i < count; ++i ){
+		s3f& vtx = arr[i].verticles;
+		CHK(x)
+		CHK(y)
+		CHK(z)
+	}
+
+#undef CHK
+
+	return distance[1] - distance[0];
+}
+
+
+void GLBrush::setCentered( )
+{
+	if( isCentered() )
+		return;
+	VertexV2FT2FC4UI* arr = points();
+	s3f dist = size( arr, points_count );
+	for( UINT i = 0; i < points_count; ++i ){
+		arr[i].verticles.x -= dist.x / 2.0f;
+		arr[i].verticles.y -= dist.y / 2.0f;
+	}
+	flags |= 1;
+}
+
+void GLBrush::clearCentered( )
+{
+	if( !isCentered() )
+		return;
+	VertexV2FT2FC4UI* arr = points();
+	s3f dist = size( arr, points_count );
+	for( UINT i = 0; i < points_count; ++i ){
+		arr[i].verticles.x += dist.x / 2.0f;
+		arr[i].verticles.y += dist.y / 2.0f;
+	}
+	flags &= ~1;
+}
 
 void GLBrush::resize_verticles( int size )
 {
@@ -56,19 +102,6 @@ void GLBrush::scale( float x, float y )
 		v->y = vertex_origin.y + (v->y - vertex_origin.y) * y;
 	}
 }
-
-/*
-void GLBrush::set_quad( s3f lb, s3f lt, s3f rt, s3f rb )
-{
-	if( points_count != 4 )
-		return;
-	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
-	arr[qcLT].verticles = lt + vertex_origin;
-	arr[qcLB].verticles = lb + vertex_origin;
-	arr[qcRT].verticles = rt + vertex_origin;
-	arr[qcRB].verticles = rb + vertex_origin;
-}
-*/
 
 
 void GLBrush::move( float dx, float dy, float dz )

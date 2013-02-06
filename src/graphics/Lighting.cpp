@@ -8,6 +8,7 @@
 #include "graphics/utils/gl_uniforms.h"
 
 #include "safestring.h"
+#include "debug.h"
 
 
 namespace LightingManager {
@@ -50,8 +51,11 @@ namespace LightingManager {
 				count_ptr = &direction_count;
 				prefix = "dir";
 				break;
-			default:
+			case ltPoint:
 				count_ptr = &point_count;
+				prefix = "point";
+				break;
+			default:
 				return;
 				break;
 		}
@@ -59,24 +63,32 @@ namespace LightingManager {
 		sprintf( name, location, prefix, *count_ptr );
 	}
 
-	void register_light( LightSource* source )
+	bool register_light( LightSource* source )
 	{
 		if( !source )
-			return;
+			return false;
 
 		int* count_ptr = NULL;
 		char* name = NULL;
 		get_source_info( source->type, name, count_ptr );
 
+		if( !name ){
+			Debug::debug( Debug::GRAPHICS, "Light with type %d was not registered.\n", source->type );
+			return false;
+		}
+
 		// Add one light source
-		(*count_ptr)++;
+		source->id = (*count_ptr)++;
 
 		pass_data( name, "direction", GL_FLOAT_VEC3, &source->direction );
+		pass_data( name, "position", GL_FLOAT_VEC3, &source->position );
 		pass_data( name, "color", GL_FLOAT_VEC3, &source->color );
 		pass_data( name, "ambient", GL_FLOAT, &source->ambient );
 		pass_data( name, "diffuse", GL_FLOAT, &source->diffuse );
 
 		delete[] name;
+
+		return true;
 	}
 
 	void unregister_light( LightSource* source )
@@ -88,10 +100,13 @@ namespace LightingManager {
 		char* name = NULL;
 		get_source_info( source->type, name, count_ptr );
 
+		source->id = -1;
+
 		// Remove one light source
 		(*count_ptr)++;
 
 		pass_data( name, "direction", GL_FLOAT_VEC3, NULL );
+		pass_data( name, "position", GL_FLOAT_VEC3, NULL );
 		pass_data( name, "color", GL_FLOAT_VEC3, NULL );
 		pass_data( name, "ambient", GL_FLOAT, NULL );
 		pass_data( name, "diffuse", GL_FLOAT, NULL );
@@ -119,8 +134,10 @@ LightSource* LightingManager::add_light( enum LightType type )
 {
 	list<LightSource*>* light_array = array_by_type( type );
 	LightSource* new_light = new LightSource( type );
-	light_array->push( new_light );
-	register_light(new_light);
+	if( register_light(new_light) )
+		light_array->push( new_light );
+	else
+		delete new_light, new_light = NULL;
 	return new_light;
 }
 

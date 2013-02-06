@@ -23,14 +23,15 @@ struct GLBrush
 	UINT texture_indices[4];
 	UINT vertex_indices[4];
 
-	GLBrush( enum primitives t, short centered );
+	GLBrush( enum primitives t );
 	~GLBrush( );
 
 	inline unsigned char isCentered()	{ return flags & 1; }
+	void setCentered( );
+	void clearCentered( );
 
 	void resize_verticles( int size );
 	void scale( float x, float y );
-	//void set_quad( s3f lb, s3f lt, s3f rt, s3f rb );
 	void move( float dx, float dy, float dz );
 	void set_color( const s4ub& color );
 	s4ub get_color(  );

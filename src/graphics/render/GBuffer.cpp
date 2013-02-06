@@ -31,14 +31,17 @@ namespace GBuffer
 	GLuint VBOHandle;
 
 	s2f window_size;
+	int current_point_light = 0;
 
 	int in_ScreenSize = -1;
+	int in_CurrentLight = -1;
+
 
 	const int texture_type = GL_TEXTURE_2D;
 
 	void geometry_pass( list<VBOStructureHandle*>* handler  );
-	void stencil_pass( LightSource* );
-	void light_pass_point( LightSource* );
+	void stencil_pass( LightSource* source, list<VBOStructureHandle*>* handler );
+	void light_pass_point( LightSource* source, list<VBOStructureHandle*>* handler );
 	void light_pass_directional( list<VBOStructureHandle*>* handler );
 	void final_pass( );
 
@@ -52,9 +55,29 @@ namespace GBuffer
 		glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, attach, texture_type, tex_id, 0 );
 	}
 
+	inline void push_materials( Sprite* s, UINT* indexes )
+	{
+		const GLMaterial* mat = GLMaterialManager::get_pointer( s->material );
+		UniformHandlers* uniforms = mat->uniforms[glpDirLight];
+		for( UINT i = 0, index = 0; i < uniforms->count; ++i ){
+			UniformHandler* h = &(uniforms->handlers[i]);
+			if( h->type != GL_SAMPLER_2D || index >= gbufLast )
+				continue;
+			for( UINT j = 0 ; j < gbufLast; ++j ){
+				if( h->index == indexes[j] ){
+					s->textures.push_back( textures[j] );
+				}
+			}
+		}
+	}
+
 	Sprite* combinator;
+	Sprite* sphere;
 	list< VBOStructureHandle* > combinator_handler;
+	list< VBOStructureHandle* > sphere_handler;
 }
+
+
 
 
 
@@ -66,9 +89,12 @@ bool GBuffer::init()
 	combinator = new Sprite( );
 	combinator->resize( window_size.x, window_size.y );
 	combinator->setFixed();
+	sphere = new Sprite( prSPHERE, 1 );
 
 	in_ScreenSize = UniformsManager::register_uniform( "in_ScreenSize", GL_FLOAT_VEC2 );
 	UniformsManager::pass_data( in_ScreenSize, &window_size.x );
+	in_CurrentLight = UniformsManager::register_uniform( "in_CurrentLight", GL_INT );
+	UniformsManager::pass_data( in_CurrentLight, &current_point_light );
 
 	// Create the VBO
 	glGenBuffers(1, &VBOHandle);
@@ -90,21 +116,12 @@ bool GBuffer::init()
 		indexes[i] = UniformsManager::register_uniform( names[i], GL_SAMPLER_2D );
 	}
 
-	const GLMaterial* mat = GLMaterialManager::get_pointer( combinator->material );
-	UniformHandlers* uniforms = mat->uniforms[glpDirLight];
-	for( UINT i = 0, index = 0; i < uniforms->count; ++i ){
-		UniformHandler* h = &(uniforms->handlers[i]);
-		if( h->type != GL_SAMPLER_2D || index >= gbufLast )
-			continue;
-		for( UINT j = 0 ; j < gbufLast; ++j ){
-			if( h->index == indexes[j] )
-				combinator->textures.push_back( textures[j] );
-		}
-	}
+	push_materials( combinator, indexes );
+	push_materials( sphere, indexes );
 
-	// Prepare combinator to rendering
+	// Prepare additional handlers for rendering
 	VBuffer::prepare_handler( combinator, &combinator_handler );
-
+	VBuffer::prepare_handler( sphere, &sphere_handler );
 
 	// Depth texture
 	texture_to_fbo( depth_texture, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, GL_DEPTH_ATTACHMENT );
@@ -165,11 +182,12 @@ void GBuffer::render()
 
 	listElement<LightSource*>* light = LightingManager::first( ltPoint );
 	while( light != NULL ){
-		stencil_pass( light->data );
-		light_pass_point( light->data );
+		stencil_pass( light->data, &sphere_handler );
+		light_pass_point( light->data, &sphere_handler );
 		light = light->next;
 	}
 
+	glDisable(GL_CULL_FACE);
 	glDisable(GL_STENCIL_TEST);
 
 	light_pass_directional( &combinator_handler );
@@ -191,7 +209,7 @@ void GBuffer::render()
 
 void GBuffer::geometry_pass( list<VBOStructureHandle*>* handler )
 {
-	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, fbo );
+	//glBindFramebuffer( GL_DRAW_FRAMEBUFFER, fbo );
 
 	GLenum draw_buffers[4] = { GL_COLOR_ATTACHMENT0,
 			GL_COLOR_ATTACHMENT1,
@@ -228,7 +246,7 @@ inline float point_light_area( const s3fc& color, float intensity )
 }
 
 
-void GBuffer::stencil_pass( LightSource* )
+void GBuffer::stencil_pass( LightSource* source, list<VBOStructureHandle*>* handler  )
 {
 	glDrawBuffer(GL_NONE);
 	glEnable(GL_DEPTH_TEST);
@@ -239,13 +257,32 @@ void GBuffer::stencil_pass( LightSource* )
 	glStencilFunc(GL_ALWAYS, 0, 0);
 	glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR, GL_KEEP);
 	glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR, GL_KEEP);
-
+	float area = point_light_area( source->color, source->diffuse );
+	sphere->resize( area, area );
+	VBuffer::draw( glpStencil, handler );
 }
 
 
 
-void GBuffer::light_pass_point( LightSource* )
+void GBuffer::light_pass_point( LightSource* source, list<VBOStructureHandle*>* handler )
 {
+	current_point_light = source->id;
+
+	glDrawBuffer(GL_COLOR_ATTACHMENT4);
+	glStencilFunc(GL_NOTEQUAL, 0, 0xFF);
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendEquation(GL_FUNC_ADD);
+	glBlendFunc(GL_ONE, GL_ONE);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+
+    float area = point_light_area( source->color, source->diffuse );
+	sphere->resize( area, area );
+	VBuffer::draw( glpPointLight, handler );
+
+    glCullFace(GL_BACK);
+	glDisable(GL_BLEND);
 }
 
 

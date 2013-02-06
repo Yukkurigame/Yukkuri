@@ -128,21 +128,7 @@ inline Sprite* sprite_from_proxy( const TextureProxy* t )
 	float dx = static_cast<float>(t->abs.width) / static_cast<float>(t->texture->w);
 	float dy = static_cast<float>(t->abs.height) / static_cast<float>(t->texture->h);
 
-	// Order: qcRT=0, qcRB, qcLT, qcLB
-/*
-	s2f coords[4] = {
-			s2f(x + dx, y + dy),
-			s2f(x + dx, y),
-			s2f(x, y + dy),
-			s2f(x, y),
-	};
-	s3f vertx[4] = {
-			s3f(t->abs.x + t->abs.width, t->abs.y + t->abs.height, 0),
-			s3f(t->abs.x + t->abs.width, t->abs.y, 0),
-			s3f(t->abs.x, t->abs.y + t->abs.height, 0),
-			s3f(t->abs.x, t->abs.y, 0)
-	};
-*/
+	// TODO: move it elsewhere
 
 	GLBrush* brush = &s->brush;
 	VertexV2FT2FC4UI* pts = brush->points();

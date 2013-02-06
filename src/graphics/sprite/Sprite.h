@@ -25,12 +25,9 @@ struct Sprite
 	rect2f rect;
 	GLBrush brush;
 
-
 	inline unsigned char isVisible()	{ return flags & 1; }
 	inline void setVisible()			{ flags |= 1; }
 	inline void clearVisible()			{ flags &= ~1; }
-
-	inline unsigned char isCentered()	{ return brush.isCentered(); }
 
 	inline void setFixed( ){ CHANGE_MATERIAL_FLAG( material, add_flag, glsFixed ) }
 	inline void clearFixed( ){ CHANGE_MATERIAL_FLAG( material, clear_flag, glsFixed) }
@@ -49,15 +46,17 @@ struct Sprite
 		CHANGE_MATERIAL_FLAG( material, clear_flag, glsNormals )
 	}
 
-	Sprite() : rect(), brush( prQUADS, 0 ) {
+	Sprite() : rect(), brush( prQUADS ) {
 		material = GLMaterialManager::get( glsLight );
 		picture = texid = 0;
 		flags = 1; // visible only
 	}
 
-	Sprite( enum primitives shape, short centered ) : rect(), brush( shape, centered ){
+	Sprite( enum primitives shape, short centered ) : rect(), brush( shape ){
 		material = GLMaterialManager::get( glsLight );
 		picture = texid = 0;
+		if( centered )
+			brush.setCentered();
 		flags = 1; // visible only
 	}
 
@@ -103,7 +102,7 @@ inline bool compareSprites( Sprite* s1, Sprite* s2 )
 		if( o1->y == o2->y ){
 			return ( o1->x > o2->x );
 		}
-		return ( o1->y > o2->y );
+		return ( o1->y < o2->y );
 	}
 	return ( o1->z < o2->z );
 }

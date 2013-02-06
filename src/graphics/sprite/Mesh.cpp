@@ -152,16 +152,20 @@ void MeshManager::load_brush( GLBrush* brush, const obj_scene_data* data )
 			brush->indices_list[brush->indices_count] = vindex + brush->point_index;
 
 			obj_vector* v = data->vertex_list[vindex];
-			obj_vector* t = data->vertex_texture_list[tindex];
-
 			arr[vindex].verticles = s3f( v->e[0], v->e[1], v->e[2] );
-			arr[tindex].coordinates = s2f( t->e[0], t->e[1] );
-
 			CHECK_MIN( vmin.x, v->e[0] )
 			CHECK_MIN( vmin.y, v->e[1] )
 			CHECK_MIN( vmin.z, v->e[2] )
-			CHECK_MIN( tmin.x, t->e[0] )
-			CHECK_MIN( tmin.y, t->e[1] )
+
+
+			if( tindex >=0 ){
+				obj_vector* t = data->vertex_texture_list[tindex];
+				arr[tindex].coordinates = s2f( t->e[0], t->e[1] );
+				CHECK_MIN( tmin.x, t->e[0] )
+				CHECK_MIN( tmin.y, t->e[1] )
+			}else{
+				arr[tindex].coordinates = s2f();
+			}
 		}
 	}
 

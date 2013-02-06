@@ -131,6 +131,7 @@ void LuaMain::RegisterApi( lua_State* L )
 		FIELD(prTRIANGLESTRIP)
 		FIELD(prTRIANGLESFAN)
 		FIELD(prQUADS)
+		FIELD(prSPHERE)
 		FIELD(prPOLYGON)
 
 		// Shaders attrib
@@ -145,6 +146,7 @@ void LuaMain::RegisterApi( lua_State* L )
 		FIELD(glpDefault)
 		FIELD(glpSimple)
 		FIELD(glpGeometry)
+		FIELD(glpStencil)
 		FIELD(glpPointLight)
 		FIELD(glpDirLight)
 		// Lights

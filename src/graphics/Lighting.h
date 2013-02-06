@@ -23,6 +23,7 @@ enum LightType {
 class LightSource : public CUDataUser
 {
 public:
+	int id;
 	// Base
 	enum LightType type;
 	s3fc color;

@@ -27,7 +27,7 @@ namespace Textures {
 	void unbind( UINT id, GLenum target = GL_TEXTURE_2D );
 	void unbind(  );
 
-	void apply( list<GLuint>* textures );
+	void apply( list<GLuint>* textures, int flags );
 
 	// Textures storage
 

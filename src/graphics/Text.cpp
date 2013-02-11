@@ -251,7 +251,7 @@ void Text::setCursorPosition( unsigned int pos )
 		}
 		prev = prev->next;
 	}
-	if( !prev || prev->data->brush.type != prQUADS )
+	if( !prev )
 		return;
 
 	if( cursor == NULL ){

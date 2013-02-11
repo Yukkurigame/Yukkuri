@@ -55,10 +55,10 @@ namespace GBuffer
 		glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, attach, texture_type, tex_id, 0 );
 	}
 
-	inline void push_materials( Sprite* s, UINT* indexes )
+	inline void push_materials( Sprite* s, int pass, UINT* indexes )
 	{
 		const GLMaterial* mat = GLMaterialManager::get_pointer( s->material );
-		UniformHandlers* uniforms = mat->uniforms[glpDirLight];
+		UniformHandlers* uniforms = mat->uniforms[pass];
 		for( UINT i = 0, index = 0; i < uniforms->count; ++i ){
 			UniformHandler* h = &(uniforms->handlers[i]);
 			if( h->type != GL_SAMPLER_2D || index >= gbufLast )
@@ -87,7 +87,7 @@ bool GBuffer::init()
 	window_size.y = conf.video.windowHeight;
 
 	combinator = new Sprite( );
-	combinator->resize( window_size.x, window_size.y );
+	combinator->resize( window_size.x, window_size.y, 0 );
 	combinator->setFixed();
 	sphere = new Sprite( prSPHERE, 1 );
 
@@ -116,8 +116,8 @@ bool GBuffer::init()
 		indexes[i] = UniformsManager::register_uniform( names[i], GL_SAMPLER_2D );
 	}
 
-	push_materials( combinator, indexes );
-	push_materials( sphere, indexes );
+	push_materials( sphere, glpPointLight, indexes );
+	push_materials( combinator, glpDirLight, indexes );
 
 	// Prepare additional handlers for rendering
 	VBuffer::prepare_handler( combinator, &combinator_handler );
@@ -258,7 +258,8 @@ void GBuffer::stencil_pass( LightSource* source, list<VBOStructureHandle*>* hand
 	glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR, GL_KEEP);
 	glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR, GL_KEEP);
 	float area = point_light_area( source->color, source->diffuse );
-	sphere->resize( area, area );
+	sphere->setPosition( &source->position );
+	sphere->resize( area, area, area );
 	VBuffer::draw( glpStencil, handler );
 }
 
@@ -273,12 +274,14 @@ void GBuffer::light_pass_point( LightSource* source, list<VBOStructureHandle*>* 
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);
-	glBlendFunc(GL_ONE, GL_ONE);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glBlendFunc(GL_ONE, GL_ONE);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
 
     float area = point_light_area( source->color, source->diffuse );
-	sphere->resize( area, area );
+    sphere->setPosition( &source->position );
+	sphere->resize( area, area, area );
 	VBuffer::draw( glpPointLight, handler );
 
     glCullFace(GL_BACK);

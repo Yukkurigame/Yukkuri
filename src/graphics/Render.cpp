@@ -115,11 +115,11 @@ bool RenderManager::openglSetup( int wwidth, int wheight )
 
 	glClear( GL_COLOR_BUFFER_BIT ); // | GL_DEPTH_BUFFER_BIT );
 
-	glTranslatef(0.0f, 0.0f, 6.0f);
+	//glTranslatef(0.0f, 0.0f, 6.0f);
 
 	glClearColor( 1, 1, 1, -1 ); //0.25, 0.43, 0.0, -1.0 );
 
-	glClearDepth( 10.0f );
+	//glClearDepth( 600.0f );
 
 	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
 
@@ -136,7 +136,14 @@ bool RenderManager::openglSetup( int wwidth, int wheight )
 	Textures::push( &first, nt, 0 );
 
 	rect2f view( 0.0, 0.0, conf.video.windowWidth, conf.video.windowHeight );
-	Camera::push_state( &view );
+	s2f z( -conf.video.windowHeight * 2, conf.video.windowHeight );
+
+	Camera::init();
+
+	Camera::push_state( &view, &z );
+	Camera::Rotate( 55, 1.0, 0.0, 0.0 );
+	Camera::Rotate( 45, 0.0, 0.0, 1.0 );
+	//Camera::Translate( -conf.video.windowWidth/4, 0, 0 );
 
 	LightingManager::init( );
 
@@ -172,7 +179,7 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 		sprite->addNormalMap( tex_info->normals );
 	}
 
-	sprite->resize( (float)width, (float)height );
+	sprite->resize( (float)width, (float)width, (float)height );
 	sprite->setPosition( x, y, z );
 
 	sprites_array.push( sprite );

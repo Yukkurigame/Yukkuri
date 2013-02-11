@@ -9,7 +9,7 @@
 #include "graphics/utils/VBOArray.h"
 
 
-GLBrush::GLBrush( enum primitives t ) : type(t), vertex_origin(), flags()
+GLBrush::GLBrush( int mesh_id ) : mesh( mesh_id ), vertex_origin(), flags()
 {
 	point_index = 0;
 	points_count = 0;
@@ -57,6 +57,7 @@ void GLBrush::setCentered( )
 	for( UINT i = 0; i < points_count; ++i ){
 		arr[i].verticles.x -= dist.x / 2.0f;
 		arr[i].verticles.y -= dist.y / 2.0f;
+		arr[i].verticles.z -= dist.z / 2.0f;
 	}
 	flags |= 1;
 }
@@ -70,6 +71,7 @@ void GLBrush::clearCentered( )
 	for( UINT i = 0; i < points_count; ++i ){
 		arr[i].verticles.x += dist.x / 2.0f;
 		arr[i].verticles.y += dist.y / 2.0f;
+		arr[i].verticles.z += dist.z / 2.0f;
 	}
 	flags &= ~1;
 }
@@ -91,15 +93,16 @@ void GLBrush::resize_verticles( int size )
 }
 
 
-void GLBrush::scale( float x, float y )
+void GLBrush::scale( const s3f* scale )
 {
 	if( points_count < 2 )
 		return;
 	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
 	for( UINT i = 0; i < points_count; ++i ){
 		s3f* v = &arr[i].verticles;
-		v->x = vertex_origin.x + (v->x - vertex_origin.x) * x;
-		v->y = vertex_origin.y + (v->y - vertex_origin.y) * y;
+		v->x = vertex_origin.x + (v->x - vertex_origin.x) * scale->x;
+		v->y = vertex_origin.y + (v->y - vertex_origin.y) * scale->y;
+		v->z = vertex_origin.z + (v->z - vertex_origin.z) * scale->z;
 	}
 }
 

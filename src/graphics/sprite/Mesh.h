@@ -14,6 +14,7 @@ namespace MeshManager {
 
 	void init( );
 	void clean( );
+	int get( const char* name );
 	void load( GLBrush* brush );
 
 }

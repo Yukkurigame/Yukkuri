@@ -59,12 +59,12 @@ struct s3fc {
 
 enum primitives {
 	prPOINTS = 0, prLINES, prLINELOOP, prTRIANGLES, prTRIANGLESTRIP,
-	prTRIANGLESFAN, prQUADS, prSPHERE, prPOLYGON, prLAST
+	prTRIANGLESFAN, prQUADS, prISOQUADS, prSPHERE, prPOLYGON, prLAST
 };
 
 static const GLuint gl_methods[prLAST] = {
 	GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_TRIANGLES, GL_TRIANGLE_STRIP,
-	GL_TRIANGLE_FAN, GL_TRIANGLES, GL_TRIANGLES, GL_POLYGON
+	GL_TRIANGLE_FAN, GL_TRIANGLES, GL_TRIANGLES, GL_TRIANGLES, GL_POLYGON
 };
 
 
@@ -203,19 +203,15 @@ struct VBOStructureHandle
 	GLuint* indexes;
 	int indexes_alloc;
 	int count;
-	enum primitives type;
+	//enum primitives type;
 	GLuint method;
 	list< GLuint > textures;
 	UINT material;
 
-	VBOStructureHandle( enum primitives t, list< GLuint >* tex, UINT mat ) : textures(tex) {
-		type = t;
-		method = gl_methods[type];
-		indexes = NULL;
-		count = 0;
-		indexes_alloc = 1;
-		material = mat;
-	}
+	VBOStructureHandle( GLuint m, list< GLuint >* tex, UINT mat ) :
+		indexes(NULL), indexes_alloc(1), count(0),
+		method(m), textures(tex), material(mat) { }
+
 	~VBOStructureHandle( ){
 		if( indexes )
 			free(indexes);

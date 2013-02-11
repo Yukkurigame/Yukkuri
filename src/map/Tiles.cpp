@@ -169,7 +169,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 				(float)( col * conf.mapTileSize + ( row % 2 ? (conf.mapTileSize >> 1) : 0 ) ),
 				(float)( row * conf.mapTileSize - row * ( 3 * (conf.mapTileSize >> 2) ) ) );
 		s->setPicture( t.Type->picture );
-		s->resize( (float)conf.mapTileSize, (float)conf.mapTileSize );
+		s->resize( (float)conf.mapTileSize, 0, (float)conf.mapTileSize );
 		if( ++col >= side ){
 			col = 0;
 			row++;

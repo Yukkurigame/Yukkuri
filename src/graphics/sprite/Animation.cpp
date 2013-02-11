@@ -140,6 +140,6 @@ void Animation::setDepth( float z )
 void Animation::setSize( float sz )
 {
 	size = sz;
-	sprite->resize( width * size, height * size );
+	sprite->resize( width * size, width * size, height * size );
 }
 

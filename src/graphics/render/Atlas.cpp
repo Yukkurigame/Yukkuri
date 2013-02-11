@@ -122,7 +122,7 @@ bool TextureAtlas::buildRelativeMap( float width, float height ){
 
 inline Sprite* sprite_from_proxy( const TextureProxy* t )
 {
-	Sprite* s = new Sprite( );
+	Sprite* s = new Sprite( prQUADS, 0 );
 	float x = static_cast<float>(t->offset.x) / static_cast<float>(t->texture->w);
 	float y = static_cast<float>(t->offset.y) / static_cast<float>(t->texture->h);
 	float dx = static_cast<float>(t->abs.width) / static_cast<float>(t->texture->w);

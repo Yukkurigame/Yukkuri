@@ -30,13 +30,15 @@ out vec4 out_Color;
 vec4 calculate_light(Light light, vec3 position, vec3 normal)
 {
 	vec3 direction = position - light.position;
-	float distance = length(direction);
+	float dist = length(direction);
+	return vec4(direction.rg, dist, 1.0);
 	direction = normalize(direction);
 
 	vec4 ambient = vec4(light.color, 1.0) * light.ambient;
 	float df = dot(normal, -direction);
-	vec4 diffuse  = vec4(0, 0, 0, 0);
-	vec4 specular = vec4(0, 0, 0, 0);
+	return vec4(direction.rg, df, 1.0);
+	vec4 diffuse  = vec4(0, 0, 0, 1.0);
+	vec4 specular = vec4(0, 0, 0, 1.0);
 
 	if (df > 0) {
 		diffuse = vec4(light.color, 1.0) * light.diffuse * df;
@@ -66,7 +68,7 @@ void main() {
 	vec3 position = texture2D(in_gPositionMap, tex_coord.st).rgb;
 	vec3 normal = normalize(texture2D(in_gNormalMap, tex_coord.st).rgb);
 
-	vec4 pt_lighting = color * calculate_light(in_point_Light[in_CurrentLight], position, normal);
+	out_Color = calculate_light(in_point_Light[in_CurrentLight], position, normal);
 
 	//vec4 dir_lighting = vec4(0.0, 0.0, 0.0, 1.0);
 	//for( int i = 0; i < dir_lights; i++ ){
@@ -75,6 +77,6 @@ void main() {
 
 	//dir_lighting = color * clamp(dir_lighting, general_ambient, vec4(1.0));
 
-	out_Color = mix(pt_lighting, lightless, lightless.a );
+	//out_Color = mix(pt_lighting, lightless, lightless.a );
 }
 

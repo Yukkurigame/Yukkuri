@@ -29,23 +29,26 @@ void Sprite::setPicture( int pic )
 }
 
 
-void Sprite::resize( float w, float h )
+void Sprite::resize( float x, float y, float z )
 {
-	float dw, dh;
-	dw = dh = 1.0;
-	if( w > 0 ){
-		//vertices.rb.x = vertices.rt.x = vertices.lb.x + w;
-		if( !rect.width )
-			rect.width = 1.0;
-		dw = w / rect.width;
-		rect.width = w;
+	s3f scale(1.0);
+	if( x > 0 ){
+		if( !size.x )
+			size.x = 1.0;
+		scale.x = x / size.x;
+		size.x = x;
 	}
-	if( h > 0 ){
-		//vertices.rt.y = vertices.lt.y = vertices.lb.y + h;
-		if( !rect.height )
-			rect.height = 1.0;
-		dh = h / rect.height;
-		rect.height = h;
+	if( y > 0 ){
+		if( !size.y )
+			size.y = 1.0;
+		scale.y = y / size.y;
+		size.y = y;
 	}
-	brush.scale( dw, dh );
+	if( z > 0 ){
+		if( !size.z )
+			size.z = 1.0;
+		scale.z = z / size.z;
+		size.z = z;
+	}
+	brush.scale( &scale );
 }

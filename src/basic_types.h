@@ -55,6 +55,7 @@ struct s3f
 	float z;
 	s3f() : x(), y(), z() {}
 	s3f( s3f* c ) : x(c->x), y(c->y), z(c->z) {}
+	s3f( float S ) : x(S), y(S), z(S) {}
 	s3f( float X, float Y, float Z ) : x(X), y(Y), z(Z) {}
 	void operator-=( const s3f& b ){
 		x -= b.x; y -= b.y; z -= b.z;

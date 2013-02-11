@@ -13,6 +13,9 @@ out vec2 vert_TexCoords;
 out vec4 vert_Color;
 
 uniform mat4 in_MVP;
+uniform mat4 in_M;
+uniform mat4 in_V;
+uniform mat4 in_P;
 
 
 void main(void)
@@ -21,10 +24,14 @@ void main(void)
 	vert_Color = in_Color;
 
 #ifdef _YFIXED
-	vec4 position = vec4(in_Position - in_Offset, 1.0);
+	mat4 V = in_V * (- vec4(in_Offset, 0.0));
+	//vec4 position = vec4(in_Position - in_Offset, 1.0);
 #else
-	vec4 position = vec4(in_Position, 1.0);
+	mat4 V = in_V;
 #endif
+	vec4 position = vec4(in_Position, 1.0);
 
-	gl_Position = in_MVP * position;
+	mat4 MVP = in_P * in_M * V;
+
+	gl_Position = MVP * position;
 }

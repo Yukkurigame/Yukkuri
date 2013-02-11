@@ -24,6 +24,7 @@ namespace  MeshManager {
 	struct Mesh {
 		UINT location;
 		char* filename;
+		char* id;
 		obj_scene_data data;
 	};
 
@@ -43,8 +44,8 @@ void MeshManager::init( )
 	ITER_LIST( char*, names ){
 		Mesh* m = new Mesh();
 		cfg->pushSubconfig( it->data, "mesh" );
+		LUA_GET_VALUE( "id", m->id );
 		LUA_GET_VALUE( "file", m->filename );
-		LUA_GET_VALUE( "location", m->location );
 		cfg->pop( 1 );
 		free( it->data );
 
@@ -52,9 +53,11 @@ void MeshManager::init( )
 
 		if( parse_obj_scene( &m->data,  path ) ){
 			Debug::debug( Debug::GRAPHICS, "Mesh %s loaded.\n", m->filename );
+			m->location = Meshes.count;
 			Meshes.push( m );
 		}else{
 			free(m->filename);
+			free(m->id);
 			delete m;
 			Debug::debug( Debug::GRAPHICS, "Cannot load mesh %s.\n", m->filename );
 		}
@@ -69,8 +72,21 @@ void MeshManager::clean( )
 {
 	ITER_LIST( Mesh*, Meshes ){
 		free(it->data->filename);
+		free(it->data->id);
 		delete it->data;
 	}
+}
+
+
+int MeshManager::get( const char* name )
+{
+	ITER_LIST( Mesh*, Meshes ){
+		if( !strcmp(it->data->id, name) )
+			return it->data->location;
+	}
+
+	Debug::debug( Debug::GRAPHICS, "No mesh loaded with id %s.\n", name );
+	return -1;
 }
 
 
@@ -78,12 +94,12 @@ void MeshManager::load( GLBrush* brush )
 {
 	obj_scene_data* data = NULL;
 	ITER_LIST( Mesh*, Meshes ){
-		if( it->data->location == brush->type )
+		if( it->data->location == brush->mesh )
 			data = &it->data->data;
 	}
 
 	if( !data ){
-		Debug::debug( Debug::GRAPHICS, "No mesh file for mesh type %d.\n", brush->type );
+		Debug::debug( Debug::GRAPHICS, "No mesh file for mesh type %d.\n", brush->mesh );
 		return;
 	}
 
@@ -98,11 +114,11 @@ void MeshManager::load( GLBrush* brush )
 
 inline void init_brush_indices( GLBrush* brush, s3f& vmin, s2f& tmin )
 {
-	if( brush->type != prQUADS )
+	if( brush->points_count != 4 )
 		return;
 
 	VertexV2FT2FC4UI* arr = brush->points();
-	for( int i = 0; i < 4; ++i ){
+	for( UINT i = 0; i < brush->points_count; ++i ){
 		const s3f& vetx = arr[i].verticles;
 		const s2f& coords = arr[i].coordinates;
 		brush->vertex_indices[i] = 0;

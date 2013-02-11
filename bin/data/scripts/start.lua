@@ -16,8 +16,8 @@ Environment:setup()
 plight = Lights.create(constants.ltPoint)
 if plight ~= nil then
 	plight:color({1,1,1})
-	plight:diffuse(2)
-	plight:position({10, 10, 1.0})
+	plight:diffuse(100)
+	plight:position({10, 10, 0.0})
 end
 
 

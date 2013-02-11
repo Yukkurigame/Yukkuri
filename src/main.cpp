@@ -1,5 +1,4 @@
 
-//#include <stdlib.h>
 #include "core/yukkuri.h"
 
 

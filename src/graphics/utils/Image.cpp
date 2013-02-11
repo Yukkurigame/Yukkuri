@@ -62,8 +62,9 @@ unsigned int Image::load( const char* name, int* width, int* height, bool force 
 
 unsigned int Image::open( const char* filename, int* width, int* height )
 {
+	//SOIL_FLAG_COMPRESS_TO_DXT
 	unsigned int tex_2d = SOIL_load_OGL_texture_sized( filename, SOIL_LOAD_AUTO,
-			SOIL_CREATE_NEW_ID, SOIL_FLAG_COMPRESS_TO_DXT, width, height );
+			SOIL_CREATE_NEW_ID, 0, width, height );
 	if( !tex_2d ){
 		const char* error = SOIL_last_result();
 		int str_size = (25 + strlen(filename) + strlen( error )) * sizeof(char);

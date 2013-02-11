@@ -22,7 +22,8 @@ struct Sprite
 	UINT material;
 	unsigned int flags; // 1 - visible
 						// 2 - centered
-	rect2f rect;
+	//rect2f rect;
+	s3f size;
 	GLBrush brush;
 
 	inline unsigned char isVisible()	{ return flags & 1; }
@@ -46,13 +47,13 @@ struct Sprite
 		CHANGE_MATERIAL_FLAG( material, clear_flag, glsNormals )
 	}
 
-	Sprite() : rect(), brush( prQUADS ) {
+	Sprite() : size(1.0f), brush( prISOQUADS ) {
 		material = GLMaterialManager::get( glsLight );
 		picture = texid = 0;
 		flags = 1; // visible only
 	}
 
-	Sprite( enum primitives shape, short centered ) : rect(), brush( shape ){
+	Sprite( enum primitives shape, short centered ) : size(1.0), brush( shape ){
 		material = GLMaterialManager::get( glsLight );
 		picture = texid = 0;
 		if( centered )
@@ -61,12 +62,12 @@ struct Sprite
 	}
 
 	Sprite( Sprite* src ) : texid(src->texid), picture(src->picture),
-		material(src->material), flags(src->flags), rect(src->rect),
+		material(src->material), flags(src->flags), size(src->size),
 		brush(src->brush) { }
 
 	void setPicture( int pic );
 
-	void resize( float w, float h );
+	void resize( float w, float h, float z );
 
 	inline void move( float dx, float dy, float dz ){
 		brush.move( dx, dy, dz );

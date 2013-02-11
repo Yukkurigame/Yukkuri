@@ -28,8 +28,10 @@ struct list
 {
 	listElement<T>* head;
 	listElement<T>* tail;
-	list( ) : head(0), tail(0) {};
-	list( const list<T>* src ) : head(0), tail(0) {
+	unsigned int count;
+
+	list( ) : head(0), tail(0), count(0) {};
+	list( const list<T>* src ) : head(0), tail(0), count(0) {
 		listElement<T>* t = src->head;
 		while( t != 0 ){
 			push_back(t->data);
@@ -51,24 +53,24 @@ struct list
 	// Insertion of data after element
 	void insert( T data, listElement<T>* prev ){
 		if( prev == 0 ){
-			push( data );
+			head = new listElement<T>( data, head );
+			if( !head->next )
+				tail = head;
 		}else{
 			prev->next = new listElement<T>( data, prev->next );
 			if( prev->next->next == 0 )
 				tail = prev->next;
 		}
+		count++;
 	}
 
 	// Pushing of data on the list head
 	void push( T data ){
-		head = new listElement<T>( data, head );
-		if( !head->next )
-			tail = head;
+		insert( data, 0 );
 	}
 
 	// Pushing of data after the last element
-	inline void push_back( T data )
-	{
+	inline void push_back( T data ){
 		insert( data, tail );
 	}
 
@@ -84,6 +86,7 @@ struct list
 			tail = prev;
 		delete t;
 		t = 0;
+		count--;
 	}
 
 	// Remove list element by element pointer
@@ -131,17 +134,6 @@ struct list
 
 	///////////////////
 	// Different list methods
-
-	// Elements count
-	int count( ){
-		int c = 0;
-		listElement<T>* t = head;
-		while( t != 0 ){
-			++c;
-			t = t->next;
-		}
-		return c;
-	}
 
 	// Comparison
 	bool cmp( const list<T>* src ){

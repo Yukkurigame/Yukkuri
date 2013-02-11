@@ -6,6 +6,9 @@ in vec2 in_TexCoord;
 in vec4 in_Color;
 
 uniform mat4 in_MVP;
+uniform mat4 in_M;
+uniform mat4 in_V;
+uniform mat4 in_P;
 uniform vec3 in_Offset;
 
 out vec3 vert_WorldPos;
@@ -18,12 +21,14 @@ void main()
 	vert_TexCoord   = in_TexCoord;
 	vert_Color		= in_Color;
 
+    //mat4 MVP = in_P ;// = in_P * in_M * in_V;
+
 #ifdef _YFIXED
 	vec4 position = vec4(in_Position - in_Offset, 1.0);
 #else
 	vec4 position = vec4(in_Position, 1.0);
 #endif
-	position = in_MVP * position;
+	position = in_MVP  * position;
 
 	vert_WorldPos = position.xyz;
 	gl_Position = position;

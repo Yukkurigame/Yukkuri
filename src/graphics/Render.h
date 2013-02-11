@@ -32,7 +32,7 @@ namespace RenderManager
 							enum primitives shape, short centered = 0 );
 	inline Sprite* CreateGLSprite( float x, float y, float z, int width, int height,
 							unsigned int texture_id, int picture, short centered = 0 ){
-		Sprite* s = CreateGLSprite( x, y, z, width, height, texture_id, prQUADS, centered );
+		Sprite* s = CreateGLSprite( x, y, z, width, height, texture_id, prISOQUADS, centered );
 		s->setPicture( picture );
 		return s;
 	}

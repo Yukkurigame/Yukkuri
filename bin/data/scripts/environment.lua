@@ -5,7 +5,7 @@ Environment = {
 	latitude = 10,
 	longitude = 130,
 	gtm_delta = 11,
-	time = 8,
+	time = 12,
 	day = 340,
 }
 Environment.__index = Environment

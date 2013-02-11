@@ -13,7 +13,7 @@
 
 struct GLBrush
 {
-	enum primitives type;
+	int mesh;
 	s3f vertex_origin;
 	UINT flags;
 	UINT points_count;
@@ -23,7 +23,7 @@ struct GLBrush
 	UINT texture_indices[4];
 	UINT vertex_indices[4];
 
-	GLBrush( enum primitives t );
+	GLBrush( int t );
 	~GLBrush( );
 
 	inline unsigned char isCentered()	{ return flags & 1; }
@@ -31,7 +31,7 @@ struct GLBrush
 	void clearCentered( );
 
 	void resize_verticles( int size );
-	void scale( float x, float y );
+	void scale( const s3f* scale );
 	void move( float dx, float dy, float dz );
 	void set_color( const s4ub& color );
 	s4ub get_color(  );

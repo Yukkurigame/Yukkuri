@@ -47,17 +47,9 @@ struct Sprite
 		CHANGE_MATERIAL_FLAG( material, clear_flag, glsNormals )
 	}
 
-	Sprite() : size(1.0f), brush( prISOQUADS ) {
+	Sprite() : size(1.0f), brush( ) {
 		material = GLMaterialManager::get( glsLight );
 		picture = texid = 0;
-		flags = 1; // visible only
-	}
-
-	Sprite( enum primitives shape, short centered ) : size(1.0), brush( shape ){
-		material = GLMaterialManager::get( glsLight );
-		picture = texid = 0;
-		if( centered )
-			brush.setCentered();
 		flags = 1; // visible only
 	}
 

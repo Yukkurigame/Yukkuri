@@ -122,7 +122,7 @@ bool TextureAtlas::buildRelativeMap( float width, float height ){
 
 inline Sprite* sprite_from_proxy( const TextureProxy* t )
 {
-	Sprite* s = new Sprite( prQUADS, 0 );
+	Sprite* s = new Sprite( );
 	float x = static_cast<float>(t->offset.x) / static_cast<float>(t->texture->w);
 	float y = static_cast<float>(t->offset.y) / static_cast<float>(t->texture->h);
 	float dx = static_cast<float>(t->abs.width) / static_cast<float>(t->texture->w);
@@ -131,6 +131,8 @@ inline Sprite* sprite_from_proxy( const TextureProxy* t )
 	// TODO: move it elsewhere
 
 	GLBrush* brush = &s->brush;
+	brush->init( "mesh_quad" );
+
 	VertexV2FT2FC4UI* pts = brush->points();
 	for( UINT i = 0; i < brush->points_count; ++i ){
 		s3f& vtx = pts[i].verticles;

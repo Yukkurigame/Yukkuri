@@ -16,6 +16,14 @@
 #include "hacks.h"
 #include "debug.h"
 
+#include <cmath>
+
+
+
+inline int log2( int n ) {
+	return log( n ) / log( 2 );
+}
+
 
 
 extern MainConfig conf;
@@ -46,6 +54,7 @@ ShaderConfigData::~ShaderConfigData()
 
 
 namespace {
+
 	char* filetobuf( const char* file )
 	{
 		FILE *fptr;
@@ -71,10 +80,13 @@ namespace {
 	std::map< enum GLSFlags, UniformHandlers > uniforms[glpLast];
 
 	// TODO: macro from configs
-	#define MACROS_SIZE 3
-	const char* macros[MACROS_SIZE] = {
-		"_YNORMALS", "_YLIGHT", "_YFIXED"
-	};
+	int macro_size = 0;
+	char** macro_names = NULL;
+
+	//#define MACROS_SIZE 3
+	//const char* macros[MACROS_SIZE] = {
+	//	"_YNORMALS", "_YLIGHT", "_YFIXED"
+	//};
 }
 
 
@@ -91,10 +103,10 @@ char* generate_defines( enum GLSFlags glflags )
 	while( flag < glsAll ){
 		++index;
 		flag <<= 1;
-		if( ( glflags & flag ) == 0 || index > MACROS_SIZE )
+		if( ( glflags & flag ) == 0 || index > macro_size )
 			continue;
 
-		const char* decl = macros[index];
+		const char* decl = macro_names[index];
 		string_size += strlen(def) + strlen(decl) + 1;
 		str = (char*)realloc( str, size * string_size );
 		strcat( str, def );
@@ -106,38 +118,35 @@ char* generate_defines( enum GLSFlags glflags )
 }
 
 
-
-bool check_shader( GLuint object, int status_name, const char* name )
+bool get_iv( GLint* status, GLuint object, int type )
 {
-	// TODO: rewrite
-	GLint status;
-	switch( status_name ){
+	switch( type ){
 		case GL_COMPILE_STATUS:
-			glGetShaderiv( object, status_name, &status );
+			glGetShaderiv( object, type, status );
 			break;
 		case GL_LINK_STATUS:
-			glGetProgramiv( object, status_name, &status );
+			glGetProgramiv( object, type, status );
 			break;
 		default:
 			Debug::debug( Debug::GRAPHICS, "Wrong shader operation");
 			return false;
 	}
+	return true;
+}
+
+
+bool check_shader( GLuint object, int status_name, const char* name )
+{
+	// TODO: rewrite
+	GLint status;
+	if( !get_iv( &status, object, status_name ) )
+		return false;
 
 	if( status == GL_FALSE ){
 		int log_length;
 		char* info_log;
-
-		switch( status_name ){
-			case GL_COMPILE_STATUS:
-				glGetShaderiv( object, GL_INFO_LOG_LENGTH, &log_length );
-				break;
-			case GL_LINK_STATUS:
-				glGetProgramiv( object, GL_INFO_LOG_LENGTH, &log_length );
-				break;
-			default:
-				Debug::debug( Debug::GRAPHICS, "Wrong shader operation");
-				return false;
-		}
+		if( !get_iv( &log_length, object, GL_INFO_LOG_LENGTH ) )
+			return false;
 
 		/* The maxLength includes the NULL character */
 		info_log = (char*)malloc( log_length );
@@ -150,6 +159,7 @@ bool check_shader( GLuint object, int status_name, const char* name )
 				glGetProgramInfoLog( object, log_length, &log_length, info_log );
 				break;
 			default:
+				free( info_log );
 				Debug::debug( Debug::GRAPHICS, "Wrong shader operation.\n");
 				return false;
 		}
@@ -161,6 +171,7 @@ bool check_shader( GLuint object, int status_name, const char* name )
 		free(info_log);
 		return false;
 	}
+
 	return true;
 }
 
@@ -298,6 +309,26 @@ GLuint createProgram( enum GLSPass pass, enum GLSFlags glflags )
 	return shaderprogram;
 }
 
+
+void Shaders::init( )
+{
+	LuaConfig* cfg = new LuaConfig();
+	unsigned int flag = glsFirst;
+	int index = -1;
+	char buf[15];
+
+	macro_size = log2(glsLast) - 1;
+	macro_names = (char**)malloc( (UINT)sizeof(char*) * macro_size );
+
+	while( flag < glsAll ){
+		++index;
+		flag <<= 1;
+		sprintf( buf, "shadermacro_%d", flag );
+		cfg->getValue( "name", buf, macro_names[index] );
+	}
+
+	delete cfg;
+}
 
 
 GLuint Shaders::getProgram( enum GLSPass pass, enum GLSFlags glflags )

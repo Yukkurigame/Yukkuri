@@ -51,8 +51,6 @@ void Scope::update( )
 	if( sprite && sprite->isVisible() ){
 		cpBody* b = shape->body;
 		sprite->brush.set_position( b->p.x, b->p.y, POSITION_Z );
-		//sprite->brush.vertex_origin.x = b->p.x;
-		//sprite->brush.vertex_origin.y = b->p.y;
 	}
 }
 
@@ -65,7 +63,7 @@ void Scope::set( )
 	if( sprite == NULL ){
 		int verts = cpPolyShapeGetNumVerts( shape );
 
-		sprite = RenderManager::CreateGLSprite( 0.0, 0.0, POSITION_Z, 600, 300, 0, prTRIANGLESFAN );
+		sprite = RenderManager::CreateGLSprite( 0.0, 0.0, POSITION_Z, 600, 300, 0 );
 		sprite->brush.resize_verticles( verts );
 		sprite->brush.set_color( color );
 

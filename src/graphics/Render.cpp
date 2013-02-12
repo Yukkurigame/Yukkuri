@@ -75,6 +75,7 @@ void RenderManager::init( )
 {
 	Textures::init();
 	AnimDef::init();
+	Shaders::init();
 	MeshManager::init();
 }
 
@@ -166,9 +167,13 @@ bool RenderManager::openglSetup( int wwidth, int wheight )
  * returns Sprite*
  */
 Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int height,
-				unsigned int texture_id, enum primitives shape, short centered )
+				unsigned int texture_id, short centered )
 {
-	Sprite* sprite = new Sprite( shape, centered );
+	Sprite* sprite = new Sprite( );
+	sprite->brush.init( "mesh_quad" );
+	if( centered )
+		sprite->brush.setCentered();
+
 	sprite->texid = texture_id;
 
 	TextureInfo* tex_info = Textures::get_pointer( texture_id );
@@ -194,7 +199,7 @@ Sprite* RenderManager::CreateGLSprite( Sprite* osprite )
 	if( osprite == NULL )
 		return NULL;
 
-	Sprite* sprite = new Sprite(osprite);
+	Sprite* sprite = new Sprite( osprite );
 
 	sprites_array.push( sprite );
 

@@ -124,17 +124,18 @@ void LuaMain::RegisterApi( lua_State* L )
 		FIELD(gbpFPS)
 
 		// Primitives
-		FIELD(prPOINTS)
-		FIELD(prLINES)
-		FIELD(prLINELOOP)
-		FIELD(prTRIANGLES)
-		FIELD(prTRIANGLESTRIP)
-		FIELD(prTRIANGLESFAN)
-		FIELD(prQUADS)
-		FIELD(prISOQUADS)
-		FIELD(prSPHERE)
-		FIELD(prPOLYGON)
+		FIELD(GL_POINTS)
+		FIELD(GL_LINES)
+		FIELD(GL_LINE_LOOP)
+		FIELD(GL_TRIANGLES)
+		FIELD(GL_TRIANGLE_STRIP)
+		FIELD(GL_TRIANGLE_FAN)
+		FIELD(GL_POLYGON)
 
+		// Shaders macros
+		FIELD(glsNormals)
+		FIELD(glsLight)
+		FIELD(glsFixed)
 		// Shaders attrib
 		FIELD(gllPosition)
 		FIELD(gllTexCoord)

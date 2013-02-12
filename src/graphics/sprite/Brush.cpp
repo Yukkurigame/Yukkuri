@@ -9,19 +9,32 @@
 #include "graphics/utils/VBOArray.h"
 
 
-GLBrush::GLBrush( int mesh_id ) : mesh( mesh_id ), vertex_origin(), flags()
+GLBrush::GLBrush(  ) : mesh( -1 ), method(GL_TRIANGLES), vertex_origin(), flags()
 {
 	point_index = 0;
 	points_count = 0;
 	indices_count = 0;
 	indices_list = NULL;
-	MeshManager::load( this );
 }
 
 
 GLBrush::~GLBrush( )
 {
 	VBOArray::freeSpace( point_index, points_count );
+}
+
+
+short GLBrush::init( int mesh_id )
+{
+	mesh = mesh_id;
+	return MeshManager::load( this );
+}
+
+
+short GLBrush::init( const char* name )
+{
+	int id = MeshManager::get( name );
+	return init(id);
 }
 
 

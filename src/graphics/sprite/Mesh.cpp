@@ -23,6 +23,7 @@ namespace  MeshManager {
 
 	struct Mesh {
 		UINT location;
+		GLuint type;
 		char* filename;
 		char* id;
 		obj_scene_data data;
@@ -46,6 +47,7 @@ void MeshManager::init( )
 		cfg->pushSubconfig( it->data, "mesh" );
 		LUA_GET_VALUE( "id", m->id );
 		LUA_GET_VALUE( "file", m->filename );
+		LUA_GET_VALUE( "type", m->type );
 		cfg->pop( 1 );
 		free( it->data );
 
@@ -90,20 +92,28 @@ int MeshManager::get( const char* name )
 }
 
 
-void MeshManager::load( GLBrush* brush )
+short MeshManager::load( GLBrush* brush )
 {
-	obj_scene_data* data = NULL;
+	if( !brush || brush->mesh < 0 )
+		return 0;
+
+	Mesh* m = NULL;
 	ITER_LIST( Mesh*, Meshes ){
 		if( it->data->location == brush->mesh )
-			data = &it->data->data;
+			m = it->data;
 	}
 
-	if( !data ){
+	if( !m ){
 		Debug::debug( Debug::GRAPHICS, "No mesh file for mesh type %d.\n", brush->mesh );
-		return;
+		return 0;
 	}
 
-	load_brush( brush, data );
+	if( m->type )
+		brush->method = m->type;
+
+	load_brush( brush, &m->data );
+
+	return 1;
 }
 
 

@@ -16,7 +16,6 @@ struct GLMaterial
 {
 	UINT flags;
 	GLuint programs[glpLast];
-	//ShaderConfigStrings* samplers[glpLast];
 	UniformHandlers* uniforms[glpLast];
 
 	void init_flags( UINT glflags );

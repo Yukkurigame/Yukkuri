@@ -57,14 +57,9 @@ struct s3fc {
 };
 
 
-enum primitives {
-	prPOINTS = 0, prLINES, prLINELOOP, prTRIANGLES, prTRIANGLESTRIP,
-	prTRIANGLESFAN, prQUADS, prISOQUADS, prSPHERE, prPOLYGON, prLAST
-};
-
-static const GLuint gl_methods[prLAST] = {
+static const GLuint gl_methods[7] = {
 	GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_TRIANGLES, GL_TRIANGLE_STRIP,
-	GL_TRIANGLE_FAN, GL_TRIANGLES, GL_TRIANGLES, GL_TRIANGLES, GL_POLYGON
+	GL_TRIANGLE_FAN, GL_POLYGON
 };
 
 

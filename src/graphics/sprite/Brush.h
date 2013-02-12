@@ -14,6 +14,7 @@
 struct GLBrush
 {
 	int mesh;
+	GLuint method;
 	s3f vertex_origin;
 	UINT flags;
 	UINT points_count;
@@ -23,8 +24,11 @@ struct GLBrush
 	UINT texture_indices[4];
 	UINT vertex_indices[4];
 
-	GLBrush( int t );
+	GLBrush( );
 	~GLBrush( );
+
+	short init( int t );
+	short init( const char* t );
 
 	inline unsigned char isCentered()	{ return flags & 1; }
 	void setCentered( );

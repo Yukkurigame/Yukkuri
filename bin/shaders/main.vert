@@ -24,14 +24,14 @@ void main(void)
 	vert_Color = in_Color;
 
 #ifdef _YFIXED
-	mat4 V = in_V * (- vec4(in_Offset, 0.0));
-	//vec4 position = vec4(in_Position - in_Offset, 1.0);
+	//mat4 V = in_V * (- vec4(in_Offset, 0.0));
+	vec4 position = vec4(in_Position - in_Offset, 1.0);
 #else
-	mat4 V = in_V;
-#endif
+	//mat4 V = in_V;
 	vec4 position = vec4(in_Position, 1.0);
+#endif
 
-	mat4 MVP = in_P * in_M * V;
+	mat4 MVP = in_P * in_V;
 
 	gl_Position = MVP * position;
 }

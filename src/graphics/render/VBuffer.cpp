@@ -131,12 +131,10 @@ void VBuffer::prepare_handler( Sprite* sprite, list<VBOStructureHandle*>* handle
 	if( handler->tail )
 		v = handler->tail->data;
 
-	GLuint method = gl_methods[sprite->brush.mesh];
-
 	if( !v || v->method != GL_TRIANGLES ||
 		v->material != sprite->material ||
 		!v->textures.cmp( &sprite->textures ) ){
-		v = new VBOStructureHandle( method, &sprite->textures, sprite->material );
+		v = new VBOStructureHandle( sprite->brush.method, &sprite->textures, sprite->material );
 		handler->push_back( v );
 	}
 

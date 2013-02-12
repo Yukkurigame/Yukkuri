@@ -168,7 +168,7 @@ void Camera::update( )
 		}
 	}
 	state->cam_translation = state->cam_position + state->cam_offset;
-	glm::mat4 view = glm::translate(state->view, state->cam_translation);
+	glm::mat4 view = glm::translate(state->view, state->cam_translation );
 	state->mvp = state->projection * state->model * view;
 
 	pass_state( state );

@@ -69,8 +69,9 @@ struct ShaderConfigData {
 
 namespace Shaders {
 
+	void init( );
+
 	GLuint getProgram( enum GLSPass, enum GLSFlags glflags );
-	//ShaderConfigStrings* getSamplers( enum GLSPass, enum GLSFlags glflags );
 	UniformHandlers* getUniforms( enum GLSPass pass, enum GLSFlags glflags );
 
 }

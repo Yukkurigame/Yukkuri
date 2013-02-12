@@ -91,7 +91,7 @@ public:
 	bool toggle( lua_State* L );
 	bool bindParam( lua_State* L );
 	LuaRet getChildren( lua_State* L );
-	inline int getChildrenCount() { return Children.count( ); }
+	inline int getChildrenCount() { return Children.count; }
 
 
 #define GET_PARAM( type, name, value )		\

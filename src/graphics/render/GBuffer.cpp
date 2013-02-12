@@ -87,9 +87,13 @@ bool GBuffer::init()
 	window_size.y = conf.video.windowHeight;
 
 	combinator = new Sprite( );
+	combinator->brush.init( "mesh_quad" );
 	combinator->resize( window_size.x, window_size.y, 0 );
 	combinator->setFixed();
-	sphere = new Sprite( prSPHERE, 1 );
+
+	sphere = new Sprite( );
+	sphere->brush.init( "mesh_sphere" );
+	sphere->brush.setCentered();
 
 	in_ScreenSize = UniformsManager::register_uniform( "in_ScreenSize", GL_FLOAT_VEC2 );
 	UniformsManager::pass_data( in_ScreenSize, &window_size.x );
@@ -276,15 +280,15 @@ void GBuffer::light_pass_point( LightSource* source, list<VBOStructureHandle*>* 
 	glBlendEquation(GL_FUNC_ADD);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//glBlendFunc(GL_ONE, GL_ONE);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);
 
-    float area = point_light_area( source->color, source->diffuse );
-    sphere->setPosition( &source->position );
+	float area = point_light_area( source->color, source->diffuse );
+	sphere->setPosition( &source->position );
 	sphere->resize( area, area, area );
 	VBuffer::draw( glpPointLight, handler );
 
-    glCullFace(GL_BACK);
+	glCullFace(GL_BACK);
 	glDisable(GL_BLEND);
 }
 

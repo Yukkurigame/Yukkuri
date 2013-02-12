@@ -17,16 +17,11 @@
 #include "debug.h"
 
 #include <cmath>
-
-
-
-inline int log2( int n ) {
-	return log( n ) / log( 2 );
-}
-
+//#define M_LOG2E 1.44269504088896340736 //log2(e)
 
 
 extern MainConfig conf;
+
 
 
 ShaderConfigAttributes::~ShaderConfigAttributes()
@@ -79,14 +74,8 @@ namespace {
 	std::map< enum GLSFlags, GLuint > shaders[glpLast];
 	std::map< enum GLSFlags, UniformHandlers > uniforms[glpLast];
 
-	// TODO: macro from configs
 	int macro_size = 0;
 	char** macro_names = NULL;
-
-	//#define MACROS_SIZE 3
-	//const char* macros[MACROS_SIZE] = {
-	//	"_YNORMALS", "_YLIGHT", "_YFIXED"
-	//};
 }
 
 
@@ -97,6 +86,7 @@ char* generate_defines( enum GLSFlags glflags )
 	char* str = (char*)malloc( size );
 	str[0] = '\0';
 	const char* def = "#define ";
+	int def_size = strlen(def) + 1;
 
 	unsigned int flag = glsFirst;
 	int index = -1;
@@ -107,7 +97,10 @@ char* generate_defines( enum GLSFlags glflags )
 			continue;
 
 		const char* decl = macro_names[index];
-		string_size += strlen(def) + strlen(decl) + 1;
+		if( !decl )
+			continue;
+
+		string_size += def_size + strlen(decl);
 		str = (char*)realloc( str, size * string_size );
 		strcat( str, def );
 		strcat( str, decl );
@@ -317,7 +310,8 @@ void Shaders::init( )
 	int index = -1;
 	char buf[15];
 
-	macro_size = log2(glsLast) - 1;
+	// log2(x ) : log(x) / log(2); floor to not count last element
+	macro_size = floor( log(glsLast) * M_LOG2E );
 	macro_names = (char**)malloc( (UINT)sizeof(char*) * macro_size );
 
 	while( flag < glsAll ){

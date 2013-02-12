@@ -25,11 +25,12 @@ void main(void)
 
 #ifdef _YFIXED
 	//mat4 V = in_V * (- vec4(in_Offset, 0.0));
-	vec4 position = vec4(in_Position - in_Offset, 1.0);
+	//vec4 position = vec4(in_Position - in_Offset, 1.0);
 #else
 	//mat4 V = in_V;
-	vec4 position = vec4(in_Position, 1.0);
+	//vec4 position = vec4(in_Position, 1.0);
 #endif
+	vec4 position = vec4(in_Position, 1.0);
 
 	mat4 MVP = in_P * in_V;
 

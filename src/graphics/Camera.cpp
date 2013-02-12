@@ -25,8 +25,8 @@ namespace Camera {
 		glm::vec3 cam_position;
 		glm::vec3 cam_offset;
 		glm::mat4x4 projection;
-		glm::mat4x4 model;
 		glm::mat4x4 view;
+		glm::mat4x4 model;
 		//glm::mat4x4 model_view;
 		glm::vec3 cam_translation;
 		glm::mat4x4 mvp;
@@ -35,8 +35,8 @@ namespace Camera {
 		CameraState( const CameraState* src ) :	TargetMode(src->TargetMode),
 				TargetX(src->TargetX), TargetY(src->TargetY), Target(src->Target),
 				cam_view(src->cam_view), rotation(src->rotation), cam_position(src->cam_position),
-				cam_offset(src->cam_offset), projection(src->projection), model(src->model),
-				view(src->view), cam_translation(src->cam_translation), mvp(src->mvp) {}
+				cam_offset(src->cam_offset), projection(src->projection), view(src->view),
+				model(src->model), cam_translation(src->cam_translation), mvp(src->mvp) {}
 
 	};
 
@@ -72,8 +72,8 @@ namespace Camera {
 	void pass_state( const CameraState* state )
 	{
 		UniformsManager::pass_data( camera_shaders.in_MVP, GLM_PTR(state->mvp) );
-		UniformsManager::pass_data( camera_shaders.in_M, GLM_PTR(state->model) );
-		UniformsManager::pass_data( camera_shaders.in_V, GLM_PTR(state->view) );
+		UniformsManager::pass_data( camera_shaders.in_M, GLM_PTR(state->view) );
+		UniformsManager::pass_data( camera_shaders.in_V, GLM_PTR(state->model) );
 		UniformsManager::pass_data( camera_shaders.in_P, GLM_PTR(state->projection) );
 		UniformsManager::pass_data( camera_shaders.in_Offset, GLM_PTR(state->cam_translation) );
 	}
@@ -107,8 +107,8 @@ void Camera::push_state( const rect2f* view, const s2f* z )
 	state->projection = glm::ortho(view->x, view->x + view->width,
 			view->y, view->y + view->height, z->x, z->y );
 			//v( -wwidth*2.0, wwidth*2.0, -wheight*2.0, wheight*2.0 );
-	state->model = glm::mat4x4(1.0);
 	state->view = glm::mat4x4(1.0);
+	state->model = glm::mat4x4(1.0);
 	states.push( state );
 	update_viewport( );
 }
@@ -164,12 +164,12 @@ void Camera::update( )
 	if( state->TargetX && state->TargetY ){
 		if( (*state->TargetX) != state->cam_position.x || (*state->TargetY) != state->cam_position.y ){
 			Move(state->cam_position.x + (*state->TargetX),
-					state->cam_position.y +(*state->TargetY), 0);
+					state->cam_position.y + (*state->TargetY), 0);
 		}
 	}
 	state->cam_translation = state->cam_position + state->cam_offset;
-	glm::mat4 view = glm::translate(state->view, state->cam_translation );
-	state->mvp = state->projection * state->model * view;
+	glm::mat4 model = glm::translate(state->model, state->cam_translation );
+	state->mvp = state->projection * state->view * model;
 
 	pass_state( state );
 }
@@ -215,7 +215,7 @@ void Camera::Translate( float x, float y, float z )
 	if( !states.head )
 		return;
 	CameraState* state = states.head->data;
-	state->view = glm::translate( state->view, glm::vec3( x, y, z ) );
+	state->model = glm::translate( state->model, glm::vec3( x, y, z ) );
 }
 
 
@@ -224,7 +224,7 @@ void Camera::Rotate( float angle, float x, float y, float z )
 	if( !states.head )
 		return;
 	CameraState* state = states.head->data;
-	state->model = glm::rotate(state->model, angle, glm::normalize(glm::vec3(x, y, z)));
+	state->view = glm::rotate(state->view, angle, glm::normalize(glm::vec3(x, y, z)));
 }
 
 
@@ -240,9 +240,9 @@ void Camera::ChangeMode( enum ctMode mode )
 	state->TargetMode = mode;
 	switch( mode ){
 		case ctmCenter:
-			//state->cam_offset.x = state->cam_view.width / 2;
-			//state->cam_offset.y = state->cam_view.height / 2;
-			state->cam_offset.x = state->cam_offset.y = 0;
+			state->cam_offset.x = state->cam_view.width / 2;
+			state->cam_offset.y = state->cam_view.height / 2;
+			//state->cam_offset.x = state->cam_offset.y = 0;
 			break;
 		case ctmNormal:
 			state->cam_offset.x = state->cam_offset.y = 0;

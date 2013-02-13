@@ -175,6 +175,7 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 		sprite->brush.setCentered();
 
 	sprite->texid = texture_id;
+	sprite->setFaced();
 
 	TextureInfo* tex_info = Textures::get_pointer( texture_id );
 	if( !tex_info ){
@@ -184,7 +185,7 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 		sprite->addNormalMap( tex_info->normals );
 	}
 
-	sprite->resize( (float)width, (float)width, (float)height );
+	sprite->resize( (float)width, (float)height, 0 );
 	sprite->setPosition( x, y, z );
 
 	sprites_array.push( sprite );

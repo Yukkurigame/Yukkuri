@@ -103,13 +103,13 @@ void WidgetBar::redraw( )
 
 	s3f pos = getWidgetPosition();
 	if( BarSprite ){
-		BarSprite->resize( size.x, 0, size.y );
+		BarSprite->resize( size.x, size.y, 0 );
 		BarSprite->setPosition( pos.x + Bar.x, pos.y + Bar.y, pos.z );
 	}
 	if( TopSprite ){
 		LOWER_LIMIT( Top.width, 1.0, rect.width )
 		LOWER_LIMIT( Top.height, 1.0, rect.height )
-		TopSprite->resize( Top.width, 0, Top.height );
+		TopSprite->resize( Top.width, Top.height, 0 );
 		TopSprite->setPosition( pos.x + Bar.x + Top.x, pos.y + Bar.y + Top.y, pos.z + 0.01f );
 	}
 }

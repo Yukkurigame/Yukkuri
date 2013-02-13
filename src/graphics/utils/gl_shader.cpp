@@ -111,17 +111,17 @@ char* generate_defines( enum GLSFlags glflags )
 }
 
 
-bool get_iv( GLint* status, GLuint object, int type )
+bool get_iv( GLint* status, GLuint object, int type, int name )
 {
 	switch( type ){
 		case GL_COMPILE_STATUS:
-			glGetShaderiv( object, type, status );
+			glGetShaderiv( object, name, status );
 			break;
 		case GL_LINK_STATUS:
-			glGetProgramiv( object, type, status );
+			glGetProgramiv( object, name, status );
 			break;
 		default:
-			Debug::debug( Debug::GRAPHICS, "Wrong shader operation");
+			Debug::debug( Debug::GRAPHICS, "Wrong shader operation.\n");
 			return false;
 	}
 	return true;
@@ -132,13 +132,13 @@ bool check_shader( GLuint object, int status_name, const char* name )
 {
 	// TODO: rewrite
 	GLint status;
-	if( !get_iv( &status, object, status_name ) )
+	if( !get_iv( &status, object, status_name, status_name ) )
 		return false;
 
 	if( status == GL_FALSE ){
 		int log_length;
 		char* info_log;
-		if( !get_iv( &log_length, object, GL_INFO_LOG_LENGTH ) )
+		if( !get_iv( &log_length, object, status_name, GL_INFO_LOG_LENGTH ) )
 			return false;
 
 		/* The maxLength includes the NULL character */

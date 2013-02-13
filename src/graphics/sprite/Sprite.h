@@ -34,6 +34,8 @@ struct Sprite
 	inline void clearFixed( ){ CHANGE_MATERIAL_FLAG( material, clear_flag, glsFixed) }
 	inline void setLight( ){ CHANGE_MATERIAL_FLAG( material, add_flag, glsLight ) }
 	inline void clearLight( ){ CHANGE_MATERIAL_FLAG( material, clear_flag, glsLight ) }
+	inline void setFaced( ){ CHANGE_MATERIAL_FLAG( material, add_flag, glsFaced ) }
+	inline void clearFaced( ){ CHANGE_MATERIAL_FLAG( material, clear_flag, glsFaced ) }
 
 	inline void addNormalMap( GLuint map ){
 		textures.push_back( map );

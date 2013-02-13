@@ -136,6 +136,7 @@ void LuaMain::RegisterApi( lua_State* L )
 		FIELD(glsNormals)
 		FIELD(glsLight)
 		FIELD(glsFixed)
+		FIELD(glsFaced)
 		// Shaders attrib
 		FIELD(gllPosition)
 		FIELD(gllTexCoord)

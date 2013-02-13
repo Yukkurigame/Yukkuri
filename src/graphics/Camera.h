@@ -21,8 +21,8 @@ namespace Camera {
 	void push_state( );
 	void pop_state( );
 
-	const float* mvp( );
-	const float* offset( );
+	//const float* mvp( );
+	//const float* offset( );
 
 	void update( );
 	s3f position( );

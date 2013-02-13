@@ -18,8 +18,9 @@ enum GLSFlags {
 	glsNormals = 	0x02,
 	glsLight = 		0x04,
 	glsFixed = 		0x08,
-	glsAll = 		0x0F,
-	glsLast = 		0x10
+	glsFaced =		0x10,
+	glsAll = 		0x1F,
+	glsLast = 		0x20
 };
 
 enum GLSPass {

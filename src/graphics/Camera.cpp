@@ -21,32 +21,39 @@ namespace Camera {
 		Unit* Target;
 
 		rect2f cam_view;
-		glm::mat3 rotation;
 		glm::vec3 cam_position;
 		glm::vec3 cam_offset;
 		glm::mat4x4 projection;
 		glm::mat4x4 view;
 		glm::mat4x4 model;
 		//glm::mat4x4 model_view;
-		glm::vec3 cam_translation;
+		//glm::vec3 cam_translation;
+
 		glm::mat4x4 mvp;
+		glm::mat4x4 movp;
+		glm::mat4x4 mp;
+		glm::mat4x4 mop;
 
 		CameraState() :	TargetMode(ctmNormal), TargetX(NULL), TargetY(NULL), Target(NULL) {}
 		CameraState( const CameraState* src ) :	TargetMode(src->TargetMode),
 				TargetX(src->TargetX), TargetY(src->TargetY), Target(src->Target),
-				cam_view(src->cam_view), rotation(src->rotation), cam_position(src->cam_position),
+				cam_view(src->cam_view), cam_position(src->cam_position),
 				cam_offset(src->cam_offset), projection(src->projection), view(src->view),
-				model(src->model), cam_translation(src->cam_translation), mvp(src->mvp) {}
+				model(src->model), mvp(src->mvp) {}
+				//cam_translation(src->cam_translation)
 
 	};
 
 	list< CameraState* > states;
 	struct CameraShaders {
 		int in_MVP;
-		int in_Offset;
+		int in_MOVP;
+		int in_MP;
+		int in_MOP;
 		int in_M;
 		int in_V;
 		int in_P;
+		//int in_Offset;
 	} camera_shaders;
 
 	inline void update_viewport( )
@@ -72,22 +79,34 @@ namespace Camera {
 	void pass_state( const CameraState* state )
 	{
 		UniformsManager::pass_data( camera_shaders.in_MVP, GLM_PTR(state->mvp) );
+		UniformsManager::pass_data( camera_shaders.in_MOVP, GLM_PTR(state->movp) );
+		UniformsManager::pass_data( camera_shaders.in_MP, GLM_PTR(state->mp) );
+		UniformsManager::pass_data( camera_shaders.in_MOP, GLM_PTR(state->mop) );
 		UniformsManager::pass_data( camera_shaders.in_M, GLM_PTR(state->view) );
 		UniformsManager::pass_data( camera_shaders.in_V, GLM_PTR(state->model) );
 		UniformsManager::pass_data( camera_shaders.in_P, GLM_PTR(state->projection) );
-		UniformsManager::pass_data( camera_shaders.in_Offset, GLM_PTR(state->cam_translation) );
+		//UniformsManager::pass_data( camera_shaders.in_Offset, GLM_PTR(state->cam_translation) );
 	}
 }
 
 
+#define REG_UNIFORM( name, type )	\
+		camera_shaders.name = UniformsManager::register_uniform( #name, type );
+
 void Camera::init( )
 {
-	camera_shaders.in_MVP = UniformsManager::register_uniform( "in_MVP", GL_FLOAT_MAT4 );
-	camera_shaders.in_M = UniformsManager::register_uniform( "in_M", GL_FLOAT_MAT4 );
-	camera_shaders.in_V = UniformsManager::register_uniform( "in_V", GL_FLOAT_MAT4 );
-	camera_shaders.in_P = UniformsManager::register_uniform( "in_P", GL_FLOAT_MAT4 );
-	camera_shaders.in_Offset = UniformsManager::register_uniform( "in_Offset", GL_FLOAT_VEC3 );
+	REG_UNIFORM( in_MVP, GL_FLOAT_MAT4 )
+	REG_UNIFORM( in_MOVP, GL_FLOAT_MAT4 )
+	REG_UNIFORM( in_MP, GL_FLOAT_MAT4 )
+	REG_UNIFORM( in_MOP, GL_FLOAT_MAT4 )
+	REG_UNIFORM( in_M, GL_FLOAT_MAT4 )
+	REG_UNIFORM( in_V, GL_FLOAT_MAT4 )
+	REG_UNIFORM( in_P, GL_FLOAT_MAT4 )
+	//camera_shaders.in_Offset = UniformsManager::register_uniform( "in_Offset", GL_FLOAT_VEC3 );
 }
+
+#undef REG_UNIFORM
+
 
 
 void Camera::push_state( const rect2f* view, const s2f* z )
@@ -137,6 +156,8 @@ void Camera::pop_state( )
 	update_viewport( );
 }
 
+
+/*
 const float* Camera::mvp()
 {
 	if( !states.head )
@@ -151,8 +172,9 @@ const float* Camera::offset( )
 	if( !states.head )
 		return NULL;
 	CameraState* state = states.head->data;
-	return GLM_PTR(state->cam_translation);
+	return GLM_PTR(state->cam_offset);
 }
+*/
 
 
 void Camera::update( )
@@ -167,9 +189,14 @@ void Camera::update( )
 					state->cam_position.y + (*state->TargetY), 0);
 		}
 	}
-	state->cam_translation = state->cam_position + state->cam_offset;
-	glm::mat4 model = glm::translate(state->model, state->cam_translation );
+	//state->cam_translation = state->cam_position + state->cam_offset;
+	glm::mat4 model = glm::translate( state->model, state->cam_position + state->cam_offset );
+	//glm::mat4 omodel = state->model; // glm::translate( state->model, state->cam_offset );
+
 	state->mvp = state->projection * state->view * model;
+	state->mp = state->projection * model;
+	state->movp = state->projection * state->view * state->model;
+	state->mop = state->projection * state->model;
 
 	pass_state( state );
 }

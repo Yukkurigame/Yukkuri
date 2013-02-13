@@ -138,7 +138,7 @@ void Widget::redraw( )
 	//Rect.x = posx;
 	//Rect.y = posy;
 	if( background ){
-		background->resize( Rect.width, 0, Rect.height );
+		background->resize( Rect.width, Rect.height, 0 );
 		background->setPosition( Position.x, Position.y, getZ() );
 	}
 

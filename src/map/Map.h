@@ -1,11 +1,8 @@
 #ifndef MAP_H
 #define MAP_H
 
-
 #include "map/Tiles.h"
-#include <vector>
-typedef std::vector< MapChunk* >::iterator ChunkListIter;
-
+#include "map/Chunk.h"
 
 enum {
 	TILE_TYPE_NONE = 0,
@@ -47,7 +44,7 @@ namespace Map
 	void setActive( );
 	void clearActive( );
 
-	void toChunkCoordinates( int& x, int& y);
+	void toChunkCoordinates( s2i& pos );
 	void fromChunkCoordinates( s2i& pos );
 
 	void toMapCoordinates( int* x, int* y);
@@ -72,14 +69,14 @@ namespace Map
 	void createVTilesLine( signed int startx, signed int starty, int number );
 	void deleteVTilesLine( signed int startx, signed int starty, int number );
 
-	void createChunksRectangle( signed int startx, signed int starty, int numberx, int numbery );
-	void deleteChunksRectangle( signed int startx, signed int starty, int numberx, int numbery );
+	void createChunksRectangle( const s2i& pos, const s2i& count );
+	void deleteChunksRectangle( const s2i& pos, const s2i& count );
 
 	MapTile* getTile( float x, float y );
 	MapTile* getTile( signed int x, signed int y );
 
-	ChunkListIter getChunkIt( signed int x, signed int y );
-	ChunkListIter getChunkXIt( signed int x );
+	//ChunkListIter getChunkIt( signed int x, signed int y );
+	//ChunkListIter getChunkXIt( signed int x );
 
 	void clear( );
 

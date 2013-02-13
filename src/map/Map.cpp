@@ -1,5 +1,6 @@
 
 #include "map/Map.h"
+
 #include "graphics/Camera.h"
 #include "3rdparty/timer/TimerManager.h"
 
@@ -13,8 +14,6 @@
 
 
 extern MainConfig conf;
-extern MapChunkManager ChunkManager;
-
 
 #define MAP_UPADTE_PERIOD 100
 
@@ -22,8 +21,7 @@ extern MapChunkManager ChunkManager;
 namespace {
 
 	bool Updated;
-	float posX;
-	float posY;
+	s2i position;
 	int map_flags;
 
 	std::vector< MapChunk* > chunkVec;
@@ -77,7 +75,7 @@ static struct MapDefines{
 		LOffset = ROffset + ( Right * -1 * ( XCount >> 1 ) ); // Left top corner
 
 		//FIXME: move from here
-		ChunkManager.init();
+		ChunkManager::init();
 	}
 } Defines;
 
@@ -86,8 +84,8 @@ static struct MapDefines{
 bool Map::init( )
 {
 	Updated = false;
-	posX = 0;
-	posY = 0;
+	position.x = 0;
+	position.y = 0;
 	map_flags = 0;
 	Defines.Init();
 	return true;
@@ -120,11 +118,12 @@ void Map::clearActive()
 }
 
 
-void Map::toChunkCoordinates( int& x, int& y)
+void Map::toChunkCoordinates( s2i& pos )
 {
-	x >>= Defines.lTileSize + CHUNK_SIZE + 1;
-	y >>= Defines.lTileSize + CHUNK_SIZE;
+	pos.x >>= Defines.lTileSize + CHUNK_SIZE + 1;
+	pos.y >>= Defines.lTileSize + CHUNK_SIZE;
 }
+
 
 void Map::fromChunkCoordinates( s2i& pos )
 {
@@ -173,8 +172,8 @@ void Map::fromMapCoordinates( s2i& coord )
 
 MapChunk* Map::createChunk( signed int x, signed int y )
 {
-	MapChunk* chunk;
-	ChunkListIter tit;
+	MapChunk* chunk = NULL;
+	/*ChunkListIter tit;
 	tit = getChunkIt( x, y );
 	if( tit != chunkVec.end() ){
 		if( (*tit)->pos.x == x && (*tit)->pos.y == y )
@@ -184,6 +183,7 @@ MapChunk* Map::createChunk( signed int x, signed int y )
 	chunk = new MapChunk( x, y );
 	chunkVec.insert( tit, chunk );
 	Updated = true;
+	*/
 	return chunk;
 }
 
@@ -199,12 +199,13 @@ void Map::deleteChunk( MapChunk* chunk )
 
 void Map::deleteChunk( signed int x, signed int y )
 {
-	ChunkListIter tit;
+	/*ChunkListIter tit;
 	tit = getChunkIt(x, y);
 	if( (*tit)->pos.x == x && (*tit)->pos.y == y ){
 		deleteChunk( *tit );
 		chunkVec.erase( tit );
 	}
+	*/
 }
 
 void Map::deleteTile( MapTile* tile )
@@ -231,6 +232,7 @@ MapTile* Map::getTile( signed int x, signed int y )
 	return NULL;
 }
 
+/*
 ChunkListIter Map::getChunkIt( signed int x, signed int y )
 {
 	int first;
@@ -307,6 +309,7 @@ ChunkListIter Map::getChunkXIt( signed int x )
 
 	return begin;
 }
+*/
 
 void Map::createHTilesLine( signed int startx, signed int starty, int number )
 {
@@ -336,22 +339,24 @@ void Map::deleteVTilesLine( signed int startx, signed int starty, int number )
 	}
 }
 
-void Map::createChunksRectangle( signed int startx, signed int starty, int numberx, int numbery )
+void Map::createChunksRectangle( const s2i& pos, const s2i& count )
 {
-	for( int i = 0; i < numbery; ++i ){
-		createHTilesLine( startx, starty + i , numberx );
+	for( int i = 0; i < count.y; ++i ){
+		createHTilesLine( pos.x, pos.y + i , count.x );
 	}
 }
 
-void Map::deleteChunksRectangle( signed int startx, signed int starty, int numberx, int numbery )
+void Map::deleteChunksRectangle( const s2i& pos, const s2i& count )
 {
-	for( int i = 0; i < numberx; ++i ){
-		deleteVTilesLine( startx - i, starty - i, numbery );
+	for( int i = 0; i < count.x; ++i ){
+		deleteVTilesLine( pos.x - i, pos.y - i, count.y );
 	}
 }
+
 
 void Map::clear( )
 {
+	/*
 	int cx, cy, ytop;
 	if( chunkVec.empty() )
 		return;
@@ -382,6 +387,7 @@ void Map::clear( )
 		}
 	}
 	Updated = false;
+	*/
 }
 
 
@@ -390,19 +396,17 @@ void Map::onDraw( )
 	if( Updated ){
 		//TODO: cleaning in thread
 		clear();
-		/*char d[3];
-		snprintf(d, 3, "%d\n", Tilesvec.size());
-		debug(0, d);*/
 		Updated = false;
 	}
-	int cx, cy;
-	cx = static_cast<int>(Camera::getX()) - 64;
-	cy = static_cast<int>(Camera::getY()) - 64;
-	toChunkCoordinates( cx, cy );
-	if( posX != cx || posY != cy ){
-		createChunksRectangle( cx, cy, ChunkManager.screen.x, ChunkManager.screen.y );
-		posX = (float)cx;
-		posY = (float)cy;
+	s3f cam_pos = Camera::position();
+	//int cx, cy;
+	//cx = static_cast<int>(Camera::getX()) - 64;
+	//cy = static_cast<int>(Camera::getY()) - 64;
+	s2i chunk_pos( cam_pos.x, cam_pos.y );
+	toChunkCoordinates( chunk_pos );
+	if( position.x != cam_pos.x || position.y != cam_pos.y ){
+		createChunksRectangle( chunk_pos, ChunkManager::get_count() );
+		position = cam_pos;
 	}
 }
 

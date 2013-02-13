@@ -37,7 +37,7 @@ SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp prot
 		  api.cpp $(addprefix $(SCRIPTSAPIDIR), $(SCRIPTSAPI))
 WIDGETS = Widget.cpp WidgetText.cpp WidgetBar.cpp
 INTERFACE = Interface.cpp $(addprefix $(WIDGETSDIR), $(WIDGETS))
-MAP = Tiles.cpp Region.cpp Map.cpp
+MAP = Tiles.cpp Chunk.cpp Region.cpp Map.cpp
 3RDPARTY = CUData.cpp CUDataUser.cpp CUDataTemplates.cpp LuaPusher.cpp timer/TimerManager.cpp \
 		   $(addprefix objTester/, list.cpp obj_parser.cpp string_extra.cpp)
 

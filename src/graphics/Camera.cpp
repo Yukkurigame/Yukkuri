@@ -26,8 +26,6 @@ namespace Camera {
 		glm::mat4x4 projection;
 		glm::mat4x4 view;
 		glm::mat4x4 model;
-		//glm::mat4x4 model_view;
-		//glm::vec3 cam_translation;
 
 		glm::mat4x4 mvp;
 		glm::mat4x4 movp;
@@ -40,7 +38,6 @@ namespace Camera {
 				cam_view(src->cam_view), cam_position(src->cam_position),
 				cam_offset(src->cam_offset), projection(src->projection), view(src->view),
 				model(src->model), mvp(src->mvp) {}
-				//cam_translation(src->cam_translation)
 
 	};
 
@@ -53,7 +50,6 @@ namespace Camera {
 		int in_M;
 		int in_V;
 		int in_P;
-		//int in_Offset;
 	} camera_shaders;
 
 	inline void update_viewport( )
@@ -85,7 +81,6 @@ namespace Camera {
 		UniformsManager::pass_data( camera_shaders.in_M, GLM_PTR(state->view) );
 		UniformsManager::pass_data( camera_shaders.in_V, GLM_PTR(state->model) );
 		UniformsManager::pass_data( camera_shaders.in_P, GLM_PTR(state->projection) );
-		//UniformsManager::pass_data( camera_shaders.in_Offset, GLM_PTR(state->cam_translation) );
 	}
 }
 
@@ -102,7 +97,6 @@ void Camera::init( )
 	REG_UNIFORM( in_M, GL_FLOAT_MAT4 )
 	REG_UNIFORM( in_V, GL_FLOAT_MAT4 )
 	REG_UNIFORM( in_P, GL_FLOAT_MAT4 )
-	//camera_shaders.in_Offset = UniformsManager::register_uniform( "in_Offset", GL_FLOAT_VEC3 );
 }
 
 #undef REG_UNIFORM
@@ -157,26 +151,6 @@ void Camera::pop_state( )
 }
 
 
-/*
-const float* Camera::mvp()
-{
-	if( !states.head )
-		return NULL;
-
-	CameraState* state = states.head->data;
-	return GLM_PTR(state->mvp);
-}
-
-const float* Camera::offset( )
-{
-	if( !states.head )
-		return NULL;
-	CameraState* state = states.head->data;
-	return GLM_PTR(state->cam_offset);
-}
-*/
-
-
 void Camera::update( )
 {
 	if( !states.head )
@@ -189,9 +163,7 @@ void Camera::update( )
 					state->cam_position.y + (*state->TargetY), 0);
 		}
 	}
-	//state->cam_translation = state->cam_position + state->cam_offset;
 	glm::mat4 model = glm::translate( state->model, state->cam_position + state->cam_offset );
-	//glm::mat4 omodel = state->model; // glm::translate( state->model, state->cam_offset );
 
 	state->mvp = state->projection * state->view * model;
 	state->mp = state->projection * model;
@@ -269,7 +241,6 @@ void Camera::ChangeMode( enum ctMode mode )
 		case ctmCenter:
 			state->cam_offset.x = state->cam_view.width / 2;
 			state->cam_offset.y = state->cam_view.height / 2;
-			//state->cam_offset.x = state->cam_offset.y = 0;
 			break;
 		case ctmNormal:
 			state->cam_offset.x = state->cam_offset.y = 0;

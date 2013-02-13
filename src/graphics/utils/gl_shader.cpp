@@ -318,6 +318,7 @@ void Shaders::init( )
 		++index;
 		flag <<= 1;
 		sprintf( buf, "shadermacro_%d", flag );
+		macro_names[index] = NULL;
 		cfg->getValue( "name", buf, macro_names[index] );
 	}
 

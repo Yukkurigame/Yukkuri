@@ -1,7 +1,8 @@
 
 #include <cstdlib>
 
-#include "ElasticBox.h"
+#include "graphics/utils/ElasticBox.h"
+#include "utils/misc.h"
 #include "debug.h"
 
 using namespace Debug;
@@ -138,17 +139,6 @@ void ElasticBox::Resize( int x, int y, int width, int height )
 	this->Height = height;
 	if (children != NULL)
 		AdjustChildren();
-}
-
-namespace {
-//FIXME: triplicate
-inline int next_p2( int a )
-{
-	int rval=2;
-	while( rval < a ) rval <<= 1;
-	return rval;
-}
-
 }
 
 ElasticRectPODBox::ElasticRectPODBox( int mSize )

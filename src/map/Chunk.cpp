@@ -6,6 +6,16 @@
  */
 
 #include "map/Chunk.h"
+#include "map/Map.h"
+#include "utils/misc.h"
+
+#include "graphics/Render.h"
+#include "graphics/render/Atlas.h"
+#include "graphics/render/GLTextures.h"
+#include "graphics/render/GLHelpers.h"
+#include "graphics/render/Textures.h"
+#include "graphics/utils/ElasticBox.h"
+
 #include "config.h"
 #include "debug.h"
 
@@ -32,7 +42,7 @@ namespace ChunkManager {
 
 MapChunk::MapChunk( signed int x, signed int y )
 {
-	/*tiles = NULL;
+	tiles = NULL;
 	sprite = NULL;
 	pos.x = realPos.x = x;
 	pos.y = realPos.y = y;
@@ -41,17 +51,18 @@ MapChunk::MapChunk( signed int x, signed int y )
 	int picture = ChunkManager::get_space( atlasPos );
 	if( picture < 0 )
 		return;
+	int count = ChunkManager::chunkTilesCount;
 	sprite = RenderManager::CreateGLSprite( (float)realPos.x, (float)realPos.y, 0,
-			ChunkManager::chunkSize.x, ChunkManager::chunkSize.y, ChunkManager::texture, picture );
-	tiles = (MapTile*)malloc( (unsigned)sizeof(MapTile) * ChunkManager::chunkTilesCount );
+			ChunkManager::chunk_size.x, ChunkManager::chunk_size.y, ChunkManager::texture, picture );
+	tiles = (MapTile*)malloc( (unsigned)sizeof(MapTile) * count );
 	unsigned int row = 0;
 	unsigned int col = 0;
-	Sprite* sprites = new Sprite[ ChunkManager::chunkTilesCount ];
+	Sprite* sprites = new Sprite[count];
 	list< Sprite* > sprite_list;
-	for( int tile = ChunkManager::chunkTilesCount - 1; tile >= 0; --tile ){
+	for( int tile = count - 1; tile >= 0; --tile ){
 		MapTile& t = tiles[tile];
-		int tx = realPos.x + col * conf.mapTileSize + ( row % 2 ? (conf.mapTileSize >> 1) : 0 );
-		int ty = realPos.y + row * conf.mapTileSize - row * ( 3 * (conf.mapTileSize >> 2) );
+		int tx = realPos.x + col * conf.mapTileSize; // + ( row % 2 ? (conf.mapTileSize >> 1) : 0 );
+		int ty = realPos.y + row * conf.mapTileSize; // - row * ( 3 * (conf.mapTileSize >> 2) );
 		Map::toMapCoordinates( &tx, &ty );
 		t.create( tx, ty );
 
@@ -60,38 +71,36 @@ MapChunk::MapChunk( signed int x, signed int y )
 		s->texid = t.Type->texture;
 		TextureInfo* tex = Textures::get_pointer( s->texid );
 		s->textures.push_back( tex->atlas );
+		s->brush.init( "mesh_quad" );
 		s->addNormalMap( tex->normals );
 		s->setPosition(
-				(float)( col * conf.mapTileSize + ( row % 2 ? (conf.mapTileSize >> 1) : 0 ) ),
-				(float)( row * conf.mapTileSize - row * ( 3 * (conf.mapTileSize >> 2) ) ) );
+				(float)( col * conf.mapTileSize /* + ( row % 2 ? (conf.mapTileSize >> 1) : 0 ) */ ),
+				(float)( row * conf.mapTileSize /*- row * ( 3 * (conf.mapTileSize >> 2) ) */ ) );
 		s->setPicture( t.Type->picture );
-		s->resize( (float)conf.mapTileSize, 0, (float)conf.mapTileSize );
+		s->resize( (float)conf.mapTileSize, (float)conf.mapTileSize, 0 );
 		if( ++col >= side ){
 			col = 0;
 			row++;
 		}
 	}
 	Texture tex;
-	tex.w = ChunkManager::chunkSize.x;
-	tex.h = ChunkManager::chunkSize.y;
+	tex.w = ChunkManager::chunk_size.x;
+	tex.h = ChunkManager::chunk_size.y;
 	tex.tex = 0;
-	GLTextures::draw( &tex.tex, ChunkManager::chunkSize.x, ChunkManager::chunkSize.y,
-						&sprite_list, true );
+	GLTextures::draw( &tex.tex, tex.w, tex.h, &sprite_list, true );
 	GLHelpers::UpdateTexture( ChunkManager::atlas, &tex, (int)atlasPos.x, (int)atlasPos.y );
 	delete[] sprites;
-	*/
 }
 
 
 MapChunk::~MapChunk()
 {
-	/*if( sprite ){
+	if( sprite ){
 		ChunkManager::return_space( sprite->picture );
 		RenderManager::FreeGLSprite( sprite );
 	}
 	if( tiles )
 		free( tiles );
-	*/
 }
 
 
@@ -99,17 +108,19 @@ MapChunk::~MapChunk()
 void ChunkManager::init(){
 	atlas = 0;
 	// Get pow2 tile size
-	int lTileSize = floor( log(conf.mapTileSize) * M_LOG2E ); // - 1;
+	tile_size_p2 = floor( log(conf.mapTileSize) * M_LOG2E );
 	// Size of one chunk
-
+	chunk_size.x = conf.mapTileSize << CHUNK_SIZE;
+	chunk_size.y = conf.mapTileSize << CHUNK_SIZE;
 
 	// 0.5 of tile for second row offset
 	//chunk_size.x = (conf.mapTileSize << CHUNK_SIZE) + (conf.mapTileSize >> 1);
 	// tile y is half of x; Each odd row located between two another.
 	//chunk_size.y = ( conf.mapTileSize << (CHUNK_SIZE - 1 ) ) + (conf.mapTileSize >> 1);
+
 	// Calculate count of chunks in the screen
-	screen.x = conf.video.windowWidth >> ( lTileSize + CHUNK_SIZE );
-	screen.y = conf.video.windowHeight >> ( lTileSize + CHUNK_SIZE - 1 );
+	screen.x = conf.video.windowWidth >> ( tile_size_p2 + CHUNK_SIZE );
+	screen.y = conf.video.windowHeight >> ( tile_size_p2 + CHUNK_SIZE - 1 );
 	// Tiles in chunk: two interpenetrative girds of CHUNK_SIZE^2 tiles.
 	chunkTilesCount = 1 << ( CHUNK_SIZE + CHUNK_SIZE + 1);
 	// calculate size of atlas. CHUNK_SIZE is additional places here
@@ -139,6 +150,11 @@ void ChunkManager::init(){
 	texture = Textures::push( &tp, atlas, 0 );
 }
 
+
+const s2i& ChunkManager::get_count( )
+{
+	return screen;
+}
 
 
 // You must call this for request a new free space, not only checking for

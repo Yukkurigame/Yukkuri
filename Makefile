@@ -64,7 +64,7 @@ UNICSOURCES = $(addprefix $(COREDIR), game.cpp graphics.cpp input.cpp)
 OBJS = $(addprefix $(OBJDIR), $(UNICSOURCES:.cpp=.o)) $(OBJECTS)
 
 UNIQHEADERS = $(addsuffix .h, \
-	 	$(SCRIPTSDIR)LuaScriptConfig $(UNITSDIR)YOBA $(MAPDIR)Waypoint \
+	 	$(SCRIPTSDIR)LuaScriptConfig $(UNITSDIR)YOBA $(MAPDIR)Waypoint $(UTILSDIR)misc \
 		$(addprefix $(3RDPARTYDIR), TypeList \
 			$(addprefix timer/, InternalTimerEvent InternalTimerEvent TimerEvent \
 			ITimerEventPerformer )) \

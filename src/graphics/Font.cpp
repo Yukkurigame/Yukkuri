@@ -4,10 +4,12 @@
  *  Created on: 29.06.2010
  */
 
-#include "Font.h"
-#include "Render.h"
+#include "graphics/Font.h"
+#include "graphics/Render.h"
 #include "graphics/render/Atlas.h"
 #include "graphics/render/Textures.h"
+
+#include "utils/misc.h"
 
 #include "safestring.h"
 #include "debug.h"
@@ -23,13 +25,6 @@ namespace {
 	bool ftLoaded = false;
 
 	int lastLine = 0;
-
-	inline int next_p2( int a )
-	{
-		int rval=2;
-		while( rval < a ) rval <<= 1;
-		return rval;
-	}
 
 	///Create a display list coresponding to the give character.
 	void makeChar( FT_Face face, unsigned int ch, Char* letter )

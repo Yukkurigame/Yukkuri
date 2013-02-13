@@ -13,14 +13,6 @@ namespace {
 
 	unsigned int TilesCount = 0;
 
-	//FIXME: dublicate
-	inline int next_p2( int a )
-	{
-		int rval=2;
-		while( rval < a ) rval <<= 1;
-		return rval;
-	}
-
 }
 
 

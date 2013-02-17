@@ -31,9 +31,13 @@ struct MapChunk
 
 namespace ChunkManager {
 
-	static int tile_size_p2;
-
 	void init();
+
+	void to_coordinates( s2i& pos );
+	void from_coordinates( s2i& pos );
+
+	int size_p2( );
+
 	const s2i& get_count( );
 	signed int get_space( s2f& pos );
 	void return_space( unsigned int p );

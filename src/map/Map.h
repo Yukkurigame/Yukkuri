@@ -45,9 +45,6 @@ namespace Map
 	void setActive( );
 	void clearActive( );
 
-	void toChunkCoordinates( s2i& pos );
-	void fromChunkCoordinates( s2i& pos );
-
 	void toMapCoordinates( int* x, int* y);
 	void fromMapCoordinates( int* x, int* y);
 

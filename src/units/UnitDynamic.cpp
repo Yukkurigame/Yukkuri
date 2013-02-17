@@ -93,7 +93,7 @@ void UnitDynamic::applyForce( const int& dt )
 	cpFloat add = (0.5 * abs(force.x) * abs(force.y));
 	// Max velocity
 	cpVect mvel = cpvmult(
-		cpv(1.0 - add, (1.0 - add) / 2),
+		cpv(1.0 - add, 1.0 - add),
 		//FIXME: Magic value must be function of time delta
 		(Char.chars.speed / (dt * dt * 20) ) * cpfclamp(Char.state.fed / 100.0, 0.1, 1.0)
 	);

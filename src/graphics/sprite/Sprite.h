@@ -16,8 +16,8 @@
 
 struct Sprite
 {
-	unsigned int texid;
-	unsigned int picture;
+	UINT texid;
+	UINT picture;
 	list< GLuint > textures; // All textures uses single coordinates
 	UINT material;
 	unsigned int flags; // 1 - visible

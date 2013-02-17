@@ -36,7 +36,7 @@ namespace ChunkManager {
 	GLuint atlas;
 	s2i screen;
 	unsigned int texture;
-
+	int tile_size_p2;
 }
 
 
@@ -46,17 +46,72 @@ MapChunk::MapChunk( signed int x, signed int y )
 	sprite = NULL;
 	pos.x = realPos.x = x;
 	pos.y = realPos.y = y;
-	Map::fromChunkCoordinates( realPos );
+	ChunkManager::from_coordinates( realPos );
 	unsigned int side = 1 << CHUNK_SIZE;
-	int picture = ChunkManager::get_space( atlasPos );
-	if( picture < 0 )
-		return;
+	//int picture = ChunkManager::get_space( atlasPos );
+	//if( picture < 0 )
+		//return;
 	int count = ChunkManager::chunkTilesCount;
 	sprite = RenderManager::CreateGLSprite( (float)realPos.x, (float)realPos.y, 0,
-			ChunkManager::chunk_size.x, ChunkManager::chunk_size.y, ChunkManager::texture, picture );
+			ChunkManager::chunk_size.x, ChunkManager::chunk_size.y );
+	sprite->clearFaced();
 	tiles = (MapTile*)malloc( (unsigned)sizeof(MapTile) * count );
 	unsigned int row = 0;
 	unsigned int col = 0;
+
+	GLBrush& brush = sprite->brush;
+	brush.init(-1);
+
+	// Two triangles per tile
+	int vx_tiles = 3 * 2;
+	int vx_count = count * vx_tiles;
+	brush.resize_verticles( vx_count );
+	brush.indices_count = 0;
+	brush.indices_list = (UINT*)malloc( sizeof(UINT) * vx_count );
+
+	VertexV2FT2FC4UI* arr = brush.points();
+	for( int tile = 0; tile < count; ++tile ){
+		MapTile& t = tiles[tile];
+		int tx = realPos.x + col * conf.mapTileSize; // + ( row % 2 ? (conf.mapTileSize >> 1) : 0 );
+		int ty = realPos.y + row * conf.mapTileSize; // - row * ( 3 * (conf.mapTileSize >> 2) );
+		int ttx = tx;
+		int tty = ty;
+		Map::toMapCoordinates( &ttx, &tty );
+		t.create( ttx, tty );
+		s3f vc[6] = {
+			s3f(tx, ty, 0), s3f(tx + conf.mapTileSize, ty, 0),
+			s3f(tx + conf.mapTileSize, ty + conf.mapTileSize, 0),
+			s3f(tx + conf.mapTileSize, ty + conf.mapTileSize, 0),
+			s3f(tx, ty + conf.mapTileSize, 0), s3f(tx, ty, 0)
+		};
+		s2f tc[6] = {
+					s2f(0.0, 0.0), s2f(1.0, 0.0),
+					s2f(1.0, 1.0), s2f(1.0, 1.0),
+					s2f(0.0, 1.0), s2f(0.0, 0.0)
+		};
+		for( int i = 0; i < vx_tiles; ++i ){
+			int ti = i + tile * vx_tiles;
+			arr[ti].verticles = vc[i];
+			arr[ti].coordinates = tc[i];
+			arr[ti].color = s4ub( rand() % 256, rand() % 256, rand() % 256, 255 );
+			brush.indices_list[brush.indices_count++] = ti + brush.point_index;
+		}
+
+		if( ++col >= side ){
+			col = 0;
+			row++;
+		}
+	}
+
+	/*
+	list< VBOStructureHandle* > vbostructure;
+	VBOStructureHandle* v = new VBOStructureHandle( brush.method, NULL,
+									GLMaterialManager::get( glsLight ) );
+	vbostructure.push_back( v );
+	v->set_indexes( brush.indices_list, brush.indices_count );
+
+
+
 	Sprite* sprites = new Sprite[count];
 	list< Sprite* > sprite_list;
 	for( int tile = count - 1; tile >= 0; --tile ){
@@ -74,8 +129,8 @@ MapChunk::MapChunk( signed int x, signed int y )
 		s->brush.init( "mesh_quad" );
 		s->addNormalMap( tex->normals );
 		s->setPosition(
-				(float)( col * conf.mapTileSize /* + ( row % 2 ? (conf.mapTileSize >> 1) : 0 ) */ ),
-				(float)( row * conf.mapTileSize /*- row * ( 3 * (conf.mapTileSize >> 2) ) */ ) );
+				(float)( col * conf.mapTileSize ), // + ( row % 2 ? (conf.mapTileSize >> 1) : 0 ) ),
+				(float)( row * conf.mapTileSize ) ); //- row * ( 3 * (conf.mapTileSize >> 2) ) ) );
 		s->setPicture( t.Type->picture );
 		s->resize( (float)conf.mapTileSize, (float)conf.mapTileSize, 0 );
 		if( ++col >= side ){
@@ -90,6 +145,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 	GLTextures::draw( &tex.tex, tex.w, tex.h, &sprite_list, true );
 	GLHelpers::UpdateTexture( ChunkManager::atlas, &tex, (int)atlasPos.x, (int)atlasPos.y );
 	delete[] sprites;
+	*/
 }
 
 
@@ -102,7 +158,6 @@ MapChunk::~MapChunk()
 	if( tiles )
 		free( tiles );
 }
-
 
 
 void ChunkManager::init(){
@@ -119,10 +174,10 @@ void ChunkManager::init(){
 	//chunk_size.y = ( conf.mapTileSize << (CHUNK_SIZE - 1 ) ) + (conf.mapTileSize >> 1);
 
 	// Calculate count of chunks in the screen
-	screen.x = conf.video.windowWidth >> ( tile_size_p2 + CHUNK_SIZE );
+	screen.x = conf.video.windowWidth >> ( tile_size_p2 + CHUNK_SIZE - 1 );
 	screen.y = conf.video.windowHeight >> ( tile_size_p2 + CHUNK_SIZE - 1 );
 	// Tiles in chunk: two interpenetrative girds of CHUNK_SIZE^2 tiles.
-	chunkTilesCount = 1 << ( CHUNK_SIZE + CHUNK_SIZE + 1);
+	chunkTilesCount = 1 << ( CHUNK_SIZE + CHUNK_SIZE );
 	// calculate size of atlas. CHUNK_SIZE is additional places here
 	chunksCount = next_p2(screen.x * screen.y + CHUNK_SIZE);
 	state = 0; // No places occupied
@@ -148,6 +203,28 @@ void ChunkManager::init(){
 	}
 	GLTextures::generate( &atlas, box.Width, box.Height );
 	texture = Textures::push( &tp, atlas, 0 );
+}
+
+
+void ChunkManager::to_coordinates( s2i& pos )
+{
+	//FIXME: Where 1 lost?
+	pos.x >>= tile_size_p2 + CHUNK_SIZE + 1;
+	pos.y >>= tile_size_p2 + CHUNK_SIZE + 1;
+}
+
+
+void ChunkManager::from_coordinates( s2i& pos )
+{
+	//FIXME: Where 1 lost?
+	pos.x <<= tile_size_p2 + CHUNK_SIZE + 1;
+	pos.y <<= tile_size_p2 + CHUNK_SIZE + 1;
+}
+
+
+int ChunkManager::size_p2( )
+{
+	return tile_size_p2;
 }
 
 

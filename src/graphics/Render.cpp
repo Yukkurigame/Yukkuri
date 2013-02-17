@@ -167,7 +167,7 @@ bool RenderManager::openglSetup( int wwidth, int wheight )
  * returns Sprite*
  */
 Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int height,
-				unsigned int texture_id, short centered )
+						unsigned int texture_id, short centered )
 {
 	Sprite* sprite = new Sprite( );
 	sprite->brush.init( "mesh_quad" );

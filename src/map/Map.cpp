@@ -117,40 +117,26 @@ void Map::clearActive()
 }
 
 
-void Map::toChunkCoordinates( s2i& pos )
-{
-	pos.x >>= ChunkManager::tile_size_p2 + CHUNK_SIZE + 1;
-	pos.y >>= ChunkManager::tile_size_p2 + CHUNK_SIZE;
-}
-
-
-void Map::fromChunkCoordinates( s2i& pos )
-{
-	pos.x <<= ChunkManager::tile_size_p2 + CHUNK_SIZE + 1;
-	pos.y <<= ChunkManager::tile_size_p2 + CHUNK_SIZE;
-}
-
-
 void Map::toMapCoordinates( int* mx, int* my )
 {
 	signed int x, y;
 	x = ( 2 * (*my) + (*mx) ) / 2;
 	y = ( 2 * (*my) - (*mx) ) / 2;
-	*mx = x >> ChunkManager::tile_size_p2;
-	*my = y >> ChunkManager::tile_size_p2;
+	*mx = x >> ChunkManager::size_p2();
+	*my = y >> ChunkManager::size_p2();
 }
 
 void Map::toMapCoordinates( s2i& coord )
 {
-	coord.x = ( ( 2 * coord.y + coord.x ) / 2 ) >> ChunkManager::tile_size_p2;
-	coord.y = ( ( 2 * coord.y - coord.x ) / 2 ) >> ChunkManager::tile_size_p2;
+	coord.x = ( ( 2 * coord.y + coord.x ) / 2 ) >> ChunkManager::size_p2();
+	coord.y = ( ( 2 * coord.y - coord.x ) / 2 ) >> ChunkManager::size_p2();
 }
 
 void Map::fromMapCoordinates( int* x, int* y )
 {
 	signed int mx, my;
-	*x <<= ChunkManager::tile_size_p2;
-	*y <<= ChunkManager::tile_size_p2;
+	*x <<= ChunkManager::size_p2();
+	*y <<= ChunkManager::size_p2();
 	mx = (*x) - (*y);
 	my = (*x) / 2 + (*y) / 2;
 	*x = mx;
@@ -161,8 +147,8 @@ void Map::fromMapCoordinates( int* x, int* y )
 void Map::fromMapCoordinates( s2i& coord )
 {
 	signed int mx;
-	coord.x <<= ChunkManager::tile_size_p2;
-	coord.y <<= ChunkManager::tile_size_p2;
+	coord.x <<= ChunkManager::size_p2();
+	coord.y <<= ChunkManager::size_p2();
 	mx = coord.x - coord.y;
 	coord.y = coord.x / 2 + coord.y / 2;
 	coord.x = mx;
@@ -178,6 +164,7 @@ MapChunk* Map::createChunk( signed int x, signed int y )
 		if( (*tit)->pos.x == x && (*tit)->pos.y == y )
 			return (*tit);
 	}
+	Debug::debug( Debug::NONE, "%d,%d\n", x, y );
 	//x, y
 	chunk = new MapChunk( x, y );
 	chunkVec.insert( tit, chunk );
@@ -258,9 +245,10 @@ ChunkListIter Map::get_chunk_iter( signed int x, signed int y )
 		if( chunkVec[last]->pos.x == x ){
 			//Next find y
 			first = last;
-			while( last < size && chunkVec[last]->pos.x == x ){
+			while( last <= size && chunkVec[last]->pos.x == x ){
 				last++; //All elements with such x
 			}
+
 			while( first < last ){
 				mid = first + ( last - first ) / 2;
 				if( y <= chunkVec[mid]->pos.y )
@@ -401,8 +389,10 @@ void Map::onDraw( )
 	//cx = static_cast<int>(Camera::getX()) - 64;
 	//cy = static_cast<int>(Camera::getY()) - 64;
 	s2i chunk_pos( cam_pos.x, cam_pos.y );
-	toChunkCoordinates( chunk_pos );
+	ChunkManager::to_coordinates( chunk_pos );
+	chunk_pos.y--;
 	if( position.x != chunk_pos.x || position.y != chunk_pos.y ){
+		Debug::debug(Debug::NONE, "%f:%f:%f\n", cam_pos.x, cam_pos.y, cam_pos.z );
 		createChunksRectangle( chunk_pos, ChunkManager::get_count() );
 		position = chunk_pos;
 	}

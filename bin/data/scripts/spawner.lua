@@ -7,8 +7,8 @@ function Spawner.new()
 	g = {}
 	setmetatable(g, Spawner)
 	g.items = {}
-	g.max_spawn = configs:get( 'max_spawn', 'config_general', 'config' )
-	g.max_edibles = configs:get( 'max_edibles', 'config_general', 'config' )
+	g.max_spawn = 0 -- configs:get( 'max_spawn', 'config_general', 'config' )
+	g.max_edibles = 0 -- configs:get( 'max_edibles', 'config_general', 'config' )
 	local conf_video = configs:get( 'video', 'config_general', 'config' )
 	g.width = conf_video['window_width']
 	g.halfWidth = g.width / 2

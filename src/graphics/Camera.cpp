@@ -25,7 +25,10 @@ namespace Camera {
 		glm::vec3 cam_offset;
 		glm::mat4x4 projection;
 		glm::mat4x4 view;
+		glm::mat4x4 view_inversed;
 		glm::mat4x4 model;
+
+		list< glm::vec4 > rotations;
 
 		glm::mat4x4 mvp;
 		glm::mat4x4 movp;
@@ -121,6 +124,7 @@ void Camera::push_state( const rect2f* view, const s2f* z )
 			view->y, view->y + view->height, z->x, z->y );
 			//v( -wwidth*2.0, wwidth*2.0, -wheight*2.0, wheight*2.0 );
 	state->view = glm::mat4x4(1.0);
+	state->view_inversed = glm::mat4x4(1.0);
 	state->model = glm::mat4x4(1.0);
 	states.push( state );
 	update_viewport( );
@@ -163,12 +167,18 @@ void Camera::update( )
 					state->cam_position.y + (*state->TargetY), 0);
 		}
 	}
-	glm::mat4 model = glm::translate( state->model, state->cam_position + state->cam_offset );
+	glm::mat4 model = glm::translate( state->model, state->cam_position - state->cam_offset );
+	glm::mat4 faced_model = state->view * model;
+	faced_model[0][0] = faced_model[1][1] = faced_model[2][2] = 1;
+	faced_model[0][1] = faced_model[0][2] = 0;
+	faced_model[1][0] = faced_model[1][2] = 0;
+	faced_model[2][0] = faced_model[2][1] = 0;
+
 
 	state->mvp = state->projection * state->view * model;
-	state->mp = state->projection * model;
+	state->mp = state->projection * faced_model;
 	state->movp = state->projection * state->view * state->model;
-	state->mop = state->projection * state->model;
+	state->mop = state->projection * state->model ;
 
 	pass_state( state );
 }
@@ -224,6 +234,13 @@ void Camera::Rotate( float angle, float x, float y, float z )
 		return;
 	CameraState* state = states.head->data;
 	state->view = glm::rotate(state->view, angle, glm::normalize(glm::vec3(x, y, z)));
+	glm::vec3 normals = -glm::normalize(glm::vec3(x, y, z));
+	state->rotations.push( glm::vec4( normals.x, normals.y, normals.z, angle ) );
+	state->view_inversed = glm::mat4x4(1.0);
+	ITER_LIST( glm::vec4, state->rotations ){
+		state->view_inversed = glm::rotate(state->view_inversed, it->data.w, glm::vec3(it->data));
+	}
+	//state->view_inversed = glm::rotate(state->view_inversed, angle, -glm::normalize(glm::vec3(x, y, z)));
 }
 
 
@@ -239,8 +256,8 @@ void Camera::ChangeMode( enum ctMode mode )
 	state->TargetMode = mode;
 	switch( mode ){
 		case ctmCenter:
-			state->cam_offset.x = state->cam_view.width / 2;
-			state->cam_offset.y = state->cam_view.height / 2;
+			state->cam_offset.x = - state->cam_view.width / 2;
+			state->cam_offset.y = - state->cam_view.height / 2;
 			break;
 		case ctmNormal:
 			state->cam_offset.x = state->cam_offset.y = 0;

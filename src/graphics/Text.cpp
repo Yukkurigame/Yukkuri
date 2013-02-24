@@ -116,7 +116,7 @@ void Text::setPosition( float x, float y, float z )
 Sprite* create_sprite( s3f& position, Char* c, font_data* font )
 {
 	Sprite* s = RenderManager::CreateGLSprite( position.x, position.y, position.z,
-						font->cellWidth, font->cellHeight, font->texture, c->pic );
+						font->cellWidth, font->cellHeight, -1, font->texture, c->pic );
 	s->clearLight();
 	return s;
 }

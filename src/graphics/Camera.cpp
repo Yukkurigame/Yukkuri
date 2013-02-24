@@ -164,7 +164,17 @@ void Camera::update( )
 					state->cam_position.y + (*state->TargetY), 0);
 		}
 	}
-	glm::mat4 model = glm::translate( state->model, state->cam_position - state->cam_offset );
+
+	glm::vec3 p = glm::unProject( glm::vec3(state->cam_offset.x, state->cam_offset.y, state->cam_offset.z),
+			state->view, state->projection,
+			glm::vec4(state->cam_view.x, state->cam_view.y, state->cam_view.width, state->cam_view.height) );
+	//p.x = -p.x;
+	//p.y = -p.y;
+	p.z = 0;
+
+	printf("%f:%f\n", p.x, p.y);
+
+	glm::mat4 model = glm::translate( state->model, state->cam_position + p );
 	state->mvp = state->projection * state->view * model;
 	state->movp = state->projection * state->view * state->model;
 
@@ -243,8 +253,8 @@ void Camera::ChangeMode( enum ctMode mode )
 	state->TargetMode = mode;
 	switch( mode ){
 		case ctmCenter:
-			state->cam_offset.x = 0; // - state->cam_view.width / 2;
-			state->cam_offset.y = 0; // - state->cam_view.height / 2;
+			state->cam_offset.x = 0;// state->cam_view.width / 2;
+			state->cam_offset.y = 0;// -state->cam_view.height / 2;
 			break;
 		case ctmNormal:
 			state->cam_offset.x = state->cam_offset.y = 0;

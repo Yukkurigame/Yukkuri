@@ -10,6 +10,7 @@
 #include "utils/misc.h"
 
 #include "graphics/Render.h"
+#include "graphics/sprite/Mesh.h"
 #include "graphics/render/Atlas.h"
 #include "graphics/render/GLTextures.h"
 #include "graphics/render/GLHelpers.h"
@@ -52,9 +53,9 @@ MapChunk::MapChunk( signed int x, signed int y )
 	//if( picture < 0 )
 		//return;
 	int count = ChunkManager::chunkTilesCount;
+	int mesh = MeshManager::get("mesh_terrain");
 	sprite = RenderManager::CreateGLSprite( (float)realPos.x, (float)realPos.y, 0,
-			ChunkManager::chunk_size.x, ChunkManager::chunk_size.y );
-	sprite->brush.clearFaced();
+								ChunkManager::chunk_size.x, ChunkManager::chunk_size.y, mesh );
 	tiles = (MapTile*)malloc( (unsigned)sizeof(MapTile) * count );
 	unsigned int row = 0;
 	unsigned int col = 0;
@@ -93,7 +94,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 			int ti = i + tile * vx_tiles;
 			arr[ti].verticles = vc[i];
 			arr[ti].coordinates = tc[i];
-			arr[ti].color = s4ub( rand() % 256, rand() % 256, rand() % 256, 255 );
+			arr[ti].color = s4ub( ((int)vc[i].x/64) % 256, ((int)vc[i].y/64) % 256, ((int)vc[i].z) % 256, 255 );
 			brush.indices_list[brush.indices_count++] = ti + brush.point_index;
 		}
 

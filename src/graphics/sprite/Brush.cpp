@@ -77,14 +77,7 @@ void GLBrush::setCentered( )
 		vertex_points[i].z -= dist.z / 2.0f;
 	}
 
-	/*VertexV2FT2FC4UI* arr = points();
-	s3f dist = size( arr, points_count );
-	for( UINT i = 0; i < points_count; ++i ){
-		arr[i].verticles.x -= dist.x / 2.0f;
-		arr[i].verticles.y -= dist.y / 2.0f;
-		arr[i].verticles.z -= dist.z / 2.0f;
-	}*/
-
+	update_points();
 	flags |= 1;
 }
 
@@ -100,14 +93,6 @@ void GLBrush::clearCentered( )
 		vertex_points[i].z += dist.z / 2.0f;
 	}
 
-	/*VertexV2FT2FC4UI* arr = points();
-	s3f dist = size( arr, points_count );
-	for( UINT i = 0; i < points_count; ++i ){
-		arr[i].verticles.x += dist.x / 2.0f;
-		arr[i].verticles.y += dist.y / 2.0f;
-		arr[i].verticles.z += dist.z / 2.0f;
-	}
-	*/
 	update_points();
 	flags &= ~1;
 }
@@ -146,13 +131,6 @@ void GLBrush::scale( const s3f* scale )
 	}
 
 	update_points();
-	//VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
-	//for( UINT i = 0; i < points_count; ++i ){
-	//	s3f* v = &arr[i].verticles;
-	//	v->x = vertex_origin.x + (v->x - vertex_origin.x) * scale->x;
-	//	v->y = vertex_origin.y + (v->y - vertex_origin.y) * scale->y;
-	//	v->z = vertex_origin.z + (v->z - vertex_origin.z) * scale->z;
-	//}
 }
 
 
@@ -165,10 +143,6 @@ void GLBrush::move( float dx, float dy, float dz )
 	}
 
 	update_points();
-	//VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
-	//for( UINT i = 0; i < points_count; ++i ){
-	//	arr[i].verticles += delta;
-	//}
 }
 
 

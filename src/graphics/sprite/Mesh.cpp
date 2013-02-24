@@ -26,6 +26,7 @@ namespace  MeshManager {
 		GLuint type;
 		char* filename;
 		char* id;
+		bool flat;
 		obj_scene_data data;
 	};
 
@@ -48,6 +49,7 @@ void MeshManager::init( )
 		LUA_GET_VALUE( "id", m->id );
 		LUA_GET_VALUE( "file", m->filename );
 		LUA_GET_VALUE( "type", m->type );
+		LUA_GET_VALUE( "flat", m->flat );
 		cfg->pop( 1 );
 		free( it->data );
 
@@ -110,6 +112,9 @@ short MeshManager::load( GLBrush* brush )
 
 	if( m->type )
 		brush->method = m->type;
+
+	if( m->flat )
+		brush->setFaced();
 
 	load_brush( brush, &m->data );
 

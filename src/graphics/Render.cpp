@@ -158,8 +158,8 @@ bool RenderManager::openglSetup( int wwidth, int wheight )
 
 /* This function creating sprite structure with texture.
  * x, y, z - right top coordinates;
- * texX, texY - right top coordinates of texture rectangle;
  * width, height - width and height of sprite/texture rectangle;
+ * mesh_id - id of mesh to be used by brush
  * texture_id - texture id;
  * picture - number of picture in texture table;
  * mirrored - rotates the image on the x axis;
@@ -167,15 +167,19 @@ bool RenderManager::openglSetup( int wwidth, int wheight )
  * returns Sprite*
  */
 Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int height,
-						unsigned int texture_id, short centered )
+			int mesh_id, unsigned int texture_id, short centered )
 {
 	Sprite* sprite = new Sprite( );
-	sprite->brush.init( "mesh_quad" );
+
+	if( mesh_id < 0 )
+		sprite->brush.init( "mesh_quad" );
+	else
+		sprite->brush.init( mesh_id );
+
 	if( centered )
 		sprite->brush.setCentered();
 
 	sprite->texid = texture_id;
-	sprite->brush.setFaced();
 
 	TextureInfo* tex_info = Textures::get_pointer( texture_id );
 	if( !tex_info ){

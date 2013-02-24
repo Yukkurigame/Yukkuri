@@ -22,6 +22,7 @@ struct Sprite
 	UINT material;
 	unsigned int flags; // 1 - visible
 						// 2 - centered
+						// 4 - faced
 	//rect2f rect;
 	s3f size;
 	GLBrush brush;
@@ -30,12 +31,10 @@ struct Sprite
 	inline void setVisible()			{ flags |= 1; }
 	inline void clearVisible()			{ flags &= ~1; }
 
-	inline void setFixed( ){ CHANGE_MATERIAL_FLAG( material, add_flag, glsFixed ) }
-	inline void clearFixed( ){ CHANGE_MATERIAL_FLAG( material, clear_flag, glsFixed) }
+	inline void setFixed( ){ CHANGE_MATERIAL_FLAG( material, add_flag, glsFixed ); brush.setScreen(); }
+	inline void clearFixed( ){ CHANGE_MATERIAL_FLAG( material, clear_flag, glsFixed); brush.clearScreen(); }
 	inline void setLight( ){ CHANGE_MATERIAL_FLAG( material, add_flag, glsLight ) }
 	inline void clearLight( ){ CHANGE_MATERIAL_FLAG( material, clear_flag, glsLight ) }
-	inline void setFaced( ){ CHANGE_MATERIAL_FLAG( material, add_flag, glsFaced ) }
-	inline void clearFaced( ){ CHANGE_MATERIAL_FLAG( material, clear_flag, glsFaced ) }
 
 	inline void addNormalMap( GLuint map ){
 		textures.push_back( map );

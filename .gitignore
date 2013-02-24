@@ -2,6 +2,7 @@
 *~
 bin/*.trace
 bin/callgrind.out.*
+bin/screenshot*
 bin/gmon.out
 Yukkuri
 obj/

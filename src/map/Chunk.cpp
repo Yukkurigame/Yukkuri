@@ -54,7 +54,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 	int count = ChunkManager::chunkTilesCount;
 	sprite = RenderManager::CreateGLSprite( (float)realPos.x, (float)realPos.y, 0,
 			ChunkManager::chunk_size.x, ChunkManager::chunk_size.y );
-	sprite->clearFaced();
+	sprite->brush.clearFaced();
 	tiles = (MapTile*)malloc( (unsigned)sizeof(MapTile) * count );
 	unsigned int row = 0;
 	unsigned int col = 0;

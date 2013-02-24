@@ -67,13 +67,13 @@ void Scope::set( )
 		sprite->brush.resize_verticles( verts );
 		sprite->brush.set_color( color );
 
-		VertexV2FT2FC4UI* points = sprite->brush.points();
+		s3f* points = sprite->brush.vertex_points;
 		for( int i=0; i < verts; ++i ){
-			s3f* pv = &(points[i].verticles);
 			cpVect sv = cpPolyShapeGetVert( shape, i );
-			pv->x = sv.x;
-			pv->y = sv.y;
+			points[i].x = sv.x;
+			points[i].y = sv.y;
 		}
+		sprite->brush.update_points();
 	}
 	sprite->setVisible();
 }

@@ -178,7 +178,7 @@ void MeshManager::load_brush( GLBrush* brush, const obj_scene_data* data )
 			brush->indices_list[brush->indices_count] = vindex + brush->point_index;
 
 			obj_vector* v = data->vertex_list[vindex];
-			arr[vindex].verticles = s3f( v->e[0], v->e[1], v->e[2] );
+			brush->vertex_points[vindex] = arr[vindex].verticles = s3f( v->e[0], v->e[1], v->e[2] );
 			CHECK_MIN( vmin.x, v->e[0] )
 			CHECK_MIN( vmin.y, v->e[1] )
 			CHECK_MIN( vmin.z, v->e[2] )

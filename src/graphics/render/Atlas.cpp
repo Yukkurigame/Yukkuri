@@ -133,6 +133,7 @@ inline Sprite* sprite_from_proxy( const TextureProxy* t )
 	GLBrush* brush = &s->brush;
 	brush->init( "mesh_quad" );
 
+	// FIXME: no direct usage
 	VertexV2FT2FC4UI* pts = brush->points();
 	for( UINT i = 0; i < brush->points_count; ++i ){
 		s3f& vtx = pts[i].verticles;

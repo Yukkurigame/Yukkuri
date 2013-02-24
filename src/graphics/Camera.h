@@ -4,7 +4,7 @@
 #include "basic_types.h"
 
 class Unit;
-
+class Brush;
 
 enum ctMode {
 	ctmNormal = 0,	// TARGET_MODE_NORMAL
@@ -20,6 +20,8 @@ namespace Camera {
 	void push_state( const rect2f* view );
 	void push_state( );
 	void pop_state( );
+
+	float* inversed_rotation();
 
 	void update( );
 	s3f position( );

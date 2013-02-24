@@ -45,14 +45,11 @@ namespace Camera {
 	};
 
 	list< CameraState* > states;
+	list< Brush* > faced_brushes;
+
 	struct CameraShaders {
 		int in_MVP;
 		int in_MOVP;
-		int in_MP;
-		int in_MOP;
-		int in_M;
-		int in_V;
-		int in_P;
 	} camera_shaders;
 
 	inline void update_viewport( )
@@ -79,11 +76,6 @@ namespace Camera {
 	{
 		UniformsManager::pass_data( camera_shaders.in_MVP, GLM_PTR(state->mvp) );
 		UniformsManager::pass_data( camera_shaders.in_MOVP, GLM_PTR(state->movp) );
-		UniformsManager::pass_data( camera_shaders.in_MP, GLM_PTR(state->mp) );
-		UniformsManager::pass_data( camera_shaders.in_MOP, GLM_PTR(state->mop) );
-		UniformsManager::pass_data( camera_shaders.in_M, GLM_PTR(state->view) );
-		UniformsManager::pass_data( camera_shaders.in_V, GLM_PTR(state->model) );
-		UniformsManager::pass_data( camera_shaders.in_P, GLM_PTR(state->projection) );
 	}
 }
 
@@ -95,11 +87,6 @@ void Camera::init( )
 {
 	REG_UNIFORM( in_MVP, GL_FLOAT_MAT4 )
 	REG_UNIFORM( in_MOVP, GL_FLOAT_MAT4 )
-	REG_UNIFORM( in_MP, GL_FLOAT_MAT4 )
-	REG_UNIFORM( in_MOP, GL_FLOAT_MAT4 )
-	REG_UNIFORM( in_M, GL_FLOAT_MAT4 )
-	REG_UNIFORM( in_V, GL_FLOAT_MAT4 )
-	REG_UNIFORM( in_P, GL_FLOAT_MAT4 )
 }
 
 #undef REG_UNIFORM
@@ -155,6 +142,16 @@ void Camera::pop_state( )
 }
 
 
+
+float* Camera::inversed_rotation()
+{
+	if( !states.head )
+		return NULL;
+	return GLM_PTR(states.head->data->view_inversed);
+}
+
+
+
 void Camera::update( )
 {
 	if( !states.head )
@@ -168,17 +165,8 @@ void Camera::update( )
 		}
 	}
 	glm::mat4 model = glm::translate( state->model, state->cam_position - state->cam_offset );
-	glm::mat4 faced_model = state->view * model;
-	faced_model[0][0] = faced_model[1][1] = faced_model[2][2] = 1;
-	faced_model[0][1] = faced_model[0][2] = 0;
-	faced_model[1][0] = faced_model[1][2] = 0;
-	faced_model[2][0] = faced_model[2][1] = 0;
-
-
 	state->mvp = state->projection * state->view * model;
-	state->mp = state->projection * faced_model;
 	state->movp = state->projection * state->view * state->model;
-	state->mop = state->projection * state->model ;
 
 	pass_state( state );
 }
@@ -240,7 +228,6 @@ void Camera::Rotate( float angle, float x, float y, float z )
 	ITER_LIST( glm::vec4, state->rotations ){
 		state->view_inversed = glm::rotate(state->view_inversed, it->data.w, glm::vec3(it->data));
 	}
-	//state->view_inversed = glm::rotate(state->view_inversed, angle, -glm::normalize(glm::vec3(x, y, z)));
 }
 
 
@@ -256,8 +243,8 @@ void Camera::ChangeMode( enum ctMode mode )
 	state->TargetMode = mode;
 	switch( mode ){
 		case ctmCenter:
-			state->cam_offset.x = - state->cam_view.width / 2;
-			state->cam_offset.y = - state->cam_view.height / 2;
+			state->cam_offset.x = 0; // - state->cam_view.width / 2;
+			state->cam_offset.y = 0; // - state->cam_view.height / 2;
 			break;
 		case ctmNormal:
 			state->cam_offset.x = state->cam_offset.y = 0;

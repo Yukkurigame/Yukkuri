@@ -175,7 +175,7 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 		sprite->brush.setCentered();
 
 	sprite->texid = texture_id;
-	sprite->setFaced();
+	sprite->brush.setFaced();
 
 	TextureInfo* tex_info = Textures::get_pointer( texture_id );
 	if( !tex_info ){

@@ -16,6 +16,7 @@ struct GLBrush
 	int mesh;
 	GLuint method;
 	s3f vertex_origin;
+	s3f* vertex_points;
 	UINT flags;
 	UINT points_count;
 	UINT point_index;
@@ -34,6 +35,15 @@ struct GLBrush
 	void setCentered( );
 	void clearCentered( );
 
+	inline unsigned char isFaced()	{ return flags & 2; }
+	inline void setFaced( )			{ flags |= 2; }
+	inline void clearFaced( )		{ flags &= ~2; }
+
+	// Screen coordinate system
+	inline unsigned char isScreen()	{ return flags & 4; }
+	inline void setScreen( )			{ flags |= 4; }
+	inline void clearScreen( )		{ flags &= ~4; }
+
 	void resize_verticles( int size );
 	void scale( const s3f* scale );
 	void move( float dx, float dy, float dz );
@@ -44,6 +54,7 @@ struct GLBrush
 		move( x - vertex_origin.x, y - vertex_origin.y, z - vertex_origin.z );
 	}
 
+	void update_points( );
 	VertexV2FT2FC4UI* points(  );
 };
 

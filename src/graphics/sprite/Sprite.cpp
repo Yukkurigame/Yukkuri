@@ -12,6 +12,20 @@
 #include "graphics/render/Textures.h"
 #include "graphics/utils/gl_shader.h"
 
+/*
+void Sprite::setFaced( )
+{
+	flags |= 4;
+	CHANGE_MATERIAL_FLAG( material, add_flag, glsFaced )
+}
+
+void Sprite::clearFaced( )
+{
+	flags &= ~4;
+	CHANGE_MATERIAL_FLAG( material, clear_flag, glsFaced )
+}
+*/
+
 
 void Sprite::setPicture( int pic )
 {

@@ -71,10 +71,12 @@ void GLBrush::setCentered( )
 	if( isCentered() )
 		return;
 	s3f dist = size( vertex_points, points_count );
+	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
 	for( UINT i = 0; i < points_count; ++i ){
-		vertex_points[i].x -= dist.x / 2.0f;
-		vertex_points[i].y -= dist.y / 2.0f;
-		vertex_points[i].z -= dist.z / 2.0f;
+		s3f* v = isFaced() ? &vertex_points[i] : &arr[i].verticles;
+		v->x -= dist.x / 2.0f;
+		v->y -= dist.y / 2.0f;
+		v->z -= dist.z / 2.0f;
 	}
 
 	update_points();
@@ -87,10 +89,12 @@ void GLBrush::clearCentered( )
 		return;
 
 	s3f dist = size( vertex_points, points_count );
+	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
 	for( UINT i = 0; i < points_count; ++i ){
-		vertex_points[i].x += dist.x / 2.0f;
-		vertex_points[i].y += dist.y / 2.0f;
-		vertex_points[i].z += dist.z / 2.0f;
+		s3f* v = isFaced() ? &vertex_points[i] : &arr[i].verticles;
+		v->x += dist.x / 2.0f;
+		v->y += dist.y / 2.0f;
+		v->z += dist.z / 2.0f;
 	}
 
 	update_points();
@@ -123,8 +127,9 @@ void GLBrush::scale( const s3f* scale )
 {
 	if( points_count < 2 )
 		return;
+	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
 	for( UINT i = 0; i < points_count; ++i ){
-		s3f* v = &vertex_points[i];
+		s3f* v = isFaced() ? &vertex_points[i] : &arr[i].verticles;
 		v->x = vertex_origin.x + (v->x - vertex_origin.x) * scale->x;
 		v->y = vertex_origin.y + (v->y - vertex_origin.y) * scale->y;
 		v->z = vertex_origin.z + (v->z - vertex_origin.z) * scale->z;
@@ -138,8 +143,12 @@ void GLBrush::move( float dx, float dy, float dz )
 {
 	s3f delta( dx, dy, dz );
 	vertex_origin += delta;
+	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
 	for( UINT i = 0; i < points_count; ++i ){
-		vertex_points[i] += delta;
+		s3f* v = isFaced() ? &vertex_points[i] : &arr[i].verticles;
+		v->x += delta.x;
+		v->y += delta.y;
+		v->z += delta.z;
 	}
 
 	update_points();
@@ -153,6 +162,7 @@ void GLBrush::set_color( const s4ub& color )
 		arr[i].color.set(color);
 }
 
+
 s4ub GLBrush::get_color(  )
 {
 	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
@@ -162,12 +172,13 @@ s4ub GLBrush::get_color(  )
 
 void GLBrush::update_points( )
 {
+	if( !isFaced() )
+		return;
+
 	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
 	glm::mat4x4 rot = glm::make_mat4x4(Camera::inversed_rotation());
 	for( UINT i = 0; i < points_count; ++i ){
-		if( !isFaced() ){
-			arr[i].verticles = vertex_points[i];
-		}else if( isScreen() ){
+		if( isScreen() ){
 			glm::vec4 pt = glm::vec4(vertex_points[i].x, vertex_points[i].y, vertex_points[i].z, 1.0);
 			pt = rot * pt;
 			arr[i].verticles.x = pt.x;

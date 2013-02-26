@@ -144,7 +144,6 @@ bool RenderManager::openglSetup( int wwidth, int wheight )
 	Camera::push_state( &view, &z );
 	Camera::Rotate( 55, 1.0, 0.0, 0.0 );
 	Camera::Rotate( 45, 0.0, 0.0, 1.0 );
-	//Camera::Translate( -conf.video.windowWidth/4, 0, 0 );
 
 	LightingManager::init( );
 

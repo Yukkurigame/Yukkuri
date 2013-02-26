@@ -131,7 +131,7 @@ inline Sprite* sprite_from_proxy( const TextureProxy* t )
 	// TODO: move it elsewhere
 
 	GLBrush* brush = &s->brush;
-	brush->init( "mesh_quad" );
+	brush->init( "mesh_terrain" );
 
 	// FIXME: no direct usage
 	VertexV2FT2FC4UI* pts = brush->points();

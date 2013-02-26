@@ -77,6 +77,17 @@ namespace Camera {
 		UniformsManager::pass_data( camera_shaders.in_MVP, GLM_PTR(state->mvp) );
 		UniformsManager::pass_data( camera_shaders.in_MOVP, GLM_PTR(state->movp) );
 	}
+
+	glm::vec3 offset(  )
+	{
+		if( !states.head )
+			return glm::vec3(0.0);
+		CameraState* state = states.head->data;
+		// I do not understand this properly, but this negation magic seems to work.
+		glm::vec4 p = state->view * glm::vec4(-state->cam_offset.x, state->cam_offset.y, state->cam_offset.z, 1.0);
+		//printf("%f:%f:%f\n", p.x, p.y, p.z);
+		return glm::vec3( p.x, -p.y, -p.z );
+	}
 }
 
 
@@ -165,18 +176,10 @@ void Camera::update( )
 		}
 	}
 
-	glm::vec3 p = glm::unProject( glm::vec3(state->cam_offset.x, state->cam_offset.y, state->cam_offset.z),
-			state->view, state->projection,
-			glm::vec4(state->cam_view.x, state->cam_view.y, state->cam_view.width, state->cam_view.height) );
-	//p.x = -p.x;
-	//p.y = -p.y;
-	p.z = 0;
 
-	printf("%f:%f\n", p.x, p.y);
-
-	glm::mat4 model = glm::translate( state->model, state->cam_position + p );
+	glm::mat4 model = glm::translate( state->model, state->cam_position + offset() );
 	state->mvp = state->projection * state->view * model;
-	state->movp = state->projection * state->view * state->model;
+	state->movp = state->projection * state->view; // * state->model
 
 	pass_state( state );
 }
@@ -187,7 +190,7 @@ s3f Camera::position( )
 	s3f ret;
 	if( states.head ){
 		CameraState* state = states.head->data;
-		glm::vec3 pos = -( state->cam_position + state->cam_offset );
+		glm::vec3 pos = -( state->cam_position + offset() );
 		ret.x = pos.x;
 		ret.y = pos.y;
 		ret.z = pos.z;
@@ -253,8 +256,9 @@ void Camera::ChangeMode( enum ctMode mode )
 	state->TargetMode = mode;
 	switch( mode ){
 		case ctmCenter:
-			state->cam_offset.x = 0;// state->cam_view.width / 2;
-			state->cam_offset.y = 0;// -state->cam_view.height / 2;
+			state->cam_offset.x = -state->cam_view.width / 2;
+			state->cam_offset.y = -state->cam_view.height / 2;
+			state->cam_offset.z = 0;
 			break;
 		case ctmNormal:
 			state->cam_offset.x = state->cam_offset.y = 0;

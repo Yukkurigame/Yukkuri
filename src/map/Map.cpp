@@ -390,7 +390,8 @@ void Map::onDraw( )
 	//cy = static_cast<int>(Camera::getY()) - 64;
 	s2i chunk_pos( cam_pos.x, cam_pos.y );
 	ChunkManager::to_coordinates( chunk_pos );
-	chunk_pos.y--;
+	chunk_pos.y -= 2;
+	chunk_pos.x--;
 	if( position.x != chunk_pos.x || position.y != chunk_pos.y ){
 		Debug::debug(Debug::NONE, "%f:%f:%f\n", cam_pos.x, cam_pos.y, cam_pos.z );
 		createChunksRectangle( chunk_pos, ChunkManager::get_count() );

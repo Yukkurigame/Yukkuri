@@ -94,7 +94,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 			int ti = i + tile * vx_tiles;
 			arr[ti].verticles = vc[i];
 			arr[ti].coordinates = tc[i];
-			arr[ti].color = s4ub( ((int)vc[i].x/64) % 256, ((int)vc[i].y/64) % 256, ((int)vc[i].z) % 256, 255 );
+			arr[ti].color = s4ub( rand() % 256, rand() % 256, rand() % 256, 255 );
 			brush.indices_list[brush.indices_count++] = ti + brush.point_index;
 		}
 
@@ -176,7 +176,7 @@ void ChunkManager::init(){
 
 	// Calculate count of chunks in the screen
 	screen.x = conf.video.windowWidth >> ( tile_size_p2 + CHUNK_SIZE - 1 );
-	screen.y = conf.video.windowHeight >> ( tile_size_p2 + CHUNK_SIZE - 1 );
+	screen.y = conf.video.windowHeight >> ( tile_size_p2 + CHUNK_SIZE - 2 );
 	// Tiles in chunk: two interpenetrative girds of CHUNK_SIZE^2 tiles.
 	chunkTilesCount = 1 << ( CHUNK_SIZE + CHUNK_SIZE );
 	// calculate size of atlas. CHUNK_SIZE is additional places here

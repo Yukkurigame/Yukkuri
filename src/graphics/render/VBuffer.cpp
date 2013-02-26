@@ -138,6 +138,7 @@ void VBuffer::prepare_handler( Sprite* sprite, list<VBOStructureHandle*>* handle
 		handler->push_back( v );
 	}
 
+	sprite->brush.update_points();
 	v->set_indexes( sprite->brush.indices_list, sprite->brush.indices_count );
 }
 

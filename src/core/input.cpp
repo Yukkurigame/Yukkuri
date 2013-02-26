@@ -111,6 +111,10 @@ void Yukkuri::HandleInput()
 				break;
 #endif
 
+			case SDL_MOUSEMOTION:
+				Camera::Rotate(event.motion.xrel % 5, 1.0, 0, 0.0);
+				Camera::Rotate(event.motion.yrel % 5, 0.0, 0, 1.0);
+				break;
 				/*
 				case SDL_MOUSEMOTION:
 					MouseMoved(

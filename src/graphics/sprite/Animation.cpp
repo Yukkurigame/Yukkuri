@@ -65,11 +65,7 @@ bool Animation::init(  std::string subconfig, std::string config)
 
 	sprite = RenderManager::CreateGLSprite( 0, 0, 0, width, height, -1,
 					Textures::get_by_name( image.c_str() ), picture , 1 );
-	//sprite->setCentered();
-	sprite->setPicture( picture );
 	count = 0;
-
-
 
 	return true;
 }

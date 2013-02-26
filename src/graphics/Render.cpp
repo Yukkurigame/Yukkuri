@@ -140,11 +140,7 @@ bool RenderManager::openglSetup( int wwidth, int wheight )
 	s2f z( -conf.video.windowHeight * 2, conf.video.windowHeight );
 
 	Camera::init();
-
 	Camera::push_state( &view, &z );
-	Camera::Rotate( 55, 1.0, 0.0, 0.0 );
-	Camera::Rotate( 45, 0.0, 0.0, 1.0 );
-
 	LightingManager::init( );
 
 	return true;

@@ -14,13 +14,16 @@
 namespace CameraApi {
 
 	int position( lua_State* L );
+	int rotate( lua_State* L );
 	int moveTo( lua_State* L );
 	int setMode( lua_State* L );
 	int setTarget( lua_State* L );
 	int getTarget( lua_State* L );
 
+
 	const luaL_reg methods[] = {
 		LUALIBFIELD( position )
+		LUALIBFIELD( rotate )
 		LUALIBFIELD( moveTo )
 		LUALIBFIELD( setMode )
 		LUALIBFIELD( getTarget )

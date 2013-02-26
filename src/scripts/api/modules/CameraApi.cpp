@@ -25,6 +25,21 @@ int CameraApi::position(lua_State* L)
 	return 1;
 }
 
+int CameraApi::rotate( lua_State* L )
+{
+	luaL_argcheck( L, lua_isnumber( L, 1 ), 1, "Number expected" );
+	luaL_argcheck( L, lua_isnumber( L, 2 ), 2, "Number expected" );
+	luaL_argcheck( L, lua_isnumber( L, 3 ), 3, "Number expected" );
+	luaL_argcheck( L, lua_isnumber( L, 4 ), 4, "Number expected" );
+
+	Camera::Rotate( (float)lua_tonumber(L, 1), (float)lua_tonumber(L, 2),
+			(float)lua_tonumber(L, 3), (float)lua_tonumber(L, 4) );
+
+	lua_pop( L, 4 );
+
+	return 0;
+}
+
 
 int CameraApi::moveTo(lua_State* L)
 {

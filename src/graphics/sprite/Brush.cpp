@@ -79,7 +79,7 @@ void GLBrush::setCentered( )
 		v->z -= dist.z / 2.0f;
 	}
 
-	update_points();
+	//update_points();
 	flags |= 1;
 }
 
@@ -97,7 +97,7 @@ void GLBrush::clearCentered( )
 		v->z += dist.z / 2.0f;
 	}
 
-	update_points();
+	//update_points();
 	flags &= ~1;
 }
 
@@ -135,7 +135,7 @@ void GLBrush::scale( const s3f* scale )
 		v->z = vertex_origin.z + (v->z - vertex_origin.z) * scale->z;
 	}
 
-	update_points();
+	//update_points();
 }
 
 
@@ -151,7 +151,7 @@ void GLBrush::move( float dx, float dy, float dz )
 		v->z += delta.z;
 	}
 
-	update_points();
+	//update_points();
 }
 
 
@@ -176,22 +176,30 @@ void GLBrush::update_points( )
 		return;
 
 	VertexV2FT2FC4UI* arr = VBOArray::pointer( point_index );
-	glm::mat4x4 rot = glm::make_mat4x4(Camera::inversed_rotation());
+	//glm::make_mat4x4()
+	float rot[4][4];
+	memcpy( &rot[0][0], Camera::inversed_rotation(), (UINT)16 * sizeof(float) );
 	for( UINT i = 0; i < points_count; ++i ){
+		s3f& target = arr[i].verticles;
 		if( isScreen() ){
-			glm::vec4 pt = glm::vec4(vertex_points[i].x, vertex_points[i].y, vertex_points[i].z, 1.0);
-			pt = rot * pt;
-			arr[i].verticles.x = pt.x;
-			arr[i].verticles.y = pt.y;
-			arr[i].verticles.z = pt.z;
+			//glm::vec4 pt = glm::vec4(vertex_points[i].x, vertex_points[i].y, vertex_points[i].z, 1.0);
+			//pt = rot * pt;
+			s3f& v = vertex_points[i];
+			target.x = rot[0][0] * v.x + rot[1][0] * v.y + rot[2][0] * v.z + rot[3][0] * 1.0;
+			target.y = rot[0][1] * v.x + rot[1][1] * v.y + rot[2][1] * v.z + rot[3][1] * 1.0;
+			target.z = rot[0][2] * v.x + rot[1][2] * v.y + rot[2][2] * v.z + rot[3][2] * 1.0;
 		}else{
-			glm::vec4 pt = glm::vec4(vertex_points[i].x - vertex_origin.x,
-									 vertex_points[i].y - vertex_origin.y,
-									 vertex_points[i].z - vertex_origin.z, 1.0);
-			pt = rot * pt;
-			arr[i].verticles.x = pt.x + vertex_origin.x;
-			arr[i].verticles.y = pt.y + vertex_origin.y;
-			arr[i].verticles.z = pt.z + vertex_origin.z;
+			s3f v = vertex_points[i] - vertex_origin;
+			//glm::vec4 pt = glm::vec4(vertex_points[i].x - vertex_origin.x,
+			//						vertex_points[i].y - vertex_origin.y,
+			//						vertex_points[i].z - vertex_origin.z, 1.0);
+			//pt = rot * pt;
+			target.x = rot[0][0] * v.x + rot[1][0] * v.y + rot[2][0] * v.z + rot[3][0] * 1.0 + vertex_origin.x;
+			target.y = rot[0][1] * v.x + rot[1][1] * v.y + rot[2][1] * v.z + rot[3][1] * 1.0 + vertex_origin.y;
+			target.z = rot[0][2] * v.x + rot[1][2] * v.y + rot[2][2] * v.z + rot[3][2] * 1.0 + vertex_origin.z;
+			//arr[i].verticles.x = pt.x + vertex_origin.x;
+			//arr[i].verticles.y = pt.y + vertex_origin.y;
+			//arr[i].verticles.z = pt.z + vertex_origin.z;
 		}
 	}
 }

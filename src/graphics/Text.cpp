@@ -257,9 +257,8 @@ void Text::setCursorPosition( unsigned int pos )
 	if( cursor == NULL ){
 			Char* tmpc = font->getChar('|');
 			cursorBearing = (tmpc->metrics.horiBearingX >> 6) + 2;
-			cursor = RenderManager::CreateGLSprite(
-					position.x, position.y, position.z,
-					font->cellWidth, font->cellHeight, font->texture, tmpc->pic );
+			cursor = RenderManager::CreateGLSprite(	position.x, position.y, position.z,
+					font->cellWidth, font->cellHeight, -1, font->texture, tmpc->pic );
 			cursor->setFixed();
 			cursor->clearLight();
 		cursor->setVisible();

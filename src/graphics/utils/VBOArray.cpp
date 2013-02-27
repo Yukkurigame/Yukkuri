@@ -10,71 +10,83 @@
 #include <cstring>
 #include "debug.h"
 
+// Critical length for last free block. All following blocks will be freed.
 #define MAX_LAST_BLOCK 255
 
-	struct free_block {
-		unsigned int start;
-		unsigned int count;
-		free_block( unsigned int s, unsigned int c ) : start(s), count(c) {}
-	};
-	list<free_block*> free_space;
+static const int chunk_size = sizeof(VertexV2FT2FC4UI);
 
-namespace {
 
-	VertexV2FT2FC4UI* array = NULL;
-	unsigned int array_size = 0;
-	const int chunk_size = sizeof(VertexV2FT2FC4UI);
-
-	void realloc_array( int size ){
-		int new_size = (array_size + size);
-		if( new_size < 0 )
-			new_size = 0;
-		array = (VertexV2FT2FC4UI*)realloc(array, chunk_size * new_size );
-		array_size = new_size;
-	}
-
-	int search_space( unsigned int size ){
-		int index = -1;
-		listElement<free_block*>* fb = free_space.head;
-		while( fb ){
-			free_block* block = fb->data;
-			if( block->count >= size ){
-				index = block->start;
-				block->start += size;
-				block->count -= size;
-				if( block->count <= 0 )
-					free_space.remove( fb );
-				break;
-			}
-			fb = fb->next;
-		}
-		return index;
-	}
-
-	/*	Check two free_block to first overlap second
-	 *  returns -1 if no overlap between them
-	 *  returns count of elements right exceed origin.
-	 */
-	int right_overlap( free_block* origin, free_block* right ){
-		if( origin == NULL || right == NULL )
-			return -1;
-		if( origin->start > right->start ){
-			Debug::debug( Debug::GRAPHICS, "VBOArray: right block preceding origin. Overlap check canceled.\n" );
-			return -1;
-		}
-		unsigned int end = origin->start + origin->count;
-		unsigned int rend = right->start + right->count;
-		if( right->start > end )	// No overlap
-			return -1;
-		if( end < rend )			// Overlap on rend - end
-			return rend - end;
-		return 0;
-	}
-
+/*	Change size of array
+ * 	size - desired size
+ */
+void VBOArray::realloc_array( int size )
+{
+	int new_size = (array_size + size);
+	if( new_size < 0 )
+		new_size = 0;
+	array = (VertexV2FT2FC4UI*)realloc(array, chunk_size * new_size );
+	array_size = new_size;
 }
 
 
-void VBOArray::clean( )
+
+/*	Search free space in array
+ * 	size - desired size of block
+ * 	returns first index of block if space found or -1 otherwise
+ */
+int VBOArray::search_space( unsigned int size )
+{
+	int index = -1;
+	listElement<free_block*>* fb = free_space.head;
+	while( fb ){
+		free_block* block = fb->data;
+		if( block->count >= size ){
+			index = block->start;
+			block->start += size;
+			block->count -= size;
+			if( block->count <= 0 )
+				free_space.remove( fb );
+			break;
+		}
+		fb = fb->next;
+	}
+	return index;
+}
+
+
+/*	Check two free_block to first overlap second
+ *  returns -1 if no overlap between them
+ *  returns count of elements right exceed origin.
+ */
+int VBOArray::right_overlap( free_block* origin, free_block* right ){
+	if( origin == NULL || right == NULL )
+		return -1;
+	if( origin->start > right->start ){
+		Debug::debug( Debug::GRAPHICS, "VBOArray: right block preceding origin. Overlap check canceled.\n" );
+		return -1;
+	}
+	unsigned int end = origin->start + origin->count;
+	unsigned int rend = right->start + right->count;
+	if( right->start > end )	// No overlap
+		return -1;
+	if( end < rend )			// Overlap on rend - end
+		return rend - end;
+	return 0;
+}
+
+
+//////////////////////////
+// PUBLIC
+
+void VBOArray::init()
+{
+	array = NULL;
+	array_size = 0;
+	free_space.init();
+}
+
+
+void VBOArray::clear()
 {
 	listElement<free_block*>* t = free_space.head;
 	while( t != NULL ){
@@ -86,6 +98,11 @@ void VBOArray::clean( )
 }
 
 
+
+/*	Search in array for space. Allocate new if no space found
+ * 	size - desired size
+ * 	returns first index of new block
+ */
 int VBOArray::getSpace( unsigned int size )
 {
 	if( array == NULL ){
@@ -101,6 +118,11 @@ int VBOArray::getSpace( unsigned int size )
 	return index;
 }
 
+
+/*	Return unneeded space to array control. Makes it available for new allocations.
+ * 	index - first index of block
+ * 	count - size of block
+ */
 void VBOArray::freeSpace( unsigned int index, unsigned int count )
 {
 	if( count < 1 )
@@ -172,10 +194,4 @@ VertexV2FT2FC4UI* VBOArray::pointer( unsigned int index )
 	if( (int)index >= array_size )
 		return NULL;
 	return &array[index];
-}
-
-
-int VBOArray::count( )
-{
-	return array_size;
 }

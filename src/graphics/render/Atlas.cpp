@@ -10,8 +10,10 @@
 #include "graphics/render/Atlas.h"
 #include "graphics/render/GLTextures.h"
 #include "graphics/render/Textures.h"
+#include "graphics/render/VBuffer.h"
 #include "graphics/utils/ElasticBox.h"
 #include "graphics/Render.h"
+
 
 #include "scripts/LuaConfig.h"
 
@@ -22,11 +24,9 @@
 list< TextureProxy* > internalTextures;
 
 namespace {
-
-
-
 	int minAtlasSize;
 	int maxAtlasSize;
+	UINT VBOHandle;
 }
 
 void TextureAtlas::init( )
@@ -122,7 +122,7 @@ bool TextureAtlas::buildRelativeMap( float width, float height ){
 
 inline Sprite* sprite_from_proxy( const TextureProxy* t )
 {
-	Sprite* s = new Sprite( );
+	Sprite* s = new Sprite( VBOHandle );
 	float x = static_cast<float>(t->offset.x) / static_cast<float>(t->texture->w);
 	float y = static_cast<float>(t->offset.y) / static_cast<float>(t->texture->h);
 	float dx = static_cast<float>(t->abs.width) / static_cast<float>(t->texture->w);
@@ -181,6 +181,8 @@ inline bool compareTextureProxies( TextureProxy* t1, TextureProxy* t2 )
 
 bool TextureAtlas::create( GLuint* ahandle, GLuint* nhandle, int& width, int& height )
 {
+	VBuffer::create( &VBOHandle );
+
 	if( internalTextures.head == NULL ){
 		Debug::debug( Debug::GRAPHICS, "Textures is missing.\n" );
 		return false;
@@ -200,6 +202,8 @@ bool TextureAtlas::create( GLuint* ahandle, GLuint* nhandle, int& width, int& he
 	// Push textures to render and clear array
 	Textures::push( internalTextures, *ahandle, nhandle ? *nhandle : 0 );
 	clean();
+
+	VBuffer::free_buffer( &VBOHandle );
 
 	return true;
 }

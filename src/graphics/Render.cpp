@@ -17,7 +17,6 @@
 #include "graphics/render/Textures.h"
 #include "graphics/render/VBuffer.h"
 #include "graphics/render/GLTextures.h"
-#include "graphics/utils/VBOArray.h"
 #include "graphics/Lighting.h"
 
 #include "SDL/SDL.h"
@@ -87,7 +86,6 @@ void RenderManager::clean( )
 	Textures::clean( );
 	GLTextures::clean();
 	clean_fonts();
-	VBOArray::clean( );
 	GBuffer::clean( );
 	MeshManager::clean();
 }
@@ -108,9 +106,10 @@ void RenderManager::openglInit( )
 bool RenderManager::openglSetup( int wwidth, int wheight )
 {
 	GLExtensions::load();
+	VBuffer::create( &VBOHandle );
 
 	// Does not init gbuffer if single mode uses
-	if( conf.video.renderMethod == rmGBuffer && !GBuffer::init( ) )
+	if( conf.video.renderMethod == rmGBuffer && !GBuffer::init(VBOHandle) )
 		return false;
 
 	glClear( GL_COLOR_BUFFER_BIT ); // | GL_DEPTH_BUFFER_BIT );
@@ -118,9 +117,6 @@ bool RenderManager::openglSetup( int wwidth, int wheight )
 	glClearColor( 1, 1, 1, -1 ); //0.25, 0.43, 0.0, -1.0 );
 	//glClearDepth( 600.0f );
 	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
-
-
-	VBuffer::create( &VBOHandle );
 
 	TextureAtlas::init( );
 
@@ -160,7 +156,7 @@ bool RenderManager::openglSetup( int wwidth, int wheight )
 Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int height,
 			int mesh_id, unsigned int texture_id, short centered )
 {
-	Sprite* sprite = new Sprite( );
+	Sprite* sprite = new Sprite( VBOHandle );
 
 	if( mesh_id < 0 )
 		sprite->brush.init( "mesh_quad" );
@@ -254,7 +250,7 @@ void RenderManager::DrawGLScene()
 		}
 			break;
 		case rmGBuffer:
-			GBuffer::render( VBOHandle );
+			GBuffer::render( );
 			break;
 	}
 

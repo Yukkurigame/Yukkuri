@@ -21,10 +21,10 @@ namespace GBuffer
 		gbufLast
 	};
 
-	bool init( );
+	bool init( UINT VBOHandle );
 	void clean( );
 
-	void render( UINT VBOHandle );
+	void render( );
 }
 
 

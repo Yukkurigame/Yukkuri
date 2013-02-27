@@ -47,6 +47,11 @@ struct list
 		}
 	};
 
+	void init( ){
+		head = tail = 0;
+		count = 0;
+	}
+
 	///////////////////
 	// List management
 
@@ -129,6 +134,7 @@ struct list
 			remove( t->next, t );
 		}
 		remove( t, 0 );
+		tail = head = 0;
 	}
 
 

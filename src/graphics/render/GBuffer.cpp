@@ -28,7 +28,7 @@ namespace GBuffer
 	GLuint depth_texture;
 	GLuint final_texture;
 
-	//GLuint VBOHandle;
+	GLuint VBOHandle;
 
 	s2f window_size;
 	int current_point_light = 0;
@@ -81,17 +81,18 @@ namespace GBuffer
 
 
 
-bool GBuffer::init()
+bool GBuffer::init( UINT VBO )
 {
 	window_size.x = conf.video.windowWidth;
 	window_size.y = conf.video.windowHeight;
+	VBOHandle = VBO;
 
-	combinator = new Sprite( );
+	combinator = new Sprite( VBOHandle );
 	combinator->brush.init( "mesh_quad" );
 	combinator->resize( window_size.x, window_size.y, 0 );
 	combinator->setFixed();
 
-	sphere = new Sprite( );
+	sphere = new Sprite( VBOHandle );
 	sphere->brush.init( "mesh_sphere" );
 	sphere->brush.setCentered();
 
@@ -169,7 +170,7 @@ void GBuffer::clean( )
 }
 
 
-void GBuffer::render( UINT VBOHandle )
+void GBuffer::render( )
 {
 	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, fbo );
 	glDrawBuffer( GL_COLOR_ATTACHMENT4 );

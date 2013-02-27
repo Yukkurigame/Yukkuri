@@ -10,6 +10,13 @@
 #include "basic_types.h"
 #include "graphics/GraphicsTypes.h"
 
+enum GLBrushFlags {
+	glbUpdated = 0x01,
+	glbCentered = 0x02,
+	glbFaced = 0x04,
+	glbScreen = 0x08,
+};
+
 
 struct GLBrush
 {
@@ -18,6 +25,7 @@ struct GLBrush
 	s3f vertex_origin;
 	s3f* vertex_points;
 	UINT flags;
+	UINT VBOHandler;
 	UINT points_count;
 	UINT point_index;
 	UINT indices_count;
@@ -25,24 +33,29 @@ struct GLBrush
 	UINT texture_indices[4];
 	UINT vertex_indices[4];
 
-	GLBrush( );
+	GLBrush( UINT );
 	~GLBrush( );
 
 	short init( int t );
 	short init( const char* t );
 
-	inline unsigned char isCentered()	{ return flags & 1; }
+	FLAGS_FUNCTIONS( glb, Updated )
+
+	inline unsigned char isCentered()	{ return flags & glbCentered; }
 	void setCentered( );
 	void clearCentered( );
 
-	inline unsigned char isFaced()	{ return flags & 2; }
-	inline void setFaced( )			{ flags |= 2; }
-	inline void clearFaced( )		{ flags &= ~2; }
+	FLAGS_FUNCTIONS( glb, Faced )
+	FLAGS_FUNCTIONS( glb, Screen )
+
+	//inline unsigned char isFaced()	{ return flags & 2; }
+	//inline void setFaced( )			{ flags |= 2; }
+	//inline void clearFaced( )		{ flags &= ~2; }
 
 	// Screen coordinate system
-	inline unsigned char isScreen()	{ return flags & 4; }
-	inline void setScreen( )			{ flags |= 4; }
-	inline void clearScreen( )		{ flags &= ~4; }
+	//inline unsigned char isScreen()	{ return flags & 4; }
+	//inline void setScreen( )			{ flags |= 4; }
+	//inline void clearScreen( )		{ flags &= ~4; }
 
 	void resize_verticles( int size );
 	void scale( const s3f* scale );

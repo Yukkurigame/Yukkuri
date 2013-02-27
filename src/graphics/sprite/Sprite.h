@@ -48,7 +48,7 @@ struct Sprite
 		CHANGE_MATERIAL_FLAG( material, clear_flag, glsNormals )
 	}
 
-	Sprite() : size(1.0f), brush( ) {
+	Sprite( UINT VBO ) : size(1.0f), brush(VBO) {
 		material = GLMaterialManager::get( glsLight );
 		picture = texid = 0;
 		flags = 1; // visible only

@@ -17,6 +17,12 @@
 	if( val < limit ) val = _default;
 #endif
 
+#define FLAGS_FUNCTIONS(prefix, name)	\
+	inline unsigned char is##name()	{ return flags & prefix##name; }	\
+	inline void set##name( )		{ flags |= prefix##name; }		\
+	inline void clear##name( )		{ flags &= ~prefix##name; }
+
+
 // TODO: find all same structures and group in one.
 enum type_identifier {
 	tiNone = 0, tiInt, tiFloat, tiString,

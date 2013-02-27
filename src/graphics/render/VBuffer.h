@@ -10,6 +10,15 @@
 
 #include "graphics/GraphicsTypes.h"
 #include "graphics/sprite/Sprite.h"
+#include "graphics/utils/VBOArray.h"
+
+
+struct VBufferHandler {
+	UINT id;
+	GLuint handle;
+	UINT size;
+	VBOArray array;
+};
 
 
 namespace VBuffer {
@@ -21,6 +30,10 @@ namespace VBuffer {
 	void fill( UINT buffer_id );
 	void unbind(  );
 
+	VBufferHandler* handler( UINT buffer_id );
+
+
+
 
 	void setup( UINT buffer_id );
 	void draw( int pass, list<VBOStructureHandle*>* /*VBOStructureHandle* vbostructure*/ );
@@ -28,9 +41,6 @@ namespace VBuffer {
 	// Structures
 	void prepare_handler( Sprite* sprite, list<VBOStructureHandle*>* );
 	void prepare_handler( list< Sprite* >* sprites, list<VBOStructureHandle*>* );
-	//VBOStructureHandle* prepare_handler( int pass, Sprite* sprite );
-	//VBOStructureHandle* prepare_handler( int pass, list< Sprite* >* sprites );
-	//VBOStructureHandle* prepare_handler( Sprite* sprites, unsigned int scount );
 	void free_handler( list<VBOStructureHandle*>* );
 
 }

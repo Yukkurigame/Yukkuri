@@ -7,7 +7,6 @@
 
 #include "graphics/render/VBuffer.h"
 #include "graphics/render/Textures.h"
-#include "graphics/utils/VBOArray.h"
 #include "graphics/utils/gl_uniforms.h"
 #include "graphics/Camera.h"
 #include <cstring>
@@ -23,27 +22,23 @@
 
 namespace VBuffer {
 
-	struct BufferHandler {
-		UINT id;
-		GLuint handle;
-		UINT size;
-	};
-
 	UINT buffers_count = 0;
-	BufferHandler* buffers = NULL;
+	VBufferHandler* buffers = NULL;
+
 }
 
 
 void VBuffer::create( UINT* buffer_id )
 {
 	UINT new_count = buffers_count + 1;
-	buffers = (BufferHandler*)realloc( buffers, (UINT)sizeof(BufferHandler)*new_count );
-	BufferHandler* hdl = &buffers[buffers_count];
+	buffers = (VBufferHandler*)realloc( buffers, (UINT)sizeof(VBufferHandler)*new_count );
+	VBufferHandler* hdl = &buffers[buffers_count];
+	hdl->array.init();
 	glGenBuffers( 1, &hdl->handle );
-	hdl->id = buffers_count;
-	hdl->size = 0;
+	*buffer_id = buffers_count;
 	buffers_count = new_count;
-	*buffer_id = hdl->id;
+	hdl->id = new_count; // buffers_count + 1; first id - 1
+	hdl->size = 0;
 }
 
 /*	This function removes VAO
@@ -51,8 +46,9 @@ void VBuffer::create( UINT* buffer_id )
  */
 void VBuffer::free_buffer( UINT* buffer_id )
 {
-	BufferHandler* hdl = &buffers[*buffer_id];
+	VBufferHandler* hdl = &buffers[*buffer_id];
 	hdl->id = 0;
+	hdl->array.clear();
 	glDeleteBuffers( 1, &hdl->handle );
 	*buffer_id = 0;
 }
@@ -64,7 +60,7 @@ void VBuffer::free_buffer( UINT* buffer_id )
  */
 void VBuffer::bind( UINT buffer_id )
 {
-	BufferHandler* hdl = &buffers[buffer_id];
+	VBufferHandler* hdl = &buffers[buffer_id];
 
 	glBindBuffer( GL_ARRAY_BUFFER, hdl->handle );
 
@@ -92,14 +88,29 @@ void VBuffer::unbind()
 }
 
 
+/*	This function returns handler to VBO
+ *	buffer_id - id of VBO
+ *	returns pointer to buffer handler.
+ */
+VBufferHandler* VBuffer::handler( UINT buffer_id )
+{
+	if( buffer_id < buffers_count ){
+		VBufferHandler* hdl = &buffers[buffer_id];
+		if( hdl->id )
+			return hdl;
+	}
+	return NULL;
+}
+
+
 /*	This function pass verticles array data to VAO
  *  VAO must be binded perviously.
  */
 void VBuffer::fill( UINT buffer_id )
 {
-	BufferHandler* hdl = &buffers[buffer_id];
-	VertexV2FT2FC4UI* head = VBOArray::head();
-	UINT size = VBOArray::size();
+	VBufferHandler* hdl = &buffers[buffer_id];
+	VertexV2FT2FC4UI* head = hdl->array.head();
+	UINT size = hdl->array.size();
 	if( size != hdl->size ){
 		glBufferData( GL_ARRAY_BUFFER, size, head, GL_STREAM_DRAW );
 		hdl->size = size;

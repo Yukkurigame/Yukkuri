@@ -13,18 +13,60 @@
 #include <cstring>
 
 
-void VBuffer::create( GLuint* handle )
-{
-	glGenBuffers( 1, handle );
+
+/* TODO:
+ *
+ * GL_ELEMENT_ARRAY_BUFFER
+ * glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DR
+ *
+ */
+
+namespace VBuffer {
+
+	struct BufferHandler {
+		UINT id;
+		GLuint handle;
+		UINT size;
+	};
+
+	UINT buffers_count = 0;
+	BufferHandler* buffers = NULL;
 }
+
+
+void VBuffer::create( UINT* buffer_id )
+{
+	UINT new_count = buffers_count + 1;
+	buffers = (BufferHandler*)realloc( buffers, (UINT)sizeof(BufferHandler)*new_count );
+	BufferHandler* hdl = &buffers[buffers_count];
+	glGenBuffers( 1, &hdl->handle );
+	hdl->id = buffers_count;
+	hdl->size = 0;
+	buffers_count = new_count;
+	*buffer_id = hdl->id;
+}
+
+/*	This function removes VAO
+ *
+ */
+void VBuffer::free_buffer( UINT* buffer_id )
+{
+	BufferHandler* hdl = &buffers[*buffer_id];
+	hdl->id = 0;
+	glDeleteBuffers( 1, &hdl->handle );
+	*buffer_id = 0;
+}
+
 
 
 /*	This function binds VAO and set up pointers positions.
  *  handle - VAO id.
  */
-void VBuffer::bind( GLuint handle )
+void VBuffer::bind( UINT buffer_id )
 {
-	glBindBuffer( GL_ARRAY_BUFFER, handle );
+	BufferHandler* hdl = &buffers[buffer_id];
+
+	glBindBuffer( GL_ARRAY_BUFFER, hdl->handle );
 
 	// Set up VBO strides & offsets
 	int vertex_size =  sizeof(VertexV2FT2FC4UI);
@@ -53,21 +95,27 @@ void VBuffer::unbind()
 /*	This function pass verticles array data to VAO
  *  VAO must be binded perviously.
  */
-void VBuffer::fill()
+void VBuffer::fill( UINT buffer_id )
 {
+	BufferHandler* hdl = &buffers[buffer_id];
 	VertexV2FT2FC4UI* head = VBOArray::head();
-	int size = VBOArray::size();
-	glBufferData( GL_ARRAY_BUFFER, size, head, GL_STREAM_DRAW );
+	UINT size = VBOArray::size();
+	if( size != hdl->size ){
+		glBufferData( GL_ARRAY_BUFFER, size, head, GL_STREAM_DRAW );
+		hdl->size = size;
+	}else{
+		glBufferSubData( GL_ARRAY_BUFFER, 0, size, head );
+	}
 }
 
 
 /*	This function is just call of bind and fill together.
  *  handle - VAO id.
  */
-void VBuffer::setup( GLuint handle )
+void VBuffer::setup( UINT buffer_id )
 {
-	bind( handle );
-	fill( );
+	bind( buffer_id );
+	fill( buffer_id );
 }
 
 inline void apply_material( UINT matid, int pass )
@@ -121,7 +169,7 @@ void VBuffer::draw( int pass, list<VBOStructureHandle*>* handler )
 /*	This function make vao array from single sprite
  *	sprite - pointer of sprite
  *	handler - pointer to handler list
-  */
+ */
 void VBuffer::prepare_handler( Sprite* sprite, list<VBOStructureHandle*>* handler )
 {
 	if( sprite == NULL || !sprite->isVisible() )
@@ -146,7 +194,7 @@ void VBuffer::prepare_handler( Sprite* sprite, list<VBOStructureHandle*>* handle
 /*	This function make vao array from sprite array
  *	sprites - array of sprites
  *	handler - pointer to handler list
-  */
+ */
 void VBuffer::prepare_handler( list< Sprite* >* sprites, list<VBOStructureHandle*>* handler )
 {
 	listElement< Sprite* >* sprites_element = sprites->head;
@@ -155,7 +203,6 @@ void VBuffer::prepare_handler( list< Sprite* >* sprites, list<VBOStructureHandle
 		sprites_element = sprites_element->next;
 	}
 }
-
 
 /*	This function removes all elements from vao handler
  *	handler - Pointer to handlers list

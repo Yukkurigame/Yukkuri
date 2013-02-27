@@ -24,7 +24,7 @@ namespace GBuffer
 	bool init( );
 	void clean( );
 
-	void render();
+	void render( UINT VBOHandle );
 }
 
 

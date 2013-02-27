@@ -173,7 +173,7 @@ bool GLTextures::draw( GLuint* ahandle, int width, int height, list< Sprite* >* 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 
-	glGenBuffers( 1, &VBOHandle );
+	VBuffer::create( &VBOHandle );
 
 	list< VBOStructureHandle* > vbostructure;
 	VBuffer::prepare_handler( sprites, &vbostructure );
@@ -182,7 +182,8 @@ bool GLTextures::draw( GLuint* ahandle, int width, int height, list< Sprite* >* 
 	VBuffer::unbind( );
 	VBuffer::free_handler( &vbostructure );
 
-	glDeleteBuffers( 1, &VBOHandle );
+	VBuffer::free_buffer( &VBOHandle );
+
 	glDisable(GL_BLEND);
 
 	Camera::pop_state();

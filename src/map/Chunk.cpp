@@ -68,7 +68,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 	int vx_count = count * vx_tiles;
 	brush.resize_verticles( vx_count );
 	brush.indices_count = 0;
-	brush.indices_list = (UINT*)malloc( sizeof(UINT) * vx_count );
+	brush.indices_list = (UINT*)malloc( (UINT)sizeof(UINT) * vx_count );
 
 	VertexV2FT2FC4UI* arr = brush.points();
 	for( int tile = 0; tile < count; ++tile ){
@@ -103,50 +103,6 @@ MapChunk::MapChunk( signed int x, signed int y )
 			row++;
 		}
 	}
-
-	/*
-	list< VBOStructureHandle* > vbostructure;
-	VBOStructureHandle* v = new VBOStructureHandle( brush.method, NULL,
-									GLMaterialManager::get( glsLight ) );
-	vbostructure.push_back( v );
-	v->set_indexes( brush.indices_list, brush.indices_count );
-
-
-
-	Sprite* sprites = new Sprite[count];
-	list< Sprite* > sprite_list;
-	for( int tile = count - 1; tile >= 0; --tile ){
-		MapTile& t = tiles[tile];
-		int tx = realPos.x + col * conf.mapTileSize; // + ( row % 2 ? (conf.mapTileSize >> 1) : 0 );
-		int ty = realPos.y + row * conf.mapTileSize; // - row * ( 3 * (conf.mapTileSize >> 2) );
-		Map::toMapCoordinates( &tx, &ty );
-		t.create( tx, ty );
-
-		Sprite* s = &sprites[tile];
-		sprite_list.push( s );
-		s->texid = t.Type->texture;
-		TextureInfo* tex = Textures::get_pointer( s->texid );
-		s->textures.push_back( tex->atlas );
-		s->brush.init( "mesh_quad" );
-		s->addNormalMap( tex->normals );
-		s->setPosition(
-				(float)( col * conf.mapTileSize ), // + ( row % 2 ? (conf.mapTileSize >> 1) : 0 ) ),
-				(float)( row * conf.mapTileSize ) ); //- row * ( 3 * (conf.mapTileSize >> 2) ) ) );
-		s->setPicture( t.Type->picture );
-		s->resize( (float)conf.mapTileSize, (float)conf.mapTileSize, 0 );
-		if( ++col >= side ){
-			col = 0;
-			row++;
-		}
-	}
-	Texture tex;
-	tex.w = ChunkManager::chunk_size.x;
-	tex.h = ChunkManager::chunk_size.y;
-	tex.tex = 0;
-	GLTextures::draw( &tex.tex, tex.w, tex.h, &sprite_list, true );
-	GLHelpers::UpdateTexture( ChunkManager::atlas, &tex, (int)atlasPos.x, (int)atlasPos.y );
-	delete[] sprites;
-	*/
 }
 
 

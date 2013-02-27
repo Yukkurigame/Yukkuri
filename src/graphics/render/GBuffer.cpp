@@ -28,7 +28,7 @@ namespace GBuffer
 	GLuint depth_texture;
 	GLuint final_texture;
 
-	GLuint VBOHandle;
+	//GLuint VBOHandle;
 
 	s2f window_size;
 	int current_point_light = 0;
@@ -101,7 +101,7 @@ bool GBuffer::init()
 	UniformsManager::pass_data( in_CurrentLight, &current_point_light );
 
 	// Create the VBO
-	glGenBuffers(1, &VBOHandle);
+	//glGenBuffers(1, &VBOHandle);
 
 	// Create the FBO
 	glGenFramebuffers( 1, &fbo );
@@ -151,8 +151,8 @@ bool GBuffer::init()
 
 void GBuffer::clean( )
 {
-	if( VBOHandle )
-		glDeleteBuffers( 1, &VBOHandle );
+	//if( VBOHandle )
+	//	glDeleteBuffers( 1, &VBOHandle );
 
 	if( fbo )
 		glDeleteFramebuffers( 1, &fbo );
@@ -169,7 +169,7 @@ void GBuffer::clean( )
 }
 
 
-void GBuffer::render()
+void GBuffer::render( UINT VBOHandle )
 {
 	glBindFramebuffer( GL_DRAW_FRAMEBUFFER, fbo );
 	glDrawBuffer( GL_COLOR_ATTACHMENT4 );

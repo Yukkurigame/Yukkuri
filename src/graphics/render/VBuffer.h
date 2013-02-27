@@ -15,11 +15,14 @@
 namespace VBuffer {
 
 	// VAO
-	void create( GLuint* handle );
-	void bind( GLuint handle );
+	void create( UINT* buffer_id );
+	void free_buffer( UINT* buffer_id );
+	void bind( UINT buffer_id );
+	void fill( UINT buffer_id );
 	void unbind(  );
-	void fill( );
-	void setup( GLuint handle );
+
+
+	void setup( UINT buffer_id );
 	void draw( int pass, list<VBOStructureHandle*>* /*VBOStructureHandle* vbostructure*/ );
 
 	// Structures

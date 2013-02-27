@@ -42,7 +42,7 @@ namespace {
 	//////////////////////////////////////////////////
 	// VBO
 
-	GLuint VBOHandle;
+	UINT VBOHandle;
 
 	//////////////////////////////////////////////////
 	// Atlases
@@ -82,8 +82,7 @@ void RenderManager::init( )
 
 void RenderManager::clean( )
 {
-	glDeleteBuffers( 1, &VBOHandle );
-
+	VBuffer::free_buffer( &VBOHandle );
 	TextureAtlas::clean( );
 	Textures::clean( );
 	GLTextures::clean();
@@ -115,16 +114,13 @@ bool RenderManager::openglSetup( int wwidth, int wheight )
 		return false;
 
 	glClear( GL_COLOR_BUFFER_BIT ); // | GL_DEPTH_BUFFER_BIT );
-
 	//glTranslatef(0.0f, 0.0f, 6.0f);
-
 	glClearColor( 1, 1, 1, -1 ); //0.25, 0.43, 0.0, -1.0 );
-
 	//glClearDepth( 600.0f );
-
 	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
 
-	glGenBuffersARB( 1, &VBOHandle );
+
+	VBuffer::create( &VBOHandle );
 
 	TextureAtlas::init( );
 
@@ -258,7 +254,7 @@ void RenderManager::DrawGLScene()
 		}
 			break;
 		case rmGBuffer:
-			GBuffer::render( );
+			GBuffer::render( VBOHandle );
 			break;
 	}
 

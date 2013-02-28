@@ -21,7 +21,7 @@
  */
 
 namespace {
-	int current_shader = -2;
+	//int current_shader = -2;
 }
 
 

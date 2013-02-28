@@ -41,6 +41,8 @@ namespace Map
 	bool init( );
 	void clean( );
 
+
+
 	unsigned char isActive( );
 	void setActive( );
 	void clearActive( );

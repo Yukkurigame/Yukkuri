@@ -30,14 +30,15 @@ namespace ChunkManager {
 
 	long int state;
 	s2i screenCount;
-	s2i atlasCount;
 	unsigned int chunksCount;
 	s2i chunk_size;
 	unsigned int chunkTilesCount;
-	GLuint atlas;
 	s2i screen;
-	unsigned int texture;
 	int tile_size_p2;
+
+	//GLuint atlas;
+	//s2i atlasCount;
+	//unsigned int texture;
 }
 
 
@@ -118,20 +119,14 @@ MapChunk::~MapChunk()
 
 
 void ChunkManager::init(){
-	atlas = 0;
 	// Get pow2 tile size
 	tile_size_p2 = floor( log(conf.mapTileSize) * M_LOG2E );
 	// Size of one chunk
 	chunk_size.x = conf.mapTileSize << CHUNK_SIZE;
 	chunk_size.y = conf.mapTileSize << CHUNK_SIZE;
 
-	// 0.5 of tile for second row offset
-	//chunk_size.x = (conf.mapTileSize << CHUNK_SIZE) + (conf.mapTileSize >> 1);
-	// tile y is half of x; Each odd row located between two another.
-	//chunk_size.y = ( conf.mapTileSize << (CHUNK_SIZE - 1 ) ) + (conf.mapTileSize >> 1);
-
 	// Calculate count of chunks in the screen
-	screen.x = conf.video.windowWidth >> ( tile_size_p2 + CHUNK_SIZE - 1 );
+	screen.x = conf.video.windowWidth >> ( tile_size_p2 + CHUNK_SIZE - 2 );
 	screen.y = conf.video.windowHeight >> ( tile_size_p2 + CHUNK_SIZE - 2 );
 	// Tiles in chunk: two interpenetrative girds of CHUNK_SIZE^2 tiles.
 	chunkTilesCount = 1 << ( CHUNK_SIZE + CHUNK_SIZE );
@@ -145,7 +140,9 @@ void ChunkManager::init(){
 		return;
 	}
 	chunksCount = box.rows * box.cols;
-	TextureProxy tp;
+
+	//atlas = 0;
+	/*TextureProxy tp;
 	{
 		tp.id = "map_atlas";
 		// Too static
@@ -160,6 +157,7 @@ void ChunkManager::init(){
 	}
 	GLTextures::generate( &atlas, box.Width, box.Height );
 	texture = Textures::push( &tp, atlas, 0 );
+	*/
 }
 
 
@@ -201,8 +199,8 @@ signed int ChunkManager::get_space( s2f& pos ){
 		if( p > chunksCount ) // No free space
 			return -1;
 	}
-	TextureInfo* texinfo = Textures::get_pointer( texture );
-	texinfo->getTexturePosition( pos, p );
+	//TextureInfo* texinfo = Textures::get_pointer( texture );
+	//texinfo->getTexturePosition( pos, p );
 	state |= c; // Set free space as occupied
 	return p;
 }

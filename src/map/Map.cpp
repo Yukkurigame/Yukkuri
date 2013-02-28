@@ -3,10 +3,12 @@
 
 #include "graphics/Camera.h"
 #include "3rdparty/timer/TimerManager.h"
+#include "basic_types.h"
 #include "debug.h"
 #include "hacks.h"
 
 #include <vector>
+#include <algorithm>
 #include <cmath>
 
 
@@ -16,12 +18,13 @@ typedef std::vector< MapChunk* >::iterator ChunkListIter;
 
 namespace Map {
 
-	bool Updated;
+	enum MapFlags { mapActive = 0x01, mapUpdated = 0x02 };
+
 	s2i position;
-	int map_flags;
+	int flags;
 
 	std::vector< MapChunk* > chunkVec;
-	ChunkListIter get_chunk_iter( signed int x, signed int y );
+	ChunkListIter get_chunk_iter( signed int x, signed int y, bool x_only = false );
 
 
 	class MapCaller : public ITimerEventPerformer
@@ -48,42 +51,16 @@ namespace Map {
 		void OnTimerEventDestroy( const InternalTimerEvent& ev ){	}
 	} map_caller;
 
+	FLAGS_FUNCTIONS( map, Updated );
+
 }
-
-/*
-static struct MapDefines{
-	int XCount;
-	int YCount;
-	int lTileSize;
-	posOffset ROffset;
-	posOffset LOffset;
-	posOffset Right;
-	posOffset Top;
-	void Init( ){
-		//FIXME: This magic needs to be described
-		lTileSize = static_cast<int>( floor( log(static_cast<float>(conf.mapTileSize)) / log(2.0f) ) ) - 1;
-		Right.set(1, -1);
-		Top.set(1, 1);
-		XCount = conf.video.windowWidth >> lTileSize;
-		YCount = conf.video.windowHeight >> lTileSize;
-		ROffset.set( conf.video.windowWidth / 2, conf.video.windowHeight / 2 );
-		Map::toMapCoordinates(&ROffset.X, &ROffset.Y);
-		ROffset += ROffset; // Right top corner
-		LOffset = ROffset + ( Right * -1 * ( XCount >> 1 ) ); // Left top corner
-
-		//FIXME: move from here
-		ChunkManager::init();
-	}
-} Defines;
-*/
 
 
 bool Map::init( )
 {
-	Updated = false;
 	position.x = 0;
 	position.y = 0;
-	map_flags = 0;
+	flags = 0;
 	ChunkManager::init();
 	//Defines.Init();
 	return true;
@@ -101,20 +78,21 @@ void Map::clean()
 
 unsigned char Map::isActive()
 {
-	return map_flags & 1;
+	return flags & mapActive;
 }
 
 void Map::setActive()
 {
-	map_flags |= 1;
+	flags |= mapActive;
 	map_caller.start();
 }
 
 void Map::clearActive()
 {
-	map_flags &= ~1;
+	flags &= ~mapActive;
 	map_caller.stop();
 }
+
 
 
 void Map::toMapCoordinates( int* mx, int* my )
@@ -168,7 +146,7 @@ MapChunk* Map::createChunk( signed int x, signed int y )
 	//x, y
 	chunk = new MapChunk( x, y );
 	chunkVec.insert( tit, chunk );
-	Updated = true;
+	setUpdated();
 	return chunk;
 }
 
@@ -177,7 +155,7 @@ void Map::deleteChunk( MapChunk* chunk )
 {
 	if( !chunk )
 		return;
-	Updated = true;
+	setUpdated();
 	delete chunk;
 }
 
@@ -196,7 +174,7 @@ void Map::deleteTile( MapTile* tile )
 {
 	if( !tile )
 		return;
-	Updated = true;
+	setUpdated();
 	delete tile;
 }
 
@@ -217,7 +195,7 @@ MapTile* Map::getTile( signed int x, signed int y )
 }
 
 
-ChunkListIter Map::get_chunk_iter( signed int x, signed int y )
+ChunkListIter Map::get_chunk_iter( signed int x, signed int y, bool x_only )
 {
 	int first;
 	int last;
@@ -242,7 +220,7 @@ ChunkListIter Map::get_chunk_iter( signed int x, signed int y )
 				first = mid + 1;
 		}
 
-		if( chunkVec[last]->pos.x == x ){
+		if( !x_only && chunkVec[last]->pos.x == x ){
 			//Next find y
 			first = last;
 			while( last <= size && chunkVec[last]->pos.x == x ){
@@ -264,38 +242,6 @@ ChunkListIter Map::get_chunk_iter( signed int x, signed int y )
 	return begin;
 }
 
-/*
-ChunkListIter Map::getChunkXIt( signed int x )
-{
-	int first;
-	int last;
-	int mid;
-	int size = chunkVec.size() - 1;
-	ChunkListIter begin;
-
-	if( size <= 0 || chunkVec[size]->pos.x < x )
-		return chunkVec.end();
-
-	begin = chunkVec.begin();
-
-	if( chunkVec[0]->pos.x <= x ){
-		//First find x
-		first = 0;
-		last = size;
-		while( first < last ){
-			mid = first + ( last - first ) / 2;
-			if( x <= chunkVec[mid]->pos.x )
-				last = mid;
-			else
-				first = mid + 1;
-		}
-
-		std::advance( begin, last );
-	}
-
-	return begin;
-}
-*/
 
 void Map::createHTilesLine( signed int startx, signed int starty, int number )
 {
@@ -342,21 +288,25 @@ void Map::deleteChunksRectangle( const s2i& pos, const s2i& count )
 
 void Map::clear( )
 {
-	/*
-	int cx, cy, ytop;
+	//int cx, cy, ytop;
 	if( chunkVec.empty() )
 		return;
-	cx = static_cast<int>(Camera::getX()) - 64;
-	cy = static_cast<int>(Camera::getY()) - 64;
-	toChunkCoordinates( cx, cy );
-	ytop = cy + ChunkManager.screen.y - 1;
-	ChunkListIter xlborder = getChunkXIt( cx );
+	s3f cam_pos = Camera::position();
+	s2i chunk_pos( cam_pos.x, cam_pos.y );
+	ChunkManager::to_coordinates( chunk_pos );
+	const s2i& count = ChunkManager::get_count();
+	//cx = static_cast<int>(Camera::getX()) - 64;
+	//cy = static_cast<int>(Camera::getY()) - 64;
+	//toChunkCoordinates( cx, cy );
+	int ytop = chunk_pos.y + (count.y >> 1);
+	int ybot = chunk_pos.y - (count.y >> 1);
+	ChunkListIter xlborder = get_chunk_iter( chunk_pos.x - (count.x >> 1), 0, true );
 	if( xlborder != chunkVec.end() ){
 		// Remove chunks before visible X
 		std::for_each( chunkVec.begin(), xlborder, deleteChunkp );
 		xlborder = chunkVec.erase( chunkVec.begin(), xlborder );
 	}
-	ChunkListIter xrborder = getChunkXIt( cx + ChunkManager.screen.x );
+	ChunkListIter xrborder = get_chunk_iter( chunk_pos.x + (count.x >> 1), 0, true );
 	if( xrborder != chunkVec.end() ){
 		// Remove chunks after visible X
 		std::for_each( xrborder, chunkVec.end(), deleteChunkp );
@@ -365,36 +315,35 @@ void Map::clear( )
 	// Remove unvisible Y chunks
 	while( xlborder != chunkVec.end() ){
 		MapChunk* c = *xlborder;
-		if( c->pos.y < cy || c->pos.y > ytop ){
+		if( c->pos.y < ybot || c->pos.y > ytop ){
 			deleteChunk( c );
 			xlborder = chunkVec.erase( xlborder );
 		}else{
 			++xlborder;
 		}
 	}
-	Updated = false;
-	*/
 }
 
 
 void Map::onDraw( )
 {
-	if( Updated ){
-		//TODO: cleaning in thread
+	if( isUpdated() ){
 		clear();
-		Updated = false;
+		clearUpdated();
 	}
+
 	s3f cam_pos = Camera::position();
 	//int cx, cy;
 	//cx = static_cast<int>(Camera::getX()) - 64;
 	//cy = static_cast<int>(Camera::getY()) - 64;
 	s2i chunk_pos( cam_pos.x, cam_pos.y );
 	ChunkManager::to_coordinates( chunk_pos );
-	chunk_pos.y -= 2;
-	chunk_pos.x--;
 	if( position.x != chunk_pos.x || position.y != chunk_pos.y ){
+		const s2i& count = ChunkManager::get_count();
+		chunk_pos.y -= (count.y >> 1);
+		chunk_pos.x -= (count.x >> 1);
 		Debug::debug(Debug::NONE, "%f:%f:%f\n", cam_pos.x, cam_pos.y, cam_pos.z );
-		createChunksRectangle( chunk_pos, ChunkManager::get_count() );
+		createChunksRectangle( chunk_pos, count );
 		position = chunk_pos;
 	}
 }

@@ -47,8 +47,6 @@ namespace {
 	// Atlases
 
 	int atlasWidth, atlasHeight;
-	//GLuint atlasHandle;
-	//GLuint normalsHandle;
 
 	void TestDrawAtlas(int x, int y, GLuint atlas)
 	{
@@ -130,10 +128,6 @@ void debug_callback( GLenum source, GLenum type, GLuint id,
 		OUTPUT_CASE( GL_DEBUG_SEVERITY_HIGH_ARB, debSev, "High" )
 		OUTPUT_CASE( GL_DEBUG_SEVERITY_MEDIUM_ARB, debSev, "Medium" )
 		OUTPUT_CASE( GL_DEBUG_SEVERITY_LOW_ARB, debSev, "Low" )
-		//GL_DEBUG_SEVERITY_NOTIFICATION
-		//default:
-		//	strcpy( debType, "Unknown" );
-		//	break;
 	}
 
 	Debug::debug( Debug::GRAPHICS, "OpenglDebug: %s\t%s\t%d\t%s\n%s\n",
@@ -307,8 +301,6 @@ void RenderManager::DrawGLScene()
 			GBuffer::render( );
 			break;
 	}
-
-	//TestDrawAtlas(-2500, -1000, 10);
 
 	SDL_GL_SwapBuffers();
 }

@@ -184,7 +184,6 @@ void Camera::update( )
 	pass_state( state );
 }
 
-
 s3f Camera::position( )
 {
 	s3f ret;

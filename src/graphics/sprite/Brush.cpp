@@ -19,6 +19,9 @@ GLBrush::GLBrush( UINT VBO ) :
 	indices_count = 0;
 	indices_list = NULL;
 	vertex_points = NULL;
+
+	memset( texture_indices, 0, (UINT)sizeof(UINT) * 4 );
+	memset( vertex_indices, 0, (UINT)sizeof(UINT) * 4 );
 }
 
 
@@ -72,12 +75,8 @@ void GLBrush::setCentered( )
 	if( isCentered() )
 		return;
 
-	VBufferHandler* hdl = VBuffer::handler( VBOHandler );
-	if( !hdl )
-		return;
-
 	s3f dist = size( vertex_points, points_count );
-	VertexV2FT2FC4UI* arr = hdl->array.pointer( point_index );
+	VertexV2FT2FC4UI* arr = VBuffer::array_pointer( VBOHandler, point_index );
 	for( UINT i = 0; i < points_count; ++i ){
 		s3f* v = isFaced() ? &vertex_points[i] : &arr[i].verticles;
 		v->x -= dist.x / 2.0f;
@@ -93,12 +92,9 @@ void GLBrush::clearCentered( )
 {
 	if( !isCentered() )
 		return;
-	VBufferHandler* hdl = VBuffer::handler( VBOHandler );
-	if( !hdl )
-		return;
 
 	s3f dist = size( vertex_points, points_count );
-	VertexV2FT2FC4UI* arr = hdl->array.pointer( point_index );
+	VertexV2FT2FC4UI* arr = VBuffer::array_pointer( VBOHandler, point_index );
 	for( UINT i = 0; i < points_count; ++i ){
 		s3f* v = isFaced() ? &vertex_points[i] : &arr[i].verticles;
 		v->x += dist.x / 2.0f;
@@ -143,11 +139,7 @@ void GLBrush::scale( const s3f* scale )
 	if( points_count < 2 )
 		return;
 
-	VBufferHandler* hdl = VBuffer::handler( VBOHandler );
-	if( !hdl )
-		return;
-
-	VertexV2FT2FC4UI* arr = hdl->array.pointer( point_index );
+	VertexV2FT2FC4UI* arr = VBuffer::array_pointer( VBOHandler, point_index );
 	for( UINT i = 0; i < points_count; ++i ){
 		s3f* v = isFaced() ? &vertex_points[i] : &arr[i].verticles;
 		v->x = vertex_origin.x + (v->x - vertex_origin.x) * scale->x;
@@ -161,13 +153,9 @@ void GLBrush::scale( const s3f* scale )
 
 void GLBrush::move( float dx, float dy, float dz )
 {
-	VBufferHandler* hdl = VBuffer::handler( VBOHandler );
-	if( !hdl )
-		return;
-
 	s3f delta( dx, dy, dz );
 	vertex_origin += delta;
-	VertexV2FT2FC4UI* arr = hdl->array.pointer( point_index );
+	VertexV2FT2FC4UI* arr = VBuffer::array_pointer( VBOHandler, point_index );
 	for( UINT i = 0; i < points_count; ++i ){
 		s3f* v = isFaced() ? &vertex_points[i] : &arr[i].verticles;
 		v->x += delta.x;
@@ -181,11 +169,7 @@ void GLBrush::move( float dx, float dy, float dz )
 
 void GLBrush::set_color( const s4ub& color )
 {
-	VBufferHandler* hdl = VBuffer::handler( VBOHandler );
-	if( !hdl )
-		return;
-
-	VertexV2FT2FC4UI* arr = hdl->array.pointer( point_index );
+	VertexV2FT2FC4UI* arr = VBuffer::array_pointer( VBOHandler, point_index );
 	for( UINT i=0; i < points_count; ++i )
 		arr[i].color.set(color);
 
@@ -195,49 +179,41 @@ void GLBrush::set_color( const s4ub& color )
 
 s4ub GLBrush::get_color(  )
 {
-	VBufferHandler* hdl = VBuffer::handler( VBOHandler );
-	if( !hdl )
-		return s4ub();
-
-	VertexV2FT2FC4UI* arr = hdl->array.pointer( point_index );
+	VertexV2FT2FC4UI* arr = VBuffer::array_pointer( VBOHandler, point_index );
 	return arr[0].color;
 }
 
 
 void GLBrush::update_points( )
 {
-	if( !isFaced() )
+	if( !isUpdated() )
 		return;
 
-	VBufferHandler* hdl = VBuffer::handler( VBOHandler );
-	if( !hdl )
-		return;
-
-
-	VertexV2FT2FC4UI* arr = hdl->array.pointer( point_index );
-	float rot[4][4];
-	memcpy( &rot[0][0], Camera::inversed_rotation(), (UINT)16 * sizeof(float) );
-	for( UINT i = 0; i < points_count; ++i ){
-		s3f& target = arr[i].verticles;
-		if( isScreen() ){
-			//glm::vec4 pt = glm::vec4(vertex_points[i].x, vertex_points[i].y, vertex_points[i].z, 1.0);
-			//pt = rot * pt;
-			s3f& v = vertex_points[i];
-			target.x = rot[0][0] * v.x + rot[1][0] * v.y + rot[2][0] * v.z + rot[3][0] * 1.0;
-			target.y = rot[0][1] * v.x + rot[1][1] * v.y + rot[2][1] * v.z + rot[3][1] * 1.0;
-			target.z = rot[0][2] * v.x + rot[1][2] * v.y + rot[2][2] * v.z + rot[3][2] * 1.0;
-		}else{
-			s3f v = vertex_points[i] - vertex_origin;
-			//glm::vec4 pt = glm::vec4(vertex_points[i].x - vertex_origin.x,
-			//						vertex_points[i].y - vertex_origin.y,
-			//						vertex_points[i].z - vertex_origin.z, 1.0);
-			//pt = rot * pt;
-			target.x = rot[0][0] * v.x + rot[1][0] * v.y + rot[2][0] * v.z + rot[3][0] * 1.0 + vertex_origin.x;
-			target.y = rot[0][1] * v.x + rot[1][1] * v.y + rot[2][1] * v.z + rot[3][1] * 1.0 + vertex_origin.y;
-			target.z = rot[0][2] * v.x + rot[1][2] * v.y + rot[2][2] * v.z + rot[3][2] * 1.0 + vertex_origin.z;
+	if( isFaced() ){
+		VertexV2FT2FC4UI* arr = VBuffer::array_pointer( VBOHandler, point_index );
+		float rot[4][4];
+		memcpy( &rot[0][0], Camera::inversed_rotation(), (UINT)sizeof(float) * 16 );
+		for( UINT i = 0; i < points_count; ++i ){
+			s3f& target = arr[i].verticles;
+			if( isScreen() ){
+				//glm::vec4 pt = glm::vec4(vertex_points[i].x, vertex_points[i].y, vertex_points[i].z, 1.0);
+				//pt = rot * pt;
+				s3f& v = vertex_points[i];
+				target.x = rot[0][0] * v.x + rot[1][0] * v.y + rot[2][0] * v.z + rot[3][0] * 1.0;
+				target.y = rot[0][1] * v.x + rot[1][1] * v.y + rot[2][1] * v.z + rot[3][1] * 1.0;
+				target.z = rot[0][2] * v.x + rot[1][2] * v.y + rot[2][2] * v.z + rot[3][2] * 1.0;
+			}else{
+				s3f v = vertex_points[i] - vertex_origin;
+				//glm::vec4 pt = glm::vec4(vertex_points[i].x - vertex_origin.x,
+				//						vertex_points[i].y - vertex_origin.y,
+				//						vertex_points[i].z - vertex_origin.z, 1.0);
+				//pt = rot * pt;
+				target.x = rot[0][0] * v.x + rot[1][0] * v.y + rot[2][0] * v.z + rot[3][0] * 1.0 + vertex_origin.x;
+				target.y = rot[0][1] * v.x + rot[1][1] * v.y + rot[2][1] * v.z + rot[3][1] * 1.0 + vertex_origin.y;
+				target.z = rot[0][2] * v.x + rot[1][2] * v.y + rot[2][2] * v.z + rot[3][2] * 1.0 + vertex_origin.z;
+			}
 		}
 	}
-
 	clearUpdated();
 }
 

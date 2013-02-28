@@ -153,7 +153,7 @@ bool GLTextures::generate( GLuint* ahandle, GLenum target, GLint internalformat,
 bool GLTextures::draw( GLuint* ahandle, int width, int height, list< Sprite* >* sprites, bool invert )
 {
 	GLuint FBOHandle = 0;
-	GLuint VBOHandle = 0;
+	//GLuint VBOHandle = 0;
 
 	// A FBO will be used to draw textures. FBO creation and setup.
 	if( !generate( ahandle, width, height ) ||
@@ -173,16 +173,10 @@ bool GLTextures::draw( GLuint* ahandle, int width, int height, list< Sprite* >* 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 
-	VBuffer::create( &VBOHandle );
-
 	list< VBOStructureHandle* > vbostructure;
 	VBuffer::prepare_handler( sprites, &vbostructure );
-	VBuffer::setup( VBOHandle );
 	VBuffer::draw( glpSimple, &vbostructure );
-	VBuffer::unbind( );
 	VBuffer::free_handler( &vbostructure );
-
-	VBuffer::free_buffer( &VBOHandle );
 
 	glDisable(GL_BLEND);
 

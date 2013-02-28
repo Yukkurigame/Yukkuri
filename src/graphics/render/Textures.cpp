@@ -153,7 +153,7 @@ void Textures::unbind( )
 }
 
 
-void Textures::apply( list<GLuint>* textures, int flags )
+void Textures::apply( list<GLuint>* textures, int& flags )
 {
 	listElement< GLuint >* texture = textures->head;
 
@@ -166,7 +166,7 @@ void Textures::apply( list<GLuint>* textures, int flags )
 		return;
 	}else if( !(flags & 1) ){
 		glEnable( GL_TEXTURE_2D );
-		flags &= 1;
+		flags |= 1;
 	}
 
 	for( int index = 0; texture != NULL; texture = texture->next, ++index ){

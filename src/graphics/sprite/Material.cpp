@@ -16,7 +16,6 @@ void GLMaterial::init_flags( UINT glflags )
 	for( unsigned int i = glpNone; i < glpLast; ++i ){
 		enum GLSPass pass = static_cast<enum GLSPass>(i);
 		programs[i] = Shaders::getProgram( pass, new_flags );
-		//samplers[i] = Shaders::getSamplers( pass, new_flags );
 		uniforms[i] = Shaders::getUniforms( pass, new_flags );
 	}
 }

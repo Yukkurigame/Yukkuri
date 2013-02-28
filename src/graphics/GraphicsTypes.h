@@ -200,12 +200,13 @@ struct VBOStructureHandle
 	int count;
 	//enum primitives type;
 	GLuint method;
+	UINT vbo;
 	list< GLuint > textures;
 	UINT material;
 
-	VBOStructureHandle( GLuint m, list< GLuint >* tex, UINT mat ) :
+	VBOStructureHandle( GLuint m, UINT VBO, list< GLuint >* tex, UINT mat ) :
 		indexes(NULL), indexes_alloc(1), count(0),
-		method(m), textures(tex), material(mat) { }
+		method(m), vbo(VBO), textures(tex), material(mat) { }
 
 	~VBOStructureHandle( ){
 		if( indexes )

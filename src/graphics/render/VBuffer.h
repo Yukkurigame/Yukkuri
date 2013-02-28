@@ -27,11 +27,16 @@ namespace VBuffer {
 	void create( UINT* buffer_id );
 	void free_buffer( UINT* buffer_id );
 	void bind( UINT buffer_id );
+	void enable_attrib( );
+	void disable_attrib( );
 	void fill( UINT buffer_id );
 	void unbind(  );
 
-	VBufferHandler* handler( UINT buffer_id );
+	void pass_subdata( UINT buffer_id, int index, int count );
 
+
+	VBufferHandler* handler( UINT buffer_id );
+	VertexV2FT2FC4UI* array_pointer( UINT buffer_id, int index );
 
 
 

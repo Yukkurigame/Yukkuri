@@ -96,6 +96,7 @@ obj_face* obj_parse_face(obj_growable_scene_data *scene)
 {
 	int vertex_count;
 	obj_face *face = (obj_face*)malloc(sizeof(obj_face));
+	memset( face, 0, (unsigned)sizeof(obj_face) );
 
 	vertex_count = obj_parse_vertex_index(face->vertex_index, face->texture_index, face->normal_index);
 	obj_convert_to_list_index_v(scene->vertex_list.item_count, face->vertex_index);

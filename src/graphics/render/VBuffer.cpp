@@ -20,10 +20,16 @@
  *
  */
 
+namespace {
+	int current_shader = -2;
+}
+
+
 namespace VBuffer {
 
 	UINT buffers_count = 0;
 	VBufferHandler* buffers = NULL;
+	UINT binded = 0;
 
 }
 
@@ -54,16 +60,24 @@ void VBuffer::free_buffer( UINT* buffer_id )
 }
 
 
-
 /*	This function binds VAO and set up pointers positions.
  *  handle - VAO id.
  */
 void VBuffer::bind( UINT buffer_id )
 {
 	VBufferHandler* hdl = &buffers[buffer_id];
+	if( binded == hdl->id )
+		return;
 
 	glBindBuffer( GL_ARRAY_BUFFER, hdl->handle );
+	binded = hdl->id;
 
+	enable_attrib( );
+}
+
+/*	This function enables attrib array and setup vbo pointers */
+void VBuffer::enable_attrib( )
+{
 	// Set up VBO strides & offsets
 	int vertex_size =  sizeof(VertexV2FT2FC4UI);
 
@@ -74,17 +88,47 @@ void VBuffer::bind( UINT buffer_id )
 	glVertexAttribPointer( gllPosition, 3, GL_FLOAT, GL_FALSE, vertex_size, 0 );
 	glVertexAttribPointer( gllTexCoord, 2, GL_FLOAT, GL_FALSE, vertex_size, BUFFER_OFFSET(sizeof(s3f)) );
 	glVertexAttribPointer( gllColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, vertex_size, BUFFER_OFFSET(sizeof(s3f) + sizeof(s2f)) );
+}
 
+/*	This function disables attrib array. */
+void VBuffer::disable_attrib( )
+{
+	glDisableVertexAttribArray( gllPosition );
+	glDisableVertexAttribArray( gllTexCoord );
+	glDisableVertexAttribArray( gllColor );
 }
 
 
 /*	This function ubinds VAO. */
 void VBuffer::unbind()
 {
-	glDisableVertexAttribArray( gllPosition );
-	glDisableVertexAttribArray( gllTexCoord );
-	glDisableVertexAttribArray( gllColor );
+
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	binded = 0;
+}
+
+/*	This function updates subdata in VBO
+ *	buffer_id - number of VBO
+ *	index - first index of data block
+ *	count - count of points in data block
+ */
+void VBuffer::pass_subdata( UINT buffer_id, int index, int count )
+{
+	VBufferHandler* hdl = &buffers[buffer_id];
+	if( binded != hdl->id ){
+		glBindBuffer( GL_ARRAY_BUFFER, hdl->handle );
+		binded = hdl->id;
+	}
+	UINT total_size = hdl->array.size();
+	if( total_size != hdl->size ){
+		glBufferData( GL_ARRAY_BUFFER, total_size, hdl->array.head(), GL_STREAM_DRAW );
+		hdl->size = total_size;
+		return;
+	}
+	UINT size = count * sizeof(VertexV2FT2FC4UI);
+	UINT first = index * sizeof(VertexV2FT2FC4UI);
+	glBufferSubData( GL_ARRAY_BUFFER, first, size, hdl->array.pointer(index) );
+
 }
 
 
@@ -99,6 +143,19 @@ VBufferHandler* VBuffer::handler( UINT buffer_id )
 		if( hdl->id )
 			return hdl;
 	}
+	return NULL;
+}
+
+
+/*	This function returns pointer to VBO array data with given offset
+ * 	buffer_id - number of VBO
+ * 	index - data block offset
+ */
+VertexV2FT2FC4UI* VBuffer::array_pointer( UINT buffer_id, int index )
+{
+	VBufferHandler* hdl = handler(buffer_id);
+	if(hdl)
+		return hdl->array.pointer(index);
 	return NULL;
 }
 
@@ -135,12 +192,15 @@ inline void apply_material( UINT matid, int pass )
 	if( !mat )
 		return;
 	int shader = mat->programs[pass];
-	UniformHandlers* uniforms = mat->uniforms[pass];
-	glUseProgram( shader );
+	//if( shader != current_shader ){
+		glUseProgram( shader );
+		//current_shader = shader;
+	//}
 	if( !shader )
 		return;
 
 	int samplers_index = -1;
+	UniformHandlers* uniforms = mat->uniforms[pass];
 	if( uniforms ){
 		for( unsigned int index = 0; index < uniforms->count; ++index ){
 			UniformHandler* uniform = &uniforms->handlers[index];
@@ -162,14 +222,18 @@ void VBuffer::draw( int pass, list<VBOStructureHandle*>* handler )
 
 	int flags = 0; // TEXTURE_2D - 1
 
-	//glEnable(GL_TEXTURE_2D);
+	VBuffer::unbind();
+
 	while(handler_element != NULL){
 		VBOStructureHandle* vbostructure = handler_element->data;
+		VBuffer::bind( vbostructure->vbo );
 		Textures::apply( &vbostructure->textures, flags );
 		apply_material( vbostructure->material, pass );
 		glDrawElements( vbostructure->method, vbostructure->count, GL_UNSIGNED_INT, vbostructure->indexes );
 		handler_element = handler_element->next;
 	}
+	VBuffer::disable_attrib();
+	VBuffer::unbind( );
 	glUseProgram( 0 );
 
 	if( flags & 1 )
@@ -191,13 +255,18 @@ void VBuffer::prepare_handler( Sprite* sprite, list<VBOStructureHandle*>* handle
 		v = handler->tail->data;
 
 	if( !v || v->method != GL_TRIANGLES ||
-		v->material != sprite->material ||
+		v->material != sprite->material || v->vbo != sprite->brush.VBOHandler ||
 		!v->textures.cmp( &sprite->textures ) ){
-		v = new VBOStructureHandle( sprite->brush.method, &sprite->textures, sprite->material );
+		v = new VBOStructureHandle( sprite->brush.method, sprite->brush.VBOHandler,
+									&sprite->textures, sprite->material );
 		handler->push_back( v );
 	}
 
-	sprite->brush.update_points();
+	if( sprite->brush.isUpdated() ){
+		sprite->brush.update_points();
+		pass_subdata( sprite->brush.VBOHandler, sprite->brush.point_index, sprite->brush.points_count );
+	}
+
 	v->set_indexes( sprite->brush.indices_list, sprite->brush.indices_count );
 }
 

@@ -92,6 +92,54 @@ void RenderManager::clean( )
 
 
 
+void debug_callback( GLenum source, GLenum type, GLuint id,
+		GLenum severity, GLsizei length, const GLchar* message, GLvoid* userParam )
+{
+	char debSource[16], debType[20], debSev[5];
+
+#define OUTPUT_CASE(var, dst, str)	\
+	case var:						\
+		strcpy( dst, str );			\
+		break;
+
+	switch( source ){
+		OUTPUT_CASE( GL_DEBUG_SOURCE_API_ARB, debSource, "OpenGL" )
+		OUTPUT_CASE( GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB, debSource, "Window system" )
+		OUTPUT_CASE( GL_DEBUG_SOURCE_SHADER_COMPILER_ARB, debSource, "Shader Compiler" )
+		OUTPUT_CASE( GL_DEBUG_SOURCE_THIRD_PARTY_ARB, debSource, "Third Party" )
+		OUTPUT_CASE( GL_DEBUG_SOURCE_APPLICATION_ARB, debSource, "Application" )
+		OUTPUT_CASE( GL_DEBUG_SOURCE_OTHER_ARB, debSource, "Other" )
+		default:
+			strcpy(debSource, "Unknown");
+			break;
+	}
+
+	switch( type ){
+		OUTPUT_CASE( GL_DEBUG_TYPE_ERROR_ARB, debType, "Error" )
+		OUTPUT_CASE( GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB, debType, "Deprecated behavior" )
+		OUTPUT_CASE( GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB, debType, "Undefined behavior" )
+		OUTPUT_CASE( GL_DEBUG_TYPE_PORTABILITY_ARB, debType, "Portability" )
+		OUTPUT_CASE( GL_DEBUG_TYPE_PERFORMANCE_ARB, debType, "Performance" )
+		OUTPUT_CASE( GL_DEBUG_TYPE_OTHER_ARB, debType, "Other" )
+		default:
+			strcpy( debType, "Unknown" );
+			break;
+	}
+
+	switch( severity ){
+		OUTPUT_CASE( GL_DEBUG_SEVERITY_HIGH_ARB, debSev, "High" )
+		OUTPUT_CASE( GL_DEBUG_SEVERITY_MEDIUM_ARB, debSev, "Medium" )
+		OUTPUT_CASE( GL_DEBUG_SEVERITY_LOW_ARB, debSev, "Low" )
+		//GL_DEBUG_SEVERITY_NOTIFICATION
+		//default:
+		//	strcpy( debType, "Unknown" );
+		//	break;
+	}
+
+	Debug::debug( Debug::GRAPHICS, "OpenglDebug: %s\t%s\t%d\t%s\n%s\n",
+			debSource, debType, id, debSev, message );
+}
+
 
 void RenderManager::openglInit( )
 {
@@ -100,11 +148,17 @@ void RenderManager::openglInit( )
 	SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 6 );
 	SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 6 );
 	SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, 6 );
+
 }
 
 
 bool RenderManager::openglSetup( int wwidth, int wheight )
 {
+#ifdef DEBUG
+	glDebugMessageControlARB( GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_LOW_ARB, 0, NULL, true );
+	glDebugMessageCallbackARB( &debug_callback, NULL );
+#endif
+
 	GLExtensions::load();
 	VBuffer::create( &VBOHandle );
 
@@ -238,14 +292,14 @@ void RenderManager::DrawGLScene()
 		{
 			list< VBOStructureHandle* > vbos;
 			VBuffer::prepare_handler( &sprites_array, &vbos );
-			VBuffer::setup( VBOHandle );
+			//VBuffer::setup( VBOHandle );
 
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glEnable(GL_BLEND);
 			VBuffer::draw( glpDefault, &vbos );
 			glDisable(GL_BLEND);
-			VBuffer::unbind( );
 
+			//VBuffer::unbind( );
 			VBuffer::free_handler( &vbos );
 		}
 			break;

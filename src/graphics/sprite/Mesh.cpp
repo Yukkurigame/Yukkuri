@@ -101,8 +101,10 @@ short MeshManager::load( GLBrush* brush )
 
 	Mesh* m = NULL;
 	ITER_LIST( Mesh*, Meshes ){
-		if( (int)it->data->location == brush->mesh )
+		if( (int)it->data->location == brush->mesh ){
 			m = it->data;
+			break;
+		}
 	}
 
 	if( !m ){

@@ -48,15 +48,6 @@ struct GLBrush
 	FLAGS_FUNCTIONS( glb, Faced )
 	FLAGS_FUNCTIONS( glb, Screen )
 
-	//inline unsigned char isFaced()	{ return flags & 2; }
-	//inline void setFaced( )			{ flags |= 2; }
-	//inline void clearFaced( )		{ flags &= ~2; }
-
-	// Screen coordinate system
-	//inline unsigned char isScreen()	{ return flags & 4; }
-	//inline void setScreen( )			{ flags |= 4; }
-	//inline void clearScreen( )		{ flags &= ~4; }
-
 	void resize_verticles( int size );
 	void scale( const s3f* scale );
 	void move( float dx, float dy, float dz );

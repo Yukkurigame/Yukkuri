@@ -196,8 +196,6 @@ void MeshManager::load_brush( GLBrush* brush, const obj_scene_data* data )
 				arr[tindex].coordinates = s2f( t->e[0], t->e[1] );
 				CHECK_MIN( tmin.x, t->e[0] )
 				CHECK_MIN( tmin.y, t->e[1] )
-			}else{
-				arr[tindex].coordinates = s2f();
 			}
 		}
 	}

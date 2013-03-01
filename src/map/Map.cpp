@@ -62,7 +62,6 @@ bool Map::init( )
 	position.y = 0;
 	flags = 0;
 	ChunkManager::init();
-	//Defines.Init();
 	return true;
 }
 
@@ -295,9 +294,6 @@ void Map::clear( )
 	s2i chunk_pos( cam_pos.x, cam_pos.y );
 	ChunkManager::to_coordinates( chunk_pos );
 	const s2i& count = ChunkManager::get_count();
-	//cx = static_cast<int>(Camera::getX()) - 64;
-	//cy = static_cast<int>(Camera::getY()) - 64;
-	//toChunkCoordinates( cx, cy );
 	int ytop = chunk_pos.y + (count.y >> 1);
 	int ybot = chunk_pos.y - (count.y >> 1);
 	ChunkListIter xlborder = get_chunk_iter( chunk_pos.x - (count.x >> 1), 0, true );
@@ -333,9 +329,6 @@ void Map::onDraw( )
 	}
 
 	s3f cam_pos = Camera::position();
-	//int cx, cy;
-	//cx = static_cast<int>(Camera::getX()) - 64;
-	//cy = static_cast<int>(Camera::getY()) - 64;
 	s2i chunk_pos( cam_pos.x, cam_pos.y );
 	ChunkManager::to_coordinates( chunk_pos );
 	if( position.x != chunk_pos.x || position.y != chunk_pos.y ){

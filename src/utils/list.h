@@ -171,6 +171,8 @@ struct list
 	// Sorting of list
 	template <typename F>
 	void sort( F func ){
+		if( !head )
+			return;
 		head = sort_recursive( head, func );
 		// FIXME: move it to sort function
 		listElement< T >* last = tail;

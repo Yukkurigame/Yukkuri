@@ -16,16 +16,13 @@
 #include <string>
 #include <cstdlib>
 
-
-enum GLTextureMaps {
-	gltColor = 0,
-	gltNormal = 1,
-	gltLast = 2
+enum GLTextureMaps
+{
+	gltColor = 0, gltNormal = 1, gltLast = 2
 };
 
 #define GL_TEXTURE_FROM_INDEX(i) GL_TEXTURE0 + i
 #define BUFFER_OFFSET(i) ((char*)NULL + (int)(i))
-
 
 struct s4ub
 {
@@ -33,54 +30,57 @@ struct s4ub
 	GLubyte g;
 	GLubyte b;
 	GLubyte a;
-	s4ub() : r(255), g(255), b(255), a(255) {}
-	s4ub(unsigned int R, unsigned int G, unsigned int B, unsigned int A) : r(R), g(G), b(B), a(A) {}
-	inline void set( unsigned int cr, unsigned int cg, unsigned int cb, unsigned int ca ) {
+	s4ub( ) : r( 255 ), g( 255 ), b( 255 ), a( 255 ) {}
+	s4ub( unsigned int hex ) :	r( ( hex >> 16 ) & 0xff ),
+		g( ( ( hex >> 8 ) & 0xFF ) ), b( hex & 0xFF ) {	}
+	s4ub( unsigned int R, unsigned int G, unsigned int B, unsigned int A ) :
+		r( R ), g( G ), b( B ), a( A ) { }
+	inline void set( unsigned int cr, unsigned int cg, unsigned int cb, unsigned int ca )
+	{
 		r = cr; g = cg; b = cb; a = ca;
 	}
-	inline void set( const s4ub& c ) {
-			r = c.r; g = c.g; b = c.b; a = c.a;
+	inline void set( const s4ub& c )
+	{
+		r = c.r; g = c.g; b = c.b; a = c.a;
 	}
 };
 
 // For colors, normalized version
-struct s3fc {
+struct s3fc
+{
 	float r;
 	float g;
 	float b;
-	s3fc( ) : r(1.0f), g(1.0f), b(1.0f) {}
-	s3fc( const s4ub& clr ){
+	s3fc( ) : r( 1.0f ), g( 1.0f ), b( 1.0f ) { }
+	s3fc( const s4ub& clr )
+	{
 		r = clr.r / 255.0f;
 		g = clr.g / 255.0f;
 		b = clr.b / 255.0f;
 	}
 };
 
-
-static const GLuint gl_methods[7] = {
-	GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_TRIANGLES, GL_TRIANGLE_STRIP,
-	GL_TRIANGLE_FAN, GL_POLYGON
-};
-
-
+static const GLuint gl_methods[7] = { GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_TRIANGLES,
+		GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_POLYGON };
 
 struct VertexV2FT2FC4UI
 {
 	s3f verticles;
 	s2f coordinates;
 	s4ub color;
-	VertexV2FT2FC4UI( s3f& p, s2f& t, s4ub& c ){
+	VertexV2FT2FC4UI( s3f& p, s2f& t, s4ub& c )
+	{
 		verticles = p;
 		coordinates = t;
 		color = c;
 	}
-	void set( s3f* p, s2f* t, s4ub* c ){
+	void set( s3f* p, s2f* t, s4ub* c )
+	{
 		verticles = *p;
 		coordinates = *t;
 		color = *c;
 	}
 };
-
 
 struct Texture
 {
@@ -89,7 +89,6 @@ struct Texture
 	int w;
 	int h;
 };
-
 
 // FIXME: PLEASE, CLEAN AND DESCRIBE THIS SHIT
 // TODO: Describe
@@ -104,28 +103,32 @@ struct TextureProxy
 	rect2f atlas; // Relative position in atlas; atlas size
 	Texture* texture;
 
-	TextureProxy( ) : rows(), cols(), id(), image(), texture(NULL) {}
+	TextureProxy( ) :
+			rows(), cols(), id(), image(), texture( NULL )
+	{
+	}
 
-	inline bool operator < ( const TextureProxy & t ) {
+	inline bool operator <( const TextureProxy & t )
+	{
 		return abs < t.abs;
 	}
 
 };
 
-enum quad_corners {
-	qcRight=1, qcBottom=2, qcFront=4,
+enum quad_corners
+{
+	qcRight = 1, qcBottom = 2, qcFront = 4,
 };
 
-
-inline void init_coords( VertexV2FT2FC4UI* points, const rect2f* rect, UINT indices[4] )
+inline void init_coords( VertexV2FT2FC4UI* points, const rect2f* rect, UINT* indices,
+		int count )
 {
-	for( int i=0; i < 4; ++i ){
+	for( int i = 0; i < count; ++i ){
 		s2f& coords = points[i].coordinates;
 		coords.x = rect->x + ( indices[i] & qcRight ? rect->width : 0 );
 		coords.y = rect->y + ( indices[i] & qcBottom ? rect->height : 0 );
 	}
 }
-
 
 struct TextureInfo
 {
@@ -139,23 +142,29 @@ struct TextureInfo
 	GLuint normals; // normals id
 	char* id;
 	rect2f pos;
-	TextureInfo () : rows(0), cols(0), swidth(0), sheight(0),
-		twidth(0), theight(0), atlas(0), normals(0), id(NULL), pos() {}
-
-	void fromTextureProxy( TextureProxy* t ){
-		fromTextureProxy(t, 0);
+	TextureInfo( ) :
+			rows( 0 ), cols( 0 ), swidth( 0 ), sheight( 0 ), twidth( 0 ), theight( 0 ), atlas(
+					0 ), normals( 0 ), id( NULL ), pos()
+	{
 	}
-	void fromTextureProxy( TextureProxy* t, GLuint a ){
+
+	void fromTextureProxy( TextureProxy* t )
+	{
+		fromTextureProxy( t, 0 );
+	}
+	void fromTextureProxy( TextureProxy* t, GLuint a )
+	{
 		rows = ( t->rows < 1 ? 1 : t->rows );
 		cols = ( t->cols < 1 ? 1 : t->cols );
 		swidth = t->abs.width / cols;
 		sheight = t->abs.height / rows;
 		atlas = a;
 		pos = t->atlas;
-		twidth = pos.width / static_cast<float>(cols);
-		theight = pos.height / static_cast<float>(rows);
+		twidth = pos.width / static_cast<float>( cols );
+		theight = pos.height / static_cast<float>( rows );
 	}
-	inline void getTexturePosition( s2f& tpos, int pic ){
+	inline void getTexturePosition( s2f& tpos, int pic )
+	{
 		int row = pic / cols;
 		int col = pic - row * cols;
 		if( cols < 1 && rows < 1 ){
@@ -168,15 +177,18 @@ struct TextureInfo
 			tpos.y = pos.y + row * sheight;
 		}
 	}
-	inline void getSubTexture( int pic, VertexV2FT2FC4UI* rect, int count, UINT indices[4] ){
+	inline void getSubTexture( int pic, VertexV2FT2FC4UI* rect, int count, UINT* indices )
+	{
 		int row = pic / cols;
 		int col = pic - row * cols;
 		getSubTexture( col, row, rect, count, indices );
 	}
-	inline void getSubTexture( int col, int row, VertexV2FT2FC4UI* coords, int count, UINT indices[4] ){
+	inline void getSubTexture( int col, int row, VertexV2FT2FC4UI* coords, int count,
+			UINT* indices )
+	{
 		if( count < 4 )
 			return;
-		rect2f s(0.0, 0.0, 1.0, 1.0);
+		rect2f s( 0.0, 0.0, 1.0, 1.0 );
 		if( cols > 0 || rows > 0 ){
 			col %= cols;
 			row %= rows;
@@ -185,11 +197,9 @@ struct TextureInfo
 			s.width = twidth;
 			s.height = theight;
 		}
-		init_coords( coords, &s, indices );
+		init_coords( coords, &s, indices, count );
 	}
 };
-
-
 
 #define QUAD_TRIANGLES_POINTS 2
 
@@ -201,24 +211,29 @@ struct VBOStructureHandle
 	//enum primitives type;
 	GLuint method;
 	UINT vbo;
-	list< GLuint > textures;
+	list<GLuint> textures;
 	UINT material;
 
-	VBOStructureHandle( GLuint m, UINT VBO, list< GLuint >* tex, UINT mat ) :
-		indexes(NULL), indexes_alloc(1), count(0),
-		method(m), vbo(VBO), textures(tex), material(mat) { }
-
-	~VBOStructureHandle( ){
-		if( indexes )
-			free(indexes);
+	VBOStructureHandle( GLuint m, UINT VBO, list<GLuint>* tex, UINT mat ) :
+			indexes( NULL ), indexes_alloc( 1 ), count( 0 ), method( m ), vbo( VBO ), textures(
+					tex ), material( mat )
+	{
 	}
 
-	void set_indexes( const UINT* face_indexes, UINT c ){
+	~VBOStructureHandle( )
+	{
+		if( indexes )
+			free( indexes );
+	}
+
+	void set_indexes( const UINT* face_indexes, UINT c )
+	{
 		int new_count = count + c;
 
 		while( new_count >= indexes_alloc ){
 			indexes_alloc <<= 1;
-			indexes = (GLuint*)realloc( indexes, (unsigned)sizeof(GLuint) * indexes_alloc );
+			indexes = (GLuint*)realloc( indexes,
+					(unsigned)sizeof(GLuint) * indexes_alloc );
 		}
 
 		memcpy( &indexes[count], face_indexes, c * (UINT)sizeof(UINT) );
@@ -226,10 +241,5 @@ struct VBOStructureHandle
 		count = new_count;
 	}
 };
-
-
-
-
-
 
 #endif /* GRAPHICSTYPES_H_ */

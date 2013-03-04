@@ -36,6 +36,10 @@ struct Sprite
 	inline void setLight( ){ CHANGE_MATERIAL_FLAG( material, add_flag, glsLight ) }
 	inline void clearLight( ){ CHANGE_MATERIAL_FLAG( material, clear_flag, glsLight ) }
 
+	inline void addTexture( GLuint texture ){
+		textures.push_back( texture );
+	}
+
 	inline void addNormalMap( GLuint map ){
 		textures.push_back( map );
 		if( map ){

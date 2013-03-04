@@ -8,6 +8,8 @@
 #ifndef BASIC_TYPES_H_
 #define BASIC_TYPES_H_
 
+#include "types.h"
+
 #ifndef MAX
 	#define MAX( a, b ) ( ((a) > (b)) ? (a) : (b) )
 #endif

@@ -2,7 +2,7 @@
 	{
 		rows = 3,
 		name = "ground",
-		image = "./iso-64x64-outside.png",
+		image = "./flat-64x64-outside.png",
 		height = 192,
 		width = 512,
 		type = "Sprite",

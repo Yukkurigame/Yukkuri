@@ -6,6 +6,7 @@
 #include "basic_types.h"
 #include "debug.h"
 #include "hacks.h"
+#include "map/generator/MapGen.h"
 
 #include <vector>
 #include <algorithm>
@@ -14,6 +15,7 @@
 
 #define MAP_UPADTE_PERIOD 100
 typedef std::vector< MapChunk* >::iterator ChunkListIter;
+MapGen* mapgen;
 
 
 namespace Map {
@@ -82,6 +84,7 @@ unsigned char Map::isActive()
 
 void Map::setActive()
 {
+	mapgen = new MapGen();
 	flags |= mapActive;
 	map_caller.start();
 }
@@ -141,7 +144,7 @@ MapChunk* Map::createChunk( signed int x, signed int y )
 		if( (*tit)->pos.x == x && (*tit)->pos.y == y )
 			return (*tit);
 	}
-	Debug::debug( Debug::NONE, "%d,%d\n", x, y );
+	//Debug::debug( Debug::NONE, "%d,%d\n", x, y );
 	//x, y
 	chunk = new MapChunk( x, y );
 	chunkVec.insert( tit, chunk );
@@ -335,7 +338,7 @@ void Map::onDraw( )
 		const s2i& count = ChunkManager::get_count();
 		chunk_pos.y -= (count.y >> 1);
 		chunk_pos.x -= (count.x >> 1);
-		Debug::debug(Debug::NONE, "%f:%f:%f\n", cam_pos.x, cam_pos.y, cam_pos.z );
+		//Debug::debug(Debug::NONE, "%f:%f:%f\n", cam_pos.x, cam_pos.y, cam_pos.z );
 		createChunksRectangle( chunk_pos, count );
 		position = chunk_pos;
 	}

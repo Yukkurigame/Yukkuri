@@ -23,7 +23,7 @@ void Sprite::setPicture( int pic )
 		tex->getSubTexture(pic, points, brush.points_count, brush.texture_indices );
 	}else{
 		rect2f s(0.0, 0.0, 1.0, 1.0);
-		init_coords( points, &s, brush.texture_indices );
+		init_coords( points, &s, brush.texture_indices, brush.points_count );
 	}
 }
 

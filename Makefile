@@ -37,10 +37,14 @@ SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp prot
 		  api.cpp $(addprefix $(SCRIPTSAPIDIR), $(SCRIPTSAPI))
 WIDGETS = Widget.cpp WidgetText.cpp WidgetBar.cpp
 INTERFACE = Interface.cpp $(addprefix $(WIDGETSDIR), $(WIDGETS))
-MAP = Tiles.cpp Chunk.cpp Region.cpp Map.cpp
+MAPGENERATOR = 
+MAP = Tiles.cpp Chunk.cpp Region.cpp Map.cpp \
+	$(addprefix generator/, MapGen.cpp MapGenerator.cpp Voronoi.cpp \
+		$(addprefix graph/, Center.cpp Corner.cpp Edge.cpp) \
+		$(addprefix fifth-party/, PMPRNG.cpp ) )
 3RDPARTY = CUData.cpp CUDataUser.cpp CUDataTemplates.cpp LuaPusher.cpp timer/TimerManager.cpp \
-		   $(addprefix objTester/, list.cpp obj_parser.cpp string_extra.cpp)
-
+		   $(addprefix objTester/, list.cpp obj_parser.cpp string_extra.cpp) \
+		   $(addprefix voronoi/, VoronoiDiagramGenerator.cpp)
 
 
 SRCS =   main.cpp config.cpp Bindings.cpp BindFunctions.cpp debug.cpp \
@@ -64,7 +68,8 @@ UNICSOURCES = $(addprefix $(COREDIR), game.cpp graphics.cpp input.cpp)
 OBJS = $(addprefix $(OBJDIR), $(UNICSOURCES:.cpp=.o)) $(OBJECTS)
 
 UNIQHEADERS = $(addsuffix .h, \
-	 	$(SCRIPTSDIR)LuaScriptConfig $(UNITSDIR)YOBA $(MAPDIR)Waypoint $(UTILSDIR)misc \
+	 	$(SCRIPTSDIR)LuaScriptConfig $(UNITSDIR)YOBA $(UTILSDIR)misc \
+	 	$(addprefix $(MAPDIR), Waypoint generator/generator_constants ) \
 		$(addprefix $(3RDPARTYDIR), TypeList \
 			$(addprefix timer/, InternalTimerEvent InternalTimerEvent TimerEvent \
 			ITimerEventPerformer )) \
@@ -114,8 +119,9 @@ dirs:
 	mkdir -p $(addprefix $(OBJDIR), $(UTILSDIR) $(COREDIR) $(SCRIPTSDIR) 	\
 	 $(SCRIPTSDIR)$(SCRIPTSAPIDIR)$(PUSHERAPIDIR) $(SCRIPTSDIR)$(SCRIPTSAPIDIR)/modules \
 	 $(GRAPHICSDIR) $(GRAPHICSDIR)render/ $(GRAPHICSDIR)sprite/ $(GRAPHICSDIR)utils/ $(UNITSDIR) \
-	 $(INTERFACEDIR) $(INTERFACEDIR)$(WIDGETSDIR) $(MAPDIR) $(3RDPARTYDIR) $(3RDPARTYDIR)objTester	\
-	 $(3RDPARTYDIR)timer $(PHYSICSDIR))
+	 $(INTERFACEDIR) $(INTERFACEDIR)$(WIDGETSDIR) $(MAPDIR) $(MAPDIR)/generator \
+	 $(MAPDIR)/generator/graph $(MAPDIR)/generator/fifth-party $(3RDPARTYDIR) $(3RDPARTYDIR)objTester \
+	 $(3RDPARTYDIR)timer $(3RDPARTYDIR)voronoi $(PHYSICSDIR))
 
 
 clean: cleanheaders cleanobjs cleanprog cleandirs

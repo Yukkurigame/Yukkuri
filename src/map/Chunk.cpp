@@ -72,8 +72,10 @@ MapChunk::MapChunk( signed int x, signed int y )
 	brush.indices_list = (UINT*)malloc( (UINT)sizeof(UINT) * vx_count );
 
 	VertexV2FT2FC4UI* arr = brush.points();
+	GLuint chunk_atlas = 0;
 	for( int tile = 0; tile < count; ++tile ){
 		MapTile& t = tiles[tile];
+		int point_index = tile * vx_tiles;
 		int tx = realPos.x + col * conf.mapTileSize; // + ( row % 2 ? (conf.mapTileSize >> 1) : 0 );
 		int ty = realPos.y + row * conf.mapTileSize; // - row * ( 3 * (conf.mapTileSize >> 2) );
 		int ttx = tx;
@@ -86,23 +88,35 @@ MapChunk::MapChunk( signed int x, signed int y )
 			s3f(tx + conf.mapTileSize, ty + conf.mapTileSize, 0),
 			s3f(tx, ty + conf.mapTileSize, 0), s3f(tx, ty, 0)
 		};
-		s2f tc[6] = {
-					s2f(0.0, 0.0), s2f(1.0, 0.0),
-					s2f(1.0, 1.0), s2f(1.0, 1.0),
-					s2f(0.0, 1.0), s2f(0.0, 0.0)
-		};
+
 		for( int i = 0; i < vx_tiles; ++i ){
-			int ti = i + tile * vx_tiles;
+			int ti = i + point_index;
 			arr[ti].verticles = vc[i];
-			arr[ti].coordinates = tc[i];
-			arr[ti].color = s4ub( rand() % 256, rand() % 256, rand() % 256, 255 );
+			//arr[ti].coordinates = tc[i];
+			//arr[ti].color = s4ub( rand() % 256, rand() % 256, rand() % 256, 255 );
 			brush.indices_list[brush.indices_count++] = ti + brush.point_index;
 		}
+
+		TextureInfo* texture = Textures::get_pointer(t.Type->texture);
+		if( !chunk_atlas )
+			chunk_atlas = texture->atlas;
+		if( chunk_atlas != texture->atlas )
+			Debug::debug( Debug::MAP, "Multiple texture atlases in one chunk. Rewrite this. Tile: %d at %f:%f", t.TileID, t.pos.x, t.pos.y );
+		UINT texture_indices[6] = {
+				qcBottom, qcRight | qcBottom, qcRight,
+				qcRight, 0, qcBottom,
+		};
+		texture->getSubTexture( t.Type->picture, &arr[point_index], 6, texture_indices );
 
 		if( ++col >= side ){
 			col = 0;
 			row++;
 		}
+	}
+
+	if(chunk_atlas){
+		sprite->textures.clear();
+		sprite->addTexture( chunk_atlas );
 	}
 }
 

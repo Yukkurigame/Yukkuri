@@ -43,6 +43,9 @@ VoronoiDiagramGenerator::VoronoiDiagramGenerator()
 	allEdges = 0;
 	iteratorEdges = 0;
 	minDistanceBetweenSites = 0;
+
+	vedges = 0;
+	edgeList = NULL;
 }
 
 VoronoiDiagramGenerator::~VoronoiDiagramGenerator()
@@ -54,10 +57,13 @@ VoronoiDiagramGenerator::~VoronoiDiagramGenerator()
 		delete allMemoryList;
 }
 
-bool VoronoiDiagramGenerator::generateVoronoi(struct SourcePoint* srcPoints, int numPoints, float minX, float maxX, float minY, float maxY, float minDist)
+bool VoronoiDiagramGenerator::generateVoronoi( struct SourcePoint* srcPoints,
+		int numPoints, float minX, float maxX, float minY, float maxY, float minDist )
 {
 	cleanup();
 	cleanupEdges();
+	clear_saved_edges();
+
 	int i;
 
 	minDistanceBetweenSites = minDist;
@@ -67,35 +73,35 @@ bool VoronoiDiagramGenerator::generateVoronoi(struct SourcePoint* srcPoints, int
 	triangulate = 0;
 	debug = 1;
 	sorted = 0;
-	freeinit(&sfl, sizeof (Site));
+	freeinit( &sfl, sizeof(Site) );
 
-	sites = (struct Site *) myalloc(nsites * sizeof(*sites));
-	polygons = (struct Polygon *) myalloc(nsites * sizeof(*polygons));
+	sites = (struct Site *)myalloc( nsites * sizeof( *sites ) );
+	polygons = (struct Polygon *)myalloc( nsites * sizeof( *polygons ) );
 
-	if(sites == 0) return false;
+	if( sites == 0 )
+		return false;
 
-        xmin = srcPoints[0].x;
-        ymin = srcPoints[0].y;
-        xmax = srcPoints[0].x;
-        ymax = srcPoints[0].y;
+	xmin = srcPoints[0].x;
+	ymin = srcPoints[0].y;
+	xmax = srcPoints[0].x;
+	ymax = srcPoints[0].y;
 
-        for(i = 0; i < nsites; i++)
-        {
-                sites[i].coord.x = srcPoints[i].x;
-                sites[i].coord.y = srcPoints[i].y;
-                sites[i].weight = srcPoints[i].weight;
-                sites[i].sitenbr = i;
-                sites[i].refcnt = 0; // prevent reuse?
+	for( i = 0; i < nsites; i++ ){
+		sites[i].coord.x = srcPoints[i].x;
+		sites[i].coord.y = srcPoints[i].y;
+		sites[i].weight = srcPoints[i].weight;
+		sites[i].sitenbr = i;
+		sites[i].refcnt = 0; // prevent reuse?
 
-                if(sites[i].coord.x < xmin)
-                        xmin = sites[i].coord.x;
-                else if(sites[i].coord.x > xmax)
-                        xmax = sites[i].coord.x;
+		if( sites[i].coord.x < xmin )
+			xmin = sites[i].coord.x;
+		else if( sites[i].coord.x > xmax )
+			xmax = sites[i].coord.x;
 
-                if(sites[i].coord.y < ymin)
-                        ymin = sites[i].coord.y;
-                else if(sites[i].coord.y > ymax)
-                        ymax = sites[i].coord.y;
+		if( sites[i].coord.y < ymin )
+			ymin = sites[i].coord.y;
+		else if( sites[i].coord.y > ymax )
+			ymax = sites[i].coord.y;
 
 		polygons[i].coord.x = sites[i].coord.x;
 		polygons[i].coord.y = sites[i].coord.y;
@@ -103,22 +109,23 @@ bool VoronoiDiagramGenerator::generateVoronoi(struct SourcePoint* srcPoints, int
 		polygons[i].pointlist = NULL;
 		polygons[i].boundary = 0;
 
-                //printf("\n%lf %lf\n", sites[i].coord.x, sites[i].coord.y);
-        }
+#ifdef VORONOI_DIAGRAM_GENERATOR_DEBUG
+		printf("\n%lf %lf\n", sites[i].coord.x, sites[i].coord.y);
+#endif
 
-	qsort(sites, nsites, sizeof (*sites), scomp);
+	}
+
+	qsort( sites, nsites, sizeof( *sites ), scomp );
 
 	siteidx = 0;
 	geominit();
 	float temp = 0;
-	if(minX > maxX)
-	{
+	if( minX > maxX ){
 		temp = minX;
 		minX = maxX;
 		maxX = temp;
 	}
-	if(minY > maxY)
-	{
+	if( minY > maxY ){
 		temp = minY;
 		minY = maxY;
 		maxY = temp;
@@ -129,18 +136,24 @@ bool VoronoiDiagramGenerator::generateVoronoi(struct SourcePoint* srcPoints, int
 	borderMaxY = maxY;
 
 	corners[0].x = borderMinX;
-        corners[0].y = borderMinY;
-        corners[1].x = borderMinX;
-        corners[1].y = borderMaxY;
-        corners[2].x = borderMaxX;
-        corners[2].y = borderMaxY;
-        corners[3].x = borderMaxX;
-        corners[3].y = borderMinY;
+	corners[0].y = borderMinY;
+	corners[1].x = borderMinX;
+	corners[1].y = borderMaxY;
+	corners[2].x = borderMaxX;
+	corners[2].y = borderMaxY;
+	corners[3].x = borderMaxX;
+	corners[3].y = borderMinY;
 
 	siteidx = 0;
-	voronoi(triangulate);
+	voronoi( triangulate );
 
 	return true;
+}
+
+void VoronoiDiagramGenerator::getEdges( const VoronoiEdge** e, int* count )
+{
+	*e = edgeList;
+	*count = vedges;
 }
 
 bool VoronoiDiagramGenerator::ELinitialize()
@@ -311,41 +324,45 @@ void VoronoiDiagramGenerator::geominit()
 }
 
 
-struct Edge * VoronoiDiagramGenerator::bisect(struct Site *s1,struct	Site *s2)
+struct Edge * VoronoiDiagramGenerator::bisect( struct Site *s1, struct Site *s2 )
 {
-	float dx,dy,adx,ady;
+	float dx, dy, adx, ady;
 	struct Edge *newedge;
 
-	newedge = (struct Edge *) getfree(&efl);
+	newedge = (struct Edge *)getfree( &efl );
 
-	newedge -> reg[0] = s1; //store the sites that this edge is bisecting
-	newedge -> reg[1] = s2;
-	ref(s1);
-	ref(s2);
-	newedge -> ep[0] = (struct Site *) NULL; //to begin with, there are no endpoints on the bisector - it goes to infinity
-	newedge -> ep[1] = (struct Site *) NULL;
+	newedge->reg[0] = s1; //store the sites that this edge is bisecting
+	newedge->reg[1] = s2;
+	ref( s1 );
+	ref( s2 );
+	newedge->ep[0] = (struct Site *)NULL; //to begin with, there are no endpoints on the bisector - it goes to infinity
+	newedge->ep[1] = (struct Site *)NULL;
 
-	dx = s2->coord.x - s1->coord.x;			//get the difference in x dist between the sites
+	dx = s2->coord.x - s1->coord.x;		//get the difference in x dist between the sites
 	dy = s2->coord.y - s1->coord.y;
-	adx = dx>0 ? dx : -dx;					//make sure that the difference in positive
-	ady = dy>0 ? dy : -dy;
-	newedge -> c = (float)(s1->coord.x * dx + s1->coord.y * dy + (dx*dx + dy*dy)*0.5);//get the slope of the line
+	adx = dx > 0 ? dx : -dx;				//make sure that the difference in positive
+	ady = dy > 0 ? dy : -dy;
+	newedge->c = (float)( s1->coord.x * dx + s1->coord.y * dy
+			+ ( dx * dx + dy * dy ) * 0.5 );				//get the slope of the line
 
-	if (adx>ady)
-	{
-		newedge -> a = 1.0; newedge -> b = dy/dx; newedge -> c /= dx;//set formula of line, with x fixed to 1
-	}
-	else
-	{
-		newedge -> b = 1.0; newedge -> a = dx/dy; newedge -> c /= dy;//set formula of line, with y fixed to 1
+	if( adx > ady ){
+		newedge->a = 1.0;
+		newedge->b = dy / dx;
+		newedge->c /= dx;					//set formula of line, with x fixed to 1
+	}else{
+		newedge->b = 1.0;
+		newedge->a = dx / dy;
+		newedge->c /= dy;					//set formula of line, with y fixed to 1
 	};
 
-	newedge -> edgenbr = nedges;
+	newedge->edgenbr = nedges;
 
-	//printf("\nbisect(%d) ((%f,%f) and (%f,%f)",nedges,s1->coord.x,s1->coord.y,s2->coord.x,s2->coord.y);
+#ifdef VORONOI_DIAGRAM_GENERATOR_DEBUG
+	printf("\nbisect(%d) ((%f,%f) and (%f,%f)",nedges,s1->coord.x,s1->coord.y,s2->coord.x,s2->coord.y);
+#endif
 
 	nedges += 1;
-	return(newedge);
+	return ( newedge );
 }
 
 //create a new site where the HalfEdges el1 and el2 intersect - note that the Point in the argument list is not used, don't know why it's there
@@ -448,20 +465,20 @@ int VoronoiDiagramGenerator::right_of(struct Halfedge *el,struct Point *p)
 }
 
 
-void VoronoiDiagramGenerator::endpoint(struct Edge *e,int lr,struct Site * s)
+void VoronoiDiagramGenerator::endpoint( struct Edge *e, int lr, struct Site * s )
 {
-	e -> ep[lr] = s;
-	ref(s);
+	e->ep[lr] = s;
+	ref( s );
 	return;
 
-	if(e -> ep[re-lr]== (struct Site *) NULL)
+	if( e->ep[re - lr] == (struct Site *)NULL )
 		return;
 
-	clip_line(e);
+	//clip_edge( e );
 
-	deref(e->reg[le]);
-	deref(e->reg[re]);
-	makefree((Freenode*)e, &efl);
+	deref( e->reg[le] );
+	deref( e->reg[re] );
+	makefree( (Freenode*)e, &efl );
 }
 
 void VoronoiDiagramGenerator::endpoint(struct Edge *e1,int lr,struct Site * s, struct Edge *e2, struct Edge *e3)
@@ -474,7 +491,7 @@ void VoronoiDiagramGenerator::endpoint(struct Edge *e1,int lr,struct Site * s, s
 
         if(e1 -> ep[le] != (struct Site *) NULL && e1 -> ep[re] != (struct Site *) NULL)
         {
-                clip_line(e1);
+                //clip_edge(e1);
                 deref(e1->reg[le]);
                 deref(e1->reg[re]);
                 makefree((Freenode*)e1, &efl);
@@ -482,7 +499,7 @@ void VoronoiDiagramGenerator::endpoint(struct Edge *e1,int lr,struct Site * s, s
 
         if(e2 -> ep[le] != (struct Site *) NULL && e2 -> ep[re] != (struct Site *) NULL)
         {
-                clip_line(e2);
+                //clip_edge(e2);
                 deref(e2->reg[le]);
                 deref(e2->reg[re]);
                 makefree((Freenode*)e2, &efl);
@@ -490,7 +507,7 @@ void VoronoiDiagramGenerator::endpoint(struct Edge *e1,int lr,struct Site * s, s
 
         if(e3 -> ep[le] != (struct Site *) NULL && e3 -> ep[re] != (struct Site *) NULL)
         {
-                clip_line(e3);
+                //clip_edge(e3);
                 deref(e3->reg[le]);
                 deref(e3->reg[re]);
                 makefree((Freenode*)e3, &efl);
@@ -664,12 +681,6 @@ void VoronoiDiagramGenerator::makefree(struct Freenode *curr,struct Freelist *fl
 
 void VoronoiDiagramGenerator::cleanup()
 {
-	if(sites != 0)
-	{
-		free(sites);
-		sites = 0;
-	}
-
 	FreeNodeArrayList* current=0, *prev = 0;
 
 	current = prev = allMemoryList;
@@ -694,6 +705,7 @@ void VoronoiDiagramGenerator::cleanup()
 	allMemoryList->memory = 0;
 	currentMemoryBlock = allMemoryList;
 }
+
 
 void VoronoiDiagramGenerator::cleanupEdges()
 {
@@ -723,12 +735,12 @@ void VoronoiDiagramGenerator::pushGraphEdge(float x1, float y1, float x2, float 
 }
 
 
-char * VoronoiDiagramGenerator::myalloc(unsigned n)
+void* VoronoiDiagramGenerator::myalloc( unsigned n )
 {
-	char *t=0;
-	t=(char*)malloc(n);
-	total_alloc += n;
-	return(t);
+	void* t = malloc( n );
+	if( t != NULL )
+		total_alloc += n;
+	return t;
 }
 
 
@@ -764,8 +776,8 @@ void VoronoiDiagramGenerator::out_vertex(struct Site *v)
 
 void VoronoiDiagramGenerator::out_site(struct Site *s)
 {
-	if(!triangulate & plot & !debug)
-		circle (s->coord.x, s->coord.y, cradius);
+	//if(!triangulate & plot & !debug)
+	//	circle (s->coord.x, s->coord.y, cradius);
 }
 
 
@@ -778,7 +790,7 @@ void VoronoiDiagramGenerator::out_triple(struct Site *s1, struct Site *s2,struct
 
 void VoronoiDiagramGenerator::plotinit()
 {
-	float dx,dy,d;
+/*	float dx,dy,d;
 
 	dy = ymax - ymin;
 	dx = xmax - xmin;
@@ -790,40 +802,43 @@ void VoronoiDiagramGenerator::plotinit()
 	cradius = (float)((pxmax - pxmin)/350.0);
 	openpl();
 	range(pxmin, pymin, pxmax, pymax);
+*/
 }
 
-void VoronoiDiagramGenerator::pushpoint(int sitenbr, double x, double y, int boundary)
+void VoronoiDiagramGenerator::pushpoint( int sitenbr, double x, double y, int boundary )
 {
+	// What is this shit? It allocates 10 blocks but increases only on one. Why?
+
 	Polygon *s;
 
 	s = &polygons[sitenbr];
 
-        if (s->numpoints == 0)
-        {
-                s->pointlist = (PolygonPoint *)malloc(sizeof(struct PolygonPoint)*(s->numpoints+10));
-                if (!s->pointlist)
-                {
-                        printf("Out of mem\n");
-                }
-        }
-        else if (s->numpoints % 10 == 0)
-        {
-                s->pointlist = (PolygonPoint *)realloc(s->pointlist, sizeof(struct PolygonPoint)*(s->numpoints+10));
-                if (!s->pointlist)
-                {
-                        printf("Out of remem\n");
-                }
-        }
-        s->pointlist[s->numpoints].coord.x = x;
-        s->pointlist[s->numpoints].coord.y = y;
-        s->pointlist[s->numpoints].angle = atan2(x-s->coord.x, y-s->coord.y);
+	if( s->numpoints == 0 ){
+		s->pointlist = (PolygonPoint *)malloc(
+				sizeof(struct PolygonPoint) * ( s->numpoints + 10 ) );
+		if( !s->pointlist ){
+			printf( "Out of mem\n" );
+		}
+	}else if( s->numpoints % 10 == 0 ){
+		s->pointlist = (PolygonPoint *)realloc( s->pointlist,
+				sizeof(struct PolygonPoint) * ( s->numpoints + 10 ) );
+		if( !s->pointlist ){
+			printf( "Out of remem\n" );
+		}
+	}
+	s->pointlist[s->numpoints].coord.x = x;
+	s->pointlist[s->numpoints].coord.y = y;
+	s->pointlist[s->numpoints].angle = atan2( x - s->coord.x, y - s->coord.y );
 	s->pointlist[s->numpoints].boundary = boundary;
 
-	if (boundary) s->boundary = 1;
+	if( boundary )
+		s->boundary = 1;
 
-        //printf("point #%d in %d (%lf, %lf) [%d] (%lf, %lf): %lf\n", s->numpoints, sitenbr, s->coord.x, s->coord.y, boundary, x, y, (s->pointlist[s->numpoints].angle/M_PI)*180);
+#ifdef VORONOI_DIAGRAM_GENERATOR_DEBUG
+	printf("point #%d in %d (%lf, %lf) [%d] (%lf, %lf): %lf\n", s->numpoints, sitenbr, s->coord.x, s->coord.y, boundary, x, y, (s->pointlist[s->numpoints].angle/M_PI)*180);
+#endif
 
-        s->numpoints++;
+	s->numpoints++;
 }
 
 int VoronoiDiagramGenerator::ccw( Point p0, Point p1, Point p2 )
@@ -844,6 +859,7 @@ int VoronoiDiagramGenerator::ccw( Point p0, Point p1, Point p2 )
 	return 0;
 }
 
+/*
 void VoronoiDiagramGenerator::getSitePoints(int sitenbr, int* numpoints, PolygonPoint** pS)
 {
 	int i, j, c, any, centrevalue, cornerinpolygon[4];
@@ -860,28 +876,36 @@ void VoronoiDiagramGenerator::getSitePoints(int sitenbr, int* numpoints, Polygon
 
 	if (polygons[sitenbr].boundary)
 	{
-//		printf("\nsite %d is boundary intersection\n", sitenbr);
-
+#ifdef VORONOI_DIAGRAM_GENERATOR_DEBUG
+		printf("\nsite %d is boundary intersection\n", sitenbr);
+#endif
 		for(c = 0; c < 4; c++) cornerinpolygon[c] = 1;
 
 		for(i = 0; i < polygons[sitenbr].numpoints; i++)
 		{
-//			printf("Point (%lf,%lf) %d\n", polygons[sitenbr].pointlist[i].coord.x,polygons[sitenbr].pointlist[i].coord.y,polygons[sitenbr].pointlist[i].boundary);
+#ifdef VORONOI_DIAGRAM_GENERATOR_DEBUG
+			printf("Point (%lf,%lf) %d\n", polygons[sitenbr].pointlist[i].coord.x,polygons[sitenbr].pointlist[i].coord.y,polygons[sitenbr].pointlist[i].boundary);
+#endif
 			j = i > 0?i-1:polygons[sitenbr].numpoints-1;
 			if (	(!polygons[sitenbr].pointlist[i].boundary || !polygons[sitenbr].pointlist[j].boundary) &&
 				(polygons[sitenbr].pointlist[i].coord.x != polygons[sitenbr].pointlist[j].coord.x ||
 				polygons[sitenbr].pointlist[i].coord.y != polygons[sitenbr].pointlist[j].coord.y))
 			{
-//				printf("line side test (%lf,%lf) => (%lf,%lf)\n",polygons[sitenbr].pointlist[i].coord.x,polygons[sitenbr].pointlist[i].coord.y,polygons[sitenbr].pointlist[j].coord.x,polygons[sitenbr].pointlist[j].coord.y);
+#ifdef VORONOI_DIAGRAM_GENERATOR_DEBUG
+				printf("line side test (%lf,%lf) => (%lf,%lf)\n",polygons[sitenbr].pointlist[i].coord.x,polygons[sitenbr].pointlist[i].coord.y,polygons[sitenbr].pointlist[j].coord.x,polygons[sitenbr].pointlist[j].coord.y);
+#endif
 				any = 0;
 				centrevalue = ccw(polygons[sitenbr].pointlist[i].coord, polygons[sitenbr].pointlist[j].coord, polygons[sitenbr].coord);
-//printf(" test against centre (%lf,%lf) %d\n", polygons[sitenbr].coord.x, polygons[sitenbr].coord.y, centrevalue);
+#ifdef VORONOI_DIAGRAM_GENERATOR_DEBUG
+				printf(" test against centre (%lf,%lf) %d\n", polygons[sitenbr].coord.x, polygons[sitenbr].coord.y, centrevalue);
+#endif
 				for(c = 0; c < 4; c++)
 				{
 					if (cornerinpolygon[c])
 					{
-
-//printf(" test against corner (%lf,%lf) %d\n", corners[c].x, corners[c].y, ccw(polygons[sitenbr].pointlist[i].coord, polygons[sitenbr].pointlist[j].coord, corners[c]));
+#ifdef VORONOI_DIAGRAM_GENERATOR_DEBUG
+						printf(" test against corner (%lf,%lf) %d\n", corners[c].x, corners[c].y, ccw(polygons[sitenbr].pointlist[i].coord, polygons[sitenbr].pointlist[j].coord, corners[c]));
+#endif
 
 						if (centrevalue == ccw(polygons[sitenbr].pointlist[i].coord, polygons[sitenbr].pointlist[j].coord, corners[c]))
 						{
@@ -902,7 +926,9 @@ void VoronoiDiagramGenerator::getSitePoints(int sitenbr, int* numpoints, Polygon
 			{
 				if (cornerinpolygon[c])
 				{
-//					printf("adding corger (%lf,%lf) to %d\n", corners[c].x, corners[c].y, sitenbr);
+#ifdef VORONOI_DIAGRAM_GENERATOR_DEBUG
+					printf("adding corger (%lf,%lf) to %d\n", corners[c].x, corners[c].y, sitenbr);
+#endif
 					pushpoint(sitenbr, corners[c].x, corners[c].y, 0);
 				}
 			}
@@ -915,189 +941,173 @@ void VoronoiDiagramGenerator::getSitePoints(int sitenbr, int* numpoints, Polygon
         *numpoints = polygons[sitenbr].numpoints;
         *pS = polygons[sitenbr].pointlist;
 }
+*/
 
-
-void VoronoiDiagramGenerator::clip_line(struct Edge *e)
+void VoronoiDiagramGenerator::clip_edge( struct VoronoiEdge *e )
 {
-	struct Site *s1, *s2, *ts1, *ts2;
-	float x1=0,x2=0,y1=0,y2=0, temp = 0;
-	int boundary1 = 0, boundary2 = 0;
-
+	struct Site *s1, *s2; //, *ts1, *ts2;
+	float x1 = 0, x2 = 0, y1 = 0, y2 = 0; //, temp = 0;
 
 	x1 = e->reg[0]->coord.x;
 	x2 = e->reg[1]->coord.x;
 	y1 = e->reg[0]->coord.y;
 	y2 = e->reg[1]->coord.y;
 
-        if(sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1))) == 0)
-        {
-                return;
-        }
-
-	pxmin = borderMinX;
-	pxmax = borderMaxX;
-	pymin = borderMinY;
-	pymax = borderMaxY;
-
-	if(e -> a == 1.0 && e ->b >= 0.0)
-	{
-		s1 = e -> ep[1];
-		s2 = e -> ep[0];
-
-                ts1 = e -> reg[1];
-                ts2 = e -> reg[0];
-	}
-	else
-	{
-		s1 = e -> ep[0];
-		s2 = e -> ep[1];
-
-                ts1 = e -> reg[0];
-                ts2 = e -> reg[1];
-
-	};
-
-	if(e -> a == 1.0)
-	{
-		if (	s1!=(struct Site *)NULL
-			&& s1->coordout.y > pymin && s1->coordout.y < pymax
-			&& s1->coordout.x > pxmin && s1->coordout.x < pxmax)
-		{
-			x1 = s1->coordout.x;
-			y1 = s1->coordout.y;
-		}
-		else
-		{
-			boundary1 = 1;
-			y1 = pymin;
-			if (s1!=(struct Site *)NULL && s1->coord.y > pymin)
-			{
-				y1 = s1->coord.y;
-			}
-			if(y1>pymax)
-			{
-				y1 = pymax;
-			}
-			x1 = e -> c - e -> b * y1;
-		}
-
-		if (	s2!=(struct Site *)NULL
-			&& s2->coordout.y > pymin && s2->coordout.y < pymax
-			&& s2->coordout.x > pxmin && s2->coordout.x < pxmax)
-		{
-			x2 = s2->coordout.x;
-			y2 = s2->coordout.y;
-		}
-		else
-		{
-			boundary2 = 1;
-			y2 = pymax;
-			if (s2!=(struct Site *)NULL && s2->coord.y < pymax)
-				y2 = s2->coord.y;
-			if(y2<pymin)
-			{
-				y2 = pymin;
-			}
-			x2 = (e->c) - (e->b) * y2;
-		}
-
-		if (((x1> pxmax) & (x2>pxmax)) | ((x1<pxmin)&(x2<pxmin)))
-		{
-			// Line completely outside clipbox
-			//printf("\nClipLine jumping out(3), x1 = %f, pxmin = %f, pxmax = %f",x1,pxmin,pxmax);
-			return;
-		}
-		if(x1 > pxmax)
-		{
-			x1 = pxmax;
-			y1 = (e -> c - x1)/e -> b;
-		}
-		if(x1 < pxmin)
-		{
-			x1 = pxmin;
-			y1 = (e -> c - x1)/e -> b;
-		}
-		if(x2 > pxmax)
-		{
-			x2 = pxmax;
-			y2 = (e -> c - x2)/e -> b;
-		}
-		if(x2 < pxmin)
-		{
-			x2 = pxmin;
-			y2 = (e -> c - x2)/e -> b;
-		}
-	}
-	else
-	{
-		if (	s1!=(struct Site *)NULL
-			&& s1->coordout.y > pymin && s1->coordout.y < pymax
-			&& s1->coordout.x > pxmin && s1->coordout.x < pxmax)
-		{
-			x1 = s1->coordout.x;
-			y1 = s1->coordout.y;
-		}
-		else
-		{
-			boundary1 = 1;
-			x1 = pxmin;
-			if (s1!=(struct Site *)NULL && s1->coord.x > pxmin)
-				x1 = s1->coord.x;
-			if(x1>pxmax)
-			{
-				//printf("\nClipped (3) x1 = %f to %f",x1,pxmin);
-				//return;
-				x1 = pxmax;
-			}
-			y1 = e -> c - e -> a * x1;
-		}
-
-		if (	s2!=(struct Site *)NULL
-			&& s2->coordout.y > pymin && s2->coordout.y < pymax
-			&& s2->coordout.x > pxmin && s2->coordout.x < pxmax)
-		{
-			x2 = s2->coordout.x;
-			y2 = s2->coordout.y;
-		}
-		else
-		{
-			boundary2 = 1;
-			x2 = pxmax;
-			if (s2!=(struct Site *)NULL && s2->coord.x < pxmax)
-				x2 = s2->coord.x;
-			if(x2<pxmin)
-			{
-				//printf("\nClipped (4) x2 = %f to %f",x2,pxmin);
-				//return;
-				x2 = pxmin;
-			}
-			y2 = e -> c - e -> a * x2;
-		}
-
-		if (((y1> pymax) & (y2>pymax)) | ((y1<pymin)&(y2<pymin)))
-		{
-			//printf("\nClipLine jumping out(6), y1 = %f, pymin = %f, pymax = %f",y2,pymin,pymax);
-			return;
-		}
-		if(y1 > pymax)
-		{	y1 = pymax; x1 = (e -> c - y1)/e -> a;};
-		if(y1 < pymin)
-		{	y1 = pymin; x1 = (e -> c - y1)/e -> a;};
-		if(y2 > pymax)
-		{	y2 = pymax; x2 = (e -> c - y2)/e -> a;};
-		if(y2 < pymin)
-		{	y2 = pymin; x2 = (e -> c - y2)/e -> a;};
-	};
-
-        if(sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1))) == 0)
-	{
+	if( sqrt( (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1) ) == 0 ){
 		return;
 	}
 
-        pushpoint(ts1->sitenbr, x1, y1, boundary1);
-        pushpoint(ts2->sitenbr, x2, y2, boundary2);
-        pushpoint(ts1->sitenbr, x2, y2, boundary2);
-        pushpoint(ts2->sitenbr, x1, y1, boundary1);
+	int pxmin = borderMinX;
+	int pxmax = borderMaxX;
+	int pymin = borderMinY;
+	int pymax = borderMaxY;
+
+	bool right = ( e->a == 1.0 && e->b >= 0.0 );
+
+	if( right ){
+		s1 = e->ep[ssRight];
+		s2 = e->ep[ssLeft];
+	}else{
+		s1 = e->ep[ssLeft];
+		s2 = e->ep[ssRight];
+	};
+
+	if( e->a == 1.0 ){
+		if( s1 != NULL && s1->coordout.y > pymin && s1->coordout.y < pymax
+				&& s1->coordout.x > pxmin && s1->coordout.x < pxmax ){
+			x1 = s1->coordout.x;
+			y1 = s1->coordout.y;
+		}else{
+			y1 = pymin;
+			if( s1 != NULL && s1->coord.y > pymin ){
+				y1 = s1->coord.y;
+			}
+			if( y1 > pymax ){
+				y1 = pymax;
+			}
+			x1 = e->c - e->b * y1;
+		}
+
+		if( s2 != NULL && s2->coordout.y > pymin && s2->coordout.y < pymax
+				&& s2->coordout.x > pxmin && s2->coordout.x < pxmax ){
+			x2 = s2->coordout.x;
+			y2 = s2->coordout.y;
+		}else{
+			y2 = pymax;
+			if( s2 != NULL && s2->coord.y < pymax )
+				y2 = s2->coord.y;
+			if( y2 < pymin ){
+				y2 = pymin;
+			}
+			x2 = ( e->c ) - ( e->b ) * y2;
+		}
+
+		if( ( ( x1 > pxmax ) & ( x2 > pxmax ) ) | ( ( x1 < pxmin ) & ( x2 < pxmin ) ) ){
+			// Line completely outside clipbox
+#ifdef VORONOI_DIAGRAM_GENERATOR_DEBUG
+			printf("\nClipLine jumping out(3), x1 = %f, pxmin = %f, pxmax = %f",x1,pxmin,pxmax);
+#endif
+			return;
+		}
+		if( x1 > pxmax ){
+			x1 = pxmax;
+			y1 = ( e->c - x1 ) / e->b;
+		}
+		if( x1 < pxmin ){
+			x1 = pxmin;
+			y1 = ( e->c - x1 ) / e->b;
+		}
+		if( x2 > pxmax ){
+			x2 = pxmax;
+			y2 = ( e->c - x2 ) / e->b;
+		}
+		if( x2 < pxmin ){
+			x2 = pxmin;
+			y2 = ( e->c - x2 ) / e->b;
+		}
+	}else{
+		if( s1 != NULL && s1->coordout.y > pymin && s1->coordout.y < pymax
+				&& s1->coordout.x > pxmin && s1->coordout.x < pxmax ){
+			x1 = s1->coordout.x;
+			y1 = s1->coordout.y;
+		}else{
+			x1 = pxmin;
+			if( s1 != NULL && s1->coord.x > pxmin )
+				x1 = s1->coord.x;
+			if( x1 > pxmax ){
+#ifdef VORONOI_DIAGRAM_GENERATOR_DEBUG
+				printf("\nClipped (3) x1 = %f to %f",x1,pxmin);
+#endif
+				//return;
+				x1 = pxmax;
+			}
+			y1 = e->c - e->a * x1;
+		}
+
+		if( s2 != NULL && s2->coordout.y > pymin && s2->coordout.y < pymax
+				&& s2->coordout.x > pxmin && s2->coordout.x < pxmax ){
+			x2 = s2->coordout.x;
+			y2 = s2->coordout.y;
+		}else{
+			x2 = pxmax;
+			if( s2 != NULL && s2->coord.x < pxmax )
+				x2 = s2->coord.x;
+			if( x2 < pxmin ){
+#ifdef VORONOI_DIAGRAM_GENERATOR_DEBUG
+				printf("\nClipped (4) x2 = %f to %f",x2,pxmin);
+#endif
+				//return;
+				x2 = pxmin;
+			}
+			y2 = e->c - e->a * x2;
+		}
+
+		if( ( ( y1 > pymax ) & ( y2 > pymax ) ) | ( ( y1 < pymin ) & ( y2 < pymin ) ) ){
+#ifdef VORONOI_DIAGRAM_GENERATOR_DEBUG
+			printf("\nClipLine jumping out(6), y1 = %f, pymin = %f, pymax = %f",y2,pymin,pymax);
+#endif
+			return;
+		}
+		if( y1 > pymax ){
+			y1 = pymax;
+			x1 = ( e->c - y1 ) / e->a;
+		};
+		if( y1 < pymin ){
+			y1 = pymin;
+			x1 = ( e->c - y1 ) / e->a;
+		};
+		if( y2 > pymax ){
+			y2 = pymax;
+			x2 = ( e->c - y2 ) / e->a;
+		};
+		if( y2 < pymin ){
+			y2 = pymin;
+			x2 = ( e->c - y2 ) / e->a;
+		};
+	};
+
+	if( sqrt( (x2 - x1) * (x2 - x1) + ( y2 - y1) * (y2 - y1) ) == 0 ){
+		return;
+	}
+
+	e->visible = true;
+
+	if( !right ){
+		e->clipped[ssLeft].x = x1;
+		e->clipped[ssLeft].y = y1;
+		e->clipped[ssRight].x = x2;
+		e->clipped[ssRight].y = y2;
+	}else{
+		e->clipped[ssRight].x = x1;
+		e->clipped[ssRight].y = y1;
+		e->clipped[ssLeft].x = x2;
+		e->clipped[ssLeft].y = y2;
+	}
+
+	//pushpoint( ts1->sitenbr, x1, y1, boundary1 );
+	//pushpoint( ts2->sitenbr, x2, y2, boundary2 );
+	//pushpoint( ts1->sitenbr, x2, y2, boundary2 );
+	//pushpoint( ts2->sitenbr, x1, y1, boundary1 );
 }
 
 
@@ -1141,6 +1151,7 @@ bool VoronoiDiagramGenerator::voronoi(int triangulate)
 			rbnd = ELright(lbnd);						//get the first HalfEdge to the RIGHT of the new site
 			bot = rightreg(lbnd);						//if this halfedge has no edge, , bot = bottom site (whatever that is)
 			e = bisect(bot, newsite);					//create a new edge that bisects
+			save_edge(e);
 			bisector = HEcreate(e, le);					//create a new HalfEdge, setting its ELpm field to 0
 			ELinsert(lbnd, bisector);					//insert this new bisector edge between the left and right vectors in a linked list
 
@@ -1189,7 +1200,8 @@ bool VoronoiDiagramGenerator::voronoi(int triangulate)
 				pm = re;
 			}
 			e = bisect(bot, top);					//create an Edge (or line) that is between the two Sites. This creates
-													//the formula of the line, and assigns a line number to it
+			save_edge(e);							//the formula of the line, and assigns a line number to it
+
 			bisector = HEcreate(e, pm);				//create a HE from the Edge 'e', and make it point to that edge with its ELedge field
 			ELinsert(llbnd, bisector);				//insert the new bisector to the right of the left HE
 			endpoint(e, re-pm, v, e2, e3);					//set one endpoint to the new edge to be the vector point 'v'.
@@ -1213,12 +1225,15 @@ bool VoronoiDiagramGenerator::voronoi(int triangulate)
 		else break;
 	};
 
-	for(lbnd=ELright(ELleftend); lbnd != ELrightend; lbnd=ELright(lbnd))
-	{
-		e = lbnd -> ELedge;
+	//for(lbnd=ELright(ELleftend); lbnd != ELrightend; lbnd=ELright(lbnd))
+	//{
+		//e = lbnd -> ELedge;
+		//clip_edge(e);
+	//};
 
-		clip_line(e);
-	};
+	for( int edg = 0; edg < vedges; ++edg ){
+		clip_edge(&edgeList[edg]);
+	}
 
 	cleanup();
 
@@ -1274,3 +1289,46 @@ struct Site * VoronoiDiagramGenerator::nextone()
 		return( (struct Site *)NULL);
 }
 
+
+void VoronoiDiagramGenerator::save_edge( Edge* edge )
+{
+	if( !nedges || !edge )
+		return;
+
+	if( !edgeList ){
+		edgeList = (VoronoiEdge*)myalloc( nedges * sizeof(VoronoiEdge) );
+		vedges_alloc = nedges;
+	}else if( vedges >= vedges_alloc -1 ){
+		vedges_alloc += 30;
+		edgeList = (VoronoiEdge*)realloc( edgeList, vedges_alloc * sizeof(VoronoiEdge) );
+	}
+
+	VoronoiEdge* vedge = &edgeList[vedges];
+	// Structures are same in edge part
+	memcpy( vedge, edge, sizeof(Edge) );
+	ref( vedge->reg[0] );
+	ref( vedge->reg[1] );
+	if( vedge->ep[0] )
+		ref( vedge->ep[0] );
+	if( vedge->ep[1] )
+		ref( vedge->ep[1] );
+	vedge->visible = false;
+	vedge->index = vedges++;
+}
+
+void VoronoiDiagramGenerator::clear_saved_edges( )
+{
+	if( edgeList ){
+		total_alloc -= nedges * sizeof(VoronoiEdge);
+		if( total_alloc < 0 )
+			total_alloc = 0;
+
+		free( edgeList );
+		edgeList = 0;
+	}
+
+	if( sites != 0 ){
+		free( sites );
+		sites = 0;
+	}
+}

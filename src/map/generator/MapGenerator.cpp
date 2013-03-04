@@ -282,8 +282,7 @@ Corner* makeCorner( std::vector<Corner*>& corners,
 	q->index = corners.size();
 	corners.push_back( q );
 	q->point = *point;
-	q->border =
-			( point->x == 0 || point->x == SIZE || point->y == 0 || point->y == SIZE );
+	q->border = ( point->x == 0 || point->x == SIZE || point->y == 0 || point->y == SIZE );
 	_cornerMap[bucket].push_back( q );
 	return q;
 }
@@ -292,8 +291,11 @@ Corner* makeCorner( std::vector<Corner*>& corners,
 void MapGenerator::buildGraph( const std::vector<s2f>& pts, Voronoi* voronoi )
 {
 	//var p:Center, q:Corner, point:Point, other:Point;
-	const std::vector<Line>& libedges = voronoi->lines();
-	std::map< const s2f*, Center*> centerLookup;
+	const VoronoiEdge* libedges = NULL;
+	int edges_count = 0;
+	voronoi->egdes( &libedges, &edges_count );
+
+	std::map< float, std::map< float, Center* > > centerLookup;
 
 	// Build Center objects for each of the points, and a lookup map
 	// to find those Center objects again as we build the graph
@@ -303,7 +305,7 @@ void MapGenerator::buildGraph( const std::vector<s2f>& pts, Voronoi* voronoi )
 		p->index = centers.size();
 		p->point = point;
 		centers.push_back(p);
-		centerLookup[&point] = p;
+		centerLookup[point.x][point.y] = p;
 	}
 
 	// Workaround for Voronoi lib bug: we need to call region()
@@ -320,10 +322,10 @@ void MapGenerator::buildGraph( const std::vector<s2f>& pts, Voronoi* voronoi )
 	// Corner object.
 	std::map< int, std::vector< Corner* > > _cornerMap;
 
-	FOREACHIT( libedges ) {
-		const Line& libedge = ( *it );
-		LineSegment dedge = libedge.delaunayLine();
-		LineSegment vedge = libedge.voronoiEdge();
+	for (int edge_idx = 0; edge_idx < edges_count; ++edge_idx) {
+		const VoronoiEdge* libedge = &libedges[edge_idx];
+		LineSegment dedge = LineSegment::delaunayLine( libedge );
+		LineSegment vedge = LineSegment::voronoiEdge( libedge );
 
 		// Fill the graph data. Make an Edge object corresponding to
 		// the edge from the voronoi library.
@@ -332,14 +334,14 @@ void MapGenerator::buildGraph( const std::vector<s2f>& pts, Voronoi* voronoi )
 		edge->index = edges.size();
 		edge->river = 0;
 		edges.push_back( edge );
-		if( vedge.p0 && vedge.p1 )
-			edge->midpoint = interpolate( *vedge.p0, *vedge.p1, 0.5 );
+		if( vedge.visible )
+			edge->midpoint = interpolate( vedge.p0, vedge.p1, 0.5 );
 
 		// Edges point to corners. Edges point to centers.
-		edge->v0 = makeCorner( corners, _cornerMap, vedge.p0, SIZE );
-		edge->v1 = makeCorner( corners, _cornerMap, vedge.p1, SIZE );
-		edge->d0 = centerLookup[dedge.p0];
-		edge->d1 = centerLookup[dedge.p1];
+		edge->v0 = makeCorner( corners, _cornerMap, ( vedge.visible ? &vedge.p0 : NULL ), SIZE );
+		edge->v1 = makeCorner( corners, _cornerMap, ( vedge.visible ? &vedge.p1 : NULL ), SIZE );
+		edge->d0 = centerLookup[dedge.p0.x][dedge.p0.y];
+		edge->d1 = centerLookup[dedge.p1.x][dedge.p1.y];
 
 		// Centers point to edges. Corners point to edges.
 		if( edge->d0 )

@@ -15,18 +15,18 @@ Voronoi::Voronoi( const std::vector<s2f>& points, const rect2f& size, int dist )
 	addSites( points );
 	vdg.generateVoronoi( sites, sites_count, size.x, size.width,
 						 size.y, size.height, dist );
-
-	vdg.resetIterator();
-	float x1, x2, y1, y2;
-	while( vdg.getNext( x1, y1, x2, y2 ) )
-		Lines.push_back( Line( x1, y1, x2, y2 ) );
-
 }
 
 Voronoi::~Voronoi( )
 {
 
 }
+
+void Voronoi::egdes( const VoronoiEdge** el, int* size )
+{
+	vdg.getEdges( el, size );
+}
+
 
 void Voronoi::addSites( const std::vector<s2f>& points )
 {
@@ -40,11 +40,6 @@ void Voronoi::addSites( const std::vector<s2f>& points )
 		p->x = point->x;
 		p->y = point->y;
 		p->weight = random() * 100;
-		sitesByLocation[point] = p;
+		sitesByLocation[point->x][point->y] = p;
 	}
-}
-
-const std::vector<Line>& Voronoi::lines( )
-{
-	return Lines;
 }

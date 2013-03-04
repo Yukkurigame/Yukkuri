@@ -321,8 +321,6 @@ void MapGen::render3dPolygons( )
 {
     double zScale = 0.15*SIZE;
 
-    s4ub colors[bLAST];
-
     if( sprite )
     	RenderManager::FreeGLSprite(sprite);
 
@@ -338,7 +336,7 @@ void MapGen::render3dPolygons( )
 		return;
 
     int mesh = MeshManager::get("mesh_terrain");
-    sprite = RenderManager::CreateGLSprite( 0, 0, 0, SIZE, SIZE, mesh );
+    sprite = RenderManager::CreateGLSprite( 0, 0, 1, SIZE, SIZE, mesh );
 
 	GLBrush& brush = sprite->brush;
 	brush.init(-1);
@@ -354,7 +352,7 @@ void MapGen::render3dPolygons( )
 		Center* p = (*it);
 		FOREACH( tit, p->borders ){
 			Edge* edge = (*tit);
-			const s4ub& color = colors[p->biome];
+			UINT color = BiomesColors[p->biome];
 			Corner* corner0 = edge->v0;
 			Corner* corner1 = edge->v1;
 

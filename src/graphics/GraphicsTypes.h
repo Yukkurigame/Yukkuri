@@ -35,14 +35,20 @@ struct s4ub
 		g( ( ( hex >> 8 ) & 0xFF ) ), b( hex & 0xFF ) {	}
 	s4ub( unsigned int R, unsigned int G, unsigned int B, unsigned int A ) :
 		r( R ), g( G ), b( B ), a( A ) { }
-	inline void set( unsigned int cr, unsigned int cg, unsigned int cb, unsigned int ca )
-	{
-		r = cr; g = cg; b = cb; a = ca;
-	}
 	inline void set( const s4ub& c )
 	{
 		r = c.r; g = c.g; b = c.b; a = c.a;
 	}
+	inline void set( unsigned int hex ) {
+		r = ( hex >> 16 ) & 0xff;
+		g = ( hex >> 8 ) & 0xFF;
+		b = hex & 0xFF;
+	}
+	inline void set( unsigned int cr, unsigned int cg, unsigned int cb, unsigned int ca )
+	{
+		r = cr; g = cg; b = cb; a = ca;
+	}
+
 };
 
 // For colors, normalized version

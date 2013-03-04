@@ -45,6 +45,13 @@ enum GeneratorColors
 	gcTROPICAL_SEASONAL_FOREST = 0x559944
 };
 
+unsigned static const int BiomesColors[bLAST] = {
+	gcOCEAN, gcLAKE, gcBEACH, gcMARSH, gcICE, gcSNOW, gcTUNDRA, gcBARE, gcSCORCHED,
+	gcTAIGA, gcSHRUBLAND, gcTEMPERATE_DESERT, gcTEMPERATE_RAIN_FOREST,
+	gcTEMPERATE_DECIDUOUS_FOREST, gcGRASSLAND, gcTROPICAL_RAIN_FOREST,
+	gcTROPICAL_SEASONAL_FOREST, gcSUBTROPICAL_DESERT
+};
+
 typedef enum GeneratorColors GeneratorColor;
 
 enum ElevationGradientColors

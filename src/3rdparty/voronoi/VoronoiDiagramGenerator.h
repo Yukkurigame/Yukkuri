@@ -75,17 +75,17 @@ struct	Freelist
 struct PolygonPoint
 {
 	struct  Point   coord;
-        double          angle;
+		double          angle;
 	int	boundary;
 };
 
 struct Polygon
 {
-        int 		sitenbr;
+		int 		sitenbr;
 	struct  Point   coord;
-        int             numpoints;
-        struct PolygonPoint * pointlist;
-        int             boundary;
+		int             numpoints;
+		struct PolygonPoint * pointlist;
+		int             boundary;
 };
 
 
@@ -130,6 +130,7 @@ public:
 
 	// TODO: make const
 	void getEdges( const VoronoiEdge** e, int* count );
+	Site* getSite( int index );
 
 	//void getSitePoints(int sitenbr, int* numpoints, PolygonPoint** pS);
 /*
@@ -214,10 +215,10 @@ private:
 
 	void pushGraphEdge(float x1, float y1, float x2, float y2);
 
-	void openpl();
-	void line(float x1, float y1, float x2, float y2);
-	void circle(float x, float y, float radius);
-	void range(float minX, float minY, float maxX, float maxY);
+	//void openpl();
+	//void line(float x1, float y1, float x2, float y2);
+	//void circle(float x, float y, float radius);
+	//void range(float minX, float minY, float maxX, float maxY);
 
 	void save_edge( Edge* );
 	void clear_saved_edges( );

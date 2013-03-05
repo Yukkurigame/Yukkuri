@@ -103,6 +103,7 @@ public:
 	~Voronoi( );
 
 	void egdes( const VoronoiEdge**, int* size );
+	void region( const s2f& )
 
 private:
 	void addSites( const std::vector<s2f>& points );
@@ -110,8 +111,6 @@ private:
 	UINT sites_count;
 	SourcePoint* sites;
 	std::map< float, std::map< float, SourcePoint* > > sitesByLocation;
-	//std::vector<Line> Lines;
-
 };
 
 #endif /* VORONOI_H_ */

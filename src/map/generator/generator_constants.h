@@ -9,7 +9,7 @@
 
 enum IslandForms
 {
-	ifRadial, ifPerlin, ifSquare, ifBlob
+	ifRadial = 0, ifPerlin, ifSquare, ifBlob
 };
 
 typedef enum IslandForms IslandForm;

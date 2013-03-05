@@ -6,7 +6,7 @@
 #include "basic_types.h"
 #include "debug.h"
 #include "hacks.h"
-#include "map/generator/MapGen.h"
+
 
 #include <vector>
 #include <algorithm>
@@ -15,8 +15,6 @@
 
 #define MAP_UPADTE_PERIOD 100
 typedef std::vector< MapChunk* >::iterator ChunkListIter;
-MapGen* mapgen;
-
 
 namespace Map {
 
@@ -84,7 +82,6 @@ unsigned char Map::isActive()
 
 void Map::setActive()
 {
-	mapgen = new MapGen();
 	flags |= mapActive;
 	map_caller.start();
 }

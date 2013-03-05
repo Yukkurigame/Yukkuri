@@ -10,6 +10,7 @@
 #include "scripts/LuaConfig.h"
 #include "graphics/Render.h"
 #include "graphics/render/Textures.h"
+#include "map/generator/MapGen.h"
 
 #include "config.h"
 #include "safestring.h"
@@ -26,6 +27,7 @@ namespace Region {
 	TileInfo* tiles;
 	bool TilesLoaded = false;
 	int TileTypesCount = 0;
+	MapGen* mapgen = new MapGen();
 }
 
 
@@ -80,6 +82,13 @@ void Region::clean( )
 {
 	delete[] tiles;
 }
+
+void Region::generate( UINT form, const char* seed )
+{
+	mapgen->newIsland( (IslandForm)form, seed );
+	mapgen->go();
+}
+
 
 void Region::load( const char* name )
 {

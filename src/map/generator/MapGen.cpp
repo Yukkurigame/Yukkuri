@@ -12,12 +12,11 @@
 
 
 
-MapGen::MapGen( )
+MapGen::MapGen( ) : sprite(NULL)
 {
 	islandType = ifSquare;
 	islandSeedInitial = "85882-1";
 	map = new MapGenerator( SIZE );
-	go( islandType );
 }
 
 MapGen::~MapGen( )
@@ -25,50 +24,52 @@ MapGen::~MapGen( )
 	// TODO Auto-generated destructor stub
 }
 
-void MapGen::newIsland( IslandForm type )
+void MapGen::newIsland( IslandForm type, const char* seed_string )
 {
 	int seed = 0;
 	int variant = 0;
 
-	// String seed
-	if( seed == 0 ){
-		std::string seed_str = islandSeedInitial;
-		// Convert the string into a number. This is a cheesy way to
-		// do it but it doesn't matter. It just allows people to use
-		// words as seeds.
-		for( UINT i = 0; i < seed_str.length(); ++i ){
-			seed = ( seed << 4 ) | (UINT)seed_str[i];
-		}
-		seed %= 100000;
-		variant = 1 + floor( 9 * random() );
+	Debug::debug( Debug::MAP, "Shaping map...\n" );
+
+	if( !seed_string || seed_string[0] == '\0' ){
+		seed_string = islandSeedInitial.c_str();
 	}
+	UINT len = strlen(seed_string);
+
+	// Convert the string into a number. This is a cheesy way to
+	// do it but it doesn't matter. It just allows people to use
+	// words as seeds.
+	for( UINT i = 0; i < len; ++i ){
+		seed = ( seed << 4 ) | (UINT)seed_string[i];
+	}
+	seed %= 100000;
+	variant = 1 + floor( 9.0 * random() );
+
 	islandType = type;
+
 	map->newIsland( type, seed, variant );
 }
 
-void MapGen::go( IslandForm type )
+void MapGen::go( )
 {
 	//roads = new Roads();
 	//lava = new Lava();
 	//watersheds = new Watersheds();
 	//noisyEdges = new NoisyEdges();
 
-	Debug::debug( Debug::MAP, "Shaping map...\n" );
-	newIsland( type );
-
 	map->go( 0, 1 );
 	//drawMap();
 
-	map->go( 1, 2 );
+	//map->go( 1, 2 );
 	//drawMap();
 
-	map->go( 2, 3 );
-	map->assignBiomes();
+	//map->go( 2, 3 );
+	//map->assignBiomes();
 	//drawMap();
 
-	Debug::debug( Debug::MAP, "Features...\n" );
-	map->go( 3, 6 );
-	map->assignBiomes();
+	//Debug::debug( Debug::MAP, "Features...\n" );
+	//map->go( 3, 6 );
+	//map->assignBiomes();
 	//drawMap();
 
 	//roads.createRoads(map);
@@ -221,50 +222,50 @@ unsigned int MapGen::interpolateColor( unsigned int c0, unsigned int c1, double 
 void drawGradientTriangle( s3f v1, s3f v2, s3f v3, colors[] colors:Array, fillFunction:Function)
 var m:Matrix = new Matrix();
 
- // Center of triangle:
- var V:Vector3D = v1.add(v2).add(v3);
- V.scaleBy(1/3.0);
+// Center of triangle:
+var V:Vector3D = v1.add(v2).add(v3);
+V.scaleBy(1/3.0);
 
- // Normal of the plane containing the triangle:
- var N:Vector3D = v2.subtract(v1).crossProduct(v3.subtract(v1));
- N.normalize();
+// Normal of the plane containing the triangle:
+var N:Vector3D = v2.subtract(v1).crossProduct(v3.subtract(v1));
+N.normalize();
 
- // Gradient vector in x-y plane pointing in the direction of increasing z
- var G:Vector3D = new Vector3D(-N.x/N.z, -N.y/N.z, 0);
+// Gradient vector in x-y plane pointing in the direction of increasing z
+var G:Vector3D = new Vector3D(-N.x/N.z, -N.y/N.z, 0);
 
- // Center of the color gradient
- var C:Vector3D = new Vector3D(V.x - G.x*((V.z-0.5)/G.length/G.length), V.y - G.y*((V.z-0.5)/G.length/G.length));
+// Center of the color gradient
+var C:Vector3D = new Vector3D(V.x - G.x*((V.z-0.5)/G.length/G.length), V.y - G.y*((V.z-0.5)/G.length/G.length));
 
- if (G.length < 1e-6) {
-   // If the gradient vector is small, there's not much
-   // difference in colors across this triangle. Use a plain
-   // fill, because the numeric accuracy of 1/G.length is not to
-   // be trusted.  NOTE: only works for 1, 2, 3 colors in the array
-   var color:uint = colors[0];
-   if (colors.length == 2) {
-     color = interpolateColor(colors[0], colors[1], V.z);
-   } else if (colors.length == 3) {
-     if (V.z < 0.5) {
-       color = interpolateColor(colors[0], colors[1], V.z*2);
-     } else {
-       color = interpolateColor(colors[1], colors[2], V.z*2-1);
-     }
-   }
-   graphics.beginFill(color);
- } else {
-   // The gradient box is weird to set up, so we let Flash set up
-   // a basic matrix and then we alter it:
-   m.createGradientBox(1, 1, 0, 0, 0);
-   m.translate(-0.5, -0.5);
-   m.scale((1/G.length), (1/G.length));
-   m.rotate(Math.atan2(G.y, G.x));
-   m.translate(C.x, C.y);
-   var alphas:Array = colors.map(function (_:*, index:int, A:Array):Number { return 1.0; });
-   var spread:Array = colors.map(function (_:*, index:int, A:Array):int { return 255*index/(A.length-1); });
-   graphics.beginGradientFill(GradientType.LINEAR, colors, alphas, spread, m, SpreadMethod.PAD);
- }
- fillFunction();
- graphics.endFill();
+if (G.length < 1e-6) {
+// If the gradient vector is small, there's not much
+// difference in colors across this triangle. Use a plain
+// fill, because the numeric accuracy of 1/G.length is not to
+// be trusted.  NOTE: only works for 1, 2, 3 colors in the array
+var color:uint = colors[0];
+if (colors.length == 2) {
+	color = interpolateColor(colors[0], colors[1], V.z);
+} else if (colors.length == 3) {
+	if (V.z < 0.5) {
+	color = interpolateColor(colors[0], colors[1], V.z*2);
+	} else {
+	color = interpolateColor(colors[1], colors[2], V.z*2-1);
+	}
+}
+graphics.beginFill(color);
+} else {
+// The gradient box is weird to set up, so we let Flash set up
+// a basic matrix and then we alter it:
+m.createGradientBox(1, 1, 0, 0, 0);
+m.translate(-0.5, -0.5);
+m.scale((1/G.length), (1/G.length));
+m.rotate(Math.atan2(G.y, G.x));
+m.translate(C.x, C.y);
+var alphas:Array = colors.map(function (_:*, index:int, A:Array):Number { return 1.0; });
+var spread:Array = colors.map(function (_:*, index:int, A:Array):int { return 255*index/(A.length-1); });
+graphics.beginGradientFill(GradientType.LINEAR, colors, alphas, spread, m, SpreadMethod.PAD);
+}
+fillFunction();
+graphics.endFill();
 }*/
 
 void MapGen::drawMap( GeneratorMode mode )
@@ -319,10 +320,12 @@ void MapGen::drawMap( GeneratorMode mode )
 
 void MapGen::render3dPolygons( )
 {
-    double zScale = 0.15*SIZE;
+	double zScale = 0.15*SIZE;
 
-    if( sprite )
-    	RenderManager::FreeGLSprite(sprite);
+	if( sprite ){
+		RenderManager::FreeGLSprite(sprite);
+		sprite = NULL;
+	}
 
 	int count = 0;
 	// Calculate count of vertices
@@ -335,8 +338,8 @@ void MapGen::render3dPolygons( )
 	if( !count )
 		return;
 
-    int mesh = MeshManager::get("mesh_terrain");
-    sprite = RenderManager::CreateGLSprite( 0, 0, 1, SIZE, SIZE, mesh );
+	int mesh = MeshManager::get("mesh_terrain");
+	sprite = RenderManager::CreateGLSprite( 0, 0, 1, SIZE, SIZE, mesh );
 
 	GLBrush& brush = sprite->brush;
 	brush.init(-1);
@@ -357,27 +360,27 @@ void MapGen::render3dPolygons( )
 			Corner* corner1 = edge->v1;
 
 			if( !corner0 || !corner1 ){
-			   // Edge of the map; we can't deal with it right now
-			   continue;
+			// Edge of the map; we can't deal with it right now
+			continue;
 			}
 
-            float zp = zScale * p->elevation;
-            float z0 = zScale * corner0->elevation;
-            float z1 = zScale*corner1->elevation;
-            // Verticles
-            s3f vc[3] = {
-            		s3f(p->point.x, p->point.y, zp),
-            		s3f(corner0->point.x, corner0->point.y, z0),
-            		s3f(corner1->point.x, corner1->point.y, z1)
-            };
+			float zp = zScale * p->elevation;
+			float z0 = zScale * corner0->elevation;
+			float z1 = zScale*corner1->elevation;
+			// Verticles
+			s3f vc[3] = {
+					s3f(p->point.x, p->point.y, zp),
+					s3f(corner0->point.x, corner0->point.y, z0),
+					s3f(corner1->point.x, corner1->point.y, z1)
+			};
 
-            // Add position & color to brush
-            for( int i = 0; i < 3; ++i ){
-            	int ti = brush.indices_count;
-            	arr[ti].verticles = vc[i];
-            	brush.indices_list[brush.indices_count++] = ti + brush.point_index;
-            	arr[ti].color.set( color );
-            }
+			// Add position & color to brush
+			for( int i = 0; i < 3; ++i ){
+				int ti = brush.indices_count;
+				arr[ti].verticles = vc[i];
+				brush.indices_list[brush.indices_count++] = ti + brush.point_index;
+				arr[ti].color.set( color );
+			}
 
 		}
 	}
@@ -389,77 +392,77 @@ void MapGen::render3dPolygons( )
 void MapGen::renderPolygons( )
 {
 	/*
-     var p:Center, r:Center;
+	var p:Center, r:Center;
 
-     // My Voronoi polygon rendering doesn't handle the boundary
-     // polygons, so I just fill everything with ocean first.
-     graphics.beginFill(colors.OCEAN);
-     graphics.drawRect(0, 0, SIZE, SIZE);
-     graphics.endFill();
+	// My Voronoi polygon rendering doesn't handle the boundary
+	// polygons, so I just fill everything with ocean first.
+	graphics.beginFill(colors.OCEAN);
+	graphics.drawRect(0, 0, SIZE, SIZE);
+	graphics.endFill();
 
-     for each (p in map.centers) {
-         for each (r in p.neighbors) {
-             var edge:Edge = map.lookupEdgeFromCenter(p, r);
-             var color:int = colors[p.biome] || 0;
-             if (colorOverrideFunction != null) {
-               color = colorOverrideFunction(color, p, r, edge);
-             }
+	for each (p in map.centers) {
+		for each (r in p.neighbors) {
+			var edge:Edge = map.lookupEdgeFromCenter(p, r);
+			var color:int = colors[p.biome] || 0;
+			if (colorOverrideFunction != null) {
+			color = colorOverrideFunction(color, p, r, edge);
+			}
 
-             function drawPath0():void {
-               var path:Vector.<Point> = noisyEdges.path0[edge.index];
-               graphics.moveTo(p.point.x, p.point.y);
-               graphics.lineTo(path[0].x, path[0].y);
-               drawPathForwards(graphics, path);
-               graphics.lineTo(p.point.x, p.point.y);
-             }
+			function drawPath0():void {
+			var path:Vector.<Point> = noisyEdges.path0[edge.index];
+			graphics.moveTo(p.point.x, p.point.y);
+			graphics.lineTo(path[0].x, path[0].y);
+			drawPathForwards(graphics, path);
+			graphics.lineTo(p.point.x, p.point.y);
+			}
 
-             function drawPath1():void {
-               var path:Vector.<Point> = noisyEdges.path1[edge.index];
-               graphics.moveTo(p.point.x, p.point.y);
-               graphics.lineTo(path[0].x, path[0].y);
-               drawPathForwards(graphics, path);
-               graphics.lineTo(p.point.x, p.point.y);
-             }
+			function drawPath1():void {
+			var path:Vector.<Point> = noisyEdges.path1[edge.index];
+			graphics.moveTo(p.point.x, p.point.y);
+			graphics.lineTo(path[0].x, path[0].y);
+			drawPathForwards(graphics, path);
+			graphics.lineTo(p.point.x, p.point.y);
+			}
 
-             if (noisyEdges.path0[edge.index] == null
-                 || noisyEdges.path1[edge.index] == null) {
-               // It's at the edge of the map, where we don't have
-               // the noisy edges computed. TODO: figure out how to
-               // fill in these edges from the voronoi library.
-               continue;
-             }
+			if (noisyEdges.path0[edge.index] == null
+				|| noisyEdges.path1[edge.index] == null) {
+			// It's at the edge of the map, where we don't have
+			// the noisy edges computed. TODO: figure out how to
+			// fill in these edges from the voronoi library.
+			continue;
+			}
 
-             if (gradientFillProperty != null) {
-               // We'll draw two triangles: center - corner0 -
-               // midpoint and center - midpoint - corner1.
-               var corner0:Corner = edge.v0;
-               var corner1:Corner = edge.v1;
+			if (gradientFillProperty != null) {
+			// We'll draw two triangles: center - corner0 -
+			// midpoint and center - midpoint - corner1.
+			var corner0:Corner = edge.v0;
+			var corner1:Corner = edge.v1;
 
-               // We pick the midpoint elevation/moisture between
-               // corners instead of between polygon centers because
-               // the resulting gradients tend to be smoother.
-               var midpoint:Point = edge.midpoint;
-               var midpointAttr:Number = 0.5*(corner0[gradientFillProperty]+corner1[gradientFillProperty]);
-               drawGradientTriangle
-                 (graphics,
-                  new Vector3D(p.point.x, p.point.y, p[gradientFillProperty]),
-                  new Vector3D(corner0.point.x, corner0.point.y, corner0[gradientFillProperty]),
-                  new Vector3D(midpoint.x, midpoint.y, midpointAttr),
-                  [colors.GRADIENT_LOW, colors.GRADIENT_HIGH], drawPath0);
-               drawGradientTriangle
-                 (graphics,
-                  new Vector3D(p.point.x, p.point.y, p[gradientFillProperty]),
-                  new Vector3D(midpoint.x, midpoint.y, midpointAttr),
-                  new Vector3D(corner1.point.x, corner1.point.y, corner1[gradientFillProperty]),
-                  [colors.GRADIENT_LOW, colors.GRADIENT_HIGH], drawPath1);
-             } else {
-               graphics.beginFill(color);
-               drawPath0();
-               drawPath1();
-               graphics.endFill();
-             }
-           }
-       }
+			// We pick the midpoint elevation/moisture between
+			// corners instead of between polygon centers because
+			// the resulting gradients tend to be smoother.
+			var midpoint:Point = edge.midpoint;
+			var midpointAttr:Number = 0.5*(corner0[gradientFillProperty]+corner1[gradientFillProperty]);
+			drawGradientTriangle
+				(graphics,
+				new Vector3D(p.point.x, p.point.y, p[gradientFillProperty]),
+				new Vector3D(corner0.point.x, corner0.point.y, corner0[gradientFillProperty]),
+				new Vector3D(midpoint.x, midpoint.y, midpointAttr),
+				[colors.GRADIENT_LOW, colors.GRADIENT_HIGH], drawPath0);
+			drawGradientTriangle
+				(graphics,
+				new Vector3D(p.point.x, p.point.y, p[gradientFillProperty]),
+				new Vector3D(midpoint.x, midpoint.y, midpointAttr),
+				new Vector3D(corner1.point.x, corner1.point.y, corner1[gradientFillProperty]),
+				[colors.GRADIENT_LOW, colors.GRADIENT_HIGH], drawPath1);
+			} else {
+			graphics.beginFill(color);
+			drawPath0();
+			drawPath1();
+			graphics.endFill();
+			}
+		}
+	}
   */
 }
 

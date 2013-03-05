@@ -173,8 +173,7 @@ void MapGenerator::generateRandomPoints( std::vector<s2f>& pts )
 	fclose(fp);
 }
 
-void MapGenerator::improveRandomPoints( std::vector<s2f>& pts )
-{
+void MapGenerator::improveRandomPoints( std::vector< s2f >& pts ) {
 	// We'd really like to generate "blue noise". Algorithms:
 	// 1. Poisson dart throwing: check each new point against all
 	//     existing points, and reject it if it's too close.
@@ -186,26 +185,28 @@ void MapGenerator::improveRandomPoints( std::vector<s2f>& pts )
 	// Option 3 is implemented here. If it's run for too many iterations,
 	// it will turn into a grid, but convergence is very slow, and we only
 	// run it a few times.
-	/*
-	 p:Point, q:Point, region:Vector.<Point>;
-	 std::vector<>
-	 for( int i = 0; i < NUM_LLOYD_ITERATIONS; i++ ){
-	 voronoi = new Voronoi(points, null, new Rectangle(0, 0, SIZE, SIZE));
-	 for each (p in points) {
-	 region = voronoi.region(p);
-	 p.x = 0.0;
-	 p.y = 0.0;
-	 for each (q in region) {
-	 p.x += q.x;
-	 p.y += q.y;
-	 }
-	 p.x /= region.length;
-	 p.y /= region.length;
-	 region.splice(0, region.length);
-	 }
-	 voronoi.dispose();
-	 }
-	 */
+
+	q:Point, region:Vector.<Point>;
+	std::vector< >
+	for( int i = 0; i < NUM_LLOYD_ITERATIONS; i++ ){
+		Voronoi* voronoi = new Voronoi( points, null,
+				new Rectangle( 0, 0, SIZE, SIZE ) );
+		FOREACHIT( points ){
+			const s2f& p = (*it);
+			region = voronoi.region(p);
+			p.x = 0.0;
+			p.y = 0.0;
+			for each (q in region){
+				p.x += q.x;
+				p.y += q.y;
+			}
+			p.x /= region.length;
+			p.y /= region.length;
+			region.splice(0, region.length);
+		}
+		voronoi.dispose( );
+	}
+
 }
 
 inline s2f interpolate( const s2f& first, const s2f& second, double delta )
@@ -358,11 +359,11 @@ void MapGenerator::buildGraph( const std::vector<s2f>& pts, Voronoi* voronoi )
 		v.push_back(x);
 
 		/*		function addToCornerList(v:Vector.<Corner>, x:Corner):void {
-		 if (x != null && v.indexOf(x) < 0) { v.push(x); }
-		 }
-		 function addToCenterList(v:Vector.<Center>, x:Center):void {
-		 if (x != null && v.indexOf(x) < 0) { v.push(x); }
-		 }
+		if (x != null && v.indexOf(x) < 0) { v.push(x); }
+		}
+		function addToCenterList(v:Vector.<Center>, x:Center):void {
+		if (x != null && v.indexOf(x) < 0) { v.push(x); }
+		}
 		 */
 
 		// Centers point to centers.

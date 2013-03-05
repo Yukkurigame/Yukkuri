@@ -76,6 +76,8 @@ bool VoronoiDiagramGenerator::generateVoronoi( struct SourcePoint* srcPoints,
 	freeinit( &sfl, sizeof(Site) );
 
 	sites = (struct Site *)myalloc( nsites * sizeof( *sites ) );
+	memset( sites, 0, nsites * sizeof( *sites ) );
+
 	polygons = (struct Polygon *)myalloc( nsites * sizeof( *polygons ) );
 
 	if( sites == 0 )
@@ -154,6 +156,13 @@ void VoronoiDiagramGenerator::getEdges( const VoronoiEdge** e, int* count )
 {
 	*e = edgeList;
 	*count = vedges;
+}
+
+Site* VoronoiDiagramGenerator::getSite( int index )
+{
+	if( index >= nsites )
+		return NULL;
+	return &sites[index];
 }
 
 bool VoronoiDiagramGenerator::ELinitialize()
@@ -489,29 +498,29 @@ void VoronoiDiagramGenerator::endpoint(struct Edge *e1,int lr,struct Site * s, s
 	s->coordout.x = s->coord.x;
 	s->coordout.y = s->coord.y;
 
-        if(e1 -> ep[le] != (struct Site *) NULL && e1 -> ep[re] != (struct Site *) NULL)
-        {
-                //clip_edge(e1);
-                deref(e1->reg[le]);
-                deref(e1->reg[re]);
-                makefree((Freenode*)e1, &efl);
-        }
+		if(e1 -> ep[le] != (struct Site *) NULL && e1 -> ep[re] != (struct Site *) NULL)
+		{
+				//clip_edge(e1);
+				deref(e1->reg[le]);
+				deref(e1->reg[re]);
+				makefree((Freenode*)e1, &efl);
+		}
 
-        if(e2 -> ep[le] != (struct Site *) NULL && e2 -> ep[re] != (struct Site *) NULL)
-        {
-                //clip_edge(e2);
-                deref(e2->reg[le]);
-                deref(e2->reg[re]);
-                makefree((Freenode*)e2, &efl);
-        }
+		if(e2 -> ep[le] != (struct Site *) NULL && e2 -> ep[re] != (struct Site *) NULL)
+		{
+				//clip_edge(e2);
+				deref(e2->reg[le]);
+				deref(e2->reg[re]);
+				makefree((Freenode*)e2, &efl);
+		}
 
-        if(e3 -> ep[le] != (struct Site *) NULL && e3 -> ep[re] != (struct Site *) NULL)
-        {
-                //clip_edge(e3);
-                deref(e3->reg[le]);
-                deref(e3->reg[re]);
-                makefree((Freenode*)e3, &efl);
-        }
+		if(e3 -> ep[le] != (struct Site *) NULL && e3 -> ep[re] != (struct Site *) NULL)
+		{
+				//clip_edge(e3);
+				deref(e3->reg[le]);
+				deref(e3->reg[re]);
+				makefree((Freenode*)e3, &efl);
+		}
 
 	return;
 }
@@ -746,6 +755,7 @@ void* VoronoiDiagramGenerator::myalloc( unsigned n )
 
 /* for those who don't have Cherry's plot */
 /* #include <plot.h> */
+/*
 void VoronoiDiagramGenerator::openpl(){}
 void VoronoiDiagramGenerator::line(float x1, float y1, float x2, float y2)
 {
@@ -785,7 +795,7 @@ void VoronoiDiagramGenerator::out_triple(struct Site *s1, struct Site *s2,struct
 {
 
 }
-
+*/
 
 
 void VoronoiDiagramGenerator::plotinit()
@@ -872,7 +882,7 @@ void VoronoiDiagramGenerator::getSitePoints(int sitenbr, int* numpoints, Polygon
 		}
 	}
 
-        qsort(polygons[sitenbr].pointlist, polygons[sitenbr].numpoints, sizeof(PolygonPoint), anglecomp);
+		qsort(polygons[sitenbr].pointlist, polygons[sitenbr].numpoints, sizeof(PolygonPoint), anglecomp);
 
 	if (polygons[sitenbr].boundary)
 	{
@@ -938,8 +948,8 @@ void VoronoiDiagramGenerator::getSitePoints(int sitenbr, int* numpoints, Polygon
 		polygons[sitenbr].boundary = 0;
 	}
 
-        *numpoints = polygons[sitenbr].numpoints;
-        *pS = polygons[sitenbr].pointlist;
+		*numpoints = polygons[sitenbr].numpoints;
+		*pS = polygons[sitenbr].pointlist;
 }
 */
 
@@ -1263,16 +1273,16 @@ int spcomp(const void *p1,const void *p2)
 
 int anglecomp(const void * p1, const void * p2)
 {
-        PolygonPoint * s1 = (PolygonPoint *)p1 ;
-        PolygonPoint * s2 = (PolygonPoint *)p2 ;
+		PolygonPoint * s1 = (PolygonPoint *)p1 ;
+		PolygonPoint * s2 = (PolygonPoint *)p2 ;
 
-        if (s1->angle < s2->angle) {
-                return (-1) ;
-        }
-        if (s1->angle > s2->angle) {
-                return (1) ;
-        }
-        return (0) ;
+		if (s1->angle < s2->angle) {
+				return (-1) ;
+		}
+		if (s1->angle > s2->angle) {
+				return (1) ;
+		}
+		return (0) ;
 }
 
 /* return a single in-storage site */
@@ -1307,11 +1317,17 @@ void VoronoiDiagramGenerator::save_edge( Edge* edge )
 	// Structures are same in edge part
 	memcpy( vedge, edge, sizeof(Edge) );
 	ref( vedge->reg[0] );
+	site_add_egde( vedge->reg[0], vedge );
 	ref( vedge->reg[1] );
-	if( vedge->ep[0] )
+	site_add_egde( vedge->reg[1], vedge );
+	if( vedge->ep[0] ){
 		ref( vedge->ep[0] );
-	if( vedge->ep[1] )
+		site_add_egde( vedge->ep[0], vedge );
+	}
+	if( vedge->ep[1] ){
 		ref( vedge->ep[1] );
+		site_add_egde( vedge->ep[1], vedge );
+	}
 	vedge->visible = false;
 	vedge->index = vedges++;
 }
@@ -1332,3 +1348,4 @@ void VoronoiDiagramGenerator::clear_saved_edges( )
 		sites = 0;
 	}
 }
+

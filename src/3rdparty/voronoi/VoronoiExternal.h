@@ -28,6 +28,10 @@ struct Site
 	double weight;
 	int sitenbr;
 	int refcnt;
+	int edges_count;
+	VoronoiEdge** edges;
+	Point** region;
+	short* edge_orientations;
 };
 
 enum SiteSide {
@@ -44,6 +48,10 @@ struct VoronoiEdge
 	struct Point clipped[2];
 	bool visible;
 };
+
+
+void site_add_egde( Site*, VoronoiEdge* );
+int site_region( Site* );
 
 
 #endif /* VORONOIEXTERNAL_H_ */

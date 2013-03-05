@@ -6,6 +6,7 @@
 
 #include "Voronoi.h"
 #include "3rdparty/voronoi/VoronoiDiagramGenerator.h"
+#include "3rdparty/voronoi/EdgeReorderer.h"
 #include "hacks.h"
 
 static VoronoiDiagramGenerator vdg;
@@ -13,17 +14,23 @@ static VoronoiDiagramGenerator vdg;
 Voronoi::Voronoi( const std::vector<s2f>& points, const rect2f& size, int dist ) : sites(NULL)
 {
 	addSites( points );
+	vdg.init();
 	vdg.generateVoronoi( sites, sites_count, size.x, size.width,
 						size.y, size.height, dist );
+	bounds[ssLeft] = size.x;
+	bounds[ssRight] = size.width;
+	bounds[ssBottom] = size.y;
+	bounds[ssTop] = size.height;
 }
 
 Voronoi::~Voronoi( )
 {
+	vdg.clean();
 	if(sites)
 		free(sites);
 }
 
-void Voronoi::egdes( const VoronoiEdge** el, int* size )
+void Voronoi::egdes( VoronoiEdge*** el, int* size )
 {
 	vdg.getEdges( el, size );
 }
@@ -45,19 +52,21 @@ void Voronoi::addSites( const std::vector<s2f>& points )
 	}
 }
 
-void Voronoi::region( const s2f& p )
+void Voronoi::region( const s2f& p, Point**& pts, int& count )
 {
 	SourcePoint* site = NULL;
-	if( sitesByLocation.count(p.x) > 0 &&
-		sitesByLocation[p.x].count(p.y) > 0 )
-		SourcePoint* site = sitesByLocation[p.x][p.y];
+	if( sitesByLocation.count( p.x ) > 0 && sitesByLocation[p.x].count( p.y ) > 0 )
+		site = sitesByLocation[p.x][p.y];
 
 	if( !site )
 		return;
 
 	Site* s = vdg.getSite( site->id );
-
-	site_region( s );
-
-	return site.region(_plotBounds);
+	if( s ){
+		site_region( s, bounds );
+		count = s->region_size;
+		pts = s->region;
+	}
 }
+
+

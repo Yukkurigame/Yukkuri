@@ -33,6 +33,17 @@
 
 VoronoiDiagramGenerator::VoronoiDiagramGenerator()
 {
+	init();
+}
+
+VoronoiDiagramGenerator::~VoronoiDiagramGenerator()
+{
+	clean();
+}
+
+
+void VoronoiDiagramGenerator::init()
+{
 	siteidx = 0;
 	sites = 0;
 
@@ -48,10 +59,11 @@ VoronoiDiagramGenerator::VoronoiDiagramGenerator()
 	edgeList = NULL;
 }
 
-VoronoiDiagramGenerator::~VoronoiDiagramGenerator()
+void VoronoiDiagramGenerator::clean()
 {
 	cleanup();
 	cleanupEdges();
+	clear_saved_edges();
 
 	if(allMemoryList != 0)
 		delete allMemoryList;
@@ -152,7 +164,7 @@ bool VoronoiDiagramGenerator::generateVoronoi( struct SourcePoint* srcPoints,
 	return true;
 }
 
-void VoronoiDiagramGenerator::getEdges( const VoronoiEdge** e, int* count )
+void VoronoiDiagramGenerator::getEdges( VoronoiEdge*** e, int* count )
 {
 	*e = edgeList;
 	*count = vedges;
@@ -324,6 +336,7 @@ void VoronoiDiagramGenerator::geominit()
 	float sn;
 
 	freeinit(&efl, sizeof(Edge));
+	freeinit(&vefl, sizeof(VoronoiEdge));
 	nvertices = 0;
 	nedges = 0;
 	sn = (float)nsites+4;
@@ -539,7 +552,6 @@ void VoronoiDiagramGenerator::makevertex(struct Site *v)
 {
 	v -> sitenbr = nvertices;
 	nvertices += 1;
-	out_vertex(v);
 }
 
 
@@ -1137,7 +1149,6 @@ bool VoronoiDiagramGenerator::voronoi(int triangulate)
 
 	PQinitialize();
 	bottomsite = nextone();
-	out_site(bottomsite);
 	bool retval = ELinitialize();
 
 	if(!retval)
@@ -1156,7 +1167,6 @@ bool VoronoiDiagramGenerator::voronoi(int triangulate)
 		if (newsite != (struct Site *)NULL 	&& (PQempty() || newsite -> coord.y < newintstar.y
 			|| (newsite->coord.y == newintstar.y && newsite->coord.x < newintstar.x)))
 		{/* new site is smallest - this is a site event*/
-			out_site(newsite);						//output the site
 			lbnd = ELleftbnd(&(newsite->coord));				//get the first HalfEdge to the LEFT of the new site
 			rbnd = ELright(lbnd);						//get the first HalfEdge to the RIGHT of the new site
 			bot = rightreg(lbnd);						//if this halfedge has no edge, , bot = bottom site (whatever that is)
@@ -1188,8 +1198,6 @@ bool VoronoiDiagramGenerator::voronoi(int triangulate)
 			rrbnd = ELright(rbnd);						//get the HalfEdge to the right of the HE to the right of the lowest HE
 			bot = leftreg(lbnd);						//get the Site to the left of the left HE which it bisects
 			top = rightreg(rbnd);						//get the Site to the right of the right HE which it bisects
-
-			out_triple(bot, top, rightreg(lbnd));		//output the triple of sites, stating that a circle goes through them
 
 			v = lbnd->vertex;						//get the vertex that caused this event
 			makevertex(v);							//set the vertex number - couldn't do this earlier since we didn't know when it would be processed
@@ -1242,10 +1250,10 @@ bool VoronoiDiagramGenerator::voronoi(int triangulate)
 	//};
 
 	for( int edg = 0; edg < vedges; ++edg ){
-		clip_edge(&edgeList[edg]);
+		clip_edge(edgeList[edg]);
 	}
 
-	cleanup();
+	//cleanup();
 
 	return true;
 }
@@ -1305,15 +1313,18 @@ void VoronoiDiagramGenerator::save_edge( Edge* edge )
 	if( !nedges || !edge )
 		return;
 
+	VoronoiEdge* vedge = (struct VoronoiEdge *)getfree( &vefl );
+
 	if( !edgeList ){
-		edgeList = (VoronoiEdge*)myalloc( nedges * sizeof(VoronoiEdge) );
+		edgeList = (VoronoiEdge**)myalloc( nedges * sizeof(VoronoiEdge) );
 		vedges_alloc = nedges;
 	}else if( vedges >= vedges_alloc -1 ){
-		vedges_alloc += 30;
-		edgeList = (VoronoiEdge*)realloc( edgeList, vedges_alloc * sizeof(VoronoiEdge) );
+		vedges_alloc += 5;
+		edgeList = (VoronoiEdge**)realloc( edgeList, vedges_alloc * sizeof(VoronoiEdge) );
 	}
 
-	VoronoiEdge* vedge = &edgeList[vedges];
+	//VoronoiEdge* vedge = &edgeList[vedges];
+	edgeList[vedges] = vedge;
 	// Structures are same in edge part
 	memcpy( vedge, edge, sizeof(Edge) );
 	ref( vedge->reg[0] );

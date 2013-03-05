@@ -126,10 +126,13 @@ public:
 	VoronoiDiagramGenerator();
 	~VoronoiDiagramGenerator();
 
+	void init();
+	void clean();
+
 	bool generateVoronoi(struct SourcePoint* srcPoints, int numPoints, float minX, float maxX, float minY, float maxY, float minDist=0);
 
 	// TODO: make const
-	void getEdges( const VoronoiEdge** e, int* count );
+	void getEdges( VoronoiEdge*** e, int* count );
 	Site* getSite( int index );
 
 	//void getSitePoints(int sitenbr, int* numpoints, PolygonPoint** pS);
@@ -243,10 +246,12 @@ private:
 
 	int		nedges;
 	struct	Freelist efl;
+	struct	Freelist vefl;
 	int		PQhashsize;
 	struct	Halfedge *PQhash;
 	int		PQcount;
 	int		PQmin;
+
 
 
 
@@ -266,7 +271,7 @@ private:
 
 	int vedges;
 	int vedges_alloc;
-	struct VoronoiEdge* edgeList;
+	struct VoronoiEdge** edgeList;
 
 };
 

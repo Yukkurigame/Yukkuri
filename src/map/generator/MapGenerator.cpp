@@ -10,6 +10,8 @@
 #include <map>
 #include <deque>
 #include <algorithm>
+#include <stdio.h>
+
 
 MapGenerator::MapGenerator( float size )
 {
@@ -159,21 +161,20 @@ void MapGenerator::go( int first, int last )
 
 }
 
-#include <stdio.h>
 
 void MapGenerator::generateRandomPoints( std::vector<s2f>& pts )
 {
-	FILE *fp = fopen("vt", "w");
+
 	for( int i = 0; i < NUM_POINTS; i++ ){
 		s2f p( mapRandom.nextDoubleRange( 10, SIZE - 10 ),
 				mapRandom.nextDoubleRange( 10, SIZE - 10 ) );
 		pts.push_back( p );
-		fprintf(fp, "%f %f\n", p.x, p.y);
 	}
-	fclose(fp);
+	printPoints("vt");
 }
 
-void MapGenerator::improveRandomPoints( std::vector< s2f >& pts ) {
+void MapGenerator::improveRandomPoints( std::vector<s2f>& pts )
+{
 	// We'd really like to generate "blue noise". Algorithms:
 	// 1. Poisson dart throwing: check each new point against all
 	//     existing points, and reject it if it's too close.
@@ -186,27 +187,28 @@ void MapGenerator::improveRandomPoints( std::vector< s2f >& pts ) {
 	// it will turn into a grid, but convergence is very slow, and we only
 	// run it a few times.
 
-	q:Point, region:Vector.<Point>;
-	std::vector< >
+	rect2f size( 0, 0, SIZE, SIZE );
 	for( int i = 0; i < NUM_LLOYD_ITERATIONS; i++ ){
-		Voronoi* voronoi = new Voronoi( points, null,
-				new Rectangle( 0, 0, SIZE, SIZE ) );
-		FOREACHIT( points ){
-			const s2f& p = (*it);
-			region = voronoi.region(p);
+		Voronoi* voronoi = new Voronoi( points, size, min_size );
+		FOREACHIT( points ) {
+			s2f& p = ( *it );
+			Point** region = NULL;
+			int region_size = 0;
+			voronoi->region( p, region, region_size );
 			p.x = 0.0;
 			p.y = 0.0;
-			for each (q in region){
-				p.x += q.x;
-				p.y += q.y;
+			for( int var = 0; var < region_size; ++var ){
+				Point* q = region[var];
+				p.x += q->x;
+				p.y += q->y;
 			}
-			p.x /= region.length;
-			p.y /= region.length;
-			region.splice(0, region.length);
+			p.x /= region_size;
+			p.y /= region_size;
 		}
-		voronoi.dispose( );
+		delete voronoi;
 	}
 
+	printPoints("ivt");
 }
 
 inline s2f interpolate( const s2f& first, const s2f& second, double delta )
@@ -292,7 +294,7 @@ Corner* makeCorner( std::vector<Corner*>& corners,
 void MapGenerator::buildGraph( const std::vector<s2f>& pts, Voronoi* voronoi )
 {
 	//var p:Center, q:Corner, point:Point, other:Point;
-	const VoronoiEdge* libedges = NULL;
+	VoronoiEdge** libedges = NULL;
 	int edges_count = 0;
 	voronoi->egdes( &libedges, &edges_count );
 
@@ -324,7 +326,7 @@ void MapGenerator::buildGraph( const std::vector<s2f>& pts, Voronoi* voronoi )
 	std::map< int, std::vector< Corner* > > _cornerMap;
 
 	for (int edge_idx = 0; edge_idx < edges_count; ++edge_idx) {
-		const VoronoiEdge* libedge = &libedges[edge_idx];
+		const VoronoiEdge* libedge = libedges[edge_idx];
 		LineSegment dedge = LineSegment::delaunayLine( libedge );
 		LineSegment vedge = LineSegment::voronoiEdge( libedge );
 
@@ -781,6 +783,17 @@ bool MapGenerator::inside( const s2f* p )
 	return islandShape->call(
 			s2f( 2 * ( p->x / SIZE - 0.5 ), 2 * ( p->y / SIZE - 0.5 ) ) );
 }
+
+void MapGenerator::printPoints( const char* name )
+{
+	FILE *fp = fopen(name, "w");
+	FOREACHIT( points ) {
+		s2f& p = ( *it );
+		fprintf(fp, "%f %f\n", p.x, p.y);
+	}
+	fclose(fp);
+}
+
 
 struct ParamsRadial
 {

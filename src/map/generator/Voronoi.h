@@ -66,34 +66,6 @@ struct LineSegment
 
 };
 
-/*
-struct Line
-{
-	s2f start;
-	s2f end;
-	bool visible;
-
-	Line( float x1, float y1, float x2, float y2 ) :
-			start( x1, y1 ), end( x2, y2 ), visible( true )
-	{
-	}
-
-	LineSegment delaunayLine( ) const
-	{
-		// draw a line connecting the input Sites for which the edge is a bisector:
-		return LineSegment( &start, &end );
-	}
-
-	LineSegment voronoiEdge( ) const
-	{
-		if( !visible )
-			return LineSegment( NULL, NULL );
-		//return new LineSegment(_clippedVertices[LR.LEFT],
-		//			_clippedVertices[LR.RIGHT]);
-		return LineSegment( &start, &end );
-	}
-};
-*/
 
 class Voronoi
 {
@@ -102,13 +74,14 @@ public:
 	Voronoi( const std::vector<s2f>& points, const rect2f& size, int min_dist );
 	~Voronoi( );
 
-	void egdes( const VoronoiEdge**, int* size );
-	void region( const s2f& )
+	void egdes( VoronoiEdge***, int* size );
+	void region( const s2f&, Point**&, int& );
 
 private:
 	void addSites( const std::vector<s2f>& points );
 
 	UINT sites_count;
+	float bounds[4];
 	SourcePoint* sites;
 	std::map< float, std::map< float, SourcePoint* > > sitesByLocation;
 };

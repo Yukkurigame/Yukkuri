@@ -61,30 +61,8 @@ typedef GenerateFunc (IslandShape::*GeneratorFunc)( int );
 
 class MapGenerator
 {
-
 public:
-	static const int NUM_POINTS = 2000;
-	static const float LAKE_THRESHOLD = 0.3; // 0 to 1, fraction of water corners for water polygon
-	static const int NUM_LLOYD_ITERATIONS = 2;
-	static const int min_size = 32;
-
-	// Passed in by the caller:
-	float SIZE;
-
-	// Island shape is controlled by the islandRandom seed and the
-	// type of island, passed in when we set the island shape. The
-	// islandShape function uses both of them to determine whether any
-	// point should be water or land.
-	GenerateFunc* islandShape;
-
-	// Island details are controlled by this random generator. The
-	// initial map upon loading is always deterministic, but
-	// subsequent maps reset this random number generator with a
-	// random seed.
-	PM_PRNG mapRandom;
-
 	// These store the graph data
-	std::vector<s2f> points;  // Only useful during map construction
 	std::vector<Center*> centers;
 	std::vector<Corner*> corners;
 	std::vector<Edge*> edges;
@@ -99,6 +77,7 @@ public:
 
 	void go( int first, int last );
 
+private:
 	// Generate random points and assign them to be on the island or
 	// in the water. Some water points are inland lakes; others are
 	// ocean. We'll determine ocean later by looking at what's
@@ -201,6 +180,35 @@ public:
 
 	// Determine whether a given point should be on the island or in the water.
 	bool inside( const s2f* p );
+
+	void printPoints( const char* name );
+
+
+	///////////////////////////////////////////
+	// VARIABLES
+
+	static const int NUM_POINTS = 2000;
+	static const float LAKE_THRESHOLD = 0.3; // 0 to 1, fraction of water corners for water polygon
+	static const int NUM_LLOYD_ITERATIONS = 2;
+	static const int min_size = 32;
+
+	// Passed in by the caller:
+	float SIZE;
+
+	// Island shape is controlled by the islandRandom seed and the
+	// type of island, passed in when we set the island shape. The
+	// islandShape function uses both of them to determine whether any
+	// point should be water or land.
+	GenerateFunc* islandShape;
+
+	// Island details are controlled by this random generator. The
+	// initial map upon loading is always deterministic, but
+	// subsequent maps reset this random number generator with a
+	// random seed.
+	PM_PRNG mapRandom;
+
+	// These store the graph data
+	std::vector<s2f> points;  // Only useful during map construction
 };
 
 #endif /* GENERATORMAP_H_ */

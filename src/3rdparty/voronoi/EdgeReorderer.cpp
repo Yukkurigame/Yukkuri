@@ -7,6 +7,9 @@
 
 #include "3rdparty/voronoi/EdgeReorderer.h"
 #include "utils/list.h"
+#include <stdlib.h>
+#include <string.h>
+
 
 EdgeReorderer::EdgeReorderer( VoronoiEdge** origEdges, int length ) :
 		edges_list( 0 ), edge_orientations( 0 )
@@ -23,17 +26,16 @@ EdgeReorderer::~EdgeReorderer( )
 
 void EdgeReorderer::reorderEdges( VoronoiEdge** origEdges, int length )
 {
-	int block_size = sizeof(VoronoiEdge*) * length;
-	list< VoronoiEdge* > newEdges;
-	list< short > _edge_orientations;
+	list<VoronoiEdge*> newEdges;
+	list<short> _edge_orientations;
 
 	int sh_length = sizeof(short) * length;
 
-	edge_orientations = (short*) malloc( sh_length );
+	edge_orientations = (short*)malloc( sh_length );
 	memset( edge_orientations, 0, sh_length );
 
 	// we're going to reorder the edges in order of traversal
-	short* done = (short*) malloc( sh_length );
+	short* done = (short*)malloc( sh_length );
 	memset( done, 0, sh_length );
 
 	int nDone = 0;
@@ -91,13 +93,13 @@ void EdgeReorderer::reorderEdges( VoronoiEdge** origEdges, int length )
 
 	free( done );
 
-	listElement< VoronoiEdge* > eel = newEdges.head;
-	listElement< short > oel = _edge_orientations.head;
+	listElement<VoronoiEdge*>* eel = newEdges.head;
+	listElement<short>* oel = _edge_orientations.head;
 
 	for( int v = 0; v < length; ++v ){
-		origEdges[v] = eel.data;
-		edge_orientations[v] = oel.data;
-		eel = eel.next;
-		oel = oel.next;
+		origEdges[v] = eel->data;
+		edge_orientations[v] = oel->data;
+		eel = eel->next;
+		oel = oel->next;
 	}
 }

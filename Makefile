@@ -44,7 +44,7 @@ MAP = Tiles.cpp Chunk.cpp Region.cpp Map.cpp \
 		$(addprefix fifth-party/, PMPRNG.cpp ) )
 3RDPARTY = CUData.cpp CUDataUser.cpp CUDataTemplates.cpp LuaPusher.cpp timer/TimerManager.cpp \
 		   $(addprefix objTester/, list.cpp obj_parser.cpp string_extra.cpp) \
-		   $(addprefix voronoi/, VoronoiDiagramGenerator.cpp)
+		   $(addprefix voronoi/, EdgeReorderer.cpp VoronoiDiagramGenerator.cpp VoronoiExternal.cpp)
 
 
 SRCS =   main.cpp config.cpp Bindings.cpp BindFunctions.cpp debug.cpp \

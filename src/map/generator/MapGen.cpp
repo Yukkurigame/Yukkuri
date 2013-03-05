@@ -60,7 +60,7 @@ void MapGen::go( )
 	map->go( 0, 1 );
 	//drawMap();
 
-	//map->go( 1, 2 );
+	map->go( 1, 2 );
 	//drawMap();
 
 	//map->go( 2, 3 );

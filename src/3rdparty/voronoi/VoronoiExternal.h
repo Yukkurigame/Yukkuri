@@ -7,6 +7,8 @@
 #ifndef VORONOIEXTERNAL_H_
 #define VORONOIEXTERNAL_H_
 
+#include <cmath>
+
 struct SourcePoint
 {
 	int id;
@@ -20,6 +22,8 @@ struct Point
 	float x, y;
 };
 
+struct VoronoiEdge;
+
 // structure used both for sites and for vertices
 struct Site
 {
@@ -30,12 +34,9 @@ struct Site
 	int refcnt;
 	int edges_count;
 	VoronoiEdge** edges;
-	Point** region;
 	short* edge_orientations;
-};
-
-enum SiteSide {
-	ssLeft = 0, ssRight
+	Point** region;
+	int region_size;
 };
 
 // External edge handler
@@ -50,8 +51,36 @@ struct VoronoiEdge
 };
 
 
-void site_add_egde( Site*, VoronoiEdge* );
-int site_region( Site* );
+enum SiteSide {
+	ssLeft = 0, ssRight, ssTop, ssBottom
+};
 
+enum BoundsCheckStates
+{
+	bcTOP = 0x01, bcBOTTOM = 0x02, bcLEFT = 0x04, bcRIGHT = 0x08
+};
+
+void site_add_egde( Site*, VoronoiEdge* );
+void site_region( Site*, float[4] );
+
+inline static double distance( const Point* v1, const Point* v2 )
+{
+	return sqrt((v1->x - v2->x) * (v1->x - v2->x) + (v1->y - v2->y) * (v1->y - v2->y));
+}
+
+// bounds: xmin xmax ymin ymax
+inline int check_bounds( Point* point, float bounds[4] )
+{
+	int value = 0;
+	if( point->x == bounds[ssLeft] )
+		value |= bcLEFT;
+	if( point->x == bounds[ssRight] )
+		value |= bcRIGHT;
+	if( point->y == bounds[ssTop] )
+		value |= bcTOP;
+	if( point->y == bounds[ssBottom] )
+		value |= bcBOTTOM;
+	return value;
+}
 
 #endif /* VORONOIEXTERNAL_H_ */

@@ -177,7 +177,7 @@ void clipToBounds( Site* s, float bounds[4] )
 	// Place points to region
 	int idx = reverse ? points.count - 1 : 0;
 	ITER_LIST( Point*, points ) {
-		s->region[index] = it->data;
+		s->region[idx] = it->data;
 		idx += reverse ? -1 : 1;
 	}
 }

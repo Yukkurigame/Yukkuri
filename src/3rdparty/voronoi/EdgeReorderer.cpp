@@ -42,14 +42,16 @@ void EdgeReorderer::reorderEdges( VoronoiEdge** origEdges, int length )
 	VoronoiEdge* edge = origEdges[0];
 	newEdges.push_back( edge );
 	_edge_orientations.push_back( ssLeft );
+	Point* firstPoint;
+	Point* lastPoint;
+	listElement<VoronoiEdge*>* eel;
+	listElement<short>* oel;
 
-	Point* firstPoint = &edge->reg[ssLeft]->coord;
-	Point* lastPoint = &edge->reg[ssRight]->coord;
+	if( !edge->ep[ssLeft] || !edge->ep[ssRight] )
+		goto push_orientations; // Return with data saving
 
-	//if (firstPoint == Vertex.VERTEX_AT_INFINITY || lastPoint == Vertex.VERTEX_AT_INFINITY)
-	//{
-	//	return new Vector.<Edge>();
-	//}
+	firstPoint = &edge->ep[ssLeft]->coord;
+	lastPoint = &edge->ep[ssRight]->coord;
 
 	done[0] = 1;
 	++nDone;
@@ -60,11 +62,13 @@ void EdgeReorderer::reorderEdges( VoronoiEdge** origEdges, int length )
 				continue;
 
 			edge = origEdges[i];
-			Point* leftPoint = &edge->reg[ssLeft]->coord;
-			Point* rightPoint = &edge->reg[ssRight]->coord;
-			//if( leftPoint == Vertex.VERTEX_AT_INFINITY	|| rightPoint == Vertex.VERTEX_AT_INFINITY ){
-			//	return new Vector.<Edge>();
-			//}
+
+			if( !edge->ep[ssLeft] || !edge->ep[ssRight] )
+				goto push_orientations; // Return with data saving
+
+			Point* leftPoint = &edge->ep[ssLeft]->coord;
+			Point* rightPoint = &edge->ep[ssRight]->coord;
+
 			if( leftPoint == lastPoint ){
 				lastPoint = rightPoint;
 				_edge_orientations.push_back( ssLeft );
@@ -93,8 +97,9 @@ void EdgeReorderer::reorderEdges( VoronoiEdge** origEdges, int length )
 
 	free( done );
 
-	listElement<VoronoiEdge*>* eel = newEdges.head;
-	listElement<short>* oel = _edge_orientations.head;
+
+	eel = newEdges.head;
+	oel = _edge_orientations.head;
 
 	for( int v = 0; v < length; ++v ){
 		origEdges[v] = eel->data;
@@ -102,4 +107,18 @@ void EdgeReorderer::reorderEdges( VoronoiEdge** origEdges, int length )
 		eel = eel->next;
 		oel = oel->next;
 	}
+
+	return;
+
+// So weird
+push_orientations:
+
+	free( done );
+
+	listElement<short>* oelr = _edge_orientations.head;
+	for( unsigned int v = 0; v < _edge_orientations.count; ++v ){
+		edge_orientations[v] = oelr->data;
+		oelr = oelr->next;
+	}
+
 }

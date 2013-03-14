@@ -68,7 +68,7 @@ bool Map::init( )
 
 void Map::clean()
 {
-	FOREACHIT( chunkVec ){
+	FOREACHIT1( chunkVec ){
 		deleteChunk( *it );
 	}
 	chunkVec.clear( );

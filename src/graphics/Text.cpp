@@ -26,10 +26,10 @@ static std::map < std::string, std::map< int, font_data* > > LoadedFonts;
 void clean_fonts( )
 {
 	Debug::debug( Debug::MAIN, "Cleaning fonts.\n" );
-	FOREACHIT( LoadedFonts ){
-		FOREACH( vit, it->second ){
-			vit->second->clean();
-			delete vit->second;
+	FOREACHIT1( LoadedFonts ){
+		FOREACHIT2( it->second ){
+			it2->second->clean();
+			delete it2->second;
 		}
 		it->second.clear();
 	}

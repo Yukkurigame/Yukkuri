@@ -39,13 +39,11 @@ WIDGETS = Widget.cpp WidgetText.cpp WidgetBar.cpp
 INTERFACE = Interface.cpp $(addprefix $(WIDGETSDIR), $(WIDGETS))
 MAPGENERATOR = 
 MAP = Tiles.cpp Chunk.cpp Region.cpp Map.cpp \
-	$(addprefix generator/, MapGen.cpp MapGenerator.cpp Voronoi.cpp \
+	$(addprefix generator/, MapGen.cpp MapGenerator.cpp NoisyEdges.cpp \
 		$(addprefix graph/, Center.cpp Corner.cpp Edge.cpp) \
 		$(addprefix fifth-party/, PMPRNG.cpp ) )
 3RDPARTY = CUData.cpp CUDataUser.cpp CUDataTemplates.cpp LuaPusher.cpp timer/TimerManager.cpp \
-		   $(addprefix objTester/, list.cpp obj_parser.cpp string_extra.cpp) \
-		   $(addprefix voronoi/, EdgeReorderer.cpp VoronoiDiagramGenerator.cpp VoronoiExternal.cpp)
-
+		   $(addprefix objTester/, list.cpp obj_parser.cpp string_extra.cpp)
 
 SRCS =   main.cpp config.cpp Bindings.cpp BindFunctions.cpp debug.cpp \
 		 $(addprefix $(UTILSDIR), $(UTILS)) \

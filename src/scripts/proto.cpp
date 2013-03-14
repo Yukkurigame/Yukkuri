@@ -29,8 +29,8 @@ void clean_prototypes( )
 {
 	list< Frame* > deleted;
 	ITER_LIST( Proto*, Prototypes ){
-		FOREACH( ait, it->data->Actions ){
-			Frame* f = ait->second.frames;
+		FOREACHIT2( it->data->Actions ){
+			Frame* f = it2->second.frames;
 			if( f != NULL && !deleted.find( f ) )
 				deleted.push_back( f );
 		}

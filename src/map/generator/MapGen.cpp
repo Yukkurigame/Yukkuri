@@ -9,6 +9,7 @@
 #include "graphics/sprite/Mesh.h"
 #include "hacks.h"
 #include "debug.h"
+#include <cmath>
 
 
 
@@ -63,19 +64,19 @@ void MapGen::go( )
 	map->go( 1, 2 );
 	//drawMap();
 
-	//map->go( 2, 3 );
+	map->go( 2, 3 );
 	//map->assignBiomes();
 	//drawMap();
 
-	//Debug::debug( Debug::MAP, "Features...\n" );
-	//map->go( 3, 6 );
-	//map->assignBiomes();
+	Debug::debug( Debug::MAP, "Features...\n" );
+	map->go( 3, 6 );
+	map->assignBiomes();
 	//drawMap();
 
 	//roads.createRoads(map);
 	// lava.createLava(map, map.mapRandom.nextDouble);
 	//watersheds.createWatersheds(map);
-	//noisyEdges.buildNoisyEdges(map, lava, map.mapRandom);
+	//noisyEdges.buildNoisyEdges( map->centers, /*lava,*/ &map->mapRandom );
 	drawMap( gm3d );
 }
 
@@ -218,56 +219,6 @@ unsigned int MapGen::interpolateColor( unsigned int c0, unsigned int c1, double 
 	return ( r << 16 ) | ( g << 8 ) | b;
 }
 
-/*
-void drawGradientTriangle( s3f v1, s3f v2, s3f v3, colors[] colors:Array, fillFunction:Function)
-var m:Matrix = new Matrix();
-
-// Center of triangle:
-var V:Vector3D = v1.add(v2).add(v3);
-V.scaleBy(1/3.0);
-
-// Normal of the plane containing the triangle:
-var N:Vector3D = v2.subtract(v1).crossProduct(v3.subtract(v1));
-N.normalize();
-
-// Gradient vector in x-y plane pointing in the direction of increasing z
-var G:Vector3D = new Vector3D(-N.x/N.z, -N.y/N.z, 0);
-
-// Center of the color gradient
-var C:Vector3D = new Vector3D(V.x - G.x*((V.z-0.5)/G.length/G.length), V.y - G.y*((V.z-0.5)/G.length/G.length));
-
-if (G.length < 1e-6) {
-// If the gradient vector is small, there's not much
-// difference in colors across this triangle. Use a plain
-// fill, because the numeric accuracy of 1/G.length is not to
-// be trusted.  NOTE: only works for 1, 2, 3 colors in the array
-var color:uint = colors[0];
-if (colors.length == 2) {
-	color = interpolateColor(colors[0], colors[1], V.z);
-} else if (colors.length == 3) {
-	if (V.z < 0.5) {
-	color = interpolateColor(colors[0], colors[1], V.z*2);
-	} else {
-	color = interpolateColor(colors[1], colors[2], V.z*2-1);
-	}
-}
-graphics.beginFill(color);
-} else {
-// The gradient box is weird to set up, so we let Flash set up
-// a basic matrix and then we alter it:
-m.createGradientBox(1, 1, 0, 0, 0);
-m.translate(-0.5, -0.5);
-m.scale((1/G.length), (1/G.length));
-m.rotate(Math.atan2(G.y, G.x));
-m.translate(C.x, C.y);
-var alphas:Array = colors.map(function (_:*, index:int, A:Array):Number { return 1.0; });
-var spread:Array = colors.map(function (_:*, index:int, A:Array):int { return 255*index/(A.length-1); });
-graphics.beginGradientFill(GradientType.LINEAR, colors, alphas, spread, m, SpreadMethod.PAD);
-}
-fillFunction();
-graphics.endFill();
-}*/
-
 void MapGen::drawMap( GeneratorMode mode )
 {
 	graphicsReset();
@@ -320,7 +271,7 @@ void MapGen::drawMap( GeneratorMode mode )
 
 void MapGen::render3dPolygons( )
 {
-	double zScale = 0.15*SIZE;
+	double zScale = -0.15*SIZE;
 
 	if( sprite ){
 		RenderManager::FreeGLSprite(sprite);
@@ -329,10 +280,8 @@ void MapGen::render3dPolygons( )
 
 	int count = 0;
 	// Calculate count of vertices
-	FOREACHIT( map->centers ){
-		FOREACH( tit, (*it)->borders ){
-			count++;
-		}
+	FOREACHIT1( map->centers ){
+		count += (*it)->borders.count;
 	}
 
 	if( !count )
@@ -351,10 +300,10 @@ void MapGen::render3dPolygons( )
 	brush.indices_list = (UINT*)malloc( (UINT)sizeof(UINT) * vx_count );
 	VertexV2FT2FC4UI* arr = brush.points();
 
-	FOREACHIT( map->centers ){
-		Center* p = (*it);
-		FOREACH( tit, p->borders ){
-			Edge* edge = (*tit);
+	Center* p;
+	FOREACH1( p, map->centers ){
+		ITER_LIST( Edge*, p->borders ){
+			Edge* edge = it->data;
 			UINT color = BiomesColors[p->biome];
 			Corner* corner0 = edge->v0;
 			Corner* corner1 = edge->v1;
@@ -388,82 +337,49 @@ void MapGen::render3dPolygons( )
 	// Render engine cares about all other stuff, not me
 }
 
+#include <stdio.h>
 
 void MapGen::renderPolygons( )
 {
-	/*
-	var p:Center, r:Center;
+	Center* p;
+	FILE *fp = fopen("lvt", "w");
 
-	// My Voronoi polygon rendering doesn't handle the boundary
-	// polygons, so I just fill everything with ocean first.
-	graphics.beginFill(colors.OCEAN);
-	graphics.drawRect(0, 0, SIZE, SIZE);
-	graphics.endFill();
+	FOREACH1( p, map->centers ){
+		//ITER_LIST( Corner*, p->corners ){
+			//Center* r = it->data;
+			//Corner* c = it->data;
+			//Edge* edge = map->lookupEdgeFromCenter( p, r );
+			//int color = BiomesColors[p->biome];
 
-	for each (p in map.centers) {
-		for each (r in p.neighbors) {
-			var edge:Edge = map.lookupEdgeFromCenter(p, r);
-			var color:int = colors[p.biome] || 0;
-			if (colorOverrideFunction != null) {
-			color = colorOverrideFunction(color, p, r, edge);
-			}
-
-			function drawPath0():void {
-			var path:Vector.<Point> = noisyEdges.path0[edge.index];
-			graphics.moveTo(p.point.x, p.point.y);
-			graphics.lineTo(path[0].x, path[0].y);
-			drawPathForwards(graphics, path);
-			graphics.lineTo(p.point.x, p.point.y);
-			}
-
-			function drawPath1():void {
-			var path:Vector.<Point> = noisyEdges.path1[edge.index];
-			graphics.moveTo(p.point.x, p.point.y);
-			graphics.lineTo(path[0].x, path[0].y);
-			drawPathForwards(graphics, path);
-			graphics.lineTo(p.point.x, p.point.y);
-			}
-
-			if (noisyEdges.path0[edge.index] == null
-				|| noisyEdges.path1[edge.index] == null) {
-			// It's at the edge of the map, where we don't have
-			// the noisy edges computed. TODO: figure out how to
-			// fill in these edges from the voronoi library.
-			continue;
-			}
-
-			if (gradientFillProperty != null) {
-			// We'll draw two triangles: center - corner0 -
-			// midpoint and center - midpoint - corner1.
-			var corner0:Corner = edge.v0;
-			var corner1:Corner = edge.v1;
-
-			// We pick the midpoint elevation/moisture between
-			// corners instead of between polygon centers because
-			// the resulting gradients tend to be smoother.
-			var midpoint:Point = edge.midpoint;
-			var midpointAttr:Number = 0.5*(corner0[gradientFillProperty]+corner1[gradientFillProperty]);
-			drawGradientTriangle
-				(graphics,
-				new Vector3D(p.point.x, p.point.y, p[gradientFillProperty]),
-				new Vector3D(corner0.point.x, corner0.point.y, corner0[gradientFillProperty]),
-				new Vector3D(midpoint.x, midpoint.y, midpointAttr),
-				[colors.GRADIENT_LOW, colors.GRADIENT_HIGH], drawPath0);
-			drawGradientTriangle
-				(graphics,
-				new Vector3D(p.point.x, p.point.y, p[gradientFillProperty]),
-				new Vector3D(midpoint.x, midpoint.y, midpointAttr),
-				new Vector3D(corner1.point.x, corner1.point.y, corner1[gradientFillProperty]),
-				[colors.GRADIENT_LOW, colors.GRADIENT_HIGH], drawPath1);
-			} else {
-			graphics.beginFill(color);
-			drawPath0();
-			drawPath1();
-			graphics.endFill();
-			}
-		}
+			//if( noisyEdges.path0.count(edge->index) < 1 ||
+			//	noisyEdges.path1.count(edge->index) < 1 )
+			//	continue;
+			//list< s2f >* path0 = noisyEdges.path0[edge->index];
+			//list< s2f >* path1 = noisyEdges.path1[edge->index];
+			//fprintf( fp, " %f:%f", c->point.x, c->point.y );
+			//ITER_LISTP( s2f, path0 ){
+			//	fprintf( fp, " %f:%f", it->data.x, it->data.y );
+			//}
+			//fprintf( fp, " %f:%f\n",  p->point.x, p->point.y );
+			//fprintf( fp, "line");
+			//fprintf( fp, " %f:%f",  p->point.x, p->point.y );
+			//ITER_LISTP( s2f, path1 ){
+			//	fprintf( fp, " %f:%f", it->data.x, it->data.y );
+			//}
+			//fprintf( fp, " %f:%f\n",  p->point.x, p->point.y );
+		//}
+		fprintf( fp, "%f %f\n",  p->point.x, p->point.y );
 	}
-  */
+
+	Edge* edge;
+	FOREACH1( edge, map->edges ){
+		if( !edge->v0 || !edge->v1 )
+			continue;
+		fprintf( fp, "line %f:%f %f:%f\n", edge->v0->point.x,
+				edge->v0->point.y, edge->v1->point.x, edge->v1->point.y);
+	}
+
+	fclose(fp);
 }
 
 

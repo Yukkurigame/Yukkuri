@@ -50,7 +50,7 @@ namespace {
 			nbPausableEvents++;
 
 		// Ищем событие, которое наступит позже, чем добавляемое.
-		FOREACHIT( timerEvents ){
+		FOREACHIT1( timerEvents ){
 			if (te->execTime < (*it)->execTime){
 				// Вставляем перед найденным событием
 				timerEvents.insert(it, te);
@@ -149,7 +149,7 @@ bool Timer::SuspendTimerEvent( UINT id )
 {
 	TimerEvent* t = NULL;
 	TEvIter tit = timerEvents.end();
-	FOREACHIT( timerEvents ){
+	FOREACHIT1( timerEvents ){
 		if( (*it)->id == id ){
 			t = *it;
 			tit = it;
@@ -197,7 +197,7 @@ bool Timer::ResumeTimerEvent( UINT id )
 bool Timer::UpdateEventById( UINT id, UINT dt )
 {
 	TimerEvent* t = NULL;
-	FOREACHIT( timerEvents ){
+	FOREACHIT1( timerEvents ){
 		if( (*it)->id == id ){
 			t = *it;
 			break;
@@ -218,7 +218,7 @@ int Timer::DeleteTimerEvent( LuaRegRef action )
 	// Посик ближайшего подходящего события и его удаление
 	TimerEvent* t = NULL;
 	TEvIter tit = timerEvents.end();
-	FOREACHIT( timerEvents ){
+	FOREACHIT1( timerEvents ){
 		if( (*it)->action == action ){
 			t = *it;
 			tit = it;
@@ -252,10 +252,9 @@ bool Timer::DeleteTimerEventById(UINT id)
 	// Посик ближайшего подходящего события и его удаление
 	TimerEvent* t = NULL;
 	TEvIter tit = timerEvents.end();
-	FOREACHIT( timerEvents ){
-		t = *it;
-		if( (*it)->id == id ){
-			tit = it;
+	FOREACH1( t, timerEvents ){
+		if( t->id == id ){
+			tit = fit1;
 			break;
 		}
 	}
@@ -291,7 +290,7 @@ void Timer::DeleteAllThreadEvents()
 // Удаляет все события из массива
 void Timer::DeleteAllEvents()
 {
-	FOREACHIT( timerEvents ){
+	FOREACHIT1( timerEvents ){
 		delete *it, *it = NULL;
 	}
 

@@ -9,6 +9,7 @@
 
 #include "map/generator/generator_constants.h"
 #include "map/generator/MapGenerator.h"
+#include "map/generator/NoisyEdges.h"
 #include "graphics/sprite/Sprite.h"
 #include <string>
 
@@ -31,7 +32,7 @@ private:
 	//Roads roads;
 	//Lava lava
 	//Watersheds watersheds;
-	//NoisyEdges noisyEdges;
+	NoisyEdges noisyEdges;
 
 public:
 	MapGen( );
@@ -47,12 +48,6 @@ public:
 	void go( );
 
 	// Show some information about the maps
-	//private static var _biomeMap:Array =
-	//  ['BEACH', 'LAKE', 'ICE', 'MARSH', 'SNOW', 'TUNDRA', 'BARE', 'SCORCHED',
-	//   'TAIGA', 'SHRUBLAND', 'TEMPERATE_DESERT', 'TEMPERATE_RAIN_FOREST',
-	//   'TEMPERATE_DECIDUOUS_FOREST', 'GRASSLAND', 'SUBTROPICAL_DESERT',
-	//   'TROPICAL_RAIN_FOREST', 'TROPICAL_SEASONAL_FOREST'];
-
 	void drawHistograms( );
 
 	// Helper functions for rendering paths
@@ -104,44 +99,6 @@ public:
 
 	// Render the paths from each polygon to the ocean, showing watersheds
 	void renderWatersheds( );
-
-	// 3D Render must make this shit, not program
-	/*double function calculateLighting(p:Center, r:Corner, s:Corner) {
-	var A:Vector3D = new Vector3D(p.point.x, p.point.y, p.elevation);
-	var B:Vector3D = new Vector3D(r.point.x, r.point.y, r.elevation);
-	var C:Vector3D = new Vector3D(s.point.x, s.point.y, s.elevation);
-	var normal:Vector3D = B.subtract(A).crossProduct(C.subtract(A));
-	if (normal.z < 0) { normal.scaleBy(-1); }
-	normal.normalize();
-	var light:Number = 0.5 + 35*normal.dotProduct(lightVector);
-	if (light < 0) light = 0;
-	if (light > 1) light = 1;
-	return light;
-	}
-	public function colorWithSlope(color:int, p:Center, q:Center, edge:Edge):int {
-	var r:Corner = edge.v0;
-	var s:Corner = edge.v1;
-	if (!r || !s) {
-	// Edge of the map
-	return displayColors.OCEAN;
-	} else if (p.water) {
-	return color;
-	}
-
-	if (q != null && p.water == q.water) color = interpolateColor(color, displayColors[q.biome], 0.4);
-	var colorLow:int = interpolateColor(color, 0x333333, 0.7);
-	var colorHigh:int = interpolateColor(color, 0xffffff, 0.3);
-	var light:Number = calculateLighting(p, r, s);
-	if (light < 0.5) return interpolateColor(colorLow, color, light*2);
-	else return interpolateColor(color, colorHigh, light*2-1);
-	}
-	public function colorWithSmoothColors(color:int, p:Center, q:Center, edge:Edge):int {
-	if (q != null && p.water == q.water) {
-	color = interpolateColor(displayColors[p.biome], displayColors[q.biome], 0.25);
-	}
-	return color;
-	}
-	 */
 
 };
 

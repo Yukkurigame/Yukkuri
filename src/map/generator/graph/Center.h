@@ -7,11 +7,12 @@
 #ifndef CENTER_H_
 #define CENTER_H_
 
-#include <vector>
 #include "map/generator/graph/Edge.h"
 #include "map/generator/graph/Corner.h"
 #include "map/generator/generator_constants.h"
+#include "utils/list.h"
 #include "basic_types.h"
+
 
 
 class Center {
@@ -29,9 +30,9 @@ public:
 	float elevation;  // 0.0-1.0
 	float moisture;  // 0.0-1.0
 
-	std::vector<Center*> neighbors;
-	std::vector<Edge*> borders;
-	std::vector< Corner* > corners;
+	list<Center*> neighbors;
+	list<Edge*> borders;
+	list< Corner* > corners;
 };
 
 #endif /* CENTER_H_ */

@@ -51,7 +51,7 @@ bool Animation::init(  std::string subconfig, std::string config)
 
 	delete cfg;
 
-	FOREACHIT( anim ){
+	FOREACHIT1( anim ){
 		std::map < std::string, unsigned int >::iterator name = animation_names.find( it->first );
 		if( name == animation_names.end() ){
 			name = animation_names.insert(

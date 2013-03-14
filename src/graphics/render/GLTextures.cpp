@@ -41,7 +41,7 @@ void GLTextures::add( std::string name, Texture* texture )
 
 void GLTextures::clean( )
 {
-	FOREACHIT( texturesCache ){
+	FOREACHIT1( texturesCache ){
 		GLTextures::free( it->second );
 		it->second = NULL;
 	}

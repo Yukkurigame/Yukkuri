@@ -23,6 +23,14 @@ struct listElement
 	for( listElement< type >* it = list->head; it != 0; it = it->next )
 
 
+/*
+ * List implements simple linked list container.
+ * One way iteration. No support for random access.
+ * Last element access. Precalculated count.
+ * Sort (recursive merge), find and comparison implemented.
+ */
+
+
 template< typename T >
 struct list
 {
@@ -79,11 +87,19 @@ struct list
 		insert( data, tail );
 	}
 
+	// Removes data at front and returns it
+	T pop( )
+	{
+		T t = head->data;
+		remove( head, 0 );
+		return t;
+	}
+
 	// Remove list content (internal in most cases, you don't need to use this)
 	void remove( listElement<T>* t, listElement<T>* prev ){
 		if(!t)
 			return;
-		if( !prev ) // element is head
+		if( t == head ) // element is head
 			head = t->next;
 		else
 			prev->next = t->next;

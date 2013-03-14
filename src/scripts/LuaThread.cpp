@@ -110,10 +110,10 @@ LuaRegRef threadsManager::NewThread( lua_State* L )
 
 ThreadIter threadsManager::GetThread( lua_State* L )
 {
-	FOREACHIT( threads ){
-		LuaThread* lt = *it;
+	LuaThread* lt = NULL;
+	FOREACH1( lt, threads ){
 		if( lt->Thread == L )
-			return it;
+			return fit1;
 	}
 	return threads.end();
 }
@@ -129,10 +129,9 @@ void threadsManager::ProcessThread( LuaRegRef r )
 {
 	LuaThread* lt = NULL;
 	ThreadIter nit = threads.end();
-	FOREACHIT( threads ){
-		lt = *it;
+	FOREACH1( lt, threads ){
 		if( lt->refKey == r ){
-			nit = it;
+			nit = fit1;
 			break;
 		}
 	}

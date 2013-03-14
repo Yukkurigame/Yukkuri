@@ -6,7 +6,8 @@
 
 #include "Center.h"
 
-Center::Center( ) : index(), elevation(), moisture()
+Center::Center( ) : index(), point(), water(false), ocean(false), coast(false),
+	border(), biome(bGRASSLAND), elevation(), moisture()
 {
 }
 

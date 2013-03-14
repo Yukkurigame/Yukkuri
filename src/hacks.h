@@ -28,11 +28,23 @@ static void clear_cvector( Vector* V ){
 }
 
 
-#define FOREACH( item, vec ) for( typeof((vec).begin()) item = (vec).begin(), end##item = (vec).end(); \
-										item != end##item; ++item )
-#define FOREACHIT( vec ) FOREACH( it, vec )
-#define FOREACHP( item, vec ) for( typeof((vec)->begin()) item = (vec)->begin(), end##item = (vec)->end(); \
-										item != end##item; ++item )
+#define FOREACH( item, iterator, vec ) \
+	for( typeof((vec).begin()) iterator = (vec).begin(), end##iterator = (vec).end(); \
+		iterator != end##iterator && ( (item = *iterator) || 1 ); ++iterator )
+#define FOREACH1( item, vec ) FOREACH( item, fit1, vec )
+#define FOREACH2( item, vec ) FOREACH( item, fit2, vec )
+#define FOREACH3( item, vec ) FOREACH( item, fit3, vec )
+
+#define FOREACHIT1( vec ) \
+	for( typeof((vec).begin()) it = (vec).begin(), end##it = (vec).end(); \
+			it != end##it; ++it )
+#define FOREACHIT2( vec ) \
+	for( typeof((vec).begin()) it2 = (vec).begin(), end##it2 = (vec).end(); \
+			it2 != end##it2; ++it2 )
+
+#define FOREACHP( item, vec ) \
+	for( typeof((vec)->begin()) item = (vec)->begin(), end##item = (vec)->end(); \
+				item != end##item; ++item )
 #define FOREACHPIT( vec ) FOREACHP( it, vec )
 
 #define GROW_ARRAY( array, type, req, size) 								\

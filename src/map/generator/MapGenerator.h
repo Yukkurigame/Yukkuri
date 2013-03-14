@@ -12,11 +12,13 @@
 #include "graph/Center.h"
 #include "graph/Edge.h"
 #include "graph/Corner.h"
-#include "Voronoi.h"
 #include "generator_constants.h"
+#include "delaunay/geom/Point.h"
+#include "delaunay/delaunay/Voronoi.h"
 
 #include "fifth-party/PMPRNG.h"
 #include "basic_types.h"
+
 
 struct GenerateFunc
 {
@@ -55,17 +57,15 @@ public:
 
 };
 
-
 typedef GenerateFunc (IslandShape::*GeneratorFunc)( int );
-
 
 class MapGenerator
 {
 public:
 	// These store the graph data
-	std::vector<Center*> centers;
-	std::vector<Corner*> corners;
-	std::vector<Edge*> edges;
+	std::vector< Center* > centers;
+	std::vector< Corner* > corners;
+	std::vector< Edge* > edges;
 
 	MapGenerator( float size );
 	virtual ~MapGenerator( );
@@ -77,15 +77,29 @@ public:
 
 	void go( int first, int last );
 
+	// Look up a Voronoi Edge object given two adjacent Voronoi
+	// polygons, or two adjacent Voronoi corners
+	Edge* lookupEdgeFromCenter( Center* p, Center* r );
+
+	Edge* lookupEdgeFromCorner( Corner* q, Corner* s );
+
+	void assignBiomes( );
+
+	// Island details are controlled by this random generator. The
+	// initial map upon loading is always deterministic, but
+	// subsequent maps reset this random number generator with a
+	// random seed.
+	PM_PRNG mapRandom;
+
 private:
 	// Generate random points and assign them to be on the island or
 	// in the water. Some water points are inland lakes; others are
 	// ocean. We'll determine ocean later by looking at what's
 	// connected to ocean.
-	void generateRandomPoints( std::vector<s2f>& pts );
+	void generateRandomPoints( std::vector< Delaunay::Point* >& pts );
 
 	// Improve the random set of points with Lloyd Relaxation.
-	void improveRandomPoints( std::vector<s2f>& pts );
+	void improveRandomPoints( std::vector< Delaunay::Point* >& pts );
 
 	// Although Lloyd relaxation improves the uniformity of polygon
 	// sizes, it doesn't help with the edge lengths. Short edges can
@@ -101,7 +115,7 @@ private:
 	// algorithms that work only on land.  We return an array instead
 	// of a vector because the redistribution algorithms want to sort
 	// this array using Array.sortOn.
-	std::vector<Corner*> landCorners( const std::vector<Corner*>& c );
+	std::vector< Corner* > landCorners( const std::vector< Corner* >& c );
 
 	// Build graph data structure in 'edges', 'centers', 'corners',
 	// based on information in the Voronoi results: point.neighbors
@@ -111,7 +125,7 @@ private:
 	// edge.{v0,v1} and its dual Delaunay triangle edge edge.{d0,d1}.
 	// For boundary polygons, the Delaunay edge will have one null
 	// point, and the Voronoi edge may be null.
-	void buildGraph( const std::vector<s2f>& pts, Voronoi* voronoi );
+	void buildGraph( const std::vector< Delaunay::Point* >& pts, Delaunay::Voronoi* voronoi );
 
 	// Determine elevations and water at Voronoi corners. By
 	// construction, we have no local minima. This is important for
@@ -128,10 +142,10 @@ private:
 	// elevations. Specifically, we want elevation X to have frequency
 	// (1-X).  To do this we will sort the corners, then set each
 	// corner to its desired elevation.
-	void redistributeElevations( std::vector<Corner*>& );
+	void redistributeElevations( std::vector< Corner* >& );
 
 	// Change the overall distribution of moisture to be evenly distributed.
-	void redistributeMoisture( std::vector<Corner*>& );
+	void redistributeMoisture( std::vector< Corner* >& );
 
 	// Determine polygon and corner types: ocean, coast, land.
 	void assignOceanCoastAndLand( );
@@ -170,26 +184,17 @@ private:
 	// needs of the island map generator.
 	static Biome getBiome( Center * p );
 
-	void assignBiomes( );
-
-	// Look up a Voronoi Edge object given two adjacent Voronoi
-	// polygons, or two adjacent Voronoi corners
-	Edge* lookupEdgeFromCenter( Center* p, Center* r );
-
-	Edge* lookupEdgeFromCorner( Corner* q, Corner* s );
-
 	// Determine whether a given point should be on the island or in the water.
 	bool inside( const s2f* p );
 
 	void printPoints( const char* name );
-
 
 	///////////////////////////////////////////
 	// VARIABLES
 
 	static const int NUM_POINTS = 2000;
 	static const float LAKE_THRESHOLD = 0.3; // 0 to 1, fraction of water corners for water polygon
-	static const int NUM_LLOYD_ITERATIONS = 2;
+	static const int NUM_LLOYD_ITERATIONS = 4;
 	static const int min_size = 32;
 
 	// Passed in by the caller:
@@ -201,14 +206,8 @@ private:
 	// point should be water or land.
 	GenerateFunc* islandShape;
 
-	// Island details are controlled by this random generator. The
-	// initial map upon loading is always deterministic, but
-	// subsequent maps reset this random number generator with a
-	// random seed.
-	PM_PRNG mapRandom;
-
 	// These store the graph data
-	std::vector<s2f> points;  // Only useful during map construction
+	std::vector< Delaunay::Point* > points;  // Only useful during map construction
 };
 
 #endif /* GENERATORMAP_H_ */

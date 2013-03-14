@@ -1,4 +1,3 @@
-
 #include "units/unitmanager.h"
 #include "units/UnitStatic.h"
 #include "units/UnitCorpse.h"
@@ -9,28 +8,29 @@
 #include "graphics/Camera.h"
 #include "scripts/Lua.h"
 
-
 #include "debug.h"
 #include "hacks.h"
 
 #include <map>
 #include <vector>
 
-
-namespace {
+namespace
+{
 	static unsigned int LastId = 1;
 
-	std::map< unsigned int, Unit* > Units;
+	list< Unit* > Units;
 	list< Unit* > RemovedUnits;
 	std::map< enum unitType, int > Size;
 	Unit* player = NULL;
 
-	void AddUnit( Unit* unit ) {
-		Units[ unit->getUnitId() ] = unit;
+	void AddUnit( Unit* unit )
+	{
+		Units.push_back( unit );
 	}
 
-	void ChangeUnitsSize( enum unitType type, signed int size ) {
-		if( Size.count(type) < 1 )
+	void ChangeUnitsSize( enum unitType type, signed int size )
+	{
+		if( Size.count( type ) < 1 )
 			Size[type] = 0;
 		Size[type] += size;
 		if( Size[type] < 0 )
@@ -45,28 +45,26 @@ namespace {
 			player = NULL;
 		if( u == Camera::GetTarget() )
 			Camera::DeleteTarget();
-		ChangeUnitsSize( u->getUnitType( ), -1 );
+		ChangeUnitsSize( u->getUnitType(), -1 );
 		delete u;
 	}
 
 }
 
-
-void UnitManager::init()
+void UnitManager::init( )
 {
 	player = NULL;
 	Phys::init();
 	//cpSpaceUseSpatialHash( Phys::space, 300.0, 3000.0 );
 }
 
-void UnitManager::clean()
+void UnitManager::clean( )
 {
 	Debug::debug( Debug::UNIT, "Remove units.\n" );
-	FOREACHIT( Units ){
-		DeleteUnit( it->second );
+	ITER_LIST( Unit*, Units ) {
+		DeleteUnit( it->data );
 	}
 	Units.clear();
-
 	Phys::clean();
 }
 /**
@@ -76,7 +74,7 @@ void UnitManager::clean()
 Unit* UnitManager::CreateUnit( enum unitType type, float x, float y, const char* proto )
 {
 	Unit* temp;
-	switch(type){
+	switch( type ){
 		case utPlayer:
 			temp = new Player();
 			break;
@@ -98,7 +96,7 @@ Unit* UnitManager::CreateUnit( enum unitType type, float x, float y, const char*
 
 	std::string protoname = "";
 	if( proto != NULL )
-		protoname = std::string(proto);
+		protoname = std::string( proto );
 
 	if( !temp->Create( LastId, protoname ) ){
 		delete temp;
@@ -120,7 +118,6 @@ Unit* UnitManager::CreateUnit( enum unitType type, float x, float y, const char*
 	return temp;
 }
 
-
 // Mark unit to removing.
 void UnitManager::RemoveUnit( Unit* u )
 {
@@ -130,50 +127,42 @@ void UnitManager::RemoveUnit( Unit* u )
 	RemovedUnits.push( u );
 }
 
-
-void UnitManager::BatchRemove()
+void UnitManager::BatchRemove( )
 {
-	if ( RemovedUnits.head == NULL )
+	if( RemovedUnits.head == NULL )
 		return;
 
-	listElement< Unit* >* le = RemovedUnits.head;
-	while( le != NULL ){
-		if( le->data ){
-			Units.erase( le->data->getUnitId() );
-			DeleteUnit( le->data );
-			le->data = NULL;
-		}
-		le = le->next;
+	ITER_LIST( Unit*, RemovedUnits ) {
+		if( !it->data )
+			continue;
+		Units.remove( it->data );
+		DeleteUnit( it->data );
+		it->data = NULL;
 	}
-	RemovedUnits.clear( );
+	RemovedUnits.clear();
 }
 
-
-Unit* UnitManager::GetPlayer()
+Unit* UnitManager::GetPlayer( )
 {
 	return player;
 }
 
-
 int UnitManager::GetUnitsSize( enum unitType type )
 {
-	if( Size.count(type) > 0 )
+	if( Size.count( type ) > 0 )
 		return Size[type];
 	return 0;
 }
 
-
-int UnitManager::GetUnitVecSize()
+int UnitManager::GetUnitVecSize( )
 {
-	return (int)Units.size();
+	return Units.count;
 }
-
 
 void UnitManager::tick( const int& dt )
 {
-	Unit* u;
-	FOREACHIT( Units ){
-		u = it->second;
+	ITER_LIST( Unit*, Units ){
+		Unit* u = it->data;
 		if( u->isDeleted() )
 			RemovedUnits.push( u );
 		else
@@ -182,12 +171,15 @@ void UnitManager::tick( const int& dt )
 	BatchRemove();
 }
 
-
 Unit* UnitManager::GetUnit( unsigned int id )
 {
 	Unit* u = NULL;
-	std::map< UINT, Unit* >::iterator it = Units.find( id );
-	if( it != Units.end() )
-		u = it->second;
+	// TODO: binary search here
+	ITER_LIST( Unit*, Units ){
+		if( it->data->getUnitId() == id ){
+			u = it->data;
+			break;
+		}
+	}
 	return u;
 }

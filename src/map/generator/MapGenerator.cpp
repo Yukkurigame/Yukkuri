@@ -5,13 +5,15 @@
  */
 
 #include "map/generator/MapGenerator.h"
+#include "delaunay/geom/Rectangle.h"
+#include "delaunay/delaunay/Edge.h"
+#include "utils/list.h"
 #include "debug.h"
 #include "hacks.h"
 #include <map>
-#include <deque>
 #include <algorithm>
 #include <stdio.h>
-
+#include <cmath>
 
 MapGenerator::MapGenerator( float size )
 {
@@ -87,12 +89,12 @@ void MapGenerator::go( int first, int last )
 			// to the edge, a map from these four points to the points
 			// they connect to (both along the edge and crosswise).
 			Debug::debug( Debug::MAP, "Build graph...\n" );
-			Voronoi* voronoi = new Voronoi( points, rect2f( 0, 0, SIZE, SIZE ),
-					min_size );
+			Delaunay::Rectangle r( 0, 0, SIZE, SIZE );
+			Delaunay::Voronoi* voronoi = new Delaunay::Voronoi( points, NULL, r );
 			buildGraph( points, voronoi );
 			improveCorners();
 			delete voronoi;
-			points.clear();
+			clear_vector( &points );
 			CHECK_LAST( 3 )
 		}
 		case 3:
@@ -111,12 +113,12 @@ void MapGenerator::go( int first, int last )
 			// largest ring around the island, and therefore should more
 			// land area than the highest elevation, which is the very
 			// center of a perfectly circular island.
-			std::vector<Corner*> cnrs = landCorners( corners );
+			std::vector< Corner* > cnrs = landCorners( corners );
 			redistributeElevations( cnrs );
 
 			// Assign elevations to non-land corners
-			FOREACHIT( corners ) {
-				Corner* q = ( *it );
+			Corner* q;
+			FOREACH1( q, corners ) {
 				if( q->ocean || q->coast )
 					q->elevation = 0.0;
 			}
@@ -144,7 +146,7 @@ void MapGenerator::go( int first, int last )
 			// to 1.0. Then assign polygon moisture as the average
 			// of the corner moisture.
 			assignCornerMoisture();
-			std::vector<Corner*> cnrs = landCorners( corners );
+			std::vector< Corner* > cnrs = landCorners( corners );
 			redistributeMoisture( cnrs );
 			assignPolygonMoisture();
 			CHECK_LAST( 5 )
@@ -161,19 +163,19 @@ void MapGenerator::go( int first, int last )
 
 }
 
-
-void MapGenerator::generateRandomPoints( std::vector<s2f>& pts )
+void MapGenerator::generateRandomPoints( std::vector< Delaunay::Point* >& pts )
 {
 
 	for( int i = 0; i < NUM_POINTS; i++ ){
-		s2f p( mapRandom.nextDoubleRange( 10, SIZE - 10 ),
+		Delaunay::Point* p = new Delaunay::Point(
+				mapRandom.nextDoubleRange( 10, SIZE - 10 ),
 				mapRandom.nextDoubleRange( 10, SIZE - 10 ) );
 		pts.push_back( p );
 	}
-	printPoints("vt");
+	//printPoints("vt");
 }
 
-void MapGenerator::improveRandomPoints( std::vector<s2f>& pts )
+void MapGenerator::improveRandomPoints( std::vector< Delaunay::Point* >& pts )
 {
 	// We'd really like to generate "blue noise". Algorithms:
 	// 1. Poisson dart throwing: check each new point against all
@@ -187,52 +189,54 @@ void MapGenerator::improveRandomPoints( std::vector<s2f>& pts )
 	// it will turn into a grid, but convergence is very slow, and we only
 	// run it a few times.
 
-	rect2f size( 0, 0, SIZE, SIZE );
+	Delaunay::Rectangle size( 0, 0, SIZE, SIZE );
 	for( int i = 0; i < NUM_LLOYD_ITERATIONS; i++ ){
-		Voronoi* voronoi = new Voronoi( points, size, min_size );
-		FOREACHIT( points ) {
-			s2f& p = ( *it );
-			Point** region = NULL;
-			int region_size = 0;
-			voronoi->region( p, region, region_size );
-			p.x = 0.0;
-			p.y = 0.0;
-			for( int var = 0; var < region_size; ++var ){
-				Point* q = region[var];
-				p.x += q->x;
-				p.y += q->y;
+		Delaunay::Voronoi* voronoi = new Delaunay::Voronoi( points, NULL, size );
+		Delaunay::Point* p = NULL;
+		FOREACH1( p, points ) {
+			std::vector< Delaunay::Point* > region = voronoi->region( p );
+			p->x = 0.0;
+			p->y = 0.0;
+			Delaunay::Point* q = NULL;
+			FOREACH2( q, region ) {
+				p->x += q->x;
+				p->y += q->y;
 			}
-			p.x /= region_size;
-			p.y /= region_size;
+			int region_size = region.size();
+			p->x /= region_size;
+			p->y /= region_size;
 		}
 		delete voronoi;
 	}
 
-	printPoints("ivt");
+	//printPoints("ivt");
 }
 
-inline s2f interpolate( const s2f& first, const s2f& second, double delta )
-{
-	return s2f( first.x + delta * ( second.x - first.x ),
-			first.y + delta * ( second.y - first.y ) );
-}
 
+// Although Lloyd relaxation improves the uniformity of polygon
+// sizes, it doesn't help with the edge lengths. Short edges can
+// be bad for some games, and lead to weird artifacts on
+// rivers. We can easily lengthen short edges by moving the
+// corners, but **we lose the Voronoi property**.  The corners are
+// moved to the average of the polygon centers around them. Short
+// edges become longer. Long edges tend to become shorter. The
+// polygons tend to be more uniform after this step.
 void MapGenerator::improveCorners( )
 {
-	std::map<int, s2f> newCorners;
+	std::map< int, s2f > newCorners;
 
 	// First we compute the average of the centers next to each corner.
-	FOREACHIT( corners ) {
-		Corner* q = ( *it );
+	Corner* q = NULL;
+	FOREACH1( q, corners ) {
 		if( q->border ){
 			newCorners[q->index] = q->point;
 		}else{
 			s2f point;
-			int size = q->touches.size();
-			FOREACH( tit, q->touches ) {
-				Center* r = ( *tit );
+			int size = q->touches.count;
+			ITER_LIST( Center*, q->touches ) {
+				Center* r = it->data;
 				point.x += r->point.x;
-				point.x += r->point.y;
+				point.y += r->point.y;
 			}
 			point.x /= size;
 			point.y /= size;
@@ -245,34 +249,37 @@ void MapGenerator::improveCorners( )
 		corners[i]->point = newCorners[i];
 	}
 
+
 	// The edge midpoints were computed for the old corners and need
 	// to be recomputed.
-	FOREACHIT( edges ) {
-		Edge* edge = ( *it );
+	Edge* edge;
+	FOREACH1( edge, edges ) {
 		if( edge->v0 && edge->v1 )
 			edge->midpoint = interpolate( edge->v0->point, edge->v1->point, 0.5 );
 	}
+	printPoints("t");
 }
 
-std::vector<Corner*> MapGenerator::landCorners( const std::vector<Corner*>& c )
+std::vector< Corner* > MapGenerator::landCorners( const std::vector< Corner* >& c )
 {
-	std::vector<Corner*> locations;
-	FOREACHIT( c ) {
-		Corner* q = ( *it );
+	std::vector< Corner* > locations;
+	Corner* q = NULL;
+	FOREACH1( q, c ) {
 		if( !q->ocean && !q->coast )
 			locations.push_back( q );
 	}
 	return locations;
 }
 
-Corner* makeCorner( std::vector<Corner*>& corners,
-		std::map<int, std::vector< Corner* > >& _cornerMap, const s2f* point, int SIZE )
+Corner* makeCorner( std::vector< Corner* >& corners,
+		std::map< int, std::vector< Corner* > >& _cornerMap, const Delaunay::Point* point,
+		int SIZE )
 {
 	if( point == NULL )
 		return NULL;
 	for( int bucket = (int)point->x - 1; bucket <= (int)point->x + 1; ++bucket ){
-		FOREACHIT( _cornerMap[bucket] ) {
-			Corner* q = ( *it );
+		Corner* q = NULL;
+		FOREACH1( q, _cornerMap[bucket] ) {
 			double dx = point->x - q->point.x;
 			double dy = point->y - q->point.y;
 			if( dx * dx + dy * dy < 1e-6 )
@@ -284,38 +291,33 @@ Corner* makeCorner( std::vector<Corner*>& corners,
 	Corner* q = new Corner();
 	q->index = corners.size();
 	corners.push_back( q );
-	q->point = *point;
+	q->point.x = point->x;
+	q->point.y = point->y;
 	q->border = ( point->x == 0 || point->x == SIZE || point->y == 0 || point->y == SIZE );
 	_cornerMap[bucket].push_back( q );
 	return q;
 }
 
 // M-M-MEGASLOW
-void MapGenerator::buildGraph( const std::vector<s2f>& pts, Voronoi* voronoi )
+void MapGenerator::buildGraph( const std::vector< Delaunay::Point* >& pts,
+		Delaunay::Voronoi* voronoi )
 {
-	//var p:Center, q:Corner, point:Point, other:Point;
-	VoronoiEdge** libedges = NULL;
-	int edges_count = 0;
-	voronoi->egdes( &libedges, &edges_count );
-
 	std::map< float, std::map< float, Center* > > centerLookup;
 
 	// Build Center objects for each of the points, and a lookup map
 	// to find those Center objects again as we build the graph
-	FOREACHIT( pts ){
-		const s2f& point = (*it);
+	Delaunay::Point* point;
+	FOREACH1( point, pts ){
 		Center* p = new Center();
 		p->index = centers.size();
-		p->point = point;
+		p->point = s2f(point->x, point->y);
 		centers.push_back(p);
-		centerLookup[point.x][point.y] = p;
+		centerLookup[point->x][point->y] = p;
 	}
 
-	// Workaround for Voronoi lib bug: we need to call region()
-	// before Edges or neighboringSites are available
-	//FOREACHIT( centers ){
-	//	voronoi.region(p.point);
-	//}
+	// We need to prepare regions before
+	// Edges or neighboringSites are available
+	voronoi->regionsPrepare();
 
 	// The Voronoi library generates multiple Point objects for
 	// corners, and we need to canonicalize to one Corner object.
@@ -325,26 +327,30 @@ void MapGenerator::buildGraph( const std::vector<s2f>& pts, Voronoi* voronoi )
 	// Corner object.
 	std::map< int, std::vector< Corner* > > _cornerMap;
 
-	for (int edge_idx = 0; edge_idx < edges_count; ++edge_idx) {
-		const VoronoiEdge* libedge = libedges[edge_idx];
-		LineSegment dedge = LineSegment::delaunayLine( libedge );
-		LineSegment vedge = LineSegment::voronoiEdge( libedge );
+	const std::vector< Delaunay::Edge* >& libedges = voronoi->edges();
+	Delaunay::Edge* libedge;
+	FOREACH1( libedge, libedges ) {
+		Delaunay::LineSegment* dedge = libedge->delaunayLine();
+		Delaunay::LineSegment* vedge = libedge->voronoiEdge();
 
 		// Fill the graph data. Make an Edge object corresponding to
 		// the edge from the voronoi library.
-		Edge* edge = new Edge();
-		;
+		Edge* edge = new Edge;
+
 		edge->index = edges.size();
 		edge->river = 0;
 		edges.push_back( edge );
-		if( vedge.visible )
-			edge->midpoint = interpolate( vedge.p0, vedge.p1, 0.5 );
+		if( vedge->p0 && vedge->p1 ){
+			s2f vp0( vedge->p0->x, vedge->p0->y );
+			s2f vp1( vedge->p1->x, vedge->p1->y );
+			edge->midpoint = interpolate( vp0, vp1, 0.5 );
+		}
 
 		// Edges point to corners. Edges point to centers.
-		edge->v0 = makeCorner( corners, _cornerMap, ( vedge.visible ? &vedge.p0 : NULL ), SIZE );
-		edge->v1 = makeCorner( corners, _cornerMap, ( vedge.visible ? &vedge.p1 : NULL ), SIZE );
-		edge->d0 = centerLookup[dedge.p0.x][dedge.p0.y];
-		edge->d1 = centerLookup[dedge.p1.x][dedge.p1.y];
+		edge->v0 = makeCorner( corners, _cornerMap, vedge->p0, SIZE );
+		edge->v1 = makeCorner( corners, _cornerMap, vedge->p1, SIZE );
+		edge->d0 = centerLookup[dedge->p0->x][dedge->p0->y];
+		edge->d1 = centerLookup[dedge->p1->x][dedge->p1->y];
 
 		// Centers point to edges. Corners point to edges.
 		if( edge->d0 )
@@ -357,16 +363,8 @@ void MapGenerator::buildGraph( const std::vector<s2f>& pts, Voronoi* voronoi )
 			edge->v1->protrudes.push_back( edge );
 
 #define ADD_TO_LIST( v, x )	\
-	if( x && std::find( v.begin(), v.end(), x ) == v.end() )	\
+	if( x && !v.find(x) )	\
 		v.push_back(x);
-
-		/*		function addToCornerList(v:Vector.<Corner>, x:Corner):void {
-		if (x != null && v.indexOf(x) < 0) { v.push(x); }
-		}
-		function addToCenterList(v:Vector.<Center>, x:Center):void {
-		if (x != null && v.indexOf(x) < 0) { v.push(x); }
-		}
-		 */
 
 		// Centers point to centers.
 		if( edge->d0 && edge->d1 ){
@@ -404,11 +402,11 @@ void MapGenerator::buildGraph( const std::vector<s2f>& pts, Voronoi* voronoi )
 
 void MapGenerator::assignCornerElevations( )
 {
-	std::deque<Corner*> queue;
+	list< Corner* > queue;
 
 	// Make island?
-	FOREACHIT( corners ) {
-		Corner* q = ( *it );
+	Corner* q;
+	FOREACH1( q, corners ) {
 		q->water = !inside( &q->point );
 		// The edges of the map are elevation 0
 		if( q->border ){
@@ -423,12 +421,10 @@ void MapGenerator::assignCornerElevations( )
 	// move away from the map border, increase the elevations. This
 	// guarantees that rivers always have a way down to the coast by
 	// going downhill (no local minima).
-	while( !queue.empty() ){
-		Corner* q = queue.front();
-		queue.pop_front();
-
-		FOREACHIT( q->adjacent ) {
-			Corner* s = ( *it );
+	while( queue.count > 0 ){
+		Corner* q = queue.pop();
+		ITER_LIST( Corner*, q->adjacent ) {
+			Corner* s = it->data;
 			// Every step up is epsilon over water or 1 over land. The
 			// number doesn't matter because we'll rescale the
 			// elevations later.
@@ -451,7 +447,7 @@ bool compareElevations( const Corner* a, const Corner* b )
 	return a->elevation < b->elevation;
 }
 
-void MapGenerator::redistributeElevations( std::vector<Corner*>& locations )
+void MapGenerator::redistributeElevations( std::vector< Corner* >& locations )
 {
 	// SCALE_FACTOR increases the mountain area. At 1.0 the maximum
 	// elevation barely shows up on the map, so we set it to 1.1.
@@ -482,7 +478,7 @@ bool compareMoisture( const Corner* a, const Corner* b )
 	return a->moisture < b->moisture;
 }
 
-void MapGenerator::redistributeMoisture( std::vector<Corner*>& locations )
+void MapGenerator::redistributeMoisture( std::vector< Corner* >& locations )
 {
 	std::sort( locations.begin(), locations.end(), compareMoisture );
 	int length = locations.size();
@@ -499,13 +495,13 @@ void MapGenerator::assignOceanCoastAndLand( )
 	// map. In the first pass, mark the edges of the map as ocean;
 	// in the second pass, mark any water-containing polygon
 	// connected an ocean as ocean.
-	std::deque<Center*> queue;
+	list< Center* > queue;
+	Center* p;
 
-	FOREACHIT( centers ) {
-		Center* p = ( *it );
+	FOREACH1( p, centers ) {
 		int numWater = 0;
-		FOREACH( tit, p->corners ) {
-			Corner* q = ( *tit );
+		ITER_LIST(Corner*, p->corners ) {
+			Corner* q = it->data;
 			if( q->border ){
 				p->border = true;
 				p->ocean = true;
@@ -515,13 +511,12 @@ void MapGenerator::assignOceanCoastAndLand( )
 			if( q->water )
 				numWater++;
 		}
-		p->water = ( p->ocean || numWater >= p->corners.size() * LAKE_THRESHOLD );
+		p->water = ( p->ocean || numWater >= p->corners.count * LAKE_THRESHOLD );
 	}
-	while( !queue.empty() ){
-		Center* p = queue.front();
-		queue.pop_front();
-		FOREACHIT( p->neighbors ) {
-			Center* r = ( *it );
+	while( queue.count ){
+		Center* p = queue.pop();
+		ITER_LIST( Center*, p->neighbors ){
+			Center* r = it->data;
 			if( r->water && !r->ocean ){
 				r->ocean = true;
 				queue.push_back( r );
@@ -532,14 +527,12 @@ void MapGenerator::assignOceanCoastAndLand( )
 	// Set the polygon attribute 'coast' based on its neighbors. If
 	// it has at least one ocean and at least one land neighbor,
 	// then this is a coastal polygon.
-	FOREACHIT( centers ) {
-		Center* p = ( *it );
+	FOREACH1( p, centers ) {
 		int numOcean = 0;
 		int numLand = 0;
-		FOREACH( tit, p->neighbors ) {
-			Center* r = ( *tit );
-			numOcean += (int)r->ocean;
-			numLand += (int)!r->water;
+		ITER_LIST( Center*, p->neighbors ) {
+			numOcean += (int)it->data->ocean;
+			numLand += (int)!it->data->water;
 		}
 		p->coast = ( numOcean > 0 ) && ( numLand > 0 );
 	}
@@ -548,43 +541,41 @@ void MapGenerator::assignOceanCoastAndLand( )
 	// attributes. If all polygons connected to this corner are
 	// ocean, then it's ocean; if all are land, then it's land;
 	// otherwise it's coast.
-	FOREACHIT( corners ) {
-		Corner* q = ( *it );
+	Corner* q;
+	FOREACH1( q, corners ) {
 		UINT numOcean = 0;
 		UINT numLand = 0;
-		FOREACH( tit, q->touches ) {
-			Center* p = ( *tit );
+		ITER_LIST( Center*, q->touches ){
+			p = it->data;
 			numOcean += (int)p->ocean;
 			numLand += (int)!p->water;
 		}
-		q->ocean = ( numOcean == q->touches.size() );
+		q->ocean = ( numOcean == q->touches.count );
 		q->coast = ( numOcean > 0 ) && ( numLand > 0 );
-		q->water = q->border || ( ( numLand != q->touches.size() ) && !q->coast );
+		q->water = q->border || ( ( numLand != q->touches.count ) && !q->coast );
 	}
 }
 
 void MapGenerator::assignPolygonElevations( )
 {
-	FOREACHIT( centers ) {
-		Center* p = ( *it );
+	Center* p;
+	FOREACH1( p, centers ) {
 		double sumElevation = 0.0;
-		FOREACH( tit, p->corners ) {
-			Corner* q = ( *tit );
-			sumElevation += q->elevation;
+		ITER_LIST( Corner*, p->corners ) {
+			sumElevation += it->data->elevation;
 		}
-		p->elevation = (double)sumElevation / (double)p->corners.size();
+		p->elevation = (double)sumElevation / (double)p->corners.count;
 	}
 }
 
 void MapGenerator::calculateDownslopes( )
 {
-	FOREACHIT( corners ) {
-		Corner* q = ( *it );
+	Corner* q;
+	FOREACH1( q, corners ) {
 		Corner* r = q;
-		FOREACH( tit, q->adjacent ) {
-			Corner* s = ( *tit );
-			if( s->elevation <= r->elevation )
-				r = s;
+		ITER_LIST( Corner*, q->adjacent ){
+			if( it->data->elevation <= r->elevation )
+				r = it->data;
 		}
 		q->downslope = r;
 	}
@@ -594,8 +585,8 @@ void MapGenerator::calculateWatersheds( )
 {
 
 	// Initially the watershed pointer points downslope one step.
-	FOREACHIT( corners ) {
-		Corner* q = ( *it );
+	Corner* q;
+	FOREACH1( q, corners ) {
 		q->watershed = q;
 		if( !q->ocean && !q->coast )
 			q->watershed = q->downslope;
@@ -608,8 +599,8 @@ void MapGenerator::calculateWatersheds( )
 	// p.watershed.watershed instead of p.downslope.watershed.
 	for( int i = 0; i < 100; ++i ){
 		bool changed = false;
-		FOREACHIT( corners ) {
-			Corner* q = ( *it );
+		Corner* q;
+		FOREACH1( q, corners ) {
 			if( !q->ocean && !q->coast && !q->watershed->coast ){
 				Corner* r = q->downslope->watershed;
 				if( !r->ocean )
@@ -622,8 +613,7 @@ void MapGenerator::calculateWatersheds( )
 	}
 
 	// How big is each watershed?
-	FOREACHIT( corners ) {
-		Corner* q = ( *it );
+	FOREACH1( q, corners ) {
 		Corner* r = q->watershed;
 		r->watershed_size = 1 + r->watershed_size;
 	}
@@ -655,22 +645,22 @@ void MapGenerator::createRivers( )
 
 void MapGenerator::assignCornerMoisture( )
 {
-	std::deque<Corner*> queue;
+	list< Corner* > queue;
 	// Fresh water
-	FOREACHIT( corners ) {
-		Corner* q = ( *it );
+	Corner* q;
+	FOREACH1( q, corners ) {
 		if( ( q->water || q->river > 0 ) && !q->ocean ){
-			q->moisture = q->river > 0 ? std::min( 3.0, (double)( 0.2 * q->river ) ) : 1.0;
+			q->moisture =
+					q->river > 0 ? std::min( 3.0, (double)( 0.2 * q->river ) ) : 1.0;
 			queue.push_back( q );
 		}else{
 			q->moisture = 0.0;
 		}
 	}
-	while( !queue.empty() ){
-		Corner* q = queue.front();
-		queue.pop_front();
-		FOREACHIT( q->adjacent ) {
-			Corner* r = ( *it );
+	while( !queue.count ){
+		Corner* q = queue.pop();
+		ITER_LIST( Corner*, q->adjacent ){
+			Corner* r = it->data;
 			double newMoisture = q->moisture * 0.9;
 			if( newMoisture > r->moisture ){
 				r->moisture = newMoisture;
@@ -679,8 +669,7 @@ void MapGenerator::assignCornerMoisture( )
 		}
 	}
 	// Salt water
-	FOREACHIT( corners ) {
-		Corner* q = ( *it );
+	FOREACH1( q, corners ) {
 		if( q->ocean || q->coast )
 			q->moisture = 1.0;
 	}
@@ -688,16 +677,16 @@ void MapGenerator::assignCornerMoisture( )
 
 void MapGenerator::assignPolygonMoisture( )
 {
-	FOREACHIT( centers ) {
-		Center* p = ( *it );
+	Center* p;
+	FOREACH1( p, centers ) {
 		double sumMoisture = 0.0;
-		FOREACH( tit, corners ) {
-			Corner* q = ( *tit );
+		Corner* q;
+		FOREACH2( q, corners ) {
 			if( q->moisture > 1.0 )
 				q->moisture = 1.0;
 			sumMoisture += q->moisture;
 		}
-		p->moisture = sumMoisture / (double)p->corners.size();
+		p->moisture = sumMoisture / (double)p->corners.count;
 	}
 }
 
@@ -752,16 +741,16 @@ Biome MapGenerator::getBiome( Center * p )
 
 void MapGenerator::assignBiomes( )
 {
-	FOREACHIT( centers ) {
-		Center* p = ( *it );
+	Center* p;
+	FOREACH1( p, centers ) {
 		p->biome = getBiome( p );
 	}
 }
 
 Edge* MapGenerator::lookupEdgeFromCenter( Center* p, Center* r )
 {
-	FOREACHIT( p->borders ) {
-		Edge* edge = ( *it );
+	ITER_LIST( Edge*, p->borders ){
+		Edge* edge = it->data;
 		if( edge->d0 == r || edge->d1 == r )
 			return edge;
 	}
@@ -770,8 +759,8 @@ Edge* MapGenerator::lookupEdgeFromCenter( Center* p, Center* r )
 
 Edge* MapGenerator::lookupEdgeFromCorner( Corner* q, Corner* s )
 {
-	FOREACHIT( q->protrudes ) {
-		Edge* edge = ( *it );
+	ITER_LIST( Edge*, q->protrudes ){
+		Edge* edge = it->data;
 		if( edge->v0 == s || edge->v1 == s )
 			return edge;
 	}
@@ -786,14 +775,13 @@ bool MapGenerator::inside( const s2f* p )
 
 void MapGenerator::printPoints( const char* name )
 {
-	FILE *fp = fopen(name, "w");
-	FOREACHIT( points ) {
-		s2f& p = ( *it );
-		fprintf(fp, "%f %f\n", p.x, p.y);
+	FILE *fp = fopen( name, "w" );
+	Delaunay::Point* p;
+	FOREACH1( p, points ) {
+		fprintf( fp, "%f %f\n", p->x, p->y );
 	}
-	fclose(fp);
+	fclose( fp );
 }
-
 
 struct ParamsRadial
 {
@@ -807,7 +795,7 @@ struct ParamsRadial
 
 bool radial_shape( s2f q, void* prm )
 {
-	ParamsRadial* param = reinterpret_cast<ParamsRadial*>( prm );
+	ParamsRadial* param = reinterpret_cast< ParamsRadial* >( prm );
 	double angle = atan2( q.y, q.x );
 	double p_length = sqrt( q.x * q.x + q.y * q.y );
 	double length = 0.5 * ( std::max( abs( q.x ), abs( q.y ) ) + p_length );

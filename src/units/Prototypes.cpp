@@ -38,7 +38,7 @@ int Action::getId( std::string name )
 
 std::string Action::getName( int id )
 {
-	FOREACHIT( action_names ){
+	FOREACHIT1( action_names ){
 		if( it->second == id )
 			return it->first;
 	}

@@ -1,0 +1,3 @@
+[submodule "src/3rdparty/delaunay"]
+	path = src/3rdparty/delaunay
+	url = git://github.com/SirAnthony/cppdelaunay.git

@@ -50,10 +50,19 @@ struct s2f
 	float y;
 	s2f() : x(), y() {}
 	s2f( float X, float Y ) : x(X), y(Y) {}
-	s2f operator*( const s2f& b ){
+	s2f operator*( const s2f& b ) const{
 		return s2f( x * b.x, y * b.y );
 	}
+	s2f operator-( const s2f& b ) const{
+		return s2f( x - b.x, y - b.y );
+	}
 };
+
+inline s2f interpolate( const s2f& first, const s2f& second, float delta )
+{
+	return s2f( first.x + delta * ( second.x - first.x ),
+			first.y + delta * ( second.y - first.y ) );
+}
 
 
 struct s3f

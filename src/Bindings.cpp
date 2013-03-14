@@ -280,7 +280,7 @@ LuaRegRef& Bindings::getReciever( ) {
 
 
 #define BIND_TO_KEY( bindarr, bindfinc )												\
-	FOREACHIT( bindarr ){																\
+	FOREACHIT1( bindarr ){																\
 		if( it->first < MAXKEYS ){														\
 			bindfinc( it->first, it->second );											\
 			BindedKeys.push_back( it->first );											\

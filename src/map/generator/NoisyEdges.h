@@ -23,8 +23,7 @@ public:
 
 	static const float NOISY_LINE_TRADEOFF = 0.5;  // low: jagged vedge; high: jagged dedge
 
-	std::map< int, list< s2f >* > path0; // edge index -> Vector.<Point>
-	std::map< int, list< s2f >* > path1; // edge index -> Vector.<Point>
+	std::map< int, list< s2f >* > path[2]; // edge index -> Vector.<Point>
 
 	// Build noisy line paths for each of the Voronoi edges. There are
 	// two noisy line paths for each edge, each covering half the
@@ -35,7 +34,7 @@ public:
 	// Helper function: build a single noisy line in a quadrilateral A-B-C-D,
 	// and store the output points in a Vector.
 	static list< s2f >* buildNoisyLineSegments( PM_PRNG* random, const s2f* A,
-			const s2f* B, const s2f* C, const s2f* D, float minLength );
+			const s2f* B, const s2f* C, const s2f* D, float minLength, bool reverse = false );
 };
 
 #endif /* NOISYEDGES_H_ */

@@ -164,8 +164,7 @@ void MeshManager::load_brush( GLBrush* brush, const obj_scene_data* data )
 
 	// TODO: Probably lose 1 byte on each face.
 	// It is a big loss for 2-faced plains and require more perd-perd actions.
-	size_t list_size = sizeof(UINT) * data->face_count * MAX_VERTEX_COUNT;
-	brush->indices_list = (UINT*)malloc( list_size );
+	brush->resize_indices( data->face_count * MAX_VERTEX_COUNT );
 
 	s2f tmin(0.0f, 0.0f);
 	s3f vmin(0.0f, 0.0f, 0.0f);
@@ -174,15 +173,16 @@ void MeshManager::load_brush( GLBrush* brush, const obj_scene_data* data )
 	if( dst > tgt )		\
 		dst = tgt;
 
-	brush->indices_count = 0;
+
+	int index = 0;
 	for( int i = 0; i < data->face_count; ++i ){
 		obj_face* face = data->face_list[i];
 
-		for( int j = 0; j < face->vertex_count; ++j, ++brush->indices_count ){
+		for( int j = 0; j < face->vertex_count; ++j, ++index ){
 			int vindex = face->vertex_index[j];
 			int tindex = face->texture_index[j];
 
-			brush->indices_list[brush->indices_count] = vindex + brush->point_index;
+			brush->indices_list[index] = vindex + brush->point_index;
 
 			obj_vector* v = data->vertex_list[vindex];
 			brush->vertex_points[vindex] = arr[vindex].verticles = s3f( v->e[0], v->e[1], v->e[2] );
@@ -199,6 +199,9 @@ void MeshManager::load_brush( GLBrush* brush, const obj_scene_data* data )
 			}
 		}
 	}
+
+	// Memory counter real value loss happens here
+	brush->indices_count = index;
 
 #undef CHECK_MIN
 

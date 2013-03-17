@@ -181,9 +181,8 @@ UINT Textures::push( TextureProxy* proxy, GLuint atlas, GLuint normals )
 	resize( 1 );
 	TextureInfo& ti = textures[count];
 	ti.fromTextureProxy( proxy, atlas );
-	ti.id = new char[proxy->id.size() + 1];
+	ti.id = strdup(proxy->id);
 	ti.normals = normals;
-	strcpy(ti.id, proxy->id.c_str());
 	return count;
 }
 

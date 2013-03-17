@@ -50,6 +50,7 @@ struct ElasticRectPODBox
 	int cols;
 	int rows;
 
+	ElasticRectPODBox( );
 	ElasticRectPODBox( int mSize );
 	bool calculate( int width, int height, int count );
 };

@@ -12,6 +12,7 @@
 #include "3rdparty/CUDataUser.h"
 #include "3rdparty/timer/ITimerEventPerformer.h"
 
+#include <string>
 
 class CUData;
 struct LuaRet;

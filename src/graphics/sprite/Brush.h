@@ -49,6 +49,7 @@ struct GLBrush
 	FLAGS_FUNCTIONS( glb, Screen )
 
 	void resize_verticles( int size );
+	void resize_indices( int size );
 	void scale( const s3f* scale );
 	void move( float dx, float dy, float dz );
 	void set_color( const s4ub& color );

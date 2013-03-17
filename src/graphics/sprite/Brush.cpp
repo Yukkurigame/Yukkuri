@@ -30,6 +30,9 @@ GLBrush::~GLBrush( )
 	VBufferHandler* hdl = VBuffer::handler( VBOHandler );
 	if( hdl )
 		hdl->array.freeSpace( point_index, points_count );
+
+	if( indices_list )
+		free( indices_list );
 }
 
 
@@ -131,6 +134,14 @@ void GLBrush::resize_verticles( int size )
 	}
 
 	setUpdated();
+}
+
+void GLBrush::resize_indices( int size )
+{
+	indices_count = size;
+	if( indices_list )
+		free(indices_list);
+	indices_list = (UINT*)malloc( (UINT)sizeof(UINT) * indices_count );
 }
 
 

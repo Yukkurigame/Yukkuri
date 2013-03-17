@@ -7,10 +7,11 @@
 #ifndef WATERSHEDS_H_
 #define WATERSHEDS_H_
 
-#include "GeneratorMap.h"
-#include "graph/Center.h"
-#include "graph/Corner.h"
+#include "map/generator/graph/Center.h"
+#include "map/generator/graph/Corner.h"
 #include "basic_types.h"
+#include <map>
+#include <vector>
 
 
 class Watersheds {
@@ -23,7 +24,7 @@ public:
 
 	// We want to mark each polygon with the corner where water would
 	// exit the island.
-	void createWatersheds( MapGenerator& map );
+	void createWatersheds( std::vector< Center* >& centers );
 
 };
 

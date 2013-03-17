@@ -17,6 +17,7 @@ function Environment:setup(params)
 	self.sun = Lights.create(constants.ltDirectional)
 	self.sun:color({1,1,1})
 	self.sun:diffuse(2)
+	self.widget = GUI:getWidget('time')
 	if self.thread == nil then
 		self.thread = Thread.newThread(function()
 			while true do
@@ -30,9 +31,8 @@ end
 
 
 function Environment:setText(text)
-	local widget = GUI:getWidget('time')
-	if widget ~= nil then
-		widget:WidgetText(text)
+	if self.widget ~= nil then
+		self.widget:WidgetText(text)
 	end
 end
 

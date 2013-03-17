@@ -13,8 +13,8 @@
 #include "utils/list.h"
 
 #include "string.h"
-#include <string>
 #include <cstdlib>
+
 
 enum GLTextureMaps
 {
@@ -74,7 +74,8 @@ struct VertexV2FT2FC4UI
 	s3f verticles;
 	s2f coordinates;
 	s4ub color;
-	VertexV2FT2FC4UI( s3f& p, s2f& t, s4ub& c )
+	VertexV2FT2FC4UI( ) : verticles(), coordinates(), color() {}
+	VertexV2FT2FC4UI( const s3f& p, const s2f& t, const s4ub& c )
 	{
 		verticles = p;
 		coordinates = t;
@@ -102,8 +103,8 @@ struct TextureProxy
 {
 	int rows;
 	int cols;
-	std::string id;
-	std::string image;
+	const char* id;
+	const char* image;
 	s2f offset;
 	rect2i abs; // Absolute position in atlas; atlas absolute size
 	rect2f atlas; // Relative position in atlas; atlas size

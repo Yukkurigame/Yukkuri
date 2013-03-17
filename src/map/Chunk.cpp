@@ -68,8 +68,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 	int vx_tiles = 3 * 2;
 	int vx_count = count * vx_tiles;
 	brush.resize_verticles( vx_count );
-	brush.indices_count = 0;
-	brush.indices_list = (UINT*)malloc( (UINT)sizeof(UINT) * vx_count );
+	brush.resize_indices( vx_count );
 
 	VertexV2FT2FC4UI* arr = brush.points();
 	GLuint chunk_atlas = 0;
@@ -94,7 +93,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 			arr[ti].verticles = vc[i];
 			//arr[ti].coordinates = tc[i];
 			//arr[ti].color = s4ub( rand() % 256, rand() % 256, rand() % 256, 255 );
-			brush.indices_list[brush.indices_count++] = ti + brush.point_index;
+			brush.indices_list[ti] = ti + brush.point_index;
 		}
 
 		TextureInfo* texture = Textures::get_pointer(t.Type->texture);

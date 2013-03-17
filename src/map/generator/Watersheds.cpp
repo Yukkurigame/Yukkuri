@@ -19,15 +19,15 @@ Watersheds::~Watersheds( )
 }
 
 
-void Watersheds::createWatersheds( MapGenerator& map )
+void Watersheds::createWatersheds( std::vector< Center* >& centers )
 {
 	// Find the lowest corner of the polygon, and set that as the
 	// exit point for rain falling on this polygon
-	FOREACHIT( map.centers ){
-		Center* p = (*it);
+	Center* p;
+	FOREACH1( p, centers ){
 		Corner* s = NULL;
-		FOREACH( tit, p->corners ){
-			Corner* q = (*tit);
+		ITER_LIST( Corner*, p->corners ){
+			Corner* q = it->data;
 			if( s == NULL || q->elevation < s->elevation )
 				s = q;
 		}

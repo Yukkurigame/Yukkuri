@@ -28,6 +28,7 @@ namespace Region {
 	bool TilesLoaded = false;
 	int TileTypesCount = 0;
 	MapGen* mapgen = new MapGen();
+	char* seed = NULL;
 }
 
 
@@ -83,9 +84,13 @@ void Region::clean( )
 	delete[] tiles;
 }
 
-void Region::generate( UINT form, const char* seed )
+void Region::generate( UINT form, const char* new_seed )
 {
-	mapgen->newIsland( (IslandForm)form, seed );
+	if( seed )
+		free(seed);
+	seed = strdup(new_seed);
+
+	mapgen->newIsland( (IslandForm)form, new_seed );
 	mapgen->go();
 }
 
@@ -117,6 +122,11 @@ void Region::load( const char* name )
 	}
 
 	delete cfg;
+}
+
+const char* Region::get_seed( )
+{
+	return seed;
 }
 
 

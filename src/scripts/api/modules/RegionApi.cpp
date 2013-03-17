@@ -40,3 +40,8 @@ int RegionApi::loadRegion( lua_State *L )
 	return 0;
 }
 
+int RegionApi::imageName( lua_State* L )
+{
+	lua_pushstring( L, Region::get_seed() );
+	return 1;
+}

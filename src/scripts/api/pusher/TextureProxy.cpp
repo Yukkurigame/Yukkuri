@@ -21,8 +21,8 @@ int pushToLua( lua_State* L, TextureProxy const& val )
 	const char* pc[4] = { "width", "height", "rows", "columns" };
 
 	lua_newtable(L);
-	LUA_PUSH_VALUE( string, "id", val.id.c_str() );
-	LUA_PUSH_VALUE( string, "image", val.image.c_str() );
+	LUA_PUSH_VALUE( string, "id", val.id );
+	LUA_PUSH_VALUE( string, "image", val.image );
 
 	for( int i = 0; i < 4; ++i ){
 		LUA_PUSH_VALUE( number, pc[i], *p[i] );

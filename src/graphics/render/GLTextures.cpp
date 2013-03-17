@@ -187,3 +187,43 @@ bool GLTextures::draw( GLuint* ahandle, int width, int height, list< Sprite* >* 
 	// Reset FBO
 	return  GLHelpers::UnbindFBO( FBOHandle );
 }
+
+
+/* This function updates texture from given sprite
+ * ahandle - pointer on opengl texture, if points to 0 new texture will be generated;
+ * width, height - width and height of new texture;
+ * sprite - sprite to draw;
+ * returns boolean
+ */
+bool GLTextures::update( GLuint* ahandle, int width, int height, Sprite* sprite, bool invert )
+{
+	GLuint FBOHandle = 0;
+
+	// A FBO will be used to draw textures. FBO creation and setup.
+	if( ( (*ahandle == 0) && !generate( ahandle, width, height ) )
+		|| !GLHelpers::BindTextureToFBO( *ahandle, FBOHandle ) )
+		return false;
+
+	rect2f new_camera;
+	if( invert )
+		new_camera = rect2f(0, height, width, -height);
+	else
+		new_camera = rect2f(0, 0, width, height);
+	Camera::push_state( &new_camera );
+	Camera::update();
+
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+	glEnable( GL_BLEND );
+
+	list< VBOStructureHandle* > vbostructure;
+	VBuffer::prepare_handler( sprite, &vbostructure );
+	VBuffer::draw( glpSimple, &vbostructure );
+	VBuffer::free_handler( &vbostructure );
+
+	glDisable(GL_BLEND);
+
+	Camera::pop_state();
+
+	// Reset FBO
+	return GLHelpers::UnbindFBO( FBOHandle );
+}

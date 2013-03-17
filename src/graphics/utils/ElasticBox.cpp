@@ -2,6 +2,7 @@
 #include <cstdlib>
 
 #include "graphics/utils/ElasticBox.h"
+#include "graphics/render/Atlas.h"
 #include "utils/misc.h"
 #include "debug.h"
 
@@ -139,6 +140,13 @@ void ElasticBox::Resize( int x, int y, int width, int height )
 	this->Height = height;
 	if (children != NULL)
 		AdjustChildren();
+}
+
+
+ElasticRectPODBox::ElasticRectPODBox( )
+{
+	cols = rows = 1;
+	maxSize = TextureAtlas::getAtlasMax();
 }
 
 ElasticRectPODBox::ElasticRectPODBox( int mSize )

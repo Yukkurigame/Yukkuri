@@ -58,12 +58,6 @@ struct s2f
 	}
 };
 
-inline s2f interpolate( const s2f& first, const s2f& second, float delta )
-{
-	return s2f( first.x + delta * ( second.x - first.x ),
-			first.y + delta * ( second.y - first.y ) );
-}
-
 
 struct s3f
 {

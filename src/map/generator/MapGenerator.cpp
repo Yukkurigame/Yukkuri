@@ -8,12 +8,15 @@
 #include "delaunay/geom/Rectangle.h"
 #include "delaunay/delaunay/Edge.h"
 #include "utils/list.h"
+#include "utils/misc.h"
 #include "debug.h"
 #include "hacks.h"
 #include <map>
 #include <algorithm>
 #include <stdio.h>
 #include <cmath>
+
+
 
 MapGenerator::MapGenerator( float size )
 {
@@ -839,7 +842,7 @@ bool perlin_shape( s2f q, void* prm )
 {
 	//var c:Number = (perlin.getPixel(int((q.x+1)*128), int((q.y+1)*128)) & 0xff) / 255.0;
 	//	return c > (0.3+0.3*q.length*q.length);
-	return false;
+	return true;
 }
 
 GenerateFunc* IslandShape::makePerlin( int seed )

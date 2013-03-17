@@ -17,6 +17,7 @@ namespace Region
 	void clean( );
 	void generate( UINT form, const char* seed );
 	void load( const char* name );
+	const char* get_seed( );
 	TileInfo* getTile( signed int x, signed int y );
 
 }

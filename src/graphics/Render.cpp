@@ -174,6 +174,7 @@ bool RenderManager::openglSetup( int wwidth, int wheight )
 	TextureProxy first;
 	GLTextures::generate( &nt, 1, 1, GL_UNSIGNED_BYTE, color );
 	first.texture = GLTextures::create( "", nt, 1, 1 );
+	first.id = "";
 	Textures::push( &first, nt, 0 );
 
 	rect2f view( 0.0, 0.0, conf.video.windowWidth, conf.video.windowHeight );

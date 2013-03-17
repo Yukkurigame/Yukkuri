@@ -14,30 +14,6 @@
 #include "safestring.h"
 
 
-/*
-int IfaceApi::loadAllWidgets( lua_State* L )
-{
-	return 0;
-}
-
-
-int IfaceApi::loadWidget( lua_State* L )
-{
-	luaL_argcheck( L, lua_isstring( L, 1 ), 1, "Widget name not given." );
-
-	const char* wname = lua_tostring( L, 1 );
-	Widget* w = Interface::LoadWidget( wname );
-	lua_pop( L, lua_gettop( L ) );
-	if( !w ){
-		lua_pushnil( L );
-	}else{
-		lua_pushinteger( L, w->getWidgetId( ) );
-	}
-	return 1;
-}
-*/
-
-
 int IfaceApi::createWidget( lua_State* L )
 {
 	luaL_argcheck( L, lua_isstring( L, 1 ), 1, "Widget name not given." );

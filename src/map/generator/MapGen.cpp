@@ -7,13 +7,18 @@
 #include "map/generator/MapGen.h"
 #include "graphics/Render.h"
 #include "graphics/sprite/Mesh.h"
+#include "graphics/utils/ElasticBox.h"
+#include "graphics/render/GLTextures.h"
+#include "graphics/render/Textures.h"
+#include "graphics/render/VBuffer.h"
+#include "utils/misc.h"
 #include "hacks.h"
 #include "debug.h"
 #include <cmath>
 
 
 
-MapGen::MapGen( ) : sprite(NULL)
+MapGen::MapGen( )
 {
 	islandType = ifSquare;
 	islandSeedInitial = "85882-1";
@@ -45,8 +50,34 @@ void MapGen::newIsland( IslandForm type, const char* seed_string )
 	}
 	seed %= 100000;
 	variant = 1 + floor( 9.0 * random() );
-
 	islandType = type;
+
+	ElasticRectPODBox box = ElasticRectPODBox( );
+	if( !box.calculate( SIZE, SIZE, 6 ) ){
+		Debug::debug( Debug::MAP, "Cannot draw map." );
+		return;
+	}
+
+	atlas.w = box.Width;
+	atlas.h = box.Height;
+
+	TextureProxy tp;
+	{
+		tp.id = seed_string;
+		// Too static
+		tp.cols = box.cols;
+		tp.rows = box.rows;
+		tp.abs.width = tp.cols * SIZE;
+		tp.abs.height = tp.rows * SIZE;
+		// Texture occupies all atlas
+		tp.atlas.width = static_cast< float >( tp.abs.width )
+				/ static_cast< float >( box.Width );
+		tp.atlas.height = static_cast< float >( tp.abs.height )
+				/ static_cast< float >( box.Height );
+		tp.atlas.x = tp.atlas.y = 0.0;
+	}
+	GLTextures::generate( &atlas );
+	texture_id = Textures::push( &tp, atlas.tex, 0 );
 
 	map->newIsland( type, seed, variant );
 }
@@ -55,18 +86,10 @@ void MapGen::go( )
 {
 	//roads = new Roads();
 	//lava = new Lava();
-	//watersheds = new Watersheds();
-	//noisyEdges = new NoisyEdges();
-
 	map->go( 0, 1 );
-	//drawMap();
-
 	map->go( 1, 2 );
-	//drawMap();
-
 	map->go( 2, 3 );
 	//map->assignBiomes();
-	//drawMap();
 
 	Debug::debug( Debug::MAP, "Features...\n" );
 	map->go( 3, 6 );
@@ -75,10 +98,11 @@ void MapGen::go( )
 
 	//roads.createRoads(map);
 	// lava.createLava(map, map.mapRandom.nextDouble);
-	//watersheds.createWatersheds(map);
-	//noisyEdges.buildNoisyEdges( map->centers, /*lava,*/ &map->mapRandom );
-	drawMap( gm3d );
+	watersheds.createWatersheds( map->centers );
+	noisyEdges.buildNoisyEdges( map->centers, /*lava,*/ &map->mapRandom );
+	drawMap( gmWatersheds, 0 );
 }
+
 
 void MapGen::drawHistograms( )
 {
@@ -190,21 +214,6 @@ void MapGen::drawHistograms( )
 */
 }
 
-
-void MapGen::drawPathForwards( std::vector<s2f>& path )
-{
-	for( UINT i = 0; i < path.size(); ++i ){
-		//graphics.lineTo(path[i].x, path[i].y);
-	}
-}
-
-void MapGen::drawPathBackwards( std::vector<s2f>& path )
-{
-	for( int i = path.size() - 1; i >= 0; --i ){
-		//graphics.lineTo(path[i].x, path[i].y);
-	}
-}
-
 unsigned int MapGen::interpolateColor( unsigned int c0, unsigned int c1, double f )
 {
 	unsigned int r = ( 1 - f ) * ( c0 >> 16 ) + f * ( c1 >> 16 );
@@ -219,7 +228,7 @@ unsigned int MapGen::interpolateColor( unsigned int c0, unsigned int c1, double 
 	return ( r << 16 ) | ( g << 8 ) | b;
 }
 
-void MapGen::drawMap( GeneratorMode mode )
+void MapGen::drawMap( GeneratorMode mode, int picture )
 {
 	graphicsReset();
 	//noiseLayer.visible = true;
@@ -233,45 +242,45 @@ void MapGen::drawMap( GeneratorMode mode )
 			break;
 		case gmPolygons:
 			//noiseLayer.visible = false;
-			renderDebugPolygons();
+			renderDebugPolygons( picture );
 			break;
 		case gmWatersheds:
 			//noiseLayer.visible = false;
-			renderDebugPolygons();
-			renderWatersheds();
+			renderDebugPolygons( picture );
+			renderWatersheds( picture );
 			return;
 			break;
 		case gmBiome:
-			renderPolygons();
+			renderPolygons( picture );
 			break;
 		case gmSlopes:
-			renderPolygons();
+			renderPolygons( picture );
 			break;
 		case gmSmooth:
-			renderPolygons();
+			renderPolygons( picture );
 			break;
 		case gmElevation:
-			renderPolygons();
+			renderPolygons( picture );
 			break;
 		case gmMoisture:
-			renderPolygons();
+			renderPolygons( picture );
 			break;
 	}
 
 	if( mode != gmSlopes && mode != gmMoisture )
-		renderRoads();
+		renderRoads( picture );
 
 	if( mode != gmPolygons )
-		renderEdges();
+		renderEdges( picture );
 
 	if( mode != gmSlopes && mode != gmMoisture )
-		renderBridges();
+		renderBridges( picture );
 }
 
 
-void MapGen::render3dPolygons( )
+void MapGen::render3dPolygons(  )
 {
-	double zScale = -0.15*SIZE;
+/*	double zScale = -0.15*SIZE;
 
 	if( sprite ){
 		RenderManager::FreeGLSprite(sprite);
@@ -333,15 +342,14 @@ void MapGen::render3dPolygons( )
 
 		}
 	}
-
+*/
 	// Render engine cares about all other stuff, not me
 }
 
-#include <stdio.h>
 
-void MapGen::renderPolygons( )
+void MapGen::renderPolygons( int picture )
 {
-	Center* p;
+/*	Center* p;
 	FILE *fp = fopen("lvt", "w");
 
 	FOREACH1( p, map->centers ){
@@ -370,20 +378,11 @@ void MapGen::renderPolygons( )
 		//}
 		fprintf( fp, "%f %f\n",  p->point.x, p->point.y );
 	}
-
-	Edge* edge;
-	FOREACH1( edge, map->edges ){
-		if( !edge->v0 || !edge->v1 )
-			continue;
-		fprintf( fp, "line %f:%f %f:%f\n", edge->v0->point.x,
-				edge->v0->point.y, edge->v1->point.x, edge->v1->point.y);
-	}
-
-	fclose(fp);
+*/
 }
 
 
-void MapGen::renderBridges( )
+void MapGen::renderBridges( int picture )
 {
 /*	var edge:Edge;
 
@@ -402,7 +401,7 @@ void MapGen::renderBridges( )
 }
 
 
-void MapGen::renderRoads( )
+void MapGen::renderRoads( int picture )
 {
 /*	// First draw the roads, because any other feature should draw
 	// over them. Also, roads don't use the noisy lines.
@@ -475,49 +474,60 @@ void MapGen::renderRoads( )
 }
 
 
-void MapGen::renderEdges( )
+void MapGen::renderEdges( int picture )
 {
-/*	var p:Center, r:Center, edge:Edge;
+	list< VertexV2FT2FC4UI* > lines;
+	list< VertexV2FT2FC4UI* > triangles;
 
-	for each (p in map.centers) {
-		for each (r in p.neighbors) {
-			edge = map.lookupEdgeFromCenter(p, r);
-			if (noisyEdges.path0[edge.index] == null
-					|| noisyEdges.path1[edge.index] == null) {
+	Center* p;
+	FOREACH1( p, map->centers ){
+		ITER_LIST( Center*, p->neighbors ){
+			Center* r = it->data;
+			Edge* edge = map->lookupEdgeFromCenter( p, r );
+			if( noisyEdges.path[0][edge->index] == NULL
+					|| noisyEdges.path[1][edge->index] == NULL ){
 				// It's at the edge of the map
 				continue;
 			}
-			if (p.ocean != r.ocean) {
+			int thikness = 1;
+			UINT color = gcBLACK;
+
+			if( p->ocean != r->ocean ){
 				// One side is ocean and the other side is land -- coastline
-				graphics.lineStyle(2, colors.COAST);
-			} else if ((p.water > 0) != (r.water > 0) && p.biome != 'ICE' && r.biome != 'ICE') {
+				color = gcCOAST;
+				thikness = 2;
+			}else if( ( p->water > 0 ) != ( r->water > 0 ) &&
+					p->biome != bICE && r->biome != bICE){
 				// Lake boundary
-				graphics.lineStyle(1, colors.LAKESHORE);
-			} else if (p.water || r.water) {
+				color = gcLAKESHORE;
+			}else if( p->water || r->water ){
 				// Lake interior – we don't want to draw the rivers here
 				continue;
-			} else if (lava.lava[edge.index]) {
+			//}else if( lava.lava[edge.index] ){
 				// Lava flow
-				graphics.lineStyle(1, colors.LAVA);
-			} else if (edge.river > 0) {
+				//	color = gcLAVA );
+			}else if( edge->river > 0 ){
 				// River edge
-				graphics.lineStyle(Math.sqrt(edge.river), colors.RIVER);
-			} else {
+				thikness = sqrt( edge->river );
+				color = gcRIVER;
+			}else{
 				// No edge
 				continue;
 			}
 
-			graphics.moveTo(noisyEdges.path0[edge.index][0].x,
-					noisyEdges.path0[edge.index][0].y);
-			drawPathForwards(graphics, noisyEdges.path0[edge.index]);
-			drawPathBackwards(graphics, noisyEdges.path1[edge.index]);
-			graphics.lineStyle();
+			//if( thikness > 1 )
+			//	prepareLine( edge, thikness, color, triangles );
+			//else
+				prepareLine( edge, thikness, color, lines );
 		}
-	}*/
+	}
+
+	draw( GL_LINES, lines, picture );
+	draw( GL_TRIANGLES, triangles, picture );
 }
 
 
-void MapGen::renderDebugPolygons( )
+void MapGen::renderDebugPolygons( int picture )
 {
 /*	var p:Center, q:Corner, edge:Edge, point:Point, color:int;
 
@@ -562,30 +572,144 @@ void MapGen::renderDebugPolygons( )
 }
 
 
-void MapGen::renderWatersheds()
+void MapGen::renderWatersheds( int picture )
 {
-/*	var edge:Edge, w0:int, w1:int;
+	list< VertexV2FT2FC4UI* > lines;
+	list< VertexV2FT2FC4UI* > triangles;
 
-	for each (edge in map.edges) {
-		if (edge.d0 && edge.d1 && edge.v0 && edge.v1
-				&& !edge.d0.ocean && !edge.d1.ocean) {
-			w0 = watersheds.watersheds[edge.d0.index];
-			w1 = watersheds.watersheds[edge.d1.index];
-			if (w0 != w1) {
-				graphics.lineStyle(3.5, 0x000000, 0.1*Math.sqrt((map.corners[w0].watershed_size || 1) + (map.corners[w1].watershed.watershed_size || 1)));
-				graphics.moveTo(edge.v0.point.x, edge.v0.point.y);
-				graphics.lineTo(edge.v1.point.x, edge.v1.point.y);
-				graphics.lineStyle();
+	Edge* edge;
+	FOREACH1( edge, map->edges ){
+		if( !edge->v0 || !edge->v1 )
+			continue;
+
+		if( edge->d0 && edge->d1 && !edge->d0->ocean && !edge->d1->ocean ){
+			int w0 = watersheds.watersheds[edge->d0->index];
+			int w1 = watersheds.watersheds[edge->d1->index];
+			if( w0 != w1 ){
+				float a = 0.5 * sqrt(
+					( map->corners[w0]->watershed_size || 1 )
+					+ ( map->corners[w1]->watershed->watershed_size	|| 1 ) );
+				prepareLine( edge, 3.5, gcBLACK, lines, a * 255 );
 			}
 		}
+
+		if( edge->river )
+			prepareLine( edge, 1.0, gcWATERSHEDS, lines );
 	}
 
-	for each (edge in map.edges) {
-		if (edge.river) {
-			graphics.lineStyle(1.0, 0x6699ff);
-			graphics.moveTo(edge.v0.point.x, edge.v0.point.y);
-			graphics.lineTo(edge.v1.point.x, edge.v1.point.y);
-			graphics.lineStyle();
+	draw( GL_LINES, lines, picture );
+}
+
+
+void prepare_point( const s2f* p[2], int thikness, UINT color,
+		list< VertexV2FT2FC4UI* >& lines, int alpha = 255 )
+{
+//	if( thikness <= 1 ){
+		float pts[4] = { p[0]->x, p[0]->y, p[1]->x, p[1]->y };
+		for( int j = 0; j < 4; j += 2 ){
+			VertexV2FT2FC4UI* point = new VertexV2FT2FC4UI;
+			point->verticles.x = pts[j];
+			point->verticles.y = pts[j + 1];
+			point->color.set( color );
+			point->color.a = alpha;
+			lines.push_back( point );
+		}
+/*	}else{
+		float angle = atan2( p[1]->y - p[0]->y, p[1]->x - p[0]->x );
+		float t2sina1 = thikness / 2 * sin( angle );
+		float t2cosa1 = thikness / 2 * cos( angle );
+		float pts[12] = { p[0]->x + t2sina1, p[0]->y - t2cosa1, p[1]->x + t2sina1, p[1]->y
+				- t2cosa1, p[1]->x - t2sina1, p[1]->y + t2cosa1, p[1]->x - t2sina1,
+				p[1]->y + t2cosa1, p[0]->x - t2sina1, p[0]->y + t2cosa1, p[0]->x
+						+ t2sina1, p[0]->y - t2cosa1, };
+
+		for( int i = 0; i < 12; i += 2 ){
+			VertexV2FT2FC4UI* point = new VertexV2FT2FC4UI;
+			point->verticles.x = pts[i];
+			point->verticles.y = pts[i + 1];
+			point->color.set( color );
+			triangles.push_back( point );
+		}
+	}
+*/
+}
+
+void MapGen::prepareLine( Edge* edge, int thikness, UINT color,
+		list< VertexV2FT2FC4UI* >& lines, int alpha )
+{
+	{
+		VertexV2FT2FC4UI* point = new VertexV2FT2FC4UI;
+		point->verticles.x = edge->v0->point.x;
+		point->verticles.y =edge->v0->point.y;
+		point->color.set( color );
+		point->color.a = alpha;
+		lines.push_back( point );
+	}
+
+	// Noisy edges. Works bad.
+/*	for( int i = 0; i < 2; ++i ){
+		list < s2f >* path = noisyEdges.path[i][edge->index];
+		ITER_LISTP( s2f, path ) {
+			if( !it->next )
+				continue;
+
+			const s2f* p[2] = { &it->data, &it->next->data };
+
+			//int segments = 1;
+			//if( (!i && !it->next->next) || (i && it == path->head ) )
+			//	segments = 2;
+
+			// Iterate 2 times because we using 2 points at once
+			it = it->next;
+
+			prepare_point( p, thikness, color, lines, triangles );
+
 		}
 	}*/
+
+	{
+		VertexV2FT2FC4UI* point = new VertexV2FT2FC4UI;
+		point->verticles.x = edge->v1->point.x;
+		point->verticles.y =edge->v1->point.y;
+		point->color.set( color );
+		point->color.a = alpha;
+		lines.push_back( point );
+	}
+}
+
+
+void MapGen::draw( UINT type, list< VertexV2FT2FC4UI* >& verticles, int picture )
+{
+	UINT VBOHandle;
+	VBuffer::create( &VBOHandle );
+	Sprite* sprite = new Sprite(VBOHandle);
+
+	GLBrush& brush = sprite->brush;
+	brush.method = type;
+
+	int vx_count = verticles.count;
+	brush.resize_verticles( vx_count );
+	brush.resize_indices( vx_count );
+
+	VertexV2FT2FC4UI* arr = brush.points();
+
+	s2f offset;
+	TextureInfo* tex = Textures::get_pointer( texture_id );
+	tex->getTexturePosition( offset, picture );
+
+	int index = 0;
+	ITER_LIST( VertexV2FT2FC4UI*, verticles ){
+		VertexV2FT2FC4UI* vel = it->data;
+		VertexV2FT2FC4UI* vpt = &arr[index];
+		vpt->verticles.x = offset.x + vel->verticles.x;
+		vpt->verticles.y = offset.y + vel->verticles.y;
+		vpt->color.set( vel->color );
+		brush.indices_list[index] = brush.point_index + index;
+		index++;
+	}
+
+	GLTextures::update( &atlas, sprite );
+
+	delete sprite;
+	VBuffer::free_buffer( &VBOHandle );
 }

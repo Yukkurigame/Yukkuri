@@ -215,16 +215,7 @@ Sprite* RenderManager::CreateGLSprite( float x, float y, float z, int width, int
 	if( centered )
 		sprite->brush.setCentered();
 
-	sprite->texid = texture_id;
-
-	TextureInfo* tex_info = Textures::get_pointer( texture_id );
-	if( !tex_info ){
-		Debug::debug( Debug::GRAPHICS, "Bad texture id passed.\n" );
-	}else{
-		sprite->textures.push_back( tex_info->atlas );
-		sprite->addNormalMap( tex_info->normals );
-	}
-
+	sprite->setTexture( texture_id );
 	sprite->resize( (float)width, (float)height, 0 );
 	sprite->setPosition( x, y, z );
 

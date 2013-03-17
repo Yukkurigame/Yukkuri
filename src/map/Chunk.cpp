@@ -115,7 +115,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 
 	if(chunk_atlas){
 		sprite->textures.clear();
-		sprite->addTexture( chunk_atlas );
+		sprite->textures.push_back( chunk_atlas );
 	}
 }
 

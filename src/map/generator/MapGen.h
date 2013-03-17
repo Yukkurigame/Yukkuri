@@ -91,9 +91,9 @@ private:
 	Watersheds watersheds;
 	NoisyEdges noisyEdges;
 
-	void prepareLine( Edge* edge, int thikness, UINT color,
+	void prepareLine( Edge* edge, float thikness, UINT color,
 			list< VertexV2FT2FC4UI* >& lines, int alpha = 255 );
-	void draw( UINT type, list< VertexV2FT2FC4UI* >& verticles, int picture );
+	void draw( list< VertexV2FT2FC4UI* >& verticles, int picture );
 
 	// Helper function for drawing triangles with gradients. This
 	// function sets up the fill on the graphics object, and then

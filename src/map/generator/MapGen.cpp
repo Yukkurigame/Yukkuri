@@ -99,8 +99,9 @@ void MapGen::go( )
 	//roads.createRoads(map);
 	// lava.createLava(map, map.mapRandom.nextDouble);
 	watersheds.createWatersheds( map->centers );
-	noisyEdges.buildNoisyEdges( map->centers, /*lava,*/ &map->mapRandom );
-	drawMap( gmWatersheds, 0 );
+	//noisyEdges.buildNoisyEdges( map->centers, /*lava,*/ &map->mapRandom );
+	drawMap( gmWatersheds, 1 );
+	drawMap( gmPolygons, 0 );
 }
 
 
@@ -477,7 +478,6 @@ void MapGen::renderRoads( int picture )
 void MapGen::renderEdges( int picture )
 {
 	list< VertexV2FT2FC4UI* > lines;
-	list< VertexV2FT2FC4UI* > triangles;
 
 	Center* p;
 	FOREACH1( p, map->centers ){
@@ -515,20 +515,18 @@ void MapGen::renderEdges( int picture )
 				continue;
 			}
 
-			//if( thikness > 1 )
-			//	prepareLine( edge, thikness, color, triangles );
-			//else
-				prepareLine( edge, thikness, color, lines );
+			prepareLine( edge, thikness, color, lines );
 		}
 	}
 
-	draw( GL_LINES, lines, picture );
-	draw( GL_TRIANGLES, triangles, picture );
+	draw( lines, picture );
 }
 
 
 void MapGen::renderDebugPolygons( int picture )
 {
+	list< VertexV2FT2FC4UI* > lines;
+
 /*	var p:Center, q:Corner, edge:Edge, point:Point, color:int;
 
 	if (map.centers.length == 0) {
@@ -542,40 +540,47 @@ void MapGen::renderDebugPolygons( int picture )
 			graphics.endFill();
 		}
 	}
+*/
 
-	for each (p in map.centers) {
-		color = colors[p.biome] || (p.ocean? colors.OCEAN : p.water? colors.RIVER : 0xffffff);
-		graphics.beginFill(interpolateColor(color, 0xdddddd, 0.2));
-		for each (edge in p.borders) {
-			if (edge.v0 && edge.v1) {
-				graphics.moveTo(p.point.x, p.point.y);
-				graphics.lineTo(edge.v0.point.x, edge.v0.point.y);
-				if (edge.river > 0) {
-					graphics.lineStyle(2, displayColors.RIVER, 1.0);
-				} else {
-					graphics.lineStyle(0, 0x000000, 0.4);
-				}
-				graphics.lineTo(edge.v1.point.x, edge.v1.point.y);
-				graphics.lineStyle();
-			}
+	Center* p;
+	FOREACH1( p, map->centers ){
+		int color;
+		if( p->biome != bNONE )
+			color = BiomesColors[p->biome];
+		else
+			color = ( p->ocean ? gcOCEAN : ( p->water ? gcRIVER : gcRED ) );
+		ITER_LIST( Edge*, p->borders ){
+			Edge* edge = it->data;
+			if( !edge->v0 || !edge->v1 )
+				continue;
+
+			prepareLine( edge, 1.0, interpolateColor(color, gcGRAY, 0.2), lines );
+
+			/* Between points
+			if (edge.river > 0) {
+				graphics.lineStyle(2, displayColors.RIVER, 1.0);
+			} else {
+				graphics.lineStyle(0, 0x000000, 0.4);
+			}*/
 		}
-		graphics.endFill();
-		graphics.beginFill(p.water > 0 ? 0x003333 : 0x000000, 0.7);
+
+		/*graphics.beginFill(p.water > 0 ? 0x003333 : 0x000000, 0.7);
 		graphics.drawCircle(p.point.x, p.point.y, 1.3);
 		graphics.endFill();
 		for each (q in p.corners) {
 			graphics.beginFill(q.water? 0x0000ff : 0x009900);
 			graphics.drawRect(q.point.x-0.7, q.point.y-0.7, 1.5, 1.5);
 			graphics.endFill();
-		}
-	}*/
+		}*/
+	}
+
+	draw( lines, picture );
 }
 
 
 void MapGen::renderWatersheds( int picture )
 {
 	list< VertexV2FT2FC4UI* > lines;
-	list< VertexV2FT2FC4UI* > triangles;
 
 	Edge* edge;
 	FOREACH1( edge, map->edges ){
@@ -597,54 +602,37 @@ void MapGen::renderWatersheds( int picture )
 			prepareLine( edge, 1.0, gcWATERSHEDS, lines );
 	}
 
-	draw( GL_LINES, lines, picture );
+	draw( lines, picture );
 }
 
 
-void prepare_point( const s2f* p[2], int thikness, UINT color,
+void calculate_line( const s2f* p[2], float thikness, UINT color,
 		list< VertexV2FT2FC4UI* >& lines, int alpha = 255 )
 {
-//	if( thikness <= 1 ){
-		float pts[4] = { p[0]->x, p[0]->y, p[1]->x, p[1]->y };
-		for( int j = 0; j < 4; j += 2 ){
-			VertexV2FT2FC4UI* point = new VertexV2FT2FC4UI;
-			point->verticles.x = pts[j];
-			point->verticles.y = pts[j + 1];
-			point->color.set( color );
-			point->color.a = alpha;
-			lines.push_back( point );
-		}
-/*	}else{
-		float angle = atan2( p[1]->y - p[0]->y, p[1]->x - p[0]->x );
-		float t2sina1 = thikness / 2 * sin( angle );
-		float t2cosa1 = thikness / 2 * cos( angle );
-		float pts[12] = { p[0]->x + t2sina1, p[0]->y - t2cosa1, p[1]->x + t2sina1, p[1]->y
-				- t2cosa1, p[1]->x - t2sina1, p[1]->y + t2cosa1, p[1]->x - t2sina1,
-				p[1]->y + t2cosa1, p[0]->x - t2sina1, p[0]->y + t2cosa1, p[0]->x
-						+ t2sina1, p[0]->y - t2cosa1, };
+	float angle = atan2( p[1]->y - p[0]->y, p[1]->x - p[0]->x );
+	float sina = thikness / 2.0 * sin( angle );
+	float cosa = thikness / 2.0 * cos( angle );
+	float pts[12] = { p[0]->x + sina, p[0]->y - cosa,
+					  p[1]->x + sina, p[1]->y - cosa,
+					  p[1]->x - sina, p[1]->y + cosa,
+					  p[1]->x - sina, p[1]->y + cosa,
+					  p[0]->x - sina, p[0]->y + cosa,
+					  p[0]->x + sina, p[0]->y - cosa, };
 
-		for( int i = 0; i < 12; i += 2 ){
-			VertexV2FT2FC4UI* point = new VertexV2FT2FC4UI;
-			point->verticles.x = pts[i];
-			point->verticles.y = pts[i + 1];
-			point->color.set( color );
-			triangles.push_back( point );
-		}
-	}
-*/
-}
-
-void MapGen::prepareLine( Edge* edge, int thikness, UINT color,
-		list< VertexV2FT2FC4UI* >& lines, int alpha )
-{
-	{
+	for( int i = 0; i < 12; i += 2 ){
 		VertexV2FT2FC4UI* point = new VertexV2FT2FC4UI;
-		point->verticles.x = edge->v0->point.x;
-		point->verticles.y =edge->v0->point.y;
+		point->verticles.x = pts[i];
+		point->verticles.y = pts[i + 1];
 		point->color.set( color );
-		point->color.a = alpha;
 		lines.push_back( point );
 	}
+}
+
+void MapGen::prepareLine( Edge* edge, float thikness, UINT color,
+		list< VertexV2FT2FC4UI* >& lines, int alpha )
+{
+	const s2f* line[2] = { &edge->v0->point, &edge->v1->point };
+	calculate_line( line, thikness, color, lines, alpha );
 
 	// Noisy edges. Works bad.
 /*	for( int i = 0; i < 2; ++i ){
@@ -666,26 +654,17 @@ void MapGen::prepareLine( Edge* edge, int thikness, UINT color,
 
 		}
 	}*/
-
-	{
-		VertexV2FT2FC4UI* point = new VertexV2FT2FC4UI;
-		point->verticles.x = edge->v1->point.x;
-		point->verticles.y =edge->v1->point.y;
-		point->color.set( color );
-		point->color.a = alpha;
-		lines.push_back( point );
-	}
 }
 
 
-void MapGen::draw( UINT type, list< VertexV2FT2FC4UI* >& verticles, int picture )
+void MapGen::draw( list< VertexV2FT2FC4UI* >& verticles, int picture )
 {
 	UINT VBOHandle;
 	VBuffer::create( &VBOHandle );
 	Sprite* sprite = new Sprite(VBOHandle);
+	sprite->setTexture(0);
 
 	GLBrush& brush = sprite->brush;
-	brush.method = type;
 
 	int vx_count = verticles.count;
 	brush.resize_verticles( vx_count );

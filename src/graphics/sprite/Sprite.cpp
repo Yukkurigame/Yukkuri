@@ -11,6 +11,22 @@
 #include "graphics/GraphicsTypes.h"
 #include "graphics/render/Textures.h"
 #include "graphics/utils/gl_shader.h"
+#include "debug.h"
+
+void Sprite::setTexture( UINT texture_id )
+{
+	texid = texture_id;
+
+	TextureInfo* tex_info = Textures::get_pointer( texture_id );
+	if( !tex_info ){
+		Debug::debug( Debug::GRAPHICS, "Bad texture id passed.\n" );
+	}else{
+		textures.clear();
+		textures.push_back( tex_info->atlas );
+		addNormalMap( tex_info->normals );
+	}
+}
+
 
 void Sprite::setPicture( int pic )
 {

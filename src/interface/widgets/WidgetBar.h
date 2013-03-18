@@ -16,7 +16,7 @@ public:
 	WidgetBar( );
 	~WidgetBar( );
 
-	void createBar( std::string name, int picture, const s4ub& color );
+	void createBar( const char* name, int picture, const s4ub& color );
 	void setBarValue( float val );
 
 	float getBarSize( ) { return BarMaxValue; }

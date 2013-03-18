@@ -11,6 +11,8 @@
 #include "interface/widgets/Widget.h"
 #include "graphics/Text.h"
 
+#include <string>
+
 
 class WidgetText: public Widget
 {

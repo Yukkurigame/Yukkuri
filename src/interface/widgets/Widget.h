@@ -12,7 +12,6 @@
 #include "3rdparty/CUDataUser.h"
 #include "3rdparty/timer/ITimerEventPerformer.h"
 
-#include <string>
 
 class CUData;
 struct LuaRet;
@@ -50,9 +49,7 @@ public:
 	Widget();
 	virtual ~Widget();
 
-	bool create( std::string id );
-
-	void setType( wType t ){ Type = t; }
+	bool create( const char* name, wType t );
 
 	void resize( float w, float h );
 	virtual void redraw( );
@@ -66,7 +63,7 @@ public:
 	virtual void setParent( Widget* p );
 	inline Widget* getParent( ) { return Parent; }
 
-	Widget* getChild( std::string name );
+	Widget* getChild( const char* name );
 	void addChild( Widget* child );
 	void removeChild( Widget* child );
 
@@ -74,11 +71,9 @@ public:
 
 	void setBackground( int texture, int picture );
 	inline void setBackgroundColor( const s4ub& c ){
-		if( background != NULL ){
+		if( background != NULL )
 			background->brush.set_color( c );
-		}
 	}
-
 
 	//FIXME: too many virtual funcs
 	virtual void Update() {};
@@ -110,19 +105,22 @@ public:
 	GET_PARAM( float, RealX, Position.x )
 	GET_PARAM( float, RealY, Position.y )
 	GET_PARAM( float, RealZ, Position.z )
+	GET_PARAM( const char*, Name, Name )
+	GET_PARAM( int, Picture, ( background ? background->picture : 0 ) )
 	//SET_PARAM( float, RealZ, PosZ )
 	//GET_SET_PARAM( std::string, Name, Name )
 	GET_SET_PARAM( float, X, Rect.x )
 	GET_SET_PARAM( float, Y, Rect.y )
 
-	std::string getWidgetName() { return Name; }
 	s3f getWidgetPosition(){ return s3f(Position.x, Position.y, getZ()); }
-	void setWidgetName( std::string _var ) { Name = _var; }
+	inline void setWidgetPicture( int p ){
+		if( background != NULL )
+			background->setPicture( p );
+	}
 
 #undef GET_PARAM
 #undef SET_PARAM
 #undef GET_SET_PARAM
-
 
 
 protected:
@@ -131,21 +129,17 @@ protected:
 	bool visible;
 	Sprite* background;
 
-
-	std::string baseID;
-	std::string Name;
-
 	struct {
 		void* ptr;
 		enum type_identifier type;
 	} Binded;
-
 
 	WCaller Timer;
 
 private:
 	unsigned int ID;
 	wType Type;
+	const char* Name;
 
 	int Align;
 

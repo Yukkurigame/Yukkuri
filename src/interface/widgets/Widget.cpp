@@ -55,9 +55,10 @@ Widget::~Widget()
 }
 
 
-bool Widget::create( std::string id )
+bool Widget::create( const char* name, wType t )
 {
-	baseID = id;
+	Name = name;
+	Type = t;
 	return true;
 }
 
@@ -161,12 +162,12 @@ void Widget::setParent( Widget* p )
 }
 
 
-Widget* Widget::getChild( std::string name )
+Widget* Widget::getChild( const char* name )
 {
 	listElement<Widget*>* l = Children.head;
 	while( l != NULL ){
 		Widget* w = l->data;
-		if( w->getWidgetName() == name )
+		if( strcmp(w->getWidgetName(), name) == 0 )
 			return l->data;
 		l = l->next;
 	}

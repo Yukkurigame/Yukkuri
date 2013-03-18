@@ -13,7 +13,6 @@
 #include "hacks.h"
 #include <map>
 #include <algorithm>
-#include <stdio.h>
 #include <cmath>
 
 
@@ -260,7 +259,6 @@ void MapGenerator::improveCorners( )
 		if( edge->v0 && edge->v1 )
 			edge->midpoint = interpolate( edge->v0->point, edge->v1->point, 0.5 );
 	}
-	printPoints("t");
 }
 
 std::vector< Corner* > MapGenerator::landCorners( const std::vector< Corner* >& c )
@@ -774,16 +772,6 @@ bool MapGenerator::inside( const s2f* p )
 {
 	return islandShape->call(
 			s2f( 2 * ( p->x / SIZE - 0.5 ), 2 * ( p->y / SIZE - 0.5 ) ) );
-}
-
-void MapGenerator::printPoints( const char* name )
-{
-	FILE *fp = fopen( name, "w" );
-	Delaunay::Point* p;
-	FOREACH1( p, points ) {
-		fprintf( fp, "%f %f\n", p->x, p->y );
-	}
-	fclose( fp );
 }
 
 struct ParamsRadial

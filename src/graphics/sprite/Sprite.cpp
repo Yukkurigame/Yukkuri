@@ -30,17 +30,21 @@ void Sprite::setTexture( UINT texture_id )
 
 void Sprite::setPicture( int pic )
 {
+	if( pic < 0 )
+		return;
+
 	picture = pic;
 	VertexV2FT2FC4UI* points = brush.points();
 	if( !points || brush.points_count < 4 )
 		return;
 	TextureInfo* tex = Textures::get_pointer( texid );
-	if( texid && tex ){
+	if( texid && tex && pic < (tex->cols * tex->rows) ){
 		tex->getSubTexture(pic, points, brush.points_count, brush.texture_indices );
 	}else{
 		rect2f s(0.0, 0.0, 1.0, 1.0);
 		init_coords( points, &s, brush.texture_indices, brush.points_count );
 	}
+	brush.setUpdated();
 }
 
 

@@ -100,8 +100,8 @@ void MapGen::go( )
 	// lava.createLava(map, map.mapRandom.nextDouble);
 	watersheds.createWatersheds( map->centers );
 	//noisyEdges.buildNoisyEdges( map->centers, /*lava,*/ &map->mapRandom );
-	drawMap( gmWatersheds, 1 );
-	drawMap( gmPolygons, 0 );
+	drawMap( gmWatersheds, gmWatersheds );
+	drawMap( gmPolygons, gmPolygons );
 }
 
 

@@ -90,6 +90,7 @@ template<> void initValue( float& ret ) { ret = 0.0f; }
 template<> void initValue( double& ret ) { ret = 0.0; }
 template<> void initValue( unsigned int& ret ) { ret = 0; }
 template<> void initValue( int& ret ) { ret = 0; }
+template<> void initValue( const char*& ret ) { ret = NULL; }
 template<> void initValue( std::string& ret ) { ret = ""; }
 template<> void initValue( char*& ret ) { ret = '\0'; }
 

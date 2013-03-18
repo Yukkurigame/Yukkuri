@@ -187,8 +187,6 @@ private:
 	// Determine whether a given point should be on the island or in the water.
 	bool inside( const s2f* p );
 
-	void printPoints( const char* name );
-
 	///////////////////////////////////////////
 	// VARIABLES
 

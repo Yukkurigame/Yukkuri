@@ -25,11 +25,11 @@ namespace
 		//FIXME: why this function is empty?
 	}
 
-	Widget* NewWidget( const char* id, enum wType type ){
+	Widget* NewWidget( const char* name, enum wType type ){
 		Widget* w = NULL;
 		switch( type ){
 			default:
-				debug( Debug::INTERFACE, "Widget with id %s have bad type: %d.\n", id, type );
+				debug( Debug::INTERFACE, "Widget with id %s have bad type: %d.\n", name, type );
 				type = wtNone;
 				// No break. Create blank widget by default.
 			case wtBlank:
@@ -42,12 +42,10 @@ namespace
 				w = new WidgetBar( );
 				break;
 		}
-		if( w != NULL ){
-			if( w->create( id ) )
-				w->setType( type );
-			else
-				delete w, w = NULL;
-		}
+
+		if( w != NULL && !w->create( name, type ) )
+			delete w, w = NULL;
+
 		return w;
 	}
 
@@ -70,11 +68,11 @@ void Interface::clean( )
 }
 
 
-Widget* Interface::CreateWidget( const char* id, UINT type )
+Widget* Interface::CreateWidget( const char* name, UINT type )
 {
 	Widget* w;
-	debug( Debug::INTERFACE, "Creating widget %s.\n", id );
-	w = NewWidget( id, static_cast<enum wType>(type) );
+	debug( Debug::INTERFACE, "Creating widget %s.\n", name );
+	w = NewWidget( name, static_cast<enum wType>(type) );
 	if( w != NULL ){
 		w->setId( LastWidgetId++ );
 		widgets.push_back( w );

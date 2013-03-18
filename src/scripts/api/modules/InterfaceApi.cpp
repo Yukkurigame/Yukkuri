@@ -29,7 +29,7 @@ int IfaceApi::createWidget( lua_State* L )
 		lua_insert( L, 1 );
 		if( !w->load( L ) )
 			Debug::debug( Debug::INTERFACE,
-					"Cannot load widget parameters for widget %s.\n", w->getWidgetName().c_str() );
+					"Cannot load widget parameters for widget %s.\n", w->getWidgetName() );
 		// TODO: stack order changed
 	}
 

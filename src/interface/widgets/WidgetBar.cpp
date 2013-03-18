@@ -32,7 +32,7 @@ WidgetBar::~WidgetBar( )
 
 
 
-void WidgetBar::createBar( std::string name, int picture, const s4ub& color )
+void WidgetBar::createBar( const char* name, int picture, const s4ub& color )
 {
 	BarSprite = RenderManager::CreateGLSprite( Bar.x, Bar.y, 1.0, Bar.width, Bar.height, -1 );
 	if( BarSprite ){
@@ -40,9 +40,9 @@ void WidgetBar::createBar( std::string name, int picture, const s4ub& color )
 			BarSprite->clearLight();
 			BarSprite->brush.set_color( color );
 	}
-	if( name != "" ){
+	if( name && name != '\0' ){
 		TopSprite = RenderManager::CreateGLSprite( Top.x,  Top.y, 1.1, Top.width, Top.height, -1,
-						Textures::get_by_name( name.c_str() ), picture );
+						Textures::get_by_name( name ), picture );
 		TopSprite->setFixed();
 		TopSprite->clearLight();
 	}

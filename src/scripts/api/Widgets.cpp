@@ -38,7 +38,6 @@ bool Widget::load( lua_State* L )
 	std::string valign;
 
 	GET_VALUE( Rect );
-	GET_NAMED_VALUE( "name", Name )
 	GET_NAMED_VALUE( "align", Align )
 
 	float z = 0;
@@ -104,9 +103,9 @@ bool WidgetText::load( lua_State* L )
 
 bool WidgetBar::load( lua_State* L )
 {
-	std::string imgname;
 	s4ub color;
 	int picture = 0;
+	const char* imgname = NULL;
 
 	IS_TABLE( "bar" ){
 		GET_VALUE( Bar );
@@ -220,7 +219,7 @@ LuaRet Widget::getChildren( lua_State* L )
 	listElement<Widget*>* l = Children.head;
 	while( l != NULL ){
 		child = l->data;
-		lua_pushstring( L, child->getWidgetName().c_str() );
+		lua_pushstring( L, child->getWidgetName() );
 		lua_pushinteger( L, child->getWidgetId() );
 		lua_settable( L, top );
 		l = l->next;

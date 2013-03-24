@@ -33,6 +33,18 @@ public:
 	list<Center*> neighbors;
 	list<Edge*> borders;
 	list< Corner* > corners;
+
+	inline float property( NodeProperty p ){
+		switch( p ){
+			case gnpElevation:
+				return elevation;
+				break;
+			case gnpMoisture:
+				return moisture;
+				break;
+		}
+		return 0.0;
+	}
 };
 
 #endif /* CENTER_H_ */

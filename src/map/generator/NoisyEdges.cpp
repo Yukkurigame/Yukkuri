@@ -11,8 +11,7 @@
 
 NoisyEdges::NoisyEdges( )
 {
-	// TODO Auto-generated constructor stub
-
+	_processed = false;
 }
 
 NoisyEdges::~NoisyEdges( )
@@ -28,7 +27,6 @@ NoisyEdges::~NoisyEdges( )
 
 void NoisyEdges::buildNoisyEdges( std::vector< Center* >& centers, /*Lava lava,*/PM_PRNG* random )
 {
-
 	Center* p = NULL;
 	FOREACH1( p, centers ) {
 		ITER_LIST(	Edge*, p->borders ){
@@ -55,6 +53,8 @@ void NoisyEdges::buildNoisyEdges( std::vector< Center* >& centers, /*Lava lava,*
 					&edge->midpoint, &r, minl );
 		}
 	}
+
+	_processed = true;
 }
 
 struct Closure

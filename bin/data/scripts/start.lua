@@ -12,6 +12,7 @@ Camera.setTarget(player)
 
 Map.generateRegion(2, "85882")
 
+
 GUI:loadGroup("game")
 
 Map.active(true)

@@ -35,6 +35,14 @@ public:
 	// and store the output points in a Vector.
 	static list< s2f >* buildNoisyLineSegments( PM_PRNG* random, const s2f* A,
 			const s2f* B, const s2f* C, const s2f* D, float minLength, bool reverse = false );
+
+	inline bool processed()
+	{
+		return _processed;
+	}
+
+private:
+	bool _processed;
 };
 
 #endif /* NOISYEDGES_H_ */

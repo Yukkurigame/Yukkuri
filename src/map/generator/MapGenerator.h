@@ -12,52 +12,13 @@
 #include "graph/Center.h"
 #include "graph/Edge.h"
 #include "graph/Corner.h"
-#include "generator_constants.h"
 #include "delaunay/geom/Point.h"
 #include "delaunay/delaunay/Voronoi.h"
-
+#include "map/generator/generator_constants.h"
+#include "map/generator/IslandShape.h"
 #include "fifth-party/PMPRNG.h"
 #include "basic_types.h"
 
-
-struct GenerateFunc
-{
-	bool (*function)( s2f, void* param );
-	void* param;
-	bool call( s2f p )
-	{
-		return function( p, param );
-	}
-};
-
-
-class IslandShape
-{
-
-	// This class has factory functions for generating islands of
-	// different shapes. The factory returns a function that takes a
-	// normalized point (x and y are -1 to +1) and returns true if the
-	// point should be on the island, and false if it should be water
-	// (lake or ocean).
-
-	// The radial island radius is based on overlapping sine waves
-	static const double ISLAND_FACTOR = 1.07; // 1.0 means no small islands; 2.0 leads to a lot
-
-public:
-	static GenerateFunc* makeRadial( int seed );
-
-	// The Perlin-based island combines perlin noise with the radius
-	static GenerateFunc* makePerlin( int seed );
-
-	// The square shape fills the entire space with land
-	static GenerateFunc* makeSquare( int seed );
-
-	// The blob island is shaped like Amit's blob logo
-	static GenerateFunc* makeBlob( int seed );
-
-};
-
-typedef GenerateFunc (IslandShape::*GeneratorFunc)( int );
 
 class MapGenerator
 {
@@ -92,49 +53,56 @@ public:
 	PM_PRNG mapRandom;
 
 private:
-	// Generate random points and assign them to be on the island or
-	// in the water. Some water points are inland lakes; others are
-	// ocean. We'll determine ocean later by looking at what's
-	// connected to ocean.
+	/* Generate random points and assign them to be on the island or
+	 * in the water. Some water points are inland lakes; others are
+	 * ocean. We'll determine ocean later by looking at what's
+	 * connected to ocean.
+	 */
 	void generateRandomPoints( std::vector< Delaunay::Point* >& pts );
 
-	// Improve the random set of points with Lloyd Relaxation.
+	/* Improve the random set of points with Lloyd Relaxation. */
 	void improveRandomPoints( std::vector< Delaunay::Point* >& pts );
 
-	// Although Lloyd relaxation improves the uniformity of polygon
-	// sizes, it doesn't help with the edge lengths. Short edges can
-	// be bad for some games, and lead to weird artifacts on
-	// rivers. We can easily lengthen short edges by moving the
-	// corners, but **we lose the Voronoi property**.  The corners are
-	// moved to the average of the polygon centers around them. Short
-	// edges become longer. Long edges tend to become shorter. The
-	// polygons tend to be more uniform after this step.
+	/* Although Lloyd relaxation improves the uniformity of polygon
+	 * sizes, it doesn't help with the edge lengths. Short edges can
+	 * be bad for some games, and lead to weird artifacts on
+	 * rivers. We can easily lengthen short edges by moving the
+	 * corners, but **we lose the Voronoi property**.  The corners are
+	 * moved to the average of the polygon centers around them. Short
+	 * edges become longer. Long edges tend to become shorter. The
+	 * polygons tend to be more uniform after this step.
+	 */
 	void improveCorners( );
 
-	// Create an array of corners that are on land only, for use by
-	// algorithms that work only on land.  We return an array instead
-	// of a vector because the redistribution algorithms want to sort
-	// this array using Array.sortOn.
-	std::vector< Corner* > landCorners( const std::vector< Corner* >& c );
+	/* Create an array of corners that are on land only, for use by
+	 * algorithms that work only on land.  We return an array instead
+	 * of a vector because the redistribution algorithms want to sort
+	 * this array using Array.sortOn.
+	 */
+	list< Corner* > landCorners( const std::vector< Corner* >& c );
 
-	// Build graph data structure in 'edges', 'centers', 'corners',
-	// based on information in the Voronoi results: point.neighbors
-	// will be a list of neighboring points of the same type (corner
-	// or center); point.edges will be a list of edges that include
-	// that point. Each edge connects to four points: the Voronoi edge
-	// edge.{v0,v1} and its dual Delaunay triangle edge edge.{d0,d1}.
-	// For boundary polygons, the Delaunay edge will have one null
-	// point, and the Voronoi edge may be null.
+	/* Build graph data structure in 'edges', 'centers', 'corners',
+	 * based on information in the Voronoi results: point.neighbors
+	 * will be a list of neighboring points of the same type (corner
+	 * or center); point.edges will be a list of edges that include
+	 * that point. Each edge connects to four points: the Voronoi edge
+	 * edge.{v0,v1} and its dual Delaunay triangle edge edge.{d0,d1}.
+	 * For boundary polygons, the Delaunay edge will have one null
+	 * point, and the Voronoi edge may be null.
+	 */
 	void buildGraph( const std::vector< Delaunay::Point* >& pts, Delaunay::Voronoi* voronoi );
 
-	// Determine elevations and water at Voronoi corners. By
-	// construction, we have no local minima. This is important for
-	// the downslope vectors later, which are used in the river
-	// construction algorithm. Also by construction, inlets/bays
-	// push low elevation areas inland, which means many rivers end
-	// up flowing out through them. Also by construction, lakes
-	// often end up on river paths because they don't raise the
-	// elevation as much as other terrain does.
+	void generateHeightMap( );
+
+	/* Determine elevations and water at Voronoi corners. By
+	 * construction, we have no local minima. This is important for
+	 * the downslope vectors later, which are used in the river
+	 * construction algorithm. Also by construction, inlets/bays
+	 * push low elevation areas inland, which means many rivers end
+	 * up flowing out through them. Also by construction, lakes
+	 * often end up on river paths because they don't raise the
+	 * elevation as much as other terrain does.
+	 */
 	void assignCornerElevations( );
 
 	// Change the overall distribution of elevations so that lower
@@ -142,10 +110,10 @@ private:
 	// elevations. Specifically, we want elevation X to have frequency
 	// (1-X).  To do this we will sort the corners, then set each
 	// corner to its desired elevation.
-	void redistributeElevations( std::vector< Corner* >& );
+	void redistributeElevations( list< Corner* >& );
 
 	// Change the overall distribution of moisture to be evenly distributed.
-	void redistributeMoisture( std::vector< Corner* >& );
+	void redistributeMoisture( list< Corner* >& );
 
 	// Determine polygon and corner types: ocean, coast, land.
 	void assignOceanCoastAndLand( );
@@ -202,7 +170,9 @@ private:
 	// type of island, passed in when we set the island shape. The
 	// islandShape function uses both of them to determine whether any
 	// point should be water or land.
-	GenerateFunc* islandShape;
+	ShapeGenerateFunc* islandShape;
+
+	HeightMap heights;
 
 	// These store the graph data
 	std::vector< Delaunay::Point* > points;  // Only useful during map construction

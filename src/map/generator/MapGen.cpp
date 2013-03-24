@@ -11,6 +11,7 @@
 #include "graphics/render/GLTextures.h"
 #include "graphics/render/Textures.h"
 #include "graphics/render/VBuffer.h"
+#include "graphics/utils/Primitives.h"
 #include "utils/misc.h"
 #include "hacks.h"
 #include "debug.h"
@@ -100,140 +101,111 @@ void MapGen::go( )
 	// lava.createLava(map, map.mapRandom.nextDouble);
 	watersheds.createWatersheds( map->centers );
 	//noisyEdges.buildNoisyEdges( map->centers, /*lava,*/ &map->mapRandom );
-	drawMap( gmWatersheds, gmWatersheds );
-	drawMap( gmPolygons, gmPolygons );
+	drawMap( gmBiome, 0 );
+	drawMap( gmWatersheds, 1 );
+	drawMap( gmPolygons, 2 );
+	drawMap( gmMoisture, 3 );
+	drawMap( gmElevation, 4 );
+}
+
+void MapGen::computeHistogram( float** hs, int* count, bucketFn fn )
+{
+	int size = map->centers.size();
+	*count = size;
+
+	if( !size )
+		return;
+
+	float* histogram = new float[size];
+
+	Center* p;
+	FOREACH1( p, map->centers ) {
+		int bucket = fn( p );
+		if( bucket >= 0 )
+			histogram[bucket] = ( histogram[bucket] || 0 ) + 1;
+	}
+
+	*hs = histogram;
+}
+
+void MapGen::drawHistogram( float x, float y, bucketFn fn, colorFn cfn,
+		float width, float height, list< VertexV2FT2FC4UI* >* lines )
+{
+	float* histogram = NULL;
+	int hcount = 0;
+	computeHistogram( &histogram, &hcount, fn );
+	if( !hcount )
+		return;
+
+	float scale = 0.0;
+	for( int i = 0; i < hcount; ++i )
+		scale = ( scale >= histogram[i] ? scale : histogram[i] );
+
+
+	for( int i = 0; i < hcount; ++i ){
+		if( histogram[i] ){
+			float ratio = width / (float)hcount;
+			GLPrimitives::prepare_rectangle( x + i * ratio, y + height,
+					(ratio - 1.0 > 0.0 ? ratio - 1.0 : 0.0),
+					-height * histogram[i] / scale,
+					cfn(i), lines );
+		}
+	}
+
+	delete[] histogram;
+}
+
+void MapGen::drawDistribution( float x, float y, bucketFn fn, colorFn cfn,
+		float width, float height, list< VertexV2FT2FC4UI* >* lines )
+{
+	float* histogram = NULL;
+	int hcount = 0;
+	computeHistogram( &histogram, &hcount, fn );
+	if( !hcount )
+		return;
+	float scale = 0.0;
+	for( int i = 0; i < hcount; ++i )
+		scale += histogram[i];
+
+	for( int i = 0; i < hcount; ++i ){
+		if( histogram[i] ){
+			float w = histogram[i] / scale * width;
+			GLPrimitives::prepare_rectangle( x, y,
+					(w - 1.0 > 0.0 ? w - 1.0 : 0.0), height, cfn(i), lines );
+			x += w;
+		}
+	}
+
+	delete[] histogram;
 }
 
 
-void MapGen::drawHistograms( )
+void MapGen::drawHistograms( int picture )
 {
-/*	// There are pairs of functions for each chart. The bucket
+	list< VertexV2FT2FC4UI* > lines;
+
+	// There are pairs of functions for each chart. The bucket
 	// function maps the polygon Center to a small int, and the
 	// color function maps the int to a color.
-	function
-	landTypeBucket(p:Center):int{
-		if (p.ocean) return 1;
-		else if (p.coast) return 2;
-		else if (p.water) return 3;
-		else return 4;
-	}
-	function
-	landTypeColor(bucket:int):uint{
-		if (bucket == 1) return displayColors.OCEAN;
-		else if (bucket == 2) return displayColors.BEACH;
-		else if (bucket == 3) return displayColors.LAKE;
-		else return displayColors.TEMPERATE_DECIDUOUS_FOREST;
-	}
-	function
-	elevationBucket(p:Center):int{
-		if (p.ocean) return -1;
-		else return Math.floor(p.elevation*10);
-	}
-	function
-	elevationColor(bucket:int):uint{
-		return interpolateColor(displayColors.TEMPERATE_DECIDUOUS_FOREST,
-				displayColors.GRASSLAND, bucket*0.1);
-	}
-	function
-	moistureBucket(p:Center):int{
-		if (p.water) return -1;
-		else return Math.floor(p.moisture*10);
-	}
-	function
-	moistureColor(bucket:int):uint{
-		return interpolateColor(displayColors.BEACH, displayColors.RIVER, bucket*0.1);
-	}
-	function
-	biomeBucket(p:Center):int{
-		return _biomeMap.indexOf(p.biome);
-	}
-	function
-	biomeColor(bucket:int):uint{
-		return displayColors[_biomeMap[bucket]];
-	}
 
-	function
-	computeHistogram(bucketFn:Function):Array{
-		var p:Center, histogram:Array, bucket:int;
-		histogram = [];
-		for each (p in map.centers){
-			bucket = bucketFn(p);
-			if (bucket >= 0) histogram[bucket] = (histogram[bucket] || 0) + 1;
-		}
-		return histogram;
-	}
+	float x = 23.0;
+	float y = 140.0;
+	float width = 154.0;
 
-	function
-	drawHistogram(x:Number, y:Number, bucketFn:Function, colorFn:Function,
-			width:Number, height:Number):void{
-		var scale:Number, i:int;
-		var histogram:Array = computeHistogram(bucketFn);
+	drawDistribution( x, y, &landTypeBucket, &landTypeColor, width, 20, &lines );
+	drawDistribution( x, y + 25, &biomeBucket, &biomeColor, width, 20, &lines );
+	drawHistogram( x, y + 55, &elevationBucket, &elevationColor, width, 30, &lines );
+	drawHistogram( x, y + 95, &moistureBucket, &moistureColor, width, 20, &lines );
 
-		scale = 0.0;
-		for (i = 0; i < histogram.length; i++){
-			scale = Math.max(scale, histogram[i] || 0);
-		}
-		for (i = 0; i < histogram.length; i++){
-			if (histogram[i]){
-				graphics.beginFill(colorFn(i));
-				graphics.drawRect(SIZE+x+i*width/histogram.length, y+height,
-						Math.max(0, width/histogram.length-1), -height*histogram[i]/scale);
-				graphics.endFill();
-			}
-		}
-	}
+	draw( lines, picture );
 
-	function
-	drawDistribution(x:Number, y:Number, bucketFn:Function, colorFn:Function,
-			width:Number, height:Number):void{
-		var scale:Number, i:int, x:Number, w:Number;
-		var histogram:Array = computeHistogram(bucketFn);
-
-		scale = 0.0;
-		for (i = 0; i < histogram.length; i++){
-			scale += histogram[i] || 0.0;
-		}
-		for (i = 0; i < histogram.length; i++){
-			if (histogram[i]){
-				graphics.beginFill(colorFn(i));
-				w = histogram[i]/scale*width;
-				graphics.drawRect(SIZE+x, y, Math.max(0, w-1), height);
-				x += w;
-				graphics.endFill();
-			}
-		}
-	}
-
-	var
-	x:Number = 23, y
-	:Number = 140, width:Number = 154;
-	drawDistribution( x, y, landTypeBucket, landTypeColor, width, 20 );
-	drawDistribution( x, y + 25, biomeBucket, biomeColor, width, 20 );
-
-	drawHistogram( x, y + 55, elevationBucket, elevationColor, width, 30 );
-	drawHistogram( x, y + 95, moistureBucket, moistureColor, width, 20 );
-*/
-}
-
-unsigned int MapGen::interpolateColor( unsigned int c0, unsigned int c1, double f )
-{
-	unsigned int r = ( 1 - f ) * ( c0 >> 16 ) + f * ( c1 >> 16 );
-	unsigned int g = ( 1 - f ) * ( ( c0 >> 8 ) & 0xff ) + f * ( ( c1 >> 8 ) & 0xff );
-	unsigned int b = ( 1 - f ) * ( c0 & 0xff ) + f * ( c1 & 0xff );
-	if( r > 255 )
-		r = 255;
-	if( g > 255 )
-		g = 255;
-	if( b > 255 )
-		b = 255;
-	return ( r << 16 ) | ( g << 8 ) | b;
 }
 
 void MapGen::drawMap( GeneratorMode mode, int picture )
 {
 	graphicsReset();
 	//noiseLayer.visible = true;
-	drawHistograms();
+
 
 	switch( mode ){
 		case gm3d:
@@ -261,10 +233,10 @@ void MapGen::drawMap( GeneratorMode mode, int picture )
 			renderPolygons( picture );
 			break;
 		case gmElevation:
-			renderPolygons( picture );
+			renderGradientPolygions( picture, gcELEVATION_LOW, gcELEVATION_HIGH, gnpElevation );
 			break;
 		case gmMoisture:
-			renderPolygons( picture );
+			renderGradientPolygions( picture, gcMOISTURE_LOW, gcMOISTURE_HIGH, gnpMoisture );
 			break;
 	}
 
@@ -276,6 +248,9 @@ void MapGen::drawMap( GeneratorMode mode, int picture )
 
 	if( mode != gmSlopes && mode != gmMoisture )
 		renderBridges( picture );
+
+	if( mode != gmBiome )
+		drawHistograms( picture );
 }
 
 
@@ -350,36 +325,84 @@ void MapGen::render3dPolygons(  )
 
 void MapGen::renderPolygons( int picture )
 {
-/*	Center* p;
-	FILE *fp = fopen("lvt", "w");
+	// My Voronoi polygon rendering doesn't handle the boundary
+	// polygons, so I just fill everything with ocean first.
+	//graphics.beginFill( colors.OCEAN );
+	//graphics.drawRect( 0, 0, SIZE, SIZE );
+	//graphics.endFill();
 
-	FOREACH1( p, map->centers ){
-		//ITER_LIST( Corner*, p->corners ){
-			//Center* r = it->data;
-			//Corner* c = it->data;
-			//Edge* edge = map->lookupEdgeFromCenter( p, r );
-			//int color = BiomesColors[p->biome];
+	list< VertexV2FT2FC4UI* > lines;
 
-			//if( noisyEdges.path0.count(edge->index) < 1 ||
-			//	noisyEdges.path1.count(edge->index) < 1 )
-			//	continue;
-			//list< s2f >* path0 = noisyEdges.path0[edge->index];
-			//list< s2f >* path1 = noisyEdges.path1[edge->index];
-			//fprintf( fp, " %f:%f", c->point.x, c->point.y );
-			//ITER_LISTP( s2f, path0 ){
-			//	fprintf( fp, " %f:%f", it->data.x, it->data.y );
-			//}
-			//fprintf( fp, " %f:%f\n",  p->point.x, p->point.y );
-			//fprintf( fp, "line");
-			//fprintf( fp, " %f:%f",  p->point.x, p->point.y );
-			//ITER_LISTP( s2f, path1 ){
-			//	fprintf( fp, " %f:%f", it->data.x, it->data.y );
-			//}
-			//fprintf( fp, " %f:%f\n",  p->point.x, p->point.y );
-		//}
-		fprintf( fp, "%f %f\n",  p->point.x, p->point.y );
+	Center* p;
+	FOREACH1( p, map->centers ) {
+		ITER_LIST( Center*, p->neighbors ) {
+			Center* r = it->data;
+			Edge* edge = map->lookupEdgeFromCenter( p, r );
+			UINT color = BiomesColors[p->biome];
+			preparePolygon( p, edge, color, &lines );
+		}
 	}
-*/
+
+	draw( lines, picture );
+}
+
+void MapGen::renderGradientPolygions( int picture, UINT color_low, UINT color_high, NodeProperty prop )
+{
+	list< VertexV2FT2FC4UI* > lines;
+
+	Center* p;
+	FOREACH1( p, map->centers ) {
+		ITER_LIST( Center*, p->neighbors ) {
+			Center* r = it->data;
+			Edge* edge = map->lookupEdgeFromCenter( p, r );
+
+			if( !edge->v0 || !edge->v1 )
+				continue;
+
+			/* I don't think this trash is useful here.
+			list< s2f >* path[2];
+			if( noisyEdges.processed() && (
+					( path[0] = noisyEdges.path[0][edge->index] ) == NULL ||
+					( path[1] = noisyEdges.path[1][edge->index] ) == NULL )
+			)
+				continue;
+			*/
+
+            // We'll draw two triangles: center - corner0 -
+            // midpoint and center - midpoint - corner1.
+			Corner* corner0 = edge->v0;
+			Corner* corner1 = edge->v1;
+
+            // We pick the midpoint elevation/moisture between
+            // corners instead of between polygon centers because
+            // the resulting gradients tend to be smoother.
+			const s2f& midpoint = edge->midpoint;
+			UINT midpoint_color = interpolateColor( color_low, color_high,
+					0.5 * ( corner0->property( prop ) + corner1->property( prop ) ) );
+			UINT p_color = interpolateColor( color_low, color_high, p->property( prop ) );
+
+			float points[12] = {
+            		p->point.x, p->point.y,
+            		corner0->point.x, corner0->point.y,
+            		midpoint.x, midpoint.y,
+            		p->point.x, p->point.y,
+            		midpoint.x, midpoint.y,
+            		corner1->point.x, corner1->point.y,
+            };
+            UINT colors[6] = {
+            		p_color,
+            		interpolateColor( color_low, color_high, corner0->property( prop ) ),
+            		midpoint_color,
+            		p_color,
+            		midpoint_color,
+            		interpolateColor( color_low, color_high, corner1->property( prop ) )
+            };
+
+            GLPrimitives::prepare_triangles( points, 12, colors, &lines );
+		}
+	}
+
+	draw( lines, picture );
 }
 
 
@@ -484,11 +507,7 @@ void MapGen::renderEdges( int picture )
 		ITER_LIST( Center*, p->neighbors ){
 			Center* r = it->data;
 			Edge* edge = map->lookupEdgeFromCenter( p, r );
-			if( noisyEdges.path[0][edge->index] == NULL
-					|| noisyEdges.path[1][edge->index] == NULL ){
-				// It's at the edge of the map
-				continue;
-			}
+
 			int thikness = 1;
 			UINT color = gcBLACK;
 
@@ -515,7 +534,7 @@ void MapGen::renderEdges( int picture )
 				continue;
 			}
 
-			prepareLine( edge, thikness, color, lines );
+			prepareLine( edge, thikness, color, &lines );
 		}
 	}
 
@@ -526,21 +545,6 @@ void MapGen::renderEdges( int picture )
 void MapGen::renderDebugPolygons( int picture )
 {
 	list< VertexV2FT2FC4UI* > lines;
-
-/*	var p:Center, q:Corner, edge:Edge, point:Point, color:int;
-
-	if (map.centers.length == 0) {
-		// We're still constructing the map so we may have some points
-		graphics.beginFill(0xdddddd);
-		graphics.drawRect(0, 0, SIZE, SIZE);
-		graphics.endFill();
-		for each (point in map.points) {
-			graphics.beginFill(0x000000);
-			graphics.drawCircle(point.x, point.y, 1.3);
-			graphics.endFill();
-		}
-	}
-*/
 
 	Center* p;
 	FOREACH1( p, map->centers ){
@@ -554,24 +558,23 @@ void MapGen::renderDebugPolygons( int picture )
 			if( !edge->v0 || !edge->v1 )
 				continue;
 
-			prepareLine( edge, 1.0, interpolateColor(color, gcGRAY, 0.2), lines );
+			preparePolygon( p, edge, interpolateColor(color, gcGRAY, 0.2), &lines );
 
-			/* Between points
-			if (edge.river > 0) {
-				graphics.lineStyle(2, displayColors.RIVER, 1.0);
-			} else {
-				graphics.lineStyle(0, 0x000000, 0.4);
-			}*/
+			if( edge->river )
+				prepareLine( edge, 1.8, gcRIVER, &lines );
+			else
+				prepareLine( edge, 0.7, gcBLACK, &lines );
 		}
 
-		/*graphics.beginFill(p.water > 0 ? 0x003333 : 0x000000, 0.7);
-		graphics.drawCircle(p.point.x, p.point.y, 1.3);
-		graphics.endFill();
-		for each (q in p.corners) {
-			graphics.beginFill(q.water? 0x0000ff : 0x009900);
-			graphics.drawRect(q.point.x-0.7, q.point.y-0.7, 1.5, 1.5);
-			graphics.endFill();
-		}*/
+		UINT ccolor = ( p->water > 0 ? gcAQUA : gcBLACK );
+		GLPrimitives::prepare_circle( p->point.x, p->point.y, 1.3, ccolor, &lines, 0.7);
+
+		ITER_LIST( Corner*, p->corners ){
+			Corner* q = it->data;
+			UINT rcolor = q->water ? gcBLUE : gcDARKGREEN;
+			GLPrimitives::prepare_rectangle( q->point.x - 0.7, q->point.y - 0.7,
+					1.5, 1.5, rcolor, &lines );
+		}
 	}
 
 	draw( lines, picture );
@@ -594,45 +597,82 @@ void MapGen::renderWatersheds( int picture )
 				float a = 0.5 * sqrt(
 					( map->corners[w0]->watershed_size || 1 )
 					+ ( map->corners[w1]->watershed->watershed_size	|| 1 ) );
-				prepareLine( edge, 3.5, gcBLACK, lines, a * 255 );
+				prepareLine( edge, 3.5, gcBLACK, &lines, a * 255 );
 			}
 		}
 
 		if( edge->river )
-			prepareLine( edge, 1.0, gcWATERSHEDS, lines );
+			prepareLine( edge, 1.0, gcWATERSHEDS, &lines );
 	}
 
 	draw( lines, picture );
 }
 
 
-void calculate_line( const s2f* p[2], float thikness, UINT color,
-		list< VertexV2FT2FC4UI* >& lines, int alpha = 255 )
+void MapGen::prepareLine( Edge* edge, float thikness, UINT color,
+		list< VertexV2FT2FC4UI* >* lines, int alpha )
 {
-	float angle = atan2( p[1]->y - p[0]->y, p[1]->x - p[0]->x );
-	float sina = thikness / 2.0 * sin( angle );
-	float cosa = thikness / 2.0 * cos( angle );
-	float pts[12] = { p[0]->x + sina, p[0]->y - cosa,
-					  p[1]->x + sina, p[1]->y - cosa,
-					  p[1]->x - sina, p[1]->y + cosa,
-					  p[1]->x - sina, p[1]->y + cosa,
-					  p[0]->x - sina, p[0]->y + cosa,
-					  p[0]->x + sina, p[0]->y - cosa, };
+	// It's at the edge of the map, where we don't have
+	// the noisy edges computed. TODO: figure out how to
+	// fill in these edges from the voronoi library.
+	list< s2f >* path[2];
+	if( noisyEdges.processed() && (
+			( path[0] = noisyEdges.path[0][edge->index] ) == NULL ||
+			( path[1] = noisyEdges.path[1][edge->index] ) == NULL )
+	)
+		return;
 
-	for( int i = 0; i < 12; i += 2 ){
-		VertexV2FT2FC4UI* point = new VertexV2FT2FC4UI;
-		point->verticles.x = pts[i];
-		point->verticles.y = pts[i + 1];
-		point->color.set( color );
-		lines.push_back( point );
-	}
+	float line[4] = {
+		edge->v0->point.x, edge->v0->point.y,
+		edge->v1->point.x, edge->v1->point.y
+	};
+	GLPrimitives::prepare_line( line, thikness, color, lines, alpha );
+
+	// Noisy edges. Works bad.
+/*	for( int i = 0; i < 2; ++i ){
+		list < s2f >* path = noisyEdges.path[i][edge->index];
+		ITER_LISTP( s2f, path ) {
+			if( !it->next )
+				continue;
+
+			const s2f* p[2] = { &it->data, &it->next->data };
+
+			//int segments = 1;
+			//if( (!i && !it->next->next) || (i && it == path->head ) )
+			//	segments = 2;
+
+			// Iterate 2 times because we using 2 points at once
+			it = it->next;
+
+			prepare_point( p, thikness, color, lines, triangles );
+
+		}
+	}*/
 }
 
-void MapGen::prepareLine( Edge* edge, float thikness, UINT color,
-		list< VertexV2FT2FC4UI* >& lines, int alpha )
+void MapGen::preparePolygon( Center* p, Edge* edge, UINT color,
+				list< VertexV2FT2FC4UI* >* lines, int alpha )
 {
-	const s2f* line[2] = { &edge->v0->point, &edge->v1->point };
-	calculate_line( line, thikness, color, lines, alpha );
+	// It's at the edge of the map, where we don't have
+	// the noisy edges computed. TODO: figure out how to
+	// fill in these edges from the voronoi library.
+	list< s2f >* path[2];
+	if( noisyEdges.processed() && (
+			( path[0] = noisyEdges.path[0][edge->index] ) == NULL ||
+			( path[1] = noisyEdges.path[1][edge->index] ) == NULL )
+	)
+		return;
+
+	if( !edge->v0 || !edge->v1 )
+		return;
+
+	float pts[6] = {
+			p->point.x, p->point.y,
+			edge->v0->point.x, edge->v0->point.y,
+			edge->v1->point.x, edge->v1->point.y
+	};
+
+	GLPrimitives::prepare_triangles( pts, 6, color, lines );
 
 	// Noisy edges. Works bad.
 /*	for( int i = 0; i < 2; ++i ){

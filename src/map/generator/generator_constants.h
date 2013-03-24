@@ -28,13 +28,18 @@ enum GeneratorColors
 {
 	// Basic
 	gcBLACK = 0x000000, gcRED = 0xff0000, gcGREEN = 0x00ff00, gcBLUE = 0x0000ff,
-	gcWHITE = 0xffffff, gcGRAY = 0xdddddd, gcWATERSHEDS = 0x6699ff,
+	gcWHITE = 0xffffff, gcGRAY = 0xdddddd, gcWATERSHEDS = 0x6699ff, gcAQUA = 0x003333,
+	gcDARKGREEN = 0x009900,
 
 	// Features
 	gcOCEAN = 0x44447a, gcCOAST = 0x33335a, gcLAKESHORE = 0x225588, gcLAKE = 0x336699,
 	gcRIVER = 0x225588, gcMARSH = 0x2f6666, gcICE = 0x99ffff, gcBEACH = 0xa09077,
 	gcROAD1 = 0x442211, gcROAD2 = 0x553322, gcROAD3 = 0x664433, gcBRIDGE = 0x686860,
 	gcLAVA = 0xcc3333,
+
+	// Gradients
+	gcELEVATION_LOW = 0x008800, gcELEVATION_HIGH = 0xffff00,
+	gcMOISTURE_LOW = 0xbbaa33, gcMOISTURE_HIGH = 0x4466ff,
 
 	// Terrain
 	gcSNOW = 0xffffff, gcTUNDRA = 0xbbbbaa, gcBARE = 0x888888, gcSCORCHED = 0x555555,
@@ -74,5 +79,12 @@ enum GeneratorModes
 };
 
 typedef enum GeneratorModes GeneratorMode;
+
+
+enum NodeProperties {
+	gnpElevation, gnpMoisture
+};
+
+typedef enum NodeProperties NodeProperty;
 
 #endif /* GENERATOR_CONSTANTS_H_ */

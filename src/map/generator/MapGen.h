@@ -11,6 +11,7 @@
 #include "map/generator/MapGenerator.h"
 #include "map/generator/NoisyEdges.h"
 #include "map/generator/Watersheds.h"
+#include "map/generator/Histogram.h"
 #include "graphics/GraphicsTypes.h"
 #include <string>
 
@@ -29,10 +30,12 @@ public:
 	void go( );
 
 	// Show some information about the maps
-	void drawHistograms( );
-
-	// Helper function for color manipulation. When f==0: color0, f==1: color1
-	unsigned int interpolateColor( unsigned int color0, unsigned int color1, double f );
+	void computeHistogram( float** hs, int* count, bucketFn fn );
+	void drawHistogram( float x, float y, bucketFn fn, colorFn cfn,
+			float width, float height, list< VertexV2FT2FC4UI* >* lines );
+	void drawDistribution( float x, float y, bucketFn fn, colorFn cfn,
+			float width, float height, list< VertexV2FT2FC4UI* >* lines );
+	void drawHistograms( int picture );
 
 	// Draw the map in the current map mode
 	void drawMap( GeneratorMode, int picture );
@@ -46,6 +49,7 @@ public:
 
 	// Render the interior of polygons
 	void renderPolygons( int picture );
+	void renderGradientPolygions( int picture, UINT color_low, UINT color_high, NodeProperty );
 
 	// Render bridges across every narrow river edge. Bridges are
 	// straight line segments perpendicular to the edge. Bridges are
@@ -92,7 +96,9 @@ private:
 	NoisyEdges noisyEdges;
 
 	void prepareLine( Edge* edge, float thikness, UINT color,
-			list< VertexV2FT2FC4UI* >& lines, int alpha = 255 );
+			list< VertexV2FT2FC4UI* >* lines, int alpha = 255 );
+	void preparePolygon( Center* p, Edge* edge, UINT color,
+				list< VertexV2FT2FC4UI* >* lines, int alpha = 255 );
 	void draw( list< VertexV2FT2FC4UI* >& verticles, int picture );
 
 	// Helper function for drawing triangles with gradients. This

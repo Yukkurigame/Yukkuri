@@ -34,5 +34,9 @@ inline s2f normalize( const s2f& f )
 	return s2f( f.x / l, f.y / l );
 }
 
+inline double max( double first, double second )
+{
+	return ( first > second ) ? first : second;
+}
 
 #endif /* MISC_H_ */

@@ -26,7 +26,7 @@ UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp ActionTimer.cpp Scope.cpp
 PHYSICS = physics.cpp handlers.cpp
 RENDER = Atlas.cpp GBuffer.cpp GLHelpers.cpp GLTextures.cpp VBuffer.cpp Textures.cpp
 SPRITE = Sprite.cpp Animation.cpp AnimationDefines.cpp Brush.cpp Material.cpp Mesh.cpp
-GRAPHUTILS = gl_shader.cpp gl_uniforms.cpp VBOArray.cpp Image.cpp ElasticBox.cpp
+GRAPHUTILS = gl_shader.cpp gl_uniforms.cpp VBOArray.cpp Image.cpp ElasticBox.cpp Primitives.cpp
 GRAPHICS = Camera.cpp Font.cpp gl_extensions.cpp Lighting.cpp Render.cpp Text.cpp \
 		   $(addprefix render/, $(RENDER)) $(addprefix sprite/, $(SPRITE)) $(addprefix utils/, $(GRAPHUTILS))
 PUSHERAPI = TextureProxy.cpp ShaderConfigData.cpp GraphicsTypes.cpp Tiles.cpp
@@ -37,11 +37,9 @@ SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp prot
 		  api.cpp $(addprefix $(SCRIPTSAPIDIR), $(SCRIPTSAPI))
 WIDGETS = Widget.cpp WidgetText.cpp WidgetBar.cpp
 INTERFACE = Interface.cpp $(addprefix $(WIDGETSDIR), $(WIDGETS))
-MAPGENERATOR = 
-MAP = Tiles.cpp Chunk.cpp Region.cpp Map.cpp \
-	$(addprefix generator/, MapGen.cpp MapGenerator.cpp NoisyEdges.cpp Watersheds.cpp \
-		$(addprefix graph/, Center.cpp Corner.cpp Edge.cpp) \
-		$(addprefix fifth-party/, PMPRNG.cpp ) )
+MAP = $(addsuffix .cpp, Tiles Chunk Region Map \
+	$(addprefix generator/, MapGen MapGenerator NoisyEdges Watersheds IslandShape \
+		$(addprefix graph/, Center Corner Edge) $(addprefix fifth-party/, PMPRNG ) ) )
 3RDPARTY = CUData.cpp CUDataUser.cpp CUDataTemplates.cpp LuaPusher.cpp timer/TimerManager.cpp \
 		   $(addprefix objTester/, list.cpp obj_parser.cpp string_extra.cpp)
 
@@ -67,7 +65,7 @@ OBJS = $(addprefix $(OBJDIR), $(UNICSOURCES:.cpp=.o)) $(OBJECTS)
 
 UNIQHEADERS = $(addsuffix .h, \
 	 	$(SCRIPTSDIR)LuaScriptConfig $(UNITSDIR)YOBA $(UTILSDIR)misc \
-	 	$(addprefix $(MAPDIR), Waypoint generator/generator_constants ) \
+	 	$(addprefix $(MAPDIR), Waypoint generator/generator_constants generator/Histogram ) \
 		$(addprefix $(3RDPARTYDIR), TypeList \
 			$(addprefix timer/, InternalTimerEvent InternalTimerEvent TimerEvent \
 			ITimerEventPerformer )) \

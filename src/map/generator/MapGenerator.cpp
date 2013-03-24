@@ -105,6 +105,9 @@ void MapGenerator::go( int first, int last )
 			// Determine the elevations and water at Voronoi corners.
 			assignCornerElevations();
 
+			// Generate heightmap for new location
+			generateHeightMap();
+
 			// Determine polygon and corner type: ocean, coast, land.
 			assignOceanCoastAndLand();
 
@@ -115,8 +118,9 @@ void MapGenerator::go( int first, int last )
 			// largest ring around the island, and therefore should more
 			// land area than the highest elevation, which is the very
 			// center of a perfectly circular island.
-			std::vector< Corner* > cnrs = landCorners( corners );
+			list< Corner* > cnrs = landCorners( corners );
 			redistributeElevations( cnrs );
+
 
 			// Assign elevations to non-land corners
 			Corner* q;
@@ -148,7 +152,7 @@ void MapGenerator::go( int first, int last )
 			// to 1.0. Then assign polygon moisture as the average
 			// of the corner moisture.
 			assignCornerMoisture();
-			std::vector< Corner* > cnrs = landCorners( corners );
+			list< Corner* > cnrs = landCorners( corners );
 			redistributeMoisture( cnrs );
 			assignPolygonMoisture();
 			CHECK_LAST( 5 )
@@ -261,9 +265,9 @@ void MapGenerator::improveCorners( )
 	}
 }
 
-std::vector< Corner* > MapGenerator::landCorners( const std::vector< Corner* >& c )
+list< Corner* > MapGenerator::landCorners( const std::vector< Corner* >& c )
 {
-	std::vector< Corner* > locations;
+	list< Corner* > locations;
 	Corner* q = NULL;
 	FOREACH1( q, c ) {
 		if( !q->ocean && !q->coast )
@@ -401,6 +405,11 @@ void MapGenerator::buildGraph( const std::vector< Delaunay::Point* >& pts,
 	}
 }
 
+void MapGenerator::generateHeightMap( )
+{
+	IslandShape::diamondSquare( &heights, SIZE, IslandShape::defaultHeight(mapRandom.seed) );
+}
+
 void MapGenerator::assignCornerElevations( )
 {
 	list< Corner* > queue;
@@ -448,19 +457,28 @@ bool compareElevations( const Corner* a, const Corner* b )
 	return a->elevation < b->elevation;
 }
 
-void MapGenerator::redistributeElevations( std::vector< Corner* >& locations )
+void MapGenerator::redistributeElevations( list< Corner* >& locations )
 {
 	// SCALE_FACTOR increases the mountain area. At 1.0 the maximum
 	// elevation barely shows up on the map, so we set it to 1.1.
-	const double SCALE_FACTOR = 1.1;
+	//const double SCALE_FACTOR = 1.1;
 
-	std::sort( locations.begin(), locations.end(), compareElevations );
-	int length = locations.size();
-	for( int i = 0; i < length; i++ ){
+	ITER_LIST( Corner*, locations ){
+		Corner* q = it->data;
+		int x = q->point.x;
+		int y = q->point.y;
+		q->elevation = ( heights.data[x][y] - heights.min ) / ( heights.max - heights.min );
+	}
+
+	/*
+	locations.sort( compareElevations );
+	float length = locations.count;
+	int index = 0;
+	ITER_LIST( Corner*, locations ){
 		// Let y(x) be the total area that we want at elevation <= x.
 		// We want the higher elevations to occur less than lower
 		// ones, and set the area to be y(x) = 1 - (1-x)^2.
-		double y = (double)i / (double)( length - 1 );
+		double y = (double)index / length;
 		// Now we have to solve for x, given the known y.
 		//  *  y = 1 - (1-x)^2
 		//  *  y = 1 - (1 - 2x + x^2)
@@ -470,8 +488,10 @@ void MapGenerator::redistributeElevations( std::vector< Corner* >& locations )
 		double x = sqrt( SCALE_FACTOR ) - sqrt( SCALE_FACTOR * ( 1.0 - y ) );
 		if( x > 1.0 )
 			x = 1.0;  // TODO: does this break downslopes?
-		locations[i]->elevation = x;
+		it->data->elevation = x;
+		index++;
 	}
+	*/
 }
 
 bool compareMoisture( const Corner* a, const Corner* b )
@@ -479,12 +499,15 @@ bool compareMoisture( const Corner* a, const Corner* b )
 	return a->moisture < b->moisture;
 }
 
-void MapGenerator::redistributeMoisture( std::vector< Corner* >& locations )
+void MapGenerator::redistributeMoisture( list< Corner* >& locations )
 {
-	std::sort( locations.begin(), locations.end(), compareMoisture );
-	int length = locations.size();
-	for( int i = 0; i < length; i++ ){
-		locations[i]->moisture = (double)i / (double)( length - 1 );
+	locations.sort( compareMoisture );
+	float length = locations.count;
+	int index = 0;
+	ITER_LIST( Corner*, locations ){
+		double m = (double)index / length;
+		it->data->moisture = m;
+		index++;
 	}
 }
 
@@ -514,7 +537,7 @@ void MapGenerator::assignOceanCoastAndLand( )
 		}
 		p->water = ( p->ocean || numWater >= p->corners.count * LAKE_THRESHOLD );
 	}
-	while( queue.count ){
+	while( queue.count > 0 ){
 		Center* p = queue.pop();
 		ITER_LIST( Center*, p->neighbors ){
 			Center* r = it->data;
@@ -647,18 +670,20 @@ void MapGenerator::createRivers( )
 void MapGenerator::assignCornerMoisture( )
 {
 	list< Corner* > queue;
+
 	// Fresh water
 	Corner* q;
 	FOREACH1( q, corners ) {
 		if( ( q->water || q->river > 0 ) && !q->ocean ){
 			q->moisture =
-					q->river > 0 ? std::min( 3.0, (double)( 0.2 * q->river ) ) : 1.0;
+					q->river > 0 ? std::min( 3.0, 0.2 * (double)q->river ) : 1.0;
 			queue.push_back( q );
 		}else{
 			q->moisture = 0.0;
 		}
 	}
-	while( !queue.count ){
+
+	while( queue.count > 0 ){
 		Corner* q = queue.pop();
 		ITER_LIST( Corner*, q->adjacent ){
 			Corner* r = it->data;
@@ -681,13 +706,14 @@ void MapGenerator::assignPolygonMoisture( )
 	Center* p;
 	FOREACH1( p, centers ) {
 		double sumMoisture = 0.0;
-		Corner* q;
-		FOREACH2( q, corners ) {
+		double count = p->corners.count;
+		ITER_LIST( Corner*, p->corners ){
+			Corner* q = it->data;
 			if( q->moisture > 1.0 )
 				q->moisture = 1.0;
 			sumMoisture += q->moisture;
 		}
-		p->moisture = sumMoisture / (double)p->corners.count;
+		p->moisture = sumMoisture / count;
 	}
 }
 
@@ -768,109 +794,10 @@ Edge* MapGenerator::lookupEdgeFromCorner( Corner* q, Corner* s )
 	return NULL;
 }
 
+
 bool MapGenerator::inside( const s2f* p )
 {
 	return islandShape->call(
 			s2f( 2 * ( p->x / SIZE - 0.5 ), 2 * ( p->y / SIZE - 0.5 ) ) );
 }
 
-struct ParamsRadial
-{
-	double ISLAND_FACTOR;
-	PM_PRNG islandRandom;
-	int bumps;
-	double startAngle;
-	double dipAngle;
-	double dipWidth;
-};
-
-bool radial_shape( s2f q, void* prm )
-{
-	ParamsRadial* param = reinterpret_cast< ParamsRadial* >( prm );
-	double angle = atan2( q.y, q.x );
-	double p_length = sqrt( q.x * q.x + q.y * q.y );
-	double length = 0.5 * ( std::max( abs( q.x ), abs( q.y ) ) + p_length );
-
-	double r1 = 0.5
-			+ 0.40
-					* sin(
-							param->startAngle + param->bumps * angle
-									+ cos( ( param->bumps + 3 ) * angle ) );
-	double r2 = 0.7
-			- 0.20
-					* sin(
-							param->startAngle + param->bumps * angle
-									- sin( ( param->bumps + 2 ) * angle ) );
-	if( abs( angle - param->dipAngle ) < param->dipWidth
-			|| abs( angle - param->dipAngle + 2 * M_PI ) < param->dipWidth
-			|| abs( angle - param->dipAngle - 2 * M_PI ) < param->dipWidth ){
-		r1 = r2 = 0.2;
-	}
-	return ( length < r1 || ( length > r1 * param->ISLAND_FACTOR && length < r2 ) );
-}
-
-GenerateFunc* IslandShape::makeRadial( int seed )
-{
-	GenerateFunc* func = new GenerateFunc();
-	ParamsRadial* p = new ParamsRadial();
-	p->ISLAND_FACTOR = ISLAND_FACTOR;
-	p->islandRandom.seed = seed;
-	p->bumps = p->islandRandom.nextIntRange( 1, 6 );
-	p->startAngle = p->islandRandom.nextDoubleRange( 0, 2 * M_PI );
-	p->dipAngle = p->islandRandom.nextDoubleRange( 0, 2 * M_PI );
-	p->dipWidth = p->islandRandom.nextDoubleRange( 0.2, 0.7 );
-
-	func->function = &radial_shape;
-	func->param = p;
-
-	return func;
-}
-
-bool perlin_shape( s2f q, void* prm )
-{
-	//var c:Number = (perlin.getPixel(int((q.x+1)*128), int((q.y+1)*128)) & 0xff) / 255.0;
-	//	return c > (0.3+0.3*q.length*q.length);
-	return true;
-}
-
-GenerateFunc* IslandShape::makePerlin( int seed )
-{
-	GenerateFunc* func = new GenerateFunc();
-	func->function = &perlin_shape;
-	//var
-	//perlin: BitmapData = new BitmapData( 256, 256 );
-	//perlin.perlinNoise( 64, 64, 8, seed, false, true );
-	//
-	return func;
-}
-
-bool square_shape( s2f q, void* prm )
-{
-	return true;
-}
-
-GenerateFunc* IslandShape::makeSquare( int seed )
-{
-	GenerateFunc* func = new GenerateFunc();
-	func->function = &square_shape;
-	return func;
-}
-
-bool blob_shape( s2f q, void* prm )
-{
-	bool eye1 = sqrt(
-			( q.x - 0.2 ) * ( q.x - 0.2 ) + ( q.y / 2 + 0.2 ) * ( q.y / 2 + 0.2 ) )
-			< 0.05;
-	bool eye2 = sqrt(
-			( q.x + 0.2 ) * ( q.x + 0.2 ) + ( q.y / 2 + 0.2 ) * ( q.y / 2 + 0.2 ) )
-			< 0.05;
-	bool body = sqrt( q.x * q.x + q.y * q.y ) < 0.8 - 0.18 * sin( 5 * atan2( q.y, q.x ) );
-	return body && !eye1 && !eye2;
-}
-
-GenerateFunc* IslandShape::makeBlob( int seed )
-{
-	GenerateFunc* func = new GenerateFunc();
-	func->function = &blob_shape;
-	return func;
-}

@@ -8,6 +8,7 @@
 #define ISLANDSHAPE_H_
 
 #include "basic_types.h"
+#include "3rdparty/rand31.h"
 
 struct ShapeGenerateFunc
 {
@@ -41,6 +42,14 @@ struct HeightMap
 };
 
 
+enum IslandForms
+{
+	ifRadial = 0, ifPerlin, ifSquare
+};
+
+typedef enum IslandForms IslandForm;
+
+
 namespace IslandShape
 {
 	/* This class has factory functions for generating islands of
@@ -50,20 +59,9 @@ namespace IslandShape
 	 * (lake or ocean).
 	 */
 
-	ShapeHeightGenerateFunc* defaultHeight( int seed );
+	ShapeHeightGenerateFunc* defaultHeight( rand31* );
 
-	// The radial island radius is based on overlapping sine waves
-	ShapeGenerateFunc* makeRadial( int seed );
-
-	// The Perlin-based island combines perlin noise with the radius
-	ShapeGenerateFunc* makePerlin( int seed );
-
-	// The square shape fills the entire space with land
-	ShapeGenerateFunc* makeSquare( int seed );
-
-	// The blob island is shaped like Amit's blob logo
-	ShapeGenerateFunc* makeBlob( int seed );
-
+	ShapeGenerateFunc* getShape( IslandForm, rand31* );
 
 	/* Diamond square algorithm generates cloud/plasma fractal heightmap
 	 * http://en.wikipedia.org/wiki/Diamond-square_algorithm
@@ -73,7 +71,7 @@ namespace IslandShape
 	void diamondSquare( HeightMap* map, int size, ShapeHeightGenerateFunc* f );
 };
 
-typedef ShapeGenerateFunc (*GeneratorFunc)( int );
+typedef ShapeGenerateFunc (*GeneratorFunc)( rand31* );
 
 
 #endif /* ISLANDSHAPE_H_ */

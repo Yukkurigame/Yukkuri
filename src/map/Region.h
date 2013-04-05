@@ -10,7 +10,6 @@
 
 #include "map/Tiles.h"
 
-
 namespace Region
 {
 	bool init( );

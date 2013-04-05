@@ -13,7 +13,6 @@
 #include "map/generator/Watersheds.h"
 #include "map/generator/Histogram.h"
 #include "graphics/GraphicsTypes.h"
-#include <string>
 
 
 class MapGen
@@ -49,7 +48,8 @@ public:
 
 	// Render the interior of polygons
 	void renderPolygons( int picture );
-	void renderGradientPolygions( int picture, UINT color_low, UINT color_high, NodeProperty );
+	void renderGradientPolygions( int picture, UINT color_low, UINT color_high, NodeProperty,
+			float min = 0.0, float max = 1.0 );
 
 	// Render bridges across every narrow river edge. Bridges are
 	// straight line segments perpendicular to the edge. Bridges are
@@ -74,7 +74,6 @@ public:
 	// Render the paths from each polygon to the ocean, showing watersheds
 	void renderWatersheds( int picture );
 
-
 private:
 	static const int SIZE = 600;
 
@@ -82,7 +81,6 @@ private:
 	// type of island. The islandShape function uses both of them to
 	// determine whether any point should be water or land.
 	IslandForm islandType;
-	std::string islandSeedInitial;
 	Texture atlas;
 	UINT texture_id;
 	//UINT atlas;

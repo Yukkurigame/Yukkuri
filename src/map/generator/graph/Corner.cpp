@@ -7,7 +7,7 @@
 #include "map/generator/graph/Corner.h"
 
 Corner::Corner( ) : index(), point(), elevation(), moisture(),
-	river(), downslope(0), watershed(0), watershed_size()
+	river(0), downslope(0), watershed(0), watershed_size(0)
 {
 
 }

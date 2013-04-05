@@ -29,6 +29,7 @@ public:
 	bool border;  // at the edge of the map
 	float elevation;  // 0.0-1.0
 	float moisture;  // 0.0-1.0
+	float temperature; // corner temperature
 
 	list< Center* > touches;
 	list< Edge* > protrudes;
@@ -46,6 +47,9 @@ public:
 				break;
 			case gnpMoisture:
 				return moisture;
+				break;
+			case gnpTemperature:
+				return temperature;
 				break;
 		}
 		return 0.0;

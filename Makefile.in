@@ -10,5 +10,5 @@ DEFS= $(shell sdl-config --cflags)
 INCLUDES= -I/usr/include -Iinclude/ -Iinclude/delaunay -Isrc/ -I/usr/include/freetype2
 LIBS= $(shell sdl-config --libs) -lpng -lSOIL -lGL -lGLEW -lfreetype -llua -L./libs/linux/$(_ARCH) \
 		 -lchipmunk -lcppdelaunay
-DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1 -DGL_GLEXT_PROTOTYPES=1
+DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1 -DGL_GLEXT_PROTOTYPES=1 -DMONGO_HAVE_STDINT
 CFLAGS= -g -pg -O0 -Wall $(DEFINES)

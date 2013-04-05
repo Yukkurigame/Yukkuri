@@ -102,6 +102,7 @@ void Region::load( const char* name )
 		Debug::debug( Debug::MAP, "Cannot load region %s without tiles.\n", name );
 		return;
 	}
+/*
 	LuaConfig* cfg = new LuaConfig;
 	list< RegionTile > Tiles;
 	cfg->getValue( "tiles", name, "region", Tiles );
@@ -122,6 +123,7 @@ void Region::load( const char* name )
 	}
 
 	delete cfg;
+*/
 }
 
 const char* Region::get_seed( )

@@ -10,7 +10,7 @@ Camera.rotate(55, 1.0, 0.0, 0.0)
 Camera.rotate(45, 0.0, 0.0, 1.0)
 Camera.setTarget(player)
 
-Map.generateRegion(2, "85882")
+Map.generateRegion(1, "85882")
 
 
 GUI:loadGroup("game")

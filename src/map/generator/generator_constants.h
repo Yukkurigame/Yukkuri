@@ -7,22 +7,8 @@
 #ifndef GENERATOR_CONSTANTS_H_
 #define GENERATOR_CONSTANTS_H_
 
-enum IslandForms
-{
-	ifRadial = 0, ifPerlin, ifSquare, ifBlob
-};
+#include "map/Constants.h"
 
-typedef enum IslandForms IslandForm;
-
-enum Biomes
-{
-	bNONE = 0, bOCEAN, bLAKE, bBEACH, bMARSH, bICE, bSNOW, bTUNDRA, bBARE,
-	bSCORCHED, bTAIGA, bSHRUBLAND, bTEMPERATE_DESERT, bTEMPERATE_RAIN_FOREST,
-	bTEMPERATE_DECIDUOUS_FOREST, bGRASSLAND, bTROPICAL_RAIN_FOREST,
-	bTROPICAL_SEASONAL_FOREST, bSUBTROPICAL_DESERT, bLAST
-};
-
-typedef enum Biomes Biome;
 
 enum GeneratorColors
 {
@@ -40,6 +26,7 @@ enum GeneratorColors
 	// Gradients
 	gcELEVATION_LOW = 0x008800, gcELEVATION_HIGH = 0xffff00,
 	gcMOISTURE_LOW = 0xbbaa33, gcMOISTURE_HIGH = 0x4466ff,
+	gcTEMPERATURE_LOW = 0x0088ff, gcTEMPERATURE_HIGH = 0xff8800,
 
 	// Terrain
 	gcSNOW = 0xffffff, gcTUNDRA = 0xbbbbaa, gcBARE = 0x888888, gcSCORCHED = 0x555555,
@@ -74,7 +61,8 @@ typedef enum MoistureGradientColors MoistureGradientColor;
 
 enum GeneratorModes
 {
-	gm3d, gmPolygons, gmWatersheds, gmBiome, gmSlopes, gmSmooth, gmElevation, gmMoisture
+	gm3d, gmPolygons, gmWatersheds, gmBiome, gmSlopes, gmSmooth, gmElevation, gmMoisture,
+	gmTemperature,
 
 };
 
@@ -82,7 +70,7 @@ typedef enum GeneratorModes GeneratorMode;
 
 
 enum NodeProperties {
-	gnpElevation, gnpMoisture
+	gnpElevation, gnpMoisture, gnpTemperature
 };
 
 typedef enum NodeProperties NodeProperty;

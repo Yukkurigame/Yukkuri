@@ -28,25 +28,13 @@ MapGenerator::~MapGenerator( )
 	reset();
 }
 
-void MapGenerator::newIsland( IslandForm type, int seed, int variant )
+void MapGenerator::newIsland( IslandForm type, int seed )
 {
-	switch( type ){
-		case ifRadial:
-			islandShape = IslandShape::makeRadial( seed );
-			break;
-		case ifPerlin:
-			islandShape = IslandShape::makePerlin( seed );
-			break;
-		case ifSquare:
-			islandShape = IslandShape::makeSquare( seed );
-			break;
-		case ifBlob:
-			islandShape = IslandShape::makeBlob( seed );
-			break;
-		default:
-			break;
-	}
-	mapRandom.seed = variant;
+	initial_seed = seed;
+	mapRandom.seed( seed );
+	islandShape = IslandShape::getShape( type, &mapRandom );
+	latitude = mapRandom.nextDouble( -90.0, 90.0 );
+	longitude = mapRandom.nextDouble( -180.0, 180.0 );
 }
 
 void MapGenerator::reset( )
@@ -103,10 +91,11 @@ void MapGenerator::go( int first, int last )
 		{
 			Debug::debug( Debug::MAP, "Assign elevations...\n" );
 			// Determine the elevations and water at Voronoi corners.
-			assignCornerElevations();
+			//assignCornerElevations();
 
 			// Generate heightmap for new location
 			generateHeightMap();
+			assignElevation( );
 
 			// Determine polygon and corner type: ocean, coast, land.
 			assignOceanCoastAndLand();
@@ -118,22 +107,31 @@ void MapGenerator::go( int first, int last )
 			// largest ring around the island, and therefore should more
 			// land area than the highest elevation, which is the very
 			// center of a perfectly circular island.
-			list< Corner* > cnrs = landCorners( corners );
-			redistributeElevations( cnrs );
+			//list< Corner* > cnrs = landCorners( corners );
+			//redistributeElevations( cnrs );
 
 
 			// Assign elevations to non-land corners
-			Corner* q;
-			FOREACH1( q, corners ) {
-				if( q->ocean || q->coast )
-					q->elevation = 0.0;
-			}
+			//Corner* q;
+			//FOREACH1( q, corners ) {
+			//	if( q->ocean || q->coast )
+			//		q->elevation = 0.0;
+			//}
 
 			// Polygon elevations are the average of their corners
 			assignPolygonElevations();
 			CHECK_LAST( 4 )
 		}
 		case 4:
+		{
+			Debug::debug( Debug::MAP, "Calculate temperature...\n" );
+
+			assignTemperature();
+			redistributeTemperature();
+
+			CHECK_LAST( 5 )
+		}
+		case 5:
 		{
 			Debug::debug( Debug::MAP, "Assign moisture...\n" );
 			// Determine downslope paths.
@@ -155,13 +153,13 @@ void MapGenerator::go( int first, int last )
 			list< Corner* > cnrs = landCorners( corners );
 			redistributeMoisture( cnrs );
 			assignPolygonMoisture();
-			CHECK_LAST( 5 )
+			CHECK_LAST( 6 )
 		}
-		case 5:
+		case 6:
 		{
 			Debug::debug( Debug::MAP, "Decorate map...\n" );
 			assignBiomes();
-			CHECK_LAST( 6 )
+			CHECK_LAST( 7 )
 		}
 		default:
 			break;
@@ -174,8 +172,8 @@ void MapGenerator::generateRandomPoints( std::vector< Delaunay::Point* >& pts )
 
 	for( int i = 0; i < NUM_POINTS; i++ ){
 		Delaunay::Point* p = new Delaunay::Point(
-				mapRandom.nextDoubleRange( 10, SIZE - 10 ),
-				mapRandom.nextDoubleRange( 10, SIZE - 10 ) );
+				mapRandom.nextDouble( 10, SIZE - 10 ),
+				mapRandom.nextDouble( 10, SIZE - 10 ) );
 		pts.push_back( p );
 	}
 	//printPoints("vt");
@@ -407,7 +405,20 @@ void MapGenerator::buildGraph( const std::vector< Delaunay::Point* >& pts,
 
 void MapGenerator::generateHeightMap( )
 {
-	IslandShape::diamondSquare( &heights, SIZE, IslandShape::defaultHeight(mapRandom.seed) );
+	IslandShape::diamondSquare( &heights, SIZE,
+			IslandShape::defaultHeight( &mapRandom ) );
+}
+
+void MapGenerator::assignElevation( )
+{
+	// TODO: for more realistic landscape with smooth valleys and rough peaks
+	// we need to generate 2 maps, normalize it and multiply.
+	Corner* q;
+	FOREACH1( q, corners ){
+		int x = q->point.x;
+		int y = q->point.y;
+		q->elevation = ( heights.data[x][y] - heights.min ) / ( heights.max - heights.min );
+	}
 }
 
 void MapGenerator::assignCornerElevations( )
@@ -461,16 +472,7 @@ void MapGenerator::redistributeElevations( list< Corner* >& locations )
 {
 	// SCALE_FACTOR increases the mountain area. At 1.0 the maximum
 	// elevation barely shows up on the map, so we set it to 1.1.
-	//const double SCALE_FACTOR = 1.1;
-
-	ITER_LIST( Corner*, locations ){
-		Corner* q = it->data;
-		int x = q->point.x;
-		int y = q->point.y;
-		q->elevation = ( heights.data[x][y] - heights.min ) / ( heights.max - heights.min );
-	}
-
-	/*
+	const double SCALE_FACTOR = 1.1;
 	locations.sort( compareElevations );
 	float length = locations.count;
 	int index = 0;
@@ -491,7 +493,80 @@ void MapGenerator::redistributeElevations( list< Corner* >& locations )
 		it->data->elevation = x;
 		index++;
 	}
-	*/
+}
+
+/* Calculate temperature map for generated region
+ * Rules of model:
+ * All nodes get default region temperature.
+ * - Default region temperature is based on geographical position.
+ * - Each degree of latitude lowers temperature by 0.75 degree in direction from equator to pole.
+ * - Biomes calculation must take into account annual temperature variations.
+ * Individual nodes temperature.
+ * - Depends on height. Each unit of height lowers temperature by 3 degree
+ * - Depends of ocean position. Each border adjacent with ocean gives +5 degree to node,
+ *   second-neighborhood gives +2 degree.
+ * - Ocean influence must depend on region temperature. It must lower temperature for hot regions.
+ * - Flatness of nodes. Bunch of nodes with slightly difference in height must receive
+ *   overall delta temperature bonus.
+ */
+void MapGenerator::assignTemperature( )
+{
+	float temperature = 35.0 - abs(latitude) * 0.75;
+
+	Corner* q;
+	FOREACH1( q, corners ) {
+		// Minimum temperature: 35 - 0.75 * 90 - 40 * 0.7 = -60.5 degree.
+		q->temperature = temperature - ( q->elevation - 0.3 ) * 40;
+
+		// Ocean normalizes temperature to some limit
+		if( q->ocean ){
+			if( q->temperature < 5 )
+				q->temperature += 20;
+			continue;
+		}
+	}
+
+	// Assign calculated temperature to centers
+	Center* p;
+	FOREACH1( p, centers ) {
+		float temperature = 0.0;
+		float corners = p->corners.count;
+		ITER_LIST(Corner*, p->corners ) {
+			temperature += it->data->temperature;
+		}
+		p->temperature = temperature / corners;
+	}
+}
+
+/* Make temperature field more smooth */
+void MapGenerator::redistributeTemperature( )
+{
+/*
+
+	// Coasts have ocean influence
+	float first_neighbor = 0;
+	float second_neighbor = 0;
+	ITER_LIST( Center*, q->touches ){
+		Center* c = it->data;
+		if( c->ocean ){
+			first_neighbor += 5;
+			continue;
+		}
+
+		// search for second neighbor
+		ITER_LIST2( Center*, c->neighbors ){
+			Center* n = it->data;
+			if( n->ocean )
+				second_neighbor += 2;
+		}
+	}
+
+	float first_temp = q->temperature + first_neighbor;
+	q->temperature = ( first_temp > 35 ? 35 : first_temp );
+
+	// Second neighborhood may give more heat.
+	q->temperature += second_neighbor;
+*/
 }
 
 bool compareMoisture( const Corner* a, const Corner* b )
@@ -517,8 +592,8 @@ void MapGenerator::assignOceanCoastAndLand( )
 	// corner attributes. Count the water corners per
 	// polygon. Oceans are all polygons connected to the edge of the
 	// map. In the first pass, mark the edges of the map as ocean;
-	// in the second pass, mark any water-containing polygon
-	// connected an ocean as ocean.
+	// in the second pass, mark any water-containing polygon or
+	// polygon with less elevation connected an ocean as ocean.
 	list< Center* > queue;
 	Center* p;
 
@@ -621,15 +696,15 @@ void MapGenerator::calculateWatersheds( )
 	// only takes 20 iterations because most points are not far from
 	// a coast.  TODO: can run faster by looking at
 	// p.watershed.watershed instead of p.downslope.watershed.
-	for( int i = 0; i < 100; ++i ){
-		bool changed = false;
+	for( int i = 0, changed = 0; i < 100; ++i, changed = 0 ){
 		Corner* q;
 		FOREACH1( q, corners ) {
 			if( !q->ocean && !q->coast && !q->watershed->coast ){
 				Corner* r = q->downslope->watershed;
+				//Corner* r = q->downslope->watershed;
 				if( !r->ocean )
 					q->watershed = r;
-				changed = true;
+				changed++;
 			}
 		}
 		if( !changed )
@@ -639,7 +714,25 @@ void MapGenerator::calculateWatersheds( )
 	// How big is each watershed?
 	FOREACH1( q, corners ) {
 		Corner* r = q->watershed;
-		r->watershed_size = 1 + r->watershed_size;
+		r->watershed_size++;
+	}
+
+	int min_watershed = 20;
+	for( int i = 0, changed = 0; i < 100; ++i, changed = 0 ){
+		FOREACH1( q, corners ) {
+			if( q->watershed->watershed_size > min_watershed )
+				continue;
+			ITER_LIST( Corner*, q->adjacent ){
+				Corner* r = it->data->watershed;
+				if( r->watershed_size > min_watershed ){
+					q->watershed = r->watershed;
+					changed = true;
+					break;
+				}
+			}
+		}
+		if( !changed )
+			break;
 	}
 }
 
@@ -649,21 +742,38 @@ void MapGenerator::createRivers( )
 	if( !length )
 		return;
 
+	list< Corner* > river_sources;
+
 	for( int i = 0; i < SIZE / 2; i++ ){
-		Corner* q = corners[mapRandom.nextIntRange( 0, length - 1 )];
+		Corner* q = corners[mapRandom.nextInt( 0, length - 1 )];
 		if( q->ocean || q->elevation < 0.3 || q->elevation > 0.9 )
 			continue;
+
+		river_sources.push(q);
 
 		// Bias rivers to go west: if (q.downslope.x > q.x) continue;
 		while( !q->coast ){
 			if( q == q->downslope )
 				break;
 			Edge* edge = lookupEdgeFromCorner( q, q->downslope );
-			edge->river = edge->river + 1;
-			q->river = ( q->river || 0 ) + 1;
-			q->downslope->river = ( q->downslope->river || 0 ) + 1; // TODO: fix double count
+			edge->river++;
+			q->river++;
+			q->downslope->river++; // TODO: fix double count
 			q = q->downslope;
 		}
+	}
+
+	// Make all rivers end at lakes or another rivers
+	while( river_sources.count > 0 ){
+		Corner* source = river_sources.pop();
+		Corner* q = source;
+		while( !q->coast && q != q->downslope && q->downslope->river )
+			q = q->downslope;
+		if( q->coast )
+			continue;
+		if( q->river > 3 )
+			q->downslope->touches.head->data->water = true;
+		// TODO: connect to another rivers
 	}
 }
 
@@ -729,7 +839,7 @@ Biome MapGenerator::getBiome( Center * p )
 		return bLAKE;
 	}else if( p->coast ){
 		return bBEACH;
-	}else if( p->elevation > 0.8 ){
+	}else if( p->temperature < 0.0 ){
 		if( p->moisture > 0.50 )
 			return bSNOW;
 		else if( p->moisture > 0.33 )
@@ -738,14 +848,14 @@ Biome MapGenerator::getBiome( Center * p )
 			return bBARE;
 		else
 			return bSCORCHED;
-	}else if( p->elevation > 0.6 ){
+	}else if( p->temperature < 5.0 ){
 		if( p->moisture > 0.66 )
 			return bTAIGA;
 		else if( p->moisture > 0.33 )
 			return bSHRUBLAND;
 		else
 			return bTEMPERATE_DESERT;
-	}else if( p->elevation > 0.3 ){
+	}else if( p->temperature < 25.0 ){
 		if( p->moisture > 0.83 )
 			return bTEMPERATE_RAIN_FOREST;
 		else if( p->moisture > 0.50 )

@@ -25,7 +25,7 @@ NoisyEdges::~NoisyEdges( )
 	}
 }
 
-void NoisyEdges::buildNoisyEdges( std::vector< Center* >& centers, /*Lava lava,*/PM_PRNG* random )
+void NoisyEdges::buildNoisyEdges( std::vector< Center* >& centers, rand31* random )
 {
 	Center* p = NULL;
 	FOREACH1( p, centers ) {
@@ -60,7 +60,7 @@ void NoisyEdges::buildNoisyEdges( std::vector< Center* >& centers, /*Lava lava,*
 struct Closure
 {
 	list< s2f >* points;
-	PM_PRNG* random;
+	rand31* random;
 	float min_length;
 	bool reverse;
 };
@@ -80,8 +80,8 @@ void subdivide( const s2f* a, const s2f* b, const s2f* c, const s2f* d, Closure&
 		return;
 
 	// Subdivide the quadrilateral
-	double p = cl.random->nextDoubleRange( 0.2, 0.8 );  // vertical (along A-D and B-C)
-	double q = cl.random->nextDoubleRange( 0.2, 0.8 );  // horizontal (along A-B and D-C)
+	double p = cl.random->nextDouble( 0.2, 0.8 );  // vertical (along A-D and B-C)
+	double q = cl.random->nextDouble( 0.2, 0.8 );  // horizontal (along A-B and D-C)
 
 	// Midpoints
 	s2f E = interpolate( A, D, p );
@@ -93,8 +93,8 @@ void subdivide( const s2f* a, const s2f* b, const s2f* c, const s2f* d, Closure&
 	s2f H = interpolate( E, F, q );
 
 	// Divide the quad into subquads, but meet at H
-	float s = 1.0 - cl.random->nextDoubleRange( -0.4, +0.4 );
-	float t = 1.0 - cl.random->nextDoubleRange( -0.4, +0.4 );
+	float s = 1.0 - cl.random->nextDouble( -0.4, +0.4 );
+	float t = 1.0 - cl.random->nextDouble( -0.4, +0.4 );
 	s2f sb = interpolate( G, B, s );
 	s2f sd = interpolate( E, D, t );
 	subdivide( a, &sb, &H, &sd, cl );
@@ -105,7 +105,7 @@ void subdivide( const s2f* a, const s2f* b, const s2f* c, const s2f* d, Closure&
 	subdivide( &H, &sb, c, &sd, cl );
 }
 
-list< s2f >* NoisyEdges::buildNoisyLineSegments( PM_PRNG* rndm, const s2f* A,
+list< s2f >* NoisyEdges::buildNoisyLineSegments( rand31* rndm, const s2f* A,
 		const s2f* B, const s2f* C, const s2f* D, float minLength, bool reverse )
 {
 	list< s2f >* points = new list< s2f >;

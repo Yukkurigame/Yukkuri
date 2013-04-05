@@ -55,7 +55,7 @@ bool CHINP_TESTER<TileInfo>(lua_State* L, int idx)
 	return false;
 }
 
-
+/*
 // RegionTile
 template<> void initValue( RegionTile& ret ) {
 	ret.id = NULL;
@@ -100,3 +100,4 @@ bool CHINP_TESTER<RegionTile>(lua_State* L, int idx)
 	return false;
 }
 
+*/

@@ -19,6 +19,13 @@ struct listElement
 
 #define ITER_LIST( type, list )		\
 	for( listElement< type >* it = list.head; it != 0; it = it->next )
+
+#define ITER_LIST2( type, list )		\
+	for( listElement< type >* lit2 = list.head; lit2 != 0; lit2 = lit2->next )
+
+#define ITER_LIST3( type, list )		\
+	for( listElement< type >* lit3 = list.head; lit3 != 0; lit3 = lit3->next )
+
 #define ITER_LISTP( type, list )		\
 	for( listElement< type >* it = list->head; it != 0; it = it->next )
 

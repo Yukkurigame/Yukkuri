@@ -22,7 +22,6 @@
 MapGen::MapGen( )
 {
 	islandType = ifSquare;
-	islandSeedInitial = "85882-1";
 	map = new MapGenerator( SIZE );
 }
 
@@ -33,26 +32,23 @@ MapGen::~MapGen( )
 
 void MapGen::newIsland( IslandForm type, const char* seed_string )
 {
-	int seed = 0;
-	int variant = 0;
+	int seed = 412496234;
 
 	Debug::debug( Debug::MAP, "Shaping map...\n" );
 
-	if( !seed_string || seed_string[0] == '\0' ){
-		seed_string = islandSeedInitial.c_str();
+	if( seed_string && seed_string[0] != '\0' ){
+		UINT len = strlen( seed_string );
+		// Convert the string into a number. This is a cheesy way to
+		// do it but it doesn't matter. It just allows people to use
+		// words as seeds.
+		for( UINT i = 0; i < len; ++i ){
+			seed = ( seed << 4 ) | (UINT)seed_string[i];
+		}
+		seed %= 100000;
 	}
-	UINT len = strlen(seed_string);
 
-	// Convert the string into a number. This is a cheesy way to
-	// do it but it doesn't matter. It just allows people to use
-	// words as seeds.
-	for( UINT i = 0; i < len; ++i ){
-		seed = ( seed << 4 ) | (UINT)seed_string[i];
-	}
-	seed %= 100000;
-	variant = 1 + floor( 9.0 * random() );
+
 	islandType = type;
-
 	ElasticRectPODBox box = ElasticRectPODBox( );
 	if( !box.calculate( SIZE, SIZE, 6 ) ){
 		Debug::debug( Debug::MAP, "Cannot draw map." );
@@ -80,7 +76,7 @@ void MapGen::newIsland( IslandForm type, const char* seed_string )
 	GLTextures::generate( &atlas );
 	texture_id = Textures::push( &tp, atlas.tex, 0 );
 
-	map->newIsland( type, seed, variant );
+	map->newIsland( type, seed );
 }
 
 void MapGen::go( )
@@ -93,9 +89,8 @@ void MapGen::go( )
 	//map->assignBiomes();
 
 	Debug::debug( Debug::MAP, "Features...\n" );
-	map->go( 3, 6 );
+	map->go( 3, 7 );
 	map->assignBiomes();
-	//drawMap();
 
 	//roads.createRoads(map);
 	// lava.createLava(map, map.mapRandom.nextDouble);
@@ -106,6 +101,8 @@ void MapGen::go( )
 	drawMap( gmPolygons, 2 );
 	drawMap( gmMoisture, 3 );
 	drawMap( gmElevation, 4 );
+	drawMap( gmTemperature, 5 );
+	map->dumpMap(".");
 }
 
 void MapGen::computeHistogram( float** hs, int* count, bucketFn fn )
@@ -238,6 +235,10 @@ void MapGen::drawMap( GeneratorMode mode, int picture )
 		case gmMoisture:
 			renderGradientPolygions( picture, gcMOISTURE_LOW, gcMOISTURE_HIGH, gnpMoisture );
 			break;
+		case gmTemperature:
+			renderGradientPolygions( picture, gcTEMPERATURE_LOW, gcTEMPERATURE_HIGH,
+					gnpTemperature, -60.5, 45.0 );
+			break;
 	}
 
 	if( mode != gmSlopes && mode != gmMoisture )
@@ -346,7 +347,8 @@ void MapGen::renderPolygons( int picture )
 	draw( lines, picture );
 }
 
-void MapGen::renderGradientPolygions( int picture, UINT color_low, UINT color_high, NodeProperty prop )
+void MapGen::renderGradientPolygions( int picture, UINT color_low, UINT color_high, NodeProperty prop,
+		float min, float max )
 {
 	list< VertexV2FT2FC4UI* > lines;
 
@@ -373,13 +375,17 @@ void MapGen::renderGradientPolygions( int picture, UINT color_low, UINT color_hi
 			Corner* corner0 = edge->v0;
 			Corner* corner1 = edge->v1;
 
-            // We pick the midpoint elevation/moisture between
-            // corners instead of between polygon centers because
-            // the resulting gradients tend to be smoother.
+            // Normalize properties
+			float prop0 = fabs( corner0->property( prop ) - min ) / ( max - min );
+			float prop1 = fabs( corner1->property( prop ) - min ) / ( max - min );
+
+			// We pick the midpoint elevation/moisture between
+			// corners instead of between polygon centers because
+			// the resulting gradients tend to be smoother.
 			const s2f& midpoint = edge->midpoint;
-			UINT midpoint_color = interpolateColor( color_low, color_high,
-					0.5 * ( corner0->property( prop ) + corner1->property( prop ) ) );
-			UINT p_color = interpolateColor( color_low, color_high, p->property( prop ) );
+			UINT midpoint_color = interpolateColor( color_low, color_high, 0.5 * ( prop0 + prop1 ) );
+			UINT p_color = interpolateColor( color_low, color_high,
+					fabs( p->property( prop ) - min ) / ( max - min ) );
 
 			float points[12] = {
             		p->point.x, p->point.y,
@@ -391,11 +397,11 @@ void MapGen::renderGradientPolygions( int picture, UINT color_low, UINT color_hi
             };
             UINT colors[6] = {
             		p_color,
-            		interpolateColor( color_low, color_high, corner0->property( prop ) ),
+            		interpolateColor( color_low, color_high, prop0 ),
             		midpoint_color,
             		p_color,
             		midpoint_color,
-            		interpolateColor( color_low, color_high, corner1->property( prop ) )
+            		interpolateColor( color_low, color_high, prop1 )
             };
 
             GLPrimitives::prepare_triangles( points, 12, colors, &lines );

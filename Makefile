@@ -19,7 +19,7 @@ MAPDIR = map/
 3RDPARTYDIR= 3rdparty/
 UTILSDIR = utils/
 
-UTILS = list.cpp path.cpp  utf.cpp
+UTILS = bson.cpp list.cpp path.cpp utf.cpp
 CORE = yukkuri.cpp
 UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp ActionTimer.cpp Scope.cpp Unit.cpp \
 		 UnitStatic.cpp UnitDynamic.cpp UnitEntity.cpp UnitCorpse.cpp UnitPlayer.cpp
@@ -37,11 +37,12 @@ SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp prot
 		  api.cpp $(addprefix $(SCRIPTSAPIDIR), $(SCRIPTSAPI))
 WIDGETS = Widget.cpp WidgetText.cpp WidgetBar.cpp
 INTERFACE = Interface.cpp $(addprefix $(WIDGETSDIR), $(WIDGETS))
-MAP = $(addsuffix .cpp, Tiles Chunk Region Map \
-	$(addprefix generator/, MapGen MapGenerator NoisyEdges Watersheds IslandShape \
-		$(addprefix graph/, Center Corner Edge) $(addprefix fifth-party/, PMPRNG ) ) )
-3RDPARTY = CUData.cpp CUDataUser.cpp CUDataTemplates.cpp LuaPusher.cpp timer/TimerManager.cpp \
-		   $(addprefix objTester/, list.cpp obj_parser.cpp string_extra.cpp)
+MAP = $(addsuffix .cpp, Tiles Chunk Region RegionFile RegionFileCache Map \
+	$(addprefix generator/, MapGen MapGenerator Dumper NoisyEdges Watersheds IslandShape \
+		$(addprefix graph/, Center Corner Edge) ) )
+3RDPARTY = CUData.cpp CUDataUser.cpp CUDataTemplates.cpp LuaPusher.cpp rand31.cpp timer/TimerManager.cpp \
+		   $(addprefix objTester/, list.cpp obj_parser.cpp string_extra.cpp) \
+		   $(addprefix bson/, bson.c encoding.c ) 
 
 SRCS =   main.cpp config.cpp Bindings.cpp BindFunctions.cpp debug.cpp \
 		 $(addprefix $(UTILSDIR), $(UTILS)) \

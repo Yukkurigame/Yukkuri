@@ -9,6 +9,29 @@
 #define TILES_H_
 
 #include "basic_types.h"
+#include "map/Constants.h"
+
+struct ChunkTile
+{
+	s3f position;
+	Biome type;
+};
+
+struct RegionTile
+{
+	ChunkTile tiles[REGION_CHUNK_SIZE][REGION_CHUNK_SIZE];
+};
+
+
+struct RegionMap
+{
+	float latitude;
+	float longitude;
+	int seed;
+	RegionTile** tiles;
+};
+
+
 
 
 struct TileInfo
@@ -20,12 +43,6 @@ struct TileInfo
 	TileInfo() : picture(), passability(), texture(), id(0) {};
 };
 
-
-struct RegionTile
-{
-	s2f postion;
-	char* id;
-};
 
 
 struct MapTile

@@ -29,6 +29,7 @@ public:
 	Biome biome;  // biome type (see article)
 	float elevation;  // 0.0-1.0
 	float moisture;  // 0.0-1.0
+	float temperature; // Node temperature
 
 	list<Center*> neighbors;
 	list<Edge*> borders;
@@ -41,6 +42,9 @@ public:
 				break;
 			case gnpMoisture:
 				return moisture;
+				break;
+			case gnpTemperature:
+				return temperature;
 				break;
 		}
 		return 0.0;

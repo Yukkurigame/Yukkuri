@@ -16,7 +16,7 @@
 #include "delaunay/delaunay/Voronoi.h"
 #include "map/generator/generator_constants.h"
 #include "map/generator/IslandShape.h"
-#include "fifth-party/PMPRNG.h"
+#include "3rdparty/rand31.h"
 #include "basic_types.h"
 
 
@@ -32,7 +32,7 @@ public:
 	virtual ~MapGenerator( );
 
 	// Random parameters governing the overall shape of the island
-	void newIsland( IslandForm type, int seed, int variant );
+	void newIsland( IslandForm type, int seed );
 
 	void reset( );
 
@@ -46,11 +46,14 @@ public:
 
 	void assignBiomes( );
 
+	// Dump all generated stuff to engine-readable structure.
+	void dumpMap( const char* path );
+
 	// Island details are controlled by this random generator. The
 	// initial map upon loading is always deterministic, but
 	// subsequent maps reset this random number generator with a
 	// random seed.
-	PM_PRNG mapRandom;
+	rand31 mapRandom;
 
 private:
 	/* Generate random points and assign them to be on the island or
@@ -93,6 +96,7 @@ private:
 	void buildGraph( const std::vector< Delaunay::Point* >& pts, Delaunay::Voronoi* voronoi );
 
 	void generateHeightMap( );
+	void assignElevation( );
 
 	/* Determine elevations and water at Voronoi corners. By
 	 * construction, we have no local minima. This is important for
@@ -111,6 +115,10 @@ private:
 	// (1-X).  To do this we will sort the corners, then set each
 	// corner to its desired elevation.
 	void redistributeElevations( list< Corner* >& );
+
+	void assignTemperature( );
+	void redistributeTemperature( );
+
 
 	// Change the overall distribution of moisture to be evenly distributed.
 	void redistributeMoisture( list< Corner* >& );
@@ -163,8 +171,14 @@ private:
 	static const int NUM_LLOYD_ITERATIONS = 4;
 	static const int min_size = 32;
 
+
 	// Passed in by the caller:
+	int initial_seed;
 	float SIZE;
+
+	// Geographical position
+	float latitude;
+	float longitude;
 
 	// Island shape is controlled by the islandRandom seed and the
 	// type of island, passed in when we set the island shape. The

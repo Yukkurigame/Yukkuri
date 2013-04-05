@@ -10,7 +10,7 @@
 #include "utils/list.h"
 #include "basic_types.h"
 #include "map/generator/graph/Center.h"
-#include "map/generator/fifth-party/PMPRNG.h"
+#include "3rdparty/rand31.h"
 #include <vector>
 #include <map>
 
@@ -30,10 +30,10 @@ public:
 	// distance: path0 is from v0 to the midpoint and path1 is from v1
 	// to the midpoint. When drawing the polygons, one or the other
 	// must be drawn in reverse order.
-	void buildNoisyEdges( std::vector< Center* >& centers, /*Lava lava,*/PM_PRNG* random );
+	void buildNoisyEdges( std::vector< Center* >& centers, rand31* random );
 	// Helper function: build a single noisy line in a quadrilateral A-B-C-D,
 	// and store the output points in a Vector.
-	static list< s2f >* buildNoisyLineSegments( PM_PRNG* random, const s2f* A,
+	static list< s2f >* buildNoisyLineSegments( rand31* random, const s2f* A,
 			const s2f* B, const s2f* C, const s2f* D, float minLength, bool reverse = false );
 
 	inline bool processed()

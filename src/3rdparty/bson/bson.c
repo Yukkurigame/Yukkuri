@@ -27,6 +27,7 @@
 
 #include "bson.h"
 #include "encoding.h"
+#include "numbers.h"
 
 const int initialBufferSize = 128;
 
@@ -379,7 +380,7 @@ MONGO_EXPORT bson_type bson_iterator_next( bson_iterator *i ) {
         char msg[] = "unknown type: 000000000000";
         bson_numstr( msg+14, ( unsigned )( i->cur[0] ) );
         bson_fatal_msg( 0, msg );
-        return 0;
+        return bson_type();
     }
     }
 
@@ -710,7 +711,7 @@ int bson_ensure_space( bson *b, const size_t bytesNeeded ) {
         return BSON_ERROR;
     }
 
-    b->data = bson_realloc( b->data, new_size );
+    b->data = (char*)bson_realloc( b->data, new_size );
     if ( !b->data )
         bson_fatal_msg( !!b->data, "realloc() failed" );
 
@@ -749,7 +750,7 @@ MONGO_EXPORT void bson_destroy( bson *b ) {
         }
         b->data = NULL;
         b->dataSize = 0;
-        b->ownsData = 0;        
+        b->ownsData = 0;
         if ( b->stackPtr && b->stackPtr != b->stack ) {
             bson_free( b->stackPtr );
             b->stackPtr = NULL;
@@ -1108,9 +1109,6 @@ void bson_fatal_msg( int ok , const char *msg ) {
 #endif
 }
 
-
-/* Efficiently copy an integer to a string. */
-extern const char bson_numstrs[1000][4];
 
 void bson_numstr( char *str, int i ) {
     if( i < 1000 )

@@ -9,6 +9,9 @@
 #include <sys/stat.h>
 #include <stdio.h>
 
+char RegionFile::emptySector[SECTOR_LENGTH];
+
+
 RegionFile::ChunkBuffer::ChunkBuffer( RegionFile& parent, int x, int y ) :
 		_file( parent ), _x( x ), _y( y )
 {

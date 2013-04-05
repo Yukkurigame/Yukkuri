@@ -40,7 +40,7 @@ void dump_chunk( const char* path, int x, int y, Center* c )
 
 	char* data = NULL;
 	int length = 0;
-	if( BSON::pack( data, length, tile ) )
+	if( BSON::pack( data, length, tile ) > 0 )
 		out->write( data, length );
 
 	delete out;
@@ -104,8 +104,13 @@ void save_region( const char* path, RegionMap* region )
 		return;
 	}
 
-	if( fwrite( region, sizeof(RegionMap), 1, ptr_fp ) != 1 )
-		Debug::debug( Debug::MAP, "Cannot write to region file in %s.\n", path );
+	int length = 0;
+	char* data = NULL;
+
+	if( BSON::pack( data, length, region ) <= 0 ||
+		fwrite( data, length, 1, ptr_fp ) != 1 ){
+			Debug::debug( Debug::MAP, "Cannot write to region file in %s.\n", path );
+	}
 
 	fclose( ptr_fp );
 }
@@ -137,7 +142,5 @@ void MapGenerator::dumpMap( const char* path )
 
 	// Save region metadata
 	save_region( path, &region );
-	free( file );
-
 }
 

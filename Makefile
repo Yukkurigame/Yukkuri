@@ -42,7 +42,7 @@ MAP = $(addsuffix .cpp, Tiles Chunk Region RegionFile RegionFileCache Map \
 		$(addprefix graph/, Center Corner Edge) ) )
 3RDPARTY = CUData.cpp CUDataUser.cpp CUDataTemplates.cpp LuaPusher.cpp rand31.cpp timer/TimerManager.cpp \
 		   $(addprefix objTester/, list.cpp obj_parser.cpp string_extra.cpp) \
-		   $(addprefix bson/, bson.c encoding.c ) 
+		   $(addprefix bson/, numbers.c encoding.c bson.c ) 
 
 SRCS =   main.cpp config.cpp Bindings.cpp BindFunctions.cpp debug.cpp \
 		 $(addprefix $(UTILSDIR), $(UTILS)) \
@@ -118,7 +118,7 @@ dirs:
 	 $(GRAPHICSDIR) $(GRAPHICSDIR)render/ $(GRAPHICSDIR)sprite/ $(GRAPHICSDIR)utils/ $(UNITSDIR) \
 	 $(INTERFACEDIR) $(INTERFACEDIR)$(WIDGETSDIR) $(MAPDIR) $(MAPDIR)/generator \
 	 $(MAPDIR)/generator/graph $(MAPDIR)/generator/fifth-party $(3RDPARTYDIR) $(3RDPARTYDIR)objTester \
-	 $(3RDPARTYDIR)timer $(3RDPARTYDIR)voronoi $(PHYSICSDIR))
+	 $(3RDPARTYDIR)timer $(3RDPARTYDIR)bson $(PHYSICSDIR))
 
 
 clean: cleanheaders cleanobjs cleanprog cleandirs

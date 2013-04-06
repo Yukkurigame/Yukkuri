@@ -39,10 +39,10 @@ void Sprite::setPicture( int pic )
 		return;
 	TextureInfo* tex = Textures::get_pointer( texid );
 	if( texid && tex && pic < (tex->cols * tex->rows) ){
-		tex->getSubTexture(pic, points, brush.points_count, brush.texture_indices );
+		tex->getSubTexture(pic, points, brush.points_count, brush.texture_indices, 4 );
 	}else{
 		rect2f s(0.0, 0.0, 1.0, 1.0);
-		init_coords( points, &s, brush.texture_indices, brush.points_count );
+		init_coords( points, &s, brush.texture_indices, 4, brush.points_count );
 	}
 	brush.setUpdated();
 }

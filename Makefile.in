@@ -11,4 +11,4 @@ INCLUDES= -I/usr/include -Iinclude/ -Iinclude/delaunay -Isrc/ -I/usr/include/fre
 LIBS= $(shell sdl-config --libs) -lpng -lSOIL -lGL -lGLEW -lfreetype -llua -L./libs/linux/$(_ARCH) \
 		 -lchipmunk -lcppdelaunay
 DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1 -DGL_GLEXT_PROTOTYPES=1 -DMONGO_HAVE_STDINT -D__STDC_LIMIT_MACROS
-CFLAGS= -g -pg -O0 -Wall $(DEFINES)
+CFLAGS= -g -O0 -Wall $(DEFINES)

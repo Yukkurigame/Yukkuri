@@ -17,24 +17,39 @@
 
 
 
-MapGenerator::MapGenerator( float size )
+MapGenerator::MapGenerator( float size ) : islandShape( NULL )
 {
 	SIZE = size;
+	heights.data = NULL;
 	reset();
 }
 
 MapGenerator::~MapGenerator( )
 {
 	reset();
+	if( islandShape )
+		delete islandShape;
+	if( heights.data ){
+		for( int i = 0; i < heights.width; ++i )
+			delete[] heights.data[i];
+		delete[] heights.data;
+	}
+
+	clear_vector( &centers );
+	clear_vector( &edges );
+	clear_vector( &corners );
 }
 
 void MapGenerator::newIsland( IslandForm type, int seed )
 {
 	initial_seed = seed;
 	mapRandom.seed( seed );
-	islandShape = IslandShape::getShape( type, &mapRandom );
 	latitude = mapRandom.nextDouble( -90.0, 90.0 );
 	longitude = mapRandom.nextDouble( -180.0, 180.0 );
+
+	if( islandShape )
+			delete islandShape;
+		islandShape = IslandShape::getShape( type, &mapRandom );
 }
 
 void MapGenerator::reset( )
@@ -83,8 +98,10 @@ void MapGenerator::go( int first, int last )
 			Delaunay::Voronoi* voronoi = new Delaunay::Voronoi( points, NULL, r );
 			buildGraph( points, voronoi );
 			improveCorners();
+			FOREACHIT1( points )
+				(*it)->dispose();
+			points.clear();
 			delete voronoi;
-			clear_vector( &points );
 			CHECK_LAST( 3 )
 		}
 		case 3:
@@ -171,7 +188,7 @@ void MapGenerator::generateRandomPoints( std::vector< Delaunay::Point* >& pts )
 {
 
 	for( int i = 0; i < NUM_POINTS; i++ ){
-		Delaunay::Point* p = new Delaunay::Point(
+		Delaunay::Point* p = Delaunay::Point::create(
 				mapRandom.nextDouble( 10, SIZE - 10 ),
 				mapRandom.nextDouble( 10, SIZE - 10 ) );
 		pts.push_back( p );
@@ -205,6 +222,7 @@ void MapGenerator::improveRandomPoints( std::vector< Delaunay::Point* >& pts )
 			FOREACH2( q, region ) {
 				p->x += q->x;
 				p->y += q->y;
+				q->dispose();
 			}
 			int region_size = region.size();
 			p->x /= region_size;
@@ -355,6 +373,9 @@ void MapGenerator::buildGraph( const std::vector< Delaunay::Point* >& pts,
 		edge->d0 = centerLookup[dedge->p0->x][dedge->p0->y];
 		edge->d1 = centerLookup[dedge->p1->x][dedge->p1->y];
 
+		dedge->dispose();
+		vedge->dispose();
+
 		// Centers point to edges. Corners point to edges.
 		if( edge->d0 )
 			edge->d0->borders.push_back( edge );
@@ -405,8 +426,9 @@ void MapGenerator::buildGraph( const std::vector< Delaunay::Point* >& pts,
 
 void MapGenerator::generateHeightMap( )
 {
-	IslandShape::diamondSquare( &heights, SIZE,
-			IslandShape::defaultHeight( &mapRandom ) );
+	ShapeHeightGenerateFunc* f = IslandShape::defaultHeight( &mapRandom );
+	IslandShape::diamondSquare( &heights, SIZE, f );
+	delete f;
 }
 
 void MapGenerator::assignElevation( )

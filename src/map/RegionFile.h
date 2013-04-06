@@ -14,8 +14,8 @@
  * blah-blah
  *
 Concept: The minimum unit of storage on hard drives is 4KB. 90% of Minecraft
- chunks are smaller than 4KB. 99% are smaller than 8KB. Write a simple
- container to store chunks in single files in runs of 4KB sectors.
+chunks are smaller than 4KB. 99% are smaller than 8KB. Write a simple
+container to store chunks in single files in runs of 4KB sectors.
 
 Each region file represents a 32x32 group of chunks. The conversion from
 chunk number to region number is floor(coord / 32): a chunk at (30, -3)
@@ -47,6 +47,7 @@ data is the chunk length - 1.
 #define CHUNK_HEADER_SIZE 8
 #define CHUNK_VERSION 1
 #define SECTOR_LENGTH 4096
+#define SECTOR_SIZE (SECTOR_LENGTH-1)
 
 #include <stdio.h>
 #include <vector>
@@ -72,8 +73,8 @@ public:
 	~RegionFile( );
 
 	inline long lastModified() {
-        return _lastModified;
-    }
+		return _lastModified;
+	}
 
 	int getSizeDelta( );
 	int getChunkDataInputStream( char** data, int x, int y );

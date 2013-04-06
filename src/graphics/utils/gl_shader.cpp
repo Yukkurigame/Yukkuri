@@ -35,6 +35,8 @@ ShaderConfigData::~ShaderConfigData()
 		free( vertex_name );
 	if( fragment_name )
 		free( fragment_name );
+	if( name )
+		free( name );
 
 	if( output ){
 		for( unsigned int i = 0; i < output_count; ++i )
@@ -262,7 +264,7 @@ GLuint createProgram( enum GLSPass pass, enum GLSFlags glflags )
 	glLinkProgram( shaderprogram );
 
 	/* Cleanup all the things we bound and allocated */
-#ifndef DEBUG
+#ifndef DEBUG_SHADERS
 	glDetachShader( shaderprogram, vertex );
 	glDetachShader( shaderprogram, fragment );
 	glDeleteShader( vertex );
@@ -275,7 +277,6 @@ GLuint createProgram( enum GLSPass pass, enum GLSFlags glflags )
 
 	char program_string[ strlen(config.name) + 17 ];
 	sprintf( program_string, "Shader program %s", config.name );
-
 
 	if( !check_shader( shaderprogram, GL_LINK_STATUS, program_string ) ){
 		glDeleteProgram( shaderprogram );
@@ -323,6 +324,16 @@ void Shaders::init( )
 	}
 
 	delete cfg;
+}
+
+void Shaders::clean( )
+{
+	for( int i = 0; i < glpLast; ++i ){
+		FOREACHIT1( uniforms[i] ){
+			UniformHandlers& h = (*it).second;
+			delete[] h.handlers;
+		}
+	}
 }
 
 

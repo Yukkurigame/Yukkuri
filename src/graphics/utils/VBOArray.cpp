@@ -44,8 +44,10 @@ int VBOArray::search_space( unsigned int size )
 			index = block->start;
 			block->start += size;
 			block->count -= size;
-			if( block->count <= 0 )
+			if( block->count <= 0 ){
+				delete block;
 				free_space.remove( fb );
+			}
 			break;
 		}
 		fb = fb->next;
@@ -88,11 +90,7 @@ void VBOArray::init()
 
 void VBOArray::clear()
 {
-	listElement<free_block*>* t = free_space.head;
-	while( t != NULL ){
-		delete t->data;
-		t = t->next;
-	}
+	CLEAR_PTR_LIST( free_space );
 	free_space.clear();
 	free( array );
 }
@@ -164,8 +162,10 @@ void VBOArray::freeSpace( unsigned int index, unsigned int count )
 	listElement<free_block*>* next = NULL;
 	while( exceed >= 0 ){
 		next = right->next;
+		delete right->data;
 		free_space.remove( right );
 		right = NULL;
+
 		block->count += exceed;
 		if( !next )
 			break;
@@ -180,7 +180,9 @@ void VBOArray::freeSpace( unsigned int index, unsigned int count )
 		if( right->data->start + right->data->count == array_size &&
 			right->data->count > MAX_LAST_BLOCK ){
 			realloc_array( - right->data->count );
+			delete right->data;
 			free_space.remove( right );
+			right = NULL;
 		}
 	}
 }
@@ -191,7 +193,7 @@ void VBOArray::freeSpace( unsigned int index, unsigned int count )
  */
 VertexV2FT2FC4UI* VBOArray::pointer( unsigned int index )
 {
-	if( (int)index >= array_size )
+	if( index >= array_size )
 		return NULL;
 	return &array[index];
 }

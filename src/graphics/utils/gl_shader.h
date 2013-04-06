@@ -71,6 +71,7 @@ struct ShaderConfigData {
 namespace Shaders {
 
 	void init( );
+	void clean( );
 
 	GLuint getProgram( enum GLSPass, enum GLSFlags glflags );
 	UniformHandlers* getUniforms( enum GLSPass pass, enum GLSFlags glflags );

@@ -54,6 +54,7 @@ bool Region::init( )
 	}
 
 	tiles = new TileInfo[TileTypesCount + 1];
+	tiles[0].id = NULL;
 	cfg->getSubconfigsList( config, names );
 
 	int counter = 0;
@@ -65,7 +66,7 @@ bool Region::init( )
 		cfg->pop( 1 );
 		free( it->data );
 
-		if( tile.id == conf.mapDefaultTile )
+		if( !strcmp(tile.id, conf.mapDefaultTile.c_str()) )
 			tiles[0] = tile;
 	}
 
@@ -81,6 +82,11 @@ bool Region::init( )
 
 void Region::clean( )
 {
+	for( int i = 1; i < TileTypesCount; ++i ){
+		free( tiles[i].id );
+		tiles[i].id = NULL;
+	}
+
 	delete[] tiles;
 }
 

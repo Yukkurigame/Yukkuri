@@ -33,6 +33,8 @@ GLBrush::~GLBrush( )
 
 	if( indices_list )
 		free( indices_list );
+	if( vertex_points )
+		delete[] vertex_points;
 }
 
 

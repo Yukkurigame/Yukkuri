@@ -48,7 +48,6 @@ private:
 	unsigned int array_size;
 	list<free_block*> free_space;
 
-
 };
 
 

@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <cerrno>
 
 
 namespace Path {
@@ -131,7 +133,9 @@ void Path::init(  )
 }
 
 
-
+/*	Join two strings into one use system separator
+ *  join("a", "b") -> "a/b" or "a\b"
+ */
 char* Path::join( const char* first, const char* sec )
 {
 	size_t f, n, k;
@@ -165,3 +169,81 @@ char* Path::join( const char* first, const char* sec )
 	return ret;
 }
 
+/* Split path into array of strings tokenized by sep
+ * "a/b" -> ["a", "b"]
+ */
+int Path::split( char*** dst, const char* src )
+{
+	// TODO: use token instead of is_sep
+	int count = 0;
+	int srcend = strlen(src);
+	int index = srcend;
+	int part_end = srcend;
+	char** reverse_names = NULL;
+	while( index > 0 ){
+		while( !is_sep(src[index]) && index > 0 )
+			--index;
+		int part_length = part_end - index;
+		// In separator
+		if( !part_length ){
+			--index;
+			--part_end;
+			continue;
+		}
+
+		count++;
+		reverse_names = (char**)realloc( reverse_names, sizeof(char*) * count );
+		reverse_names[count-1] = (char*)malloc( sizeof(char) * part_length );
+		strncpy( reverse_names[count-1], &src[index+1], part_length );
+		reverse_names[count-1][part_length] = '\0';
+		part_end = index;
+	}
+
+	if( count ){
+		*dst = (char**)malloc( sizeof(char*) * count );
+		for( int i = 0; i < count; ++i ){
+			(*dst)[(count - 1) - i] = reverse_names[i];
+		}
+		free( reverse_names );
+	}
+
+	return count;
+}
+
+/* Makes directory recursivly
+ * Returns zero or ERRNO value on error
+ */
+int Path::mkdir_recursive( const char* path, unsigned int perms )
+{
+	int ret = 0;
+	char** path_components = NULL;
+	int components_length = split( &path_components, path );
+	char* tmp_path = (char*) malloc( sizeof(char*) * 2 );
+	tmp_path[0] = '\0';
+
+	for( int i = 0; i < components_length; ++i ){
+		if( ret >= 0 ){
+			char* npath = join( tmp_path, path_components[i] );
+			struct stat s;
+			if( stat( npath, &s ) < 0 ){
+				// Some error
+				if( errno != ENOENT )
+					ret = errno;
+				else
+					mkdir( npath, perms );
+			}else if( !S_ISDIR(s.st_mode)){
+				// Exists and not a directory.
+				ret = ENOTDIR;
+			}
+			free( tmp_path );
+			tmp_path = npath;
+		}
+		free( path_components[i] );
+	}
+
+	if( components_length )
+		free(path_components);
+	free( tmp_path );
+
+	return ret;
+}

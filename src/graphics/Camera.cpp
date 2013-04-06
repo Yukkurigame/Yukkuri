@@ -41,7 +41,6 @@ namespace Camera {
 				cam_view(src->cam_view), cam_position(src->cam_position),
 				cam_offset(src->cam_offset), projection(src->projection), view(src->view),
 				model(src->model), mvp(src->mvp) {}
-
 	};
 
 	list< CameraState* > states;
@@ -152,6 +151,11 @@ void Camera::pop_state( )
 	update_viewport( );
 }
 
+
+int Camera::states_count( )
+{
+	return states.count;
+}
 
 
 float* Camera::inversed_rotation()

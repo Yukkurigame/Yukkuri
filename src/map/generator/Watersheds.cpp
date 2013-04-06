@@ -25,13 +25,13 @@ void Watersheds::createWatersheds( std::vector< Center* >& centers )
 	// exit point for rain falling on this polygon
 	Center* p;
 	FOREACH1( p, centers ){
-		Corner* s = NULL;
+		Corner* s = 0;
 		ITER_LIST( Corner*, p->corners ){
 			Corner* q = it->data;
-			if( s == NULL || q->elevation < s->elevation )
+			if( s == 0 || q->elevation < s->elevation )
 				s = q;
 		}
-		lowestCorner[p->index] = (s == NULL) ? -1 : s->index;
-		watersheds[p->index] = (s == NULL) ? -1 : (s->watershed == NULL) ? -1 : s->watershed->index;
+		lowestCorner[p->index] = (s == 0) ? -1 : s->index;
+		watersheds[p->index] = (s == 0) ? -1 : (s->watershed == 0) ? -1 : s->watershed->index;
 	}
 }

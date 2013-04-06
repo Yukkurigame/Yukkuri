@@ -516,7 +516,9 @@ bool Unit::setUnitName( std::string type )
 {
 	//FIXME: it's bad.
 	LuaConfig* cfg = new LuaConfig;
-	UnitName = std::string(cfg->getRandom("meeting", type.c_str()));
+	char* random_name = cfg->getRandom("meeting", type.c_str());
+	UnitName = std::string(random_name);
+	free( random_name );
 	delete cfg;
 	if( UnitName == "" )
 		return false;

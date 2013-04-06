@@ -13,7 +13,7 @@
 
 namespace RegionFileCache
 {
-	void clear( );
+	void clean( );
 
 	RegionFile* getRegionFile( const char* basePath, int x, int y );
 	int getSizeDelta( const char* basePath, int x, int y );

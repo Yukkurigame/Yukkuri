@@ -103,7 +103,7 @@ struct TextureProxy
 {
 	int rows;
 	int cols;
-	const char* id;
+	char* id;
 	const char* image;
 	s2f offset;
 	rect2i abs; // Absolute position in atlas; atlas absolute size
@@ -128,12 +128,12 @@ enum quad_corners
 };
 
 inline void init_coords( VertexV2FT2FC4UI* points, const rect2f* rect, UINT* indices,
-		int count )
+		int indices_count, int count )
 {
 	for( int i = 0; i < count; ++i ){
 		s2f& coords = points[i].coordinates;
-		coords.x = rect->x + ( indices[i] & qcRight ? rect->width : 0 );
-		coords.y = rect->y + ( indices[i] & qcBottom ? rect->height : 0 );
+		coords.x = rect->x + ( indices[i % indices_count] & qcRight ? rect->width : 0 );
+		coords.y = rect->y + ( indices[i % indices_count] & qcBottom ? rect->height : 0 );
 	}
 }
 
@@ -184,14 +184,15 @@ struct TextureInfo
 			tpos.y = pos.y + row * sheight;
 		}
 	}
-	inline void getSubTexture( int pic, VertexV2FT2FC4UI* rect, int count, UINT* indices )
+	inline void getSubTexture( int pic, VertexV2FT2FC4UI* rect, int count,
+			UINT* indices, int indices_count )
 	{
 		int row = pic / cols;
 		int col = pic - row * cols;
-		getSubTexture( col, row, rect, count, indices );
+		getSubTexture( col, row, rect, count, indices, indices_count );
 	}
 	inline void getSubTexture( int col, int row, VertexV2FT2FC4UI* coords, int count,
-			UINT* indices )
+			UINT* indices, int indices_count )
 	{
 		if( count < 4 )
 			return;
@@ -204,7 +205,7 @@ struct TextureInfo
 			s.width = twidth;
 			s.height = theight;
 		}
-		init_coords( coords, &s, indices, count );
+		init_coords( coords, &s, indices, indices_count, count );
 	}
 };
 

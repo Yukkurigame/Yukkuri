@@ -79,12 +79,16 @@ void RenderManager::init( )
 
 void RenderManager::clean( )
 {
+	while( Camera::states_count() )
+		Camera::pop_state();
+
 	VBuffer::free_buffer( &VBOHandle );
 	TextureAtlas::clean( );
 	Textures::clean( );
 	GLTextures::clean();
 	clean_fonts();
 	GBuffer::clean( );
+	Shaders::clean( );
 	MeshManager::clean();
 }
 
@@ -174,8 +178,9 @@ bool RenderManager::openglSetup( int wwidth, int wheight )
 	TextureProxy first;
 	GLTextures::generate( &nt, 1, 1, GL_UNSIGNED_BYTE, color );
 	first.texture = GLTextures::create( "", nt, 1, 1 );
-	first.id = "";
+	first.id = strdup("\0");
 	Textures::push( &first, nt, 0 );
+	free(first.id);
 
 	rect2f view( 0.0, 0.0, conf.video.windowWidth, conf.video.windowHeight );
 	s2f z( -conf.video.windowHeight * 2, conf.video.windowHeight );

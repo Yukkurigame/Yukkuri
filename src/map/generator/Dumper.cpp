@@ -48,7 +48,7 @@ void dump_chunk( const char* path, int x, int y, Center* c )
 }
 
 
-void dump_center( const char* path, Center* c, int** filled )
+void dump_center( const char* path, Center* c, int**& filled, int size )
 {
 	// Prepare slow check
 	int nvert = c->corners.count;
@@ -75,14 +75,15 @@ void dump_center( const char* path, Center* c, int** filled )
 		if( filled[node.x][node.y] || !pnpoly( nvert, vertx, verty, node.x, node.y ) )
 			continue;
 		w = e = node.x;
-		while( !filled[w][node.y] && pnpoly( nvert, vertx, verty, w, node.y ) )
+		while( w < size && !filled[w][node.y] && pnpoly( nvert, vertx, verty, w, node.y ) )
 			++w;
-		while( !filled[e][node.y] && pnpoly( nvert, vertx, verty, e, node.y ) )
+		while( e > 0 && !filled[e][node.y] && pnpoly( nvert, vertx, verty, e, node.y ) )
 			--e;
 		for( int i = e; i < w; ++i ){
 			dump_chunk( path, i, node.y, c );
 			filled[i][node.y] = 1;
-			int n = node.y + 1, s = node.y - 1;
+			int n = node.y >= size ? size - 1 : node.y + 1;
+			int s = node.y > 0 ? node.y - 1 : 0;
 			if( !filled[i][n] )
 				nodes.push( s2i(i, n) );
 			if( !filled[i][s] )
@@ -123,24 +124,27 @@ void MapGenerator::dumpMap( const char* path )
 	region.latitude = latitude;
 	region.longitude = longitude;
 	region.seed = initial_seed;
-
 	int isize = SIZE;
-	int** filled = (int**)malloc(sizeof(int)* isize);
-	for( int i = 0; i < isize; ++i ){
-		filled[i] = (int*)malloc(sizeof(int)* isize);
-		memset( filled[i], 0, SIZE );
+
+	int** filled = new int*[isize];
+	filled[0] = new int[isize * isize];
+	memset( filled[0], 0, sizeof(int) * isize * isize );
+	for( int i = 1; i < isize; ++i ){
+		filled[i] = filled[0] + i * isize;
 	}
 
-	Center* c;
+	Center* c = NULL;
+	char* worldpath = Path::join( path, "world" );
 	FOREACH1( c, centers ){
-		dump_center( path, c, filled );
+		dump_center( worldpath, c, filled, isize );
 	}
 
-	for( int i = 0; i < isize; ++i )
-		free(filled[i]);
-	free(filled);
+	delete[] filled[0];
+	delete[] filled;
 
 	// Save region metadata
-	save_region( path, &region );
+	save_region( worldpath, &region );
+
+	free( worldpath );
 }
 

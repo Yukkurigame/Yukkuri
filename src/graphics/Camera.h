@@ -20,6 +20,7 @@ namespace Camera {
 	void push_state( const rect2f* view );
 	void push_state( );
 	void pop_state( );
+	int states_count( );
 
 	float* inversed_rotation();
 

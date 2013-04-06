@@ -22,11 +22,11 @@ void GLPrimitives::prepare_line( float p[4], float thikness, UINT color,
 	float sina = thikness / 2.0 * sin( angle );
 	float cosa = thikness / 2.0 * cos( angle );
 	float pts[12] = { x1 + sina, y1 - cosa,
-					  x2 + sina, y2 - cosa,
-					  x2 - sina, y2 + cosa,
-					  x2 - sina, y2 + cosa,
-					  x1 - sina, y1 + cosa,
-					  x1 + sina, y1 - cosa, };
+					x2 + sina, y2 - cosa,
+					x2 - sina, y2 + cosa,
+					x2 - sina, y2 + cosa,
+					x1 - sina, y1 + cosa,
+					x1 + sina, y1 - cosa, };
 
 	prepare_triangles( pts, 12, color, lines );
 }
@@ -35,11 +35,11 @@ void GLPrimitives::prepare_rectangle( float x, float y, float width, float heigh
 		list< VertexV2FT2FC4UI* >* lines, int alpha )
 {
 	float pts[12] = { x, y,
-					  x + width, y,
-					  x, y + height,
-					  x, y + height,
-					  x + width, y,
-					  x + width, y + height
+					x + width, y,
+					x, y + height,
+					x, y + height,
+					x + width, y,
+					x + width, y + height
 	};
 
 	prepare_triangles( pts, 12, color, lines );
@@ -54,8 +54,8 @@ void GLPrimitives::prepare_circle( float x, float y, float radius, UINT color,
 	for( int angle = angle_step, old_angle = 0; angle < 360; angle += angle_step, old_angle += angle_step ){
 		float pts[6] = {
 			x, y,
-			x + cos(angle*rad)*radius, y + sin(angle*rad)*radius,
-			x + cos(old_angle*rad)*radius, y + sin(old_angle*rad)*radius,
+			x + (float)cos(angle*rad)*radius, y + (float)sin(angle*rad)*radius,
+			x + (float)cos(old_angle*rad)*radius, y + (float)sin(old_angle*rad)*radius,
 		};
 
 		prepare_triangles( pts, 6, color, lines );

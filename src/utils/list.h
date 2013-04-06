@@ -30,6 +30,11 @@ struct listElement
 	for( listElement< type >* it = list->head; it != 0; it = it->next )
 
 
+#define CLEAR_PTR_LIST( list )		\
+	while( list.count )				\
+		delete list.pop();
+
+
 /*
  * List implements simple linked list container.
  * One way iteration. No support for random access.

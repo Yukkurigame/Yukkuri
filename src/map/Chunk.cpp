@@ -105,7 +105,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 				qcBottom, qcRight | qcBottom, qcRight,
 				qcRight, 0, qcBottom,
 		};
-		texture->getSubTexture( t.Type->picture, &arr[point_index], 6, texture_indices );
+		texture->getSubTexture( t.Type->picture, &arr[point_index], 6, texture_indices, 6 );
 
 		if( ++col >= side ){
 			col = 0;

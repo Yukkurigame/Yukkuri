@@ -59,7 +59,7 @@ void Textures::clean( )
 		return;
 
 	for( unsigned int i = 0; i < textures_count; ++i )
-		delete[] textures[i].id;
+		free(textures[i].id);
 	free( textures );
 }
 

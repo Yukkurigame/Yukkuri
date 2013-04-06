@@ -75,8 +75,9 @@ void MeshManager::init( )
 void MeshManager::clean( )
 {
 	ITER_LIST( Mesh*, Meshes ){
-		free(it->data->filename);
-		free(it->data->id);
+		free( it->data->filename );
+		free( it->data->id );
+		delete_obj_data( &it->data->data );
 		delete it->data;
 	}
 }

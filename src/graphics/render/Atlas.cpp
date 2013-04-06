@@ -38,6 +38,7 @@ void TextureAtlas::init( )
 void TextureAtlas::clean( )
 {
 	ITER_LIST( TextureProxy*, internalTextures ){
+		free( it->data->id );
 		delete it->data;
 	}
 	internalTextures.clear();
@@ -56,7 +57,8 @@ void TextureAtlas::addTexture( const char* name ){
 	lc->pushSubconfig( name, "sprite" );
 	lc->LuaMain::get( -1, *t );
 	lc->pop( 1 );
-	t->texture = GLTextures::load( t->image );
+	std::string img = (std::string)t->image;
+	t->texture = GLTextures::load( img );
 
 	internalTextures.push_back(t);
 

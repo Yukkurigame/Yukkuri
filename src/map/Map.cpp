@@ -1,5 +1,6 @@
 
 #include "map/Map.h"
+#include "map/RegionFileCache.h"
 
 #include "graphics/Camera.h"
 #include "3rdparty/timer/TimerManager.h"
@@ -72,6 +73,7 @@ void Map::clean()
 		deleteChunk( *it );
 	}
 	chunkVec.clear( );
+	RegionFileCache::clean();
 }
 
 

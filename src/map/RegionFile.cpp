@@ -6,6 +6,7 @@
 
 #include "map/RegionFile.h"
 #include "debug.h"
+#include "safestring.h"
 #include <sys/stat.h>
 #include <stdio.h>
 
@@ -23,16 +24,23 @@ RegionFile::RegionFile( const char* path )
 	fileName = path;
 	_lastModified = 0;
 
-	Debug::debug( Debug::MAP, "Region load %s.\n", fileName );
+	//Debug::debug( Debug::MAP, "Region load %s.\n", fileName );
 	sizeDelta = 0;
 
 	struct stat fileStat;
 	int stat_status;
-	if( ( stat_status = stat( path, &fileStat ) ) == 0 )
+	char mode[4];
+	if( (stat_status = stat( path, &fileStat )) == 0 ){
 		_lastModified = fileStat.st_mtime;
+		strncpy( mode, "r+b", 4 );
+	}else{
+		strncpy( mode, "w+b", 4 );
+	}
 
-	file = fopen( path, "rw" );
-	if( !stat_status || fileStat.st_size < SECTOR_LENGTH ){
+
+	file = fopen( path, mode );
+	setbuf( file, NULL ); // Disable buffering
+	if( stat_status < 0 || fileStat.st_size < SECTOR_LENGTH ){
 		/* we need to write the chunk offset table */
 		fseek( file, 0L, SEEK_SET );
 		for( int i = 0; i < 1024; ++i )
@@ -43,17 +51,18 @@ RegionFile::RegionFile( const char* path )
 	fseek( file, 0L, SEEK_END );
 	int seek_length = ftell( file );
 
-	if( ( seek_length & 0xfff ) != 0 ){
+	if( ( seek_length & SECTOR_SIZE ) != 0 ){
 		/* the file size is not a multiple of 4KB, grow it */
-		for( int i = 0; i < ( seek_length & 0xfff ); ++i )
-			fprintf( file, "%s", "\0");
+		int end = SECTOR_LENGTH - ( seek_length & SECTOR_SIZE );
+		for( int i = 0; i < end; ++i )
+			fprintf( file, "%s", "0");
 	}
 
 	fseek( file, 0L, SEEK_END );
 	seek_length = ftell( file );
 
 	/* set up the available sector map */
-	int nSectors = seek_length / SECTOR_LENGTH;
+	int nSectors = (float)seek_length / (float)SECTOR_LENGTH;
 	sectorFree.resize( nSectors );
 	std::fill( sectorFree.begin(), sectorFree.end(), true );
 
@@ -66,7 +75,7 @@ RegionFile::RegionFile( const char* path )
 		fscanf( file, "%d", &offset );
 		offsets[i] = offset;
 		if( offset != 0 && ( offset >> 8 ) + ( offset & 0xFF ) <= sectorFree.size() ){
-			for( int sectorNum = 0; sectorNum < ( offset & 0xFF ); ++sectorNum ){
+			for( unsigned int sectorNum = 0; sectorNum < ( offset & 0xFF ); ++sectorNum ){
 				sectorFree[ (offset >> 8 ) + sectorNum ] = false;
 			}
 		}
@@ -77,6 +86,7 @@ RegionFile::RegionFile( const char* path )
 RegionFile::~RegionFile( )
 {
 	fclose(file);
+	delete[] offsets;
 }
 
 

@@ -27,7 +27,7 @@ NoisyEdges::~NoisyEdges( )
 
 void NoisyEdges::buildNoisyEdges( std::vector< Center* >& centers, rand31* random )
 {
-	Center* p = NULL;
+	Center* p = 0;
 	FOREACH1( p, centers ) {
 		ITER_LIST(	Edge*, p->borders ){
 			Edge* edge = it->data;

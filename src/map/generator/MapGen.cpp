@@ -23,6 +23,8 @@ MapGen::MapGen( )
 {
 	islandType = ifSquare;
 	map = new MapGenerator( SIZE );
+	texture_id = 0;
+	atlas.tex = 0;
 }
 
 MapGen::~MapGen( )
@@ -60,7 +62,7 @@ void MapGen::newIsland( IslandForm type, const char* seed_string )
 
 	TextureProxy tp;
 	{
-		tp.id = seed_string;
+		tp.id = strdup(seed_string);
 		// Too static
 		tp.cols = box.cols;
 		tp.rows = box.rows;
@@ -75,6 +77,7 @@ void MapGen::newIsland( IslandForm type, const char* seed_string )
 	}
 	GLTextures::generate( &atlas );
 	texture_id = Textures::push( &tp, atlas.tex, 0 );
+	free(tp.id);
 
 	map->newIsland( type, seed );
 }
@@ -114,6 +117,7 @@ void MapGen::computeHistogram( float** hs, int* count, bucketFn fn )
 		return;
 
 	float* histogram = new float[size];
+	memset( &histogram[0], 0, sizeof(float) * size );
 
 	Center* p;
 	FOREACH1( p, map->centers ) {
@@ -131,8 +135,10 @@ void MapGen::drawHistogram( float x, float y, bucketFn fn, colorFn cfn,
 	float* histogram = NULL;
 	int hcount = 0;
 	computeHistogram( &histogram, &hcount, fn );
-	if( !hcount )
+	if( !hcount ){
+		delete[] histogram;
 		return;
+	}
 
 	float scale = 0.0;
 	for( int i = 0; i < hcount; ++i )
@@ -195,8 +201,9 @@ void MapGen::drawHistograms( int picture )
 	drawHistogram( x, y + 95, &moistureBucket, &moistureColor, width, 20, &lines );
 
 	draw( lines, picture );
-
+	CLEAR_PTR_LIST( lines );
 }
+
 
 void MapGen::drawMap( GeneratorMode mode, int picture )
 {
@@ -345,6 +352,7 @@ void MapGen::renderPolygons( int picture )
 	}
 
 	draw( lines, picture );
+	CLEAR_PTR_LIST( lines );
 }
 
 void MapGen::renderGradientPolygions( int picture, UINT color_low, UINT color_high, NodeProperty prop,
@@ -370,12 +378,12 @@ void MapGen::renderGradientPolygions( int picture, UINT color_low, UINT color_hi
 				continue;
 			*/
 
-            // We'll draw two triangles: center - corner0 -
-            // midpoint and center - midpoint - corner1.
+			// We'll draw two triangles: center - corner0 -
+			// midpoint and center - midpoint - corner1.
 			Corner* corner0 = edge->v0;
 			Corner* corner1 = edge->v1;
 
-            // Normalize properties
+			// Normalize properties
 			float prop0 = fabs( corner0->property( prop ) - min ) / ( max - min );
 			float prop1 = fabs( corner1->property( prop ) - min ) / ( max - min );
 
@@ -388,27 +396,28 @@ void MapGen::renderGradientPolygions( int picture, UINT color_low, UINT color_hi
 					fabs( p->property( prop ) - min ) / ( max - min ) );
 
 			float points[12] = {
-            		p->point.x, p->point.y,
-            		corner0->point.x, corner0->point.y,
-            		midpoint.x, midpoint.y,
-            		p->point.x, p->point.y,
-            		midpoint.x, midpoint.y,
-            		corner1->point.x, corner1->point.y,
-            };
-            UINT colors[6] = {
-            		p_color,
-            		interpolateColor( color_low, color_high, prop0 ),
-            		midpoint_color,
-            		p_color,
-            		midpoint_color,
-            		interpolateColor( color_low, color_high, prop1 )
-            };
+					p->point.x, p->point.y,
+					corner0->point.x, corner0->point.y,
+					midpoint.x, midpoint.y,
+					p->point.x, p->point.y,
+					midpoint.x, midpoint.y,
+					corner1->point.x, corner1->point.y,
+			};
+			UINT colors[6] = {
+					p_color,
+					interpolateColor( color_low, color_high, prop0 ),
+					midpoint_color,
+					p_color,
+					midpoint_color,
+					interpolateColor( color_low, color_high, prop1 )
+			};
 
-            GLPrimitives::prepare_triangles( points, 12, colors, &lines );
+			GLPrimitives::prepare_triangles( points, 12, colors, &lines );
 		}
 	}
 
 	draw( lines, picture );
+	CLEAR_PTR_LIST( lines );
 }
 
 
@@ -545,6 +554,7 @@ void MapGen::renderEdges( int picture )
 	}
 
 	draw( lines, picture );
+	CLEAR_PTR_LIST( lines );
 }
 
 
@@ -584,6 +594,7 @@ void MapGen::renderDebugPolygons( int picture )
 	}
 
 	draw( lines, picture );
+	CLEAR_PTR_LIST( lines );
 }
 
 
@@ -612,6 +623,7 @@ void MapGen::renderWatersheds( int picture )
 	}
 
 	draw( lines, picture );
+	CLEAR_PTR_LIST( lines );
 }
 
 

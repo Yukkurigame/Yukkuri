@@ -16,6 +16,8 @@ namespace Path {
 	void init( );
 
 	char* join( const char* first, const char* sec );
+	int split( char*** dst, const char* src );
+	int mkdir_recursive( const char* path, unsigned int perms );
 }
 
 #endif /* PATH_H_ */

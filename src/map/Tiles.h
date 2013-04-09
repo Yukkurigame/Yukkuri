@@ -11,24 +11,11 @@
 #include "basic_types.h"
 #include "map/Constants.h"
 
-struct ChunkTile
-{
-	s3f position;
-	Biome type;
-};
-
-struct RegionTile
-{
-	ChunkTile tiles[REGION_CHUNK_SIZE][REGION_CHUNK_SIZE];
-};
-
-
 struct RegionMap
 {
 	float latitude;
 	float longitude;
 	int seed;
-	RegionTile** tiles;
 };
 
 

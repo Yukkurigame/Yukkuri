@@ -5,12 +5,30 @@
  */
 
 #include "map/RegionFile.h"
+#include "utils/file.h"
 #include "debug.h"
 #include "safestring.h"
 #include <sys/stat.h>
 #include <stdio.h>
+#include <stdlib.h>
+
 
 char RegionFile::emptySector[SECTOR_LENGTH];
+
+
+inline void seek_start( FILE* file, int start )
+{
+	fseek( file, HEAD_SECTOR_LENGTH + start, SEEK_SET );
+}
+
+
+inline int file_length( FILE* file )
+{
+	fseek( file, 0L, SEEK_END );
+	return ftell( file ) -HEAD_SECTOR_LENGTH;
+}
+
+
 
 
 RegionFile::ChunkBuffer::ChunkBuffer( RegionFile& parent, int x, int y ) :
@@ -18,10 +36,12 @@ RegionFile::ChunkBuffer::ChunkBuffer( RegionFile& parent, int x, int y ) :
 {
 }
 
+
 RegionFile::RegionFile( const char* path )
 {
 	offsets = new int[1024];
-	fileName = path;
+	memset( &offsets[0], 0, sizeof(int) * 1024 );
+	fileName = strdup(path);
 	_lastModified = 0;
 
 	//Debug::debug( Debug::MAP, "Region load %s.\n", fileName );
@@ -39,42 +59,38 @@ RegionFile::RegionFile( const char* path )
 
 
 	file = fopen( path, mode );
-	setbuf( file, NULL ); // Disable buffering
-	if( stat_status < 0 || fileStat.st_size < SECTOR_LENGTH ){
+	setbuf( file, NULL );
+	if( stat_status < 0 || fileStat.st_size < HEAD_SECTOR_LENGTH ){
 		/* we need to write the chunk offset table */
 		fseek( file, 0L, SEEK_SET );
 		for( int i = 0; i < 1024; ++i )
-			fprintf( file, "%d", 0);
-		sizeDelta += SECTOR_LENGTH;
+			YFILE::write_libe( file, 0 );
+		sizeDelta += HEAD_SECTOR_LENGTH;
 	}
 
-	fseek( file, 0L, SEEK_END );
-	int seek_length = ftell( file );
-
+	int seek_length = file_length( file );
 	if( ( seek_length & SECTOR_SIZE ) != 0 ){
 		/* the file size is not a multiple of 4KB, grow it */
 		int end = SECTOR_LENGTH - ( seek_length & SECTOR_SIZE );
 		for( int i = 0; i < end; ++i )
-			fprintf( file, "%s", "0");
+			fprintf( file, "%s", "0" );
 	}
 
-	fseek( file, 0L, SEEK_END );
-	seek_length = ftell( file );
+	seek_length = file_length( file );
+
 
 	/* set up the available sector map */
-	int nSectors = (float)seek_length / (float)SECTOR_LENGTH;
-	sectorFree.resize( nSectors );
-	std::fill( sectorFree.begin(), sectorFree.end(), true );
+	sectorFreeSize = (float)seek_length / (float)SECTOR_LENGTH;
+	int sectorFreeLen = sizeof(bool) * sectorFreeSize;
+	sectorFree = (bool*)( malloc( sectorFreeLen ));
+	memset( &sectorFree[0], true, sectorFreeLen );
 
-	sectorFree[0] = false; // chunk offset table
-
+	/* Read offsets */
 	fseek( file, 0L, SEEK_SET );
-
 	for( int i = 0; i < 1024; ++i ){
-		unsigned int offset;
-		fscanf( file, "%d", &offset );
+		int offset = YFILE::read_libe( file );
 		offsets[i] = offset;
-		if( offset != 0 && ( offset >> 8 ) + ( offset & 0xFF ) <= sectorFree.size() ){
+		if( offset != 0 && ( offset >> 8 ) + ( offset & 0xFF ) <= sectorFreeSize ){
 			for( unsigned int sectorNum = 0; sectorNum < ( offset & 0xFF ); ++sectorNum ){
 				sectorFree[ (offset >> 8 ) + sectorNum ] = false;
 			}
@@ -85,6 +101,8 @@ RegionFile::RegionFile( const char* path )
 
 RegionFile::~RegionFile( )
 {
+	free(fileName);
+	free(sectorFree);
 	fclose(file);
 	delete[] offsets;
 }
@@ -108,17 +126,16 @@ int RegionFile::getChunkDataInputStream( char** data, int x, int y )
 	if( offset == 0 )
 		return -1;
 
-	unsigned int sectorNumber = offset >> 8;
-	unsigned int numSectors = offset & 0xFF;
+	int sectorNumber = offset >> 8;
+	int numSectors = offset & 0xFF;
 
-	if( sectorNumber + numSectors > sectorFree.size() ){
+	if( sectorNumber + numSectors > sectorFreeSize ){
 		Debug::debug( Debug::MAP, "Read [%d:%d] invalid sector.\n", x, y );
 		return -1;
 	}
 
-	unsigned int length;
-	fseek( file, sectorNumber * SECTOR_LENGTH, SEEK_SET );
-	fscanf( file, "%d", &length );
+	seek_start( file, sectorNumber * SECTOR_LENGTH );
+	int length = YFILE::read_libe( file );
 
 	if( length > SECTOR_LENGTH * numSectors ){
 		Debug::debug( Debug::MAP,
@@ -127,8 +144,7 @@ int RegionFile::getChunkDataInputStream( char** data, int x, int y )
 		return -1;
 	}
 
-	int version;
-	fscanf( file, "%d", &version );
+	int version = YFILE::read_libe( file );
 
 	if( version == 1 ){
 		(*data) = new char[length - 1];
@@ -164,7 +180,7 @@ void RegionFile::write( int x, int y, char* data, int length )
 
 	if( sectorNumber != 0 && sectorsAllocated == sectorsNeeded ){
 		/* we can simply overwrite the old sectors */
-		Debug::debug( Debug::MAP, "Save region %s [%d:%d] %d B = rewrite", fileName, x, y,
+		Debug::debug( Debug::MAP, "Save region %s [%d:%d] %d B = rewrite.\n", fileName, x, y,
 				length );
 		write( sectorNumber, data, length );
 	}else{
@@ -172,13 +188,13 @@ void RegionFile::write( int x, int y, char* data, int length )
 
 		/* mark the sectors previously used for this chunk as free */
 		for( int i = 0; i < sectorsAllocated; ++i )
-			sectorFree.at( sectorNumber + i ) = true;
+			sectorFree[sectorNumber + i] = true;
 
 		/* scan for a free space large enough to store this chunk */
 		int runStart = 0;
 		while( !sectorFree[runStart] ){
 			++runStart;
-			if( runStart >= (int)sectorFree.size() ){
+			if( runStart >= sectorFreeSize ){
 				runStart = -1;
 				break;
 			}
@@ -186,13 +202,13 @@ void RegionFile::write( int x, int y, char* data, int length )
 
 		int runLength = 0;
 		if( runStart != -1 ){
-			for( unsigned int i = runStart; i < sectorFree.size(); ++i ){
+			for( int i = runStart; i < sectorFreeSize; ++i ){
 				if( runLength != 0 ){
-					if( sectorFree.at( i ) )
+					if( sectorFree[i] )
 						runLength++;
 					else
 						runLength = 0;
-				}else if( sectorFree.at( i ) ){
+				}else if( sectorFree[i] ){
 					runStart = i;
 					runLength = 1;
 				}
@@ -203,7 +219,7 @@ void RegionFile::write( int x, int y, char* data, int length )
 
 		if( runLength >= sectorsNeeded ){
 			/* we found a free space large enough */
-			Debug::debug( Debug::MAP, "Save region %s [%d:%d] %d B = reuse", fileName, x,
+			Debug::debug( Debug::MAP, "Save region %s [%d:%d] %d B = reuse.\n", fileName, x,
 					y, length );
 			sectorNumber = runStart;
 			setOffset( x, y, ( sectorNumber << 8 ) | sectorsNeeded );
@@ -212,14 +228,18 @@ void RegionFile::write( int x, int y, char* data, int length )
 			write( sectorNumber, data, length );
 		}else{
 			/* no free space large enough found -- we need to grow the file */
-			Debug::debug( Debug::MAP, "Save region %s [%d:%d] %d B = grow", fileName, x,
+			Debug::debug( Debug::MAP, "Save region %s [%d:%d] %d B = grow.\n", fileName, x,
 					y, length );
 			fseek( file, 0L, SEEK_END );
-			sectorNumber = sectorFree.size();
-			for( int i = 0; i < sectorsNeeded; ++i ){
+			sectorNumber = sectorFreeSize;
+
+			sectorFree = (bool*)realloc( sectorFree, sizeof(bool) * (sectorFreeSize + sectorsNeeded) );
+			memset( &sectorFree[sectorFreeSize], false, sizeof(bool) * sectorsNeeded );
+			sectorFreeSize += sectorsNeeded;
+
+			for( int i = 0; i < sectorsNeeded; ++i )
 				fwrite( emptySector, SECTOR_LENGTH, 1, file );
-				sectorFree.push_back( false );
-			}
+
 			sizeDelta += SECTOR_LENGTH * sectorsNeeded;
 
 			write( sectorNumber, data, length );
@@ -233,9 +253,9 @@ void RegionFile::write( int x, int y, char* data, int length )
 /* write a chunk data to the region file at specified sector number */
 void RegionFile::write(int sectorNumber, char* data, int length)
 {
-	fseek( file, sectorNumber * SECTOR_LENGTH, SEEK_SET );
-	fprintf( file, "%d", length + 1 ); // chunk length
-	fprintf( file, "%d", CHUNK_VERSION ); // chunk version number
+	seek_start( file, sectorNumber * SECTOR_LENGTH );
+	YFILE::write_libe( file, length + 1 ); // chunk length
+	YFILE::write_libe( file, CHUNK_VERSION ); // chunk version number
 	fwrite( data, length, 1, file ); // chunk data
 }
 
@@ -257,5 +277,5 @@ void RegionFile::setOffset( int x, int y, int offset )
 {
 	offsets[x + y * 32] = offset;
 	fseek( file, (x + y * 32) * 4, SEEK_SET );
-	fprintf( file, "%d", offset);
+	YFILE::write_libe( file, offset );
 }

@@ -19,7 +19,7 @@ MAPDIR = map/
 3RDPARTYDIR= 3rdparty/
 UTILSDIR = utils/
 
-UTILS = bson.cpp list.cpp path.cpp utf.cpp
+UTILS = bson.cpp list.cpp path.cpp utf.cpp file.cpp
 CORE = yukkuri.cpp
 UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp ActionTimer.cpp Scope.cpp Unit.cpp \
 		 UnitStatic.cpp UnitDynamic.cpp UnitEntity.cpp UnitCorpse.cpp UnitPlayer.cpp

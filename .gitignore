@@ -4,6 +4,7 @@ bin/*.trace
 bin/callgrind.out.*
 bin/screenshot*
 bin/gmon.out
+bin/world/
 Yukkuri
 obj/
 .cproject

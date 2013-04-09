@@ -15,6 +15,13 @@
 // Power of two
 #define CHUNK_SIZE 3
 
+struct ChunkTile
+{
+	s3f position;
+	Biome type;
+	//float height[REGION_CHUNK_SIZE][REGION_CHUNK_SIZE];
+};
+
 
 struct MapChunk
 {

@@ -46,7 +46,8 @@ data is the chunk length - 1.
 
 #define CHUNK_HEADER_SIZE 8
 #define CHUNK_VERSION 1
-#define SECTOR_LENGTH 4096
+#define SECTOR_LENGTH 32
+#define HEAD_SECTOR_LENGTH 4096
 #define SECTOR_SIZE (SECTOR_LENGTH-1)
 
 #include <stdio.h>
@@ -90,10 +91,11 @@ private:
 	int getOffset( int x, int y );
 	void setOffset( int x, int y, int offset );
 
-	const char* fileName;
+	char* fileName;
 	FILE* file;
 	int* offsets;
-	std::vector<bool> sectorFree;
+	bool* sectorFree;
+	int sectorFreeSize;
 	int sizeDelta;
 	long _lastModified;
 

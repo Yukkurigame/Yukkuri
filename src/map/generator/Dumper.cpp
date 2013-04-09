@@ -6,6 +6,7 @@
 
 #include "map/generator/MapGenerator.h"
 #include "map/Tiles.h"
+#include "map/Chunk.h"
 #include "map/RegionFileCache.h"
 #include "hacks.h"
 #include "utils/path.h"

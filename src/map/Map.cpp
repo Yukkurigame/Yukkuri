@@ -105,6 +105,7 @@ void Map::toMapCoordinates( int* mx, int* my )
 	*my = y >> ChunkManager::size_p2();
 }
 
+
 void Map::toMapCoordinates( s2i& coord )
 {
 	coord.x = ( ( 2 * coord.y + coord.x ) / 2 ) >> ChunkManager::size_p2();

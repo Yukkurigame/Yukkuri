@@ -125,6 +125,7 @@ void MapGenerator::dumpMap( const char* path )
 	region.latitude = latitude;
 	region.longitude = longitude;
 	region.seed = initial_seed;
+	region.seed_string = initial_seed_string;
 	int isize = SIZE;
 
 	int** filled = new int*[isize];

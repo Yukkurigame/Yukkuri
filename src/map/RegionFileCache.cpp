@@ -33,8 +33,8 @@ RegionFile* RegionFileCache::getRegionFile( const char* basePath, int x, int y )
 {
 	char* regionDir = Path::join( basePath, "region" );
 
-	char filename[20];
-	snprintf( filename, 20, "r%x.%x.yrd", (x >> 5), (y >> 5) );
+	char filename[25];
+	snprintf( filename, 25, "r%x.%x.yrd", (x >> 5), (y >> 5) );
 
 	char* file = Path::join( regionDir, filename );
 	std::string file_str = (std::string)file;

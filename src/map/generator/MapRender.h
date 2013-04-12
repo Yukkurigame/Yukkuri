@@ -4,8 +4,8 @@
  *  Created on: 03.03.2013
  */
 
-#ifndef MAPGEN_H_
-#define MAPGEN_H_
+#ifndef MAPRENDER_H_
+#define MAPRENDER_H_
 
 #include "map/generator/generator_constants.h"
 #include "map/generator/MapGenerator.h"
@@ -15,11 +15,11 @@
 #include "graphics/GraphicsTypes.h"
 
 
-class MapGen
+class MapRender
 {
 public:
-	MapGen( );
-	~MapGen( );
+	MapRender( );
+	~MapRender( );
 
 	// Random parameters governing the overall shape of the island
 	void newIsland( IslandForm type, const char* seed );
@@ -106,4 +106,4 @@ private:
 
 };
 
-#endif /* MAPGEN_H_ */
+#endif /* MAPRENDER_H_ */

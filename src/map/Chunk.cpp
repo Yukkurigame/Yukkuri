@@ -7,6 +7,7 @@
 
 #include "map/Chunk.h"
 #include "map/Map.h"
+#include "map/Region.h"
 #include "utils/misc.h"
 
 #include "graphics/Render.h"
@@ -15,7 +16,7 @@
 #include "graphics/render/GLTextures.h"
 #include "graphics/render/GLHelpers.h"
 #include "graphics/render/Textures.h"
-#include "graphics/utils/ElasticBox.h"
+//#include "graphics/utils/ElasticBox.h"
 
 #include "config.h"
 #include "debug.h"
@@ -28,14 +29,14 @@ extern MainConfig conf;
 
 namespace ChunkManager {
 
-	long int state;
 	s2i screenCount;
-	unsigned int chunksCount;
 	s2i chunk_size;
 	unsigned int chunkTilesCount;
 	s2i screen;
 	int tile_size_p2;
 
+	//unsigned int chunksCount;
+	//long int state;
 	//GLuint atlas;
 	//s2i atlasCount;
 	//unsigned int texture;
@@ -50,9 +51,9 @@ MapChunk::MapChunk( signed int x, signed int y )
 	pos.y = realPos.y = y;
 	ChunkManager::from_coordinates( realPos );
 	unsigned int side = 1 << CHUNK_SIZE;
-	//int picture = ChunkManager::get_space( atlasPos );
-	//if( picture < 0 )
-		//return;
+
+	ChunkTile* proto = Region::getChunk( x, y );
+
 	int count = ChunkManager::chunkTilesCount;
 	int mesh = MeshManager::get("mesh_terrain");
 	sprite = RenderManager::CreateGLSprite( (float)realPos.x, (float)realPos.y, 0,
@@ -92,10 +93,11 @@ MapChunk::MapChunk( signed int x, signed int y )
 			int ti = i + point_index;
 			arr[ti].verticles = vc[i];
 			//arr[ti].coordinates = tc[i];
-			//arr[ti].color = s4ub( rand() % 256, rand() % 256, rand() % 256, 255 );
+			arr[ti].color.set( proto ? BiomesColors[proto->type] : gcWHITE );
 			brush.indices_list[ti] = ti + brush.point_index;
 		}
 
+		/*
 		TextureInfo* texture = Textures::get_pointer(t.Type->texture);
 		if( !chunk_atlas )
 			chunk_atlas = texture->atlas;
@@ -106,6 +108,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 				qcRight, 0, qcBottom,
 		};
 		texture->getSubTexture( t.Type->picture, &arr[point_index], 6, texture_indices, 6 );
+		*/
 
 		if( ++col >= side ){
 			col = 0;
@@ -123,7 +126,7 @@ MapChunk::MapChunk( signed int x, signed int y )
 MapChunk::~MapChunk()
 {
 	if( sprite ){
-		ChunkManager::return_space( sprite->picture );
+		//ChunkManager::return_space( sprite->picture );
 		RenderManager::FreeGLSprite( sprite );
 	}
 	if( tiles )
@@ -143,16 +146,17 @@ void ChunkManager::init(){
 	screen.y = conf.video.windowHeight >> ( tile_size_p2 + CHUNK_SIZE - 2 );
 	// Tiles in chunk: two interpenetrative girds of CHUNK_SIZE^2 tiles.
 	chunkTilesCount = 1 << ( CHUNK_SIZE + CHUNK_SIZE );
-	// calculate size of atlas. CHUNK_SIZE is additional places here
-	chunksCount = next_p2(screen.x * screen.y + CHUNK_SIZE);
-	state = 0; // No places occupied
 
-	ElasticRectPODBox box = ElasticRectPODBox( TextureAtlas::getAtlasMax() );
-	if( !box.calculate( chunk_size.x, chunk_size.y, chunksCount ) ){
-		Debug::debug( Debug::MAP, "Chunks count too big" );
-		return;
-	}
-	chunksCount = box.rows * box.cols;
+	// calculate size of atlas. CHUNK_SIZE is additional places here
+	//chunksCount = next_p2(screen.x * screen.y + CHUNK_SIZE);
+	//state = 0; // No places occupied
+
+	//ElasticRectPODBox box = ElasticRectPODBox( TextureAtlas::getAtlasMax() );
+	//if( !box.calculate( chunk_size.x, chunk_size.y, chunksCount ) ){
+	//	Debug::debug( Debug::MAP, "Chunks count too big" );
+	//	return;
+	//}
+	//chunksCount = box.rows * box.cols;
 
 	//atlas = 0;
 	/*TextureProxy tp;
@@ -201,7 +205,7 @@ const s2i& ChunkManager::get_count( )
 	return screen;
 }
 
-
+/*
 // You must call this for request a new free space, not only checking for
 signed int ChunkManager::get_space( s2f& pos ){
 	unsigned int c = 1, p = 0;
@@ -227,6 +231,6 @@ void ChunkManager::return_space( unsigned int p )
 	state &= ~c; // Set occupied space as free
 }
 
-
+*/
 
 

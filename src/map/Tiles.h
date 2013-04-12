@@ -16,9 +16,17 @@ struct RegionMap
 	float latitude;
 	float longitude;
 	int seed;
+	char* seed_string;
+	UINT texture_id;
+	RegionMap() : seed_string(0) {}
 };
 
 
+enum {
+	TILE_TYPE_NONE = 0,
+	TILE_TYPE_NORMAL,
+	TILE_TYPE_BLOCK
+};
 
 
 struct TileInfo

@@ -11,6 +11,7 @@
 #include "graphics/Render.h"
 #include "graphics/render/Textures.h"
 #include "map/generator/MapGen.h"
+#include "map/Packer.h"
 
 #include "config.h"
 #include "safestring.h"
@@ -27,8 +28,10 @@ namespace Region {
 	TileInfo* tiles;
 	bool TilesLoaded = false;
 	int TileTypesCount = 0;
-	MapGen* mapgen = new MapGen();
-	char* seed = NULL;
+	MapRender* mapgen = new MapRender();
+
+	RegionMap* active_region = NULL;
+	char* active_path = NULL;
 }
 
 
@@ -92,49 +95,68 @@ void Region::clean( )
 
 void Region::generate( UINT form, const char* new_seed )
 {
-	if( seed )
-		free(seed);
-	seed = strdup(new_seed);
-
 	mapgen->newIsland( (IslandForm)form, new_seed );
 	mapgen->go();
 }
 
 
-void Region::load( const char* name )
+int Region::load( const char* path )
 {
-	Debug::debug( Debug::MAP, "Loading region %s.\n", name );
+	Debug::debug( Debug::MAP, "Loading region %s.\n", path );
 	if( !TilesLoaded ){
-		Debug::debug( Debug::MAP, "Cannot load region %s without tiles.\n", name );
-		return;
-	}
-/*
-	LuaConfig* cfg = new LuaConfig;
-	list< RegionTile > Tiles;
-	cfg->getValue( "tiles", name, "region", Tiles );
-
-	ITER_LIST( RegionTile, Tiles ){
-		if( !it->data.id )
-			continue;
-
-		signed int x = it->data.postion.x;
-		signed int y = it->data.postion.y;
-		for( int tile = 1; tile < TileTypesCount; ++tile ){
-			if( !strcmp( tiles[tile].id, it->data.id ) ){
-				RegionDump[x][y] = &tiles[tile];
-				break;
-			}
-		}
-		free( it->data.id );
+		Debug::debug( Debug::MAP, "Cannot load region without tiles.\n" );
+		return 0;
 	}
 
-	delete cfg;
-*/
+	unload();
+
+	active_region = new RegionMap;
+	if( !MapPacker::unpack_region( path, active_region ) ){
+		Debug::debug( Debug::MAP, "Cannot unpack region in %s.\n", path );
+		delete active_region, active_region = NULL;
+		return 0;
+	}
+
+	active_path = strdup(path);
+
+	return 1;
 }
+
+void Region::unload( )
+{
+	if( active_path ){
+		free(active_path);
+		active_path = NULL;
+	}
+
+	if( !active_region )
+		return;
+
+	Debug::debug( Debug::MAP, "Unloading region.\n" );
+	delete active_region, active_region = NULL;
+}
+
+float Region::get_latitude( )
+{
+	if( !active_region )
+		return 0.0;
+	return active_region->latitude;
+}
+
+
+float Region::get_longitude( )
+{
+	if( !active_region )
+		return 0.0;
+	return active_region->longitude;
+}
+
 
 const char* Region::get_seed( )
 {
-	return seed;
+	if( !active_region )
+		return NULL;
+	return active_region->seed_string;
 }
 
 
@@ -146,4 +168,17 @@ TileInfo* Region::getTile( signed int x, signed int y )
 		}
 	}
 	return &tiles[0];
+}
+
+
+ChunkTile* Region::getChunk( signed int x, signed int y )
+{
+	ChunkTile* chunk = new ChunkTile;
+	if( !MapPacker::unpack_chunk( active_path, x, y, chunk ) ){
+		Debug::debug( Debug::MAP, "Cannot unpack chunk %d:%d in %s.\n", x, y, active_path );
+		delete chunk, chunk = NULL;
+		return NULL;
+	}
+
+	return chunk;
 }

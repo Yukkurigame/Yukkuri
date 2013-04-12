@@ -37,7 +37,7 @@ SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp prot
 		  api.cpp $(addprefix $(SCRIPTSAPIDIR), $(SCRIPTSAPI))
 WIDGETS = Widget.cpp WidgetText.cpp WidgetBar.cpp
 INTERFACE = Interface.cpp $(addprefix $(WIDGETSDIR), $(WIDGETS))
-MAP = $(addsuffix .cpp, Tiles Chunk Region RegionFile RegionFileCache Map \
+MAP = $(addsuffix .cpp, Tiles Chunk Region RegionFile RegionFileCache Map Packer \
 	$(addprefix generator/, MapGen MapGenerator Dumper NoisyEdges Watersheds IslandShape \
 		$(addprefix graph/, Center Corner Edge) ) )
 3RDPARTY = CUData.cpp CUDataUser.cpp CUDataTemplates.cpp LuaPusher.cpp rand31.cpp timer/TimerManager.cpp \

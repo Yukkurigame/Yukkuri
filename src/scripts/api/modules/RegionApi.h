@@ -17,12 +17,16 @@ namespace RegionApi
 	int generateRegion( lua_State* L );
 	int loadRegion( lua_State* L );
 	int imageName( lua_State* L );
+	int latitude( lua_State* L );
+	int longitude( lua_State* L );
 
 	const luaL_reg methods[] = {
 		LUALIBFIELD( active )
 		LUALIBFIELD( generateRegion )
 		LUALIBFIELD( loadRegion )
 		LUALIBFIELD( imageName )
+		LUALIBFIELD( latitude )
+		LUALIBFIELD( longitude )
 		LUALIBEND
 	};
 

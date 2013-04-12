@@ -4,7 +4,7 @@
  *  Created on: 03.03.2013
  */
 
-#include "map/generator/MapGen.h"
+#include "map/generator/MapRender.h"
 #include "graphics/Render.h"
 #include "graphics/sprite/Mesh.h"
 #include "graphics/utils/ElasticBox.h"
@@ -19,7 +19,7 @@
 
 
 
-MapGen::MapGen( )
+MapRender::MapRender( )
 {
 	islandType = ifSquare;
 	map = new MapGenerator( SIZE );
@@ -27,29 +27,13 @@ MapGen::MapGen( )
 	atlas.tex = 0;
 }
 
-MapGen::~MapGen( )
+MapRender::~MapRender( )
 {
 	// TODO Auto-generated destructor stub
 }
 
-void MapGen::newIsland( IslandForm type, const char* seed_string )
+void MapRender::newIsland( IslandForm type, const char* seed_string )
 {
-	int seed = 412496234;
-
-	Debug::debug( Debug::MAP, "Shaping map...\n" );
-
-	if( seed_string && seed_string[0] != '\0' ){
-		UINT len = strlen( seed_string );
-		// Convert the string into a number. This is a cheesy way to
-		// do it but it doesn't matter. It just allows people to use
-		// words as seeds.
-		for( UINT i = 0; i < len; ++i ){
-			seed = ( seed << 4 ) | (UINT)seed_string[i];
-		}
-		seed %= 100000;
-	}
-
-
 	islandType = type;
 	ElasticRectPODBox box = ElasticRectPODBox( );
 	if( !box.calculate( SIZE, SIZE, 6 ) ){
@@ -79,10 +63,10 @@ void MapGen::newIsland( IslandForm type, const char* seed_string )
 	texture_id = Textures::push( &tp, atlas.tex, 0 );
 	free(tp.id);
 
-	map->newIsland( type, seed );
+	map->newIsland( type, seed_string );
 }
 
-void MapGen::go( )
+void MapRender::go( )
 {
 	//roads = new Roads();
 	//lava = new Lava();
@@ -108,7 +92,7 @@ void MapGen::go( )
 	map->dumpMap(".");
 }
 
-void MapGen::computeHistogram( float** hs, int* count, bucketFn fn )
+void MapRender::computeHistogram( float** hs, int* count, bucketFn fn )
 {
 	int size = map->centers.size();
 	*count = size;
@@ -129,7 +113,7 @@ void MapGen::computeHistogram( float** hs, int* count, bucketFn fn )
 	*hs = histogram;
 }
 
-void MapGen::drawHistogram( float x, float y, bucketFn fn, colorFn cfn,
+void MapRender::drawHistogram( float x, float y, bucketFn fn, colorFn cfn,
 		float width, float height, list< VertexV2FT2FC4UI* >* lines )
 {
 	float* histogram = NULL;
@@ -158,7 +142,7 @@ void MapGen::drawHistogram( float x, float y, bucketFn fn, colorFn cfn,
 	delete[] histogram;
 }
 
-void MapGen::drawDistribution( float x, float y, bucketFn fn, colorFn cfn,
+void MapRender::drawDistribution( float x, float y, bucketFn fn, colorFn cfn,
 		float width, float height, list< VertexV2FT2FC4UI* >* lines )
 {
 	float* histogram = NULL;
@@ -183,7 +167,7 @@ void MapGen::drawDistribution( float x, float y, bucketFn fn, colorFn cfn,
 }
 
 
-void MapGen::drawHistograms( int picture )
+void MapRender::drawHistograms( int picture )
 {
 	list< VertexV2FT2FC4UI* > lines;
 
@@ -205,7 +189,7 @@ void MapGen::drawHistograms( int picture )
 }
 
 
-void MapGen::drawMap( GeneratorMode mode, int picture )
+void MapRender::drawMap( GeneratorMode mode, int picture )
 {
 	graphicsReset();
 	//noiseLayer.visible = true;
@@ -262,7 +246,7 @@ void MapGen::drawMap( GeneratorMode mode, int picture )
 }
 
 
-void MapGen::render3dPolygons(  )
+void MapRender::render3dPolygons(  )
 {
 /*	double zScale = -0.15*SIZE;
 
@@ -331,7 +315,7 @@ void MapGen::render3dPolygons(  )
 }
 
 
-void MapGen::renderPolygons( int picture )
+void MapRender::renderPolygons( int picture )
 {
 	// My Voronoi polygon rendering doesn't handle the boundary
 	// polygons, so I just fill everything with ocean first.
@@ -355,7 +339,7 @@ void MapGen::renderPolygons( int picture )
 	CLEAR_PTR_LIST( lines );
 }
 
-void MapGen::renderGradientPolygions( int picture, UINT color_low, UINT color_high, NodeProperty prop,
+void MapRender::renderGradientPolygions( int picture, UINT color_low, UINT color_high, NodeProperty prop,
 		float min, float max )
 {
 	list< VertexV2FT2FC4UI* > lines;
@@ -421,7 +405,7 @@ void MapGen::renderGradientPolygions( int picture, UINT color_low, UINT color_hi
 }
 
 
-void MapGen::renderBridges( int picture )
+void MapRender::renderBridges( int picture )
 {
 /*	var edge:Edge;
 
@@ -440,7 +424,7 @@ void MapGen::renderBridges( int picture )
 }
 
 
-void MapGen::renderRoads( int picture )
+void MapRender::renderRoads( int picture )
 {
 /*	// First draw the roads, because any other feature should draw
 	// over them. Also, roads don't use the noisy lines.
@@ -513,7 +497,7 @@ void MapGen::renderRoads( int picture )
 }
 
 
-void MapGen::renderEdges( int picture )
+void MapRender::renderEdges( int picture )
 {
 	list< VertexV2FT2FC4UI* > lines;
 
@@ -558,7 +542,7 @@ void MapGen::renderEdges( int picture )
 }
 
 
-void MapGen::renderDebugPolygons( int picture )
+void MapRender::renderDebugPolygons( int picture )
 {
 	list< VertexV2FT2FC4UI* > lines;
 
@@ -598,7 +582,7 @@ void MapGen::renderDebugPolygons( int picture )
 }
 
 
-void MapGen::renderWatersheds( int picture )
+void MapRender::renderWatersheds( int picture )
 {
 	list< VertexV2FT2FC4UI* > lines;
 
@@ -627,7 +611,7 @@ void MapGen::renderWatersheds( int picture )
 }
 
 
-void MapGen::prepareLine( Edge* edge, float thikness, UINT color,
+void MapRender::prepareLine( Edge* edge, float thikness, UINT color,
 		list< VertexV2FT2FC4UI* >* lines, int alpha )
 {
 	// It's at the edge of the map, where we don't have
@@ -668,7 +652,7 @@ void MapGen::prepareLine( Edge* edge, float thikness, UINT color,
 	}*/
 }
 
-void MapGen::preparePolygon( Center* p, Edge* edge, UINT color,
+void MapRender::preparePolygon( Center* p, Edge* edge, UINT color,
 				list< VertexV2FT2FC4UI* >* lines, int alpha )
 {
 	// It's at the edge of the map, where we don't have
@@ -715,7 +699,7 @@ void MapGen::preparePolygon( Center* p, Edge* edge, UINT color,
 }
 
 
-void MapGen::draw( list< VertexV2FT2FC4UI* >& verticles, int picture )
+void MapRender::draw( list< VertexV2FT2FC4UI* >& verticles, int picture )
 {
 	UINT VBOHandle;
 	VBuffer::create( &VBOHandle );

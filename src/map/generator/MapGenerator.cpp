@@ -10,17 +10,18 @@
 #include "utils/list.h"
 #include "utils/misc.h"
 #include "debug.h"
+#include "safestring.h"
 #include "hacks.h"
 #include <map>
 #include <algorithm>
 #include <cmath>
 
 
-
 MapGenerator::MapGenerator( float size ) : islandShape( NULL )
 {
 	SIZE = size;
 	heights.data = NULL;
+	initial_seed_string = NULL;
 	reset();
 }
 
@@ -40,16 +41,34 @@ MapGenerator::~MapGenerator( )
 	clear_vector( &corners );
 }
 
-void MapGenerator::newIsland( IslandForm type, int seed )
+void MapGenerator::newIsland( IslandForm type, const char* seed_string )
 {
+	int seed = 412496234;
+	Debug::debug( Debug::MAP, "Shaping map...\n" );
+
+	if( seed_string && seed_string[0] != '\0' ){
+		UINT len = strlen( seed_string );
+		// Convert the string into a number. This is a cheesy way to
+		// do it but it doesn't matter. It just allows people to use
+		// words as seeds.
+		for( UINT i = 0; i < len; ++i ){
+			seed = ( seed << 4 ) | (UINT)seed_string[i];
+		}
+		seed %= 100000;
+	}
+
+	if( initial_seed_string )
+		free( initial_seed_string );
+	initial_seed_string = strdup( seed_string );
+
 	initial_seed = seed;
 	mapRandom.seed( seed );
 	latitude = mapRandom.nextDouble( -90.0, 90.0 );
 	longitude = mapRandom.nextDouble( -180.0, 180.0 );
 
 	if( islandShape )
-			delete islandShape;
-		islandShape = IslandShape::getShape( type, &mapRandom );
+		delete islandShape;
+	islandShape = IslandShape::getShape( type, &mapRandom );
 }
 
 void MapGenerator::reset( )

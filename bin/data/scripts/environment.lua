@@ -5,7 +5,7 @@ Environment = {
 	latitude = 10,
 	longitude = 130,
 	gtm_delta = 11,
-	time = 12,
+	time = 10,
 	day = 340,
 }
 Environment.__index = Environment
@@ -13,6 +13,10 @@ Environment.__index = Environment
 local RADIANS = math.pi / 180
 
 function Environment:setup(params)
+	self.latitude = Map.latitude()
+	self.longitude = Map.longitude()
+	self.gtm_delta = ( self.longitude + 30.0 ) / 15.0 + 1;
+	if self.gtm_delta > 12 then self.gtm_delta = self.gtm_delta - 24 end;
 	self.ltsm = ( self.longitude - 15.0 * self.gtm_delta )
 	self.sun = Lights.create(constants.ltDirectional)
 	self.sun:color({1,1,1})

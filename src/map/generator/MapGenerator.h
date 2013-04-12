@@ -20,9 +20,8 @@
 #include "basic_types.h"
 
 
-class MapGenerator
+namespace MapGenerator
 {
-public:
 	// These store the graph data
 	std::vector< Center* > centers;
 	std::vector< Corner* > corners;
@@ -32,7 +31,7 @@ public:
 	virtual ~MapGenerator( );
 
 	// Random parameters governing the overall shape of the island
-	void newIsland( IslandForm type, int seed );
+	void newIsland( IslandForm type, const char* seed_string );
 
 	void reset( );
 
@@ -54,6 +53,8 @@ public:
 	// subsequent maps reset this random number generator with a
 	// random seed.
 	rand31 mapRandom;
+
+}
 
 private:
 	/* Generate random points and assign them to be on the island or
@@ -174,6 +175,7 @@ private:
 
 	// Passed in by the caller:
 	int initial_seed;
+	char* initial_seed_string;
 	float SIZE;
 
 	// Geographical position

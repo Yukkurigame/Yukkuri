@@ -9,15 +9,21 @@
 #define REGION_H_
 
 #include "map/Tiles.h"
+#include "map/Chunk.h"
+
 
 namespace Region
 {
 	bool init( );
 	void clean( );
 	void generate( UINT form, const char* seed );
-	void load( const char* name );
+	int load( const char* name );
+	void unload( );
+	float get_latitude( );
+	float get_longitude( );
 	const char* get_seed( );
 	TileInfo* getTile( signed int x, signed int y );
+	ChunkTile* getChunk( signed int x, signed int y );
 
 }
 

@@ -16,7 +16,7 @@ long int YFILE::read_libe( FILE* file )
 	for( int i = 0; i < 4; i++ )
 		bits = ( bits << 8 ) + fgetc( file );
 
-	return bits < 0x80000000 ? bits : -1 - (long)(bits ^ 0xffffffff);
+	return bits < (long)0x80000000 ? bits : -1 - (long)(bits ^ 0xffffffff);
 
 }
 

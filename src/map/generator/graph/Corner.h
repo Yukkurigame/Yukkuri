@@ -9,7 +9,7 @@
 
 #include "utils/list.h"
 #include "basic_types.h"
-#include "map/generator/generator_constants.h"
+#include "map/generator/Constants.h"
 
 
 class Center;

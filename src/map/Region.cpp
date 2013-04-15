@@ -7,16 +7,15 @@
 
 #include "map/Region.h"
 #include "map/Tiles.h"
-#include "scripts/LuaConfig.h"
-#include "graphics/Render.h"
-#include "graphics/render/Textures.h"
-#include "map/generator/MapGen.h"
+#include "map/generator/MapGenerator.h"
 #include "map/Packer.h"
+#include "scripts/LuaConfig.h"
 
 #include "config.h"
 #include "safestring.h"
 #include "debug.h"
-#include <map>
+
+//#include <map>
 
 
 extern MainConfig conf;
@@ -24,11 +23,10 @@ extern MainConfig conf;
 
 namespace Region {
 
-	std::map< signed int, std::map< signed int, TileInfo* > >  RegionDump;
+	//std::map< signed int, std::map< signed int, TileInfo* > >  RegionDump;
 	TileInfo* tiles;
 	bool TilesLoaded = false;
 	int TileTypesCount = 0;
-	MapRender* mapgen = new MapRender();
 
 	RegionMap* active_region = NULL;
 	char* active_path = NULL;
@@ -80,6 +78,8 @@ bool Region::init( )
 
 	delete cfg;
 
+	MapGenerator::init( );
+
 	return true;
 }
 
@@ -91,12 +91,14 @@ void Region::clean( )
 	}
 
 	delete[] tiles;
+
+	MapGenerator::clean();
 }
 
 void Region::generate( UINT form, const char* new_seed )
 {
-	mapgen->newIsland( (IslandForm)form, new_seed );
-	mapgen->go();
+	MapGenerator::newIsland( (IslandForm)form, new_seed );
+	MapGenerator::go();
 }
 
 
@@ -162,12 +164,14 @@ const char* Region::get_seed( )
 
 TileInfo* Region::getTile( signed int x, signed int y )
 {
-	if( RegionDump.count( x ) > 0) {
+	/*if( RegionDump.count( x ) > 0) {
 		if( RegionDump[x].count( y ) > 0 ){
 			return RegionDump[x][y];
 		}
 	}
 	return &tiles[0];
+	*/
+	return NULL;
 }
 
 

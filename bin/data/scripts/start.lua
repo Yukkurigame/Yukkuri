@@ -11,10 +11,10 @@ Camera.rotate(45, 0.0, 0.0, 1.0)
 Camera.setTarget(player)
 
 Map.active(true)
-if Map.loadRegion('') <= 0 then
+--if Map.loadRegion('') <= 0 then
 	Map.generateRegion(1, "85882")
 	Map.loadRegion('')
-end
+--end
 
 GUI:loadGroup("game")
 

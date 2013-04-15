@@ -8,7 +8,7 @@
 #define MAPGEN_HISTOGRAM_H_
 
 #include "map/generator/graph/Center.h"
-#include "map/generator/generator_constants.h"
+#include "map/generator/Constants.h"
 #include <cmath>
 
 inline UINT interpolateColor( unsigned int c0, unsigned int c1, double f )

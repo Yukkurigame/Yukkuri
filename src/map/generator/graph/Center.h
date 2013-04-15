@@ -9,7 +9,7 @@
 
 #include "map/generator/graph/Edge.h"
 #include "map/generator/graph/Corner.h"
-#include "map/generator/generator_constants.h"
+#include "map/generator/Constants.h"
 #include "utils/list.h"
 #include "basic_types.h"
 

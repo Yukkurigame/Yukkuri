@@ -4,7 +4,13 @@
  *  Created on: 03.03.2013
  */
 
-#include "map/generator/MapRender.h"
+#include "map/generator/modules/Render.h"
+#include "map/generator/Constants.h"
+#include "map/generator/NoisyEdges.h"
+#include "map/generator/Watersheds.h"
+#include "map/generator/Histogram.h"
+#include "graphics/GraphicsTypes.h"
+
 #include "graphics/Render.h"
 #include "graphics/sprite/Mesh.h"
 #include "graphics/utils/ElasticBox.h"
@@ -18,40 +24,140 @@
 #include <cmath>
 
 
-
-MapRender::MapRender( )
+namespace MapRender
 {
-	islandType = ifSquare;
-	map = new MapGenerator( SIZE );
-	texture_id = 0;
-	atlas.tex = 0;
+	int prepareTexture( );
+
+	// Show some information about the maps
+	void computeHistogram( float** hs, int* count, bucketFn fn );
+	void drawHistogram( float x, float y, bucketFn fn, colorFn cfn, float width,
+			float height, list< VertexV2FT2FC4UI* >* lines );
+	void drawDistribution( float x, float y, bucketFn fn, colorFn cfn, float width,
+			float height, list< VertexV2FT2FC4UI* >* lines );
+	void drawHistograms( int picture );
+
+	// Draw the map in the current map mode
+	void drawMap( GeneratorMode, int picture );
+
+	// 3D rendering of polygons. If the 'triangles3d' array is empty,
+	// it's filled and the graphicsData is filled in as well. On
+	// rendering, the triangles3d array has to be z-sorted and then
+	// the resulting polygon data is transferred into graphicsData
+	// before rendering.
+
+	// Render the interior of polygons
+	void renderPolygons( int picture );
+	void renderGradientPolygions( int picture, UINT color_low, UINT color_high,
+			NodeProperty, float min = 0.0, float max = 1.0 );
+
+	// Render bridges across every narrow river edge. Bridges are
+	// straight line segments perpendicular to the edge. Bridges are
+	// drawn after rivers. TODO: sometimes the bridges aren't long
+	// enough to cross the entire noisy line river. TODO: bridges
+	// don't line up with curved road segments when there are
+	// roads. It might be worth making a shader that draws the bridge
+	// only when there's water underneath.
+	void renderBridges( int picture );
+
+	// Render roads. We draw these before polygon edges, so that rivers overwrite roads.
+	void renderRoads( int picture );
+
+	// Render the exterior of polygons: coastlines, lake shores,
+	// rivers, lava fissures. We draw all of these after the polygons
+	// so that polygons don't overwrite any edges.
+	void renderEdges( int picture );
+
+	// Render the polygons so that each can be seen clearly
+	void renderDebugPolygons( int picture );
+
+	// Render the paths from each polygon to the ocean, showing watersheds
+	void renderWatersheds( int picture );
+
+	void prepareLine( Edge* edge, float thikness, UINT color,
+			list< VertexV2FT2FC4UI* >* lines, int alpha = 255 );
+	void preparePolygon( Center* p, Edge* edge, UINT color,
+			list< VertexV2FT2FC4UI* >* lines, int alpha = 255 );
+	void draw( list< VertexV2FT2FC4UI* >& verticles, int picture );
+
+	// Helper function for drawing triangles with gradients. This
+	// function sets up the fill on the graphics object, and then
+	// calls fillFunction to draw the desired path.
+	//void drawGradientTriangle( s3f v1, s3f v2, s3f v3, colors[] colors:Array, fillFunction:Function)
+
+	// Island shape is controlled by the islandRandom seed and the
+	// type of island. The islandShape function uses both of them to
+	// determine whether any point should be water or land.
+	IslandForm islandType;
+
+	//Roads roads;
+	//Lava lava
+	Watersheds watersheds;
+	NoisyEdges noisyEdges;
+
+	MapProto* proto = NULL;
+	GeneratorModule module = {	&init, &clean, &process	};
 }
 
-MapRender::~MapRender( )
+
+void MapRender::init( )
 {
-	// TODO Auto-generated destructor stub
+	proto = NULL;
 }
 
-void MapRender::newIsland( IslandForm type, const char* seed_string )
+
+void MapRender::clean( )
 {
-	islandType = type;
-	ElasticRectPODBox box = ElasticRectPODBox( );
-	if( !box.calculate( SIZE, SIZE, 6 ) ){
-		Debug::debug( Debug::MAP, "Cannot draw map." );
+	// We need to clean texture after generation.
+	proto = NULL;
+}
+
+
+void MapRender::process( MapProto* pr )
+{
+	proto = pr;
+	if( !prepareTexture() )
 		return;
+
+	watersheds.createWatersheds( proto->centers );
+
+	drawMap( gmBiome, 0 );
+	drawMap( gmWatersheds, 1 );
+	drawMap( gmPolygons, 2 );
+	drawMap( gmMoisture, 3 );
+	drawMap( gmElevation, 4 );
+	drawMap( gmTemperature, 5 );
+}
+
+
+GeneratorModule* MapRender::get_module()
+{
+	return &module;
+}
+
+
+
+int MapRender::prepareTexture( )
+{
+	proto->atlas.tex = 0;
+	proto->texture_id = 0;
+
+	ElasticRectPODBox box = ElasticRectPODBox();
+	if( !box.calculate( GENERATOR_SIZE, GENERATOR_SIZE, 6 ) ){
+		Debug::debug( Debug::MAP, "Cannot draw map." );
+		return 0;
 	}
 
-	atlas.w = box.Width;
-	atlas.h = box.Height;
+	proto->atlas.w = box.Width;
+	proto->atlas.h = box.Height;
 
 	TextureProxy tp;
 	{
-		tp.id = strdup(seed_string);
+		tp.id = strdup( proto->initial_seed_string );
 		// Too static
 		tp.cols = box.cols;
 		tp.rows = box.rows;
-		tp.abs.width = tp.cols * SIZE;
-		tp.abs.height = tp.rows * SIZE;
+		tp.abs.width = tp.cols * GENERATOR_SIZE;
+		tp.abs.height = tp.rows * GENERATOR_SIZE;
 		// Texture occupies all atlas
 		tp.atlas.width = static_cast< float >( tp.abs.width )
 				/ static_cast< float >( box.Width );
@@ -59,42 +165,18 @@ void MapRender::newIsland( IslandForm type, const char* seed_string )
 				/ static_cast< float >( box.Height );
 		tp.atlas.x = tp.atlas.y = 0.0;
 	}
-	GLTextures::generate( &atlas );
-	texture_id = Textures::push( &tp, atlas.tex, 0 );
-	free(tp.id);
+	GLTextures::generate( &proto->atlas );
+	proto->texture_id = Textures::push( &tp, proto->atlas.tex, 0 );
+	free( tp.id );
 
-	map->newIsland( type, seed_string );
+	return 1;
 }
 
-void MapRender::go( )
-{
-	//roads = new Roads();
-	//lava = new Lava();
-	map->go( 0, 1 );
-	map->go( 1, 2 );
-	map->go( 2, 3 );
-	//map->assignBiomes();
 
-	Debug::debug( Debug::MAP, "Features...\n" );
-	map->go( 3, 7 );
-	map->assignBiomes();
-
-	//roads.createRoads(map);
-	// lava.createLava(map, map.mapRandom.nextDouble);
-	watersheds.createWatersheds( map->centers );
-	//noisyEdges.buildNoisyEdges( map->centers, /*lava,*/ &map->mapRandom );
-	drawMap( gmBiome, 0 );
-	drawMap( gmWatersheds, 1 );
-	drawMap( gmPolygons, 2 );
-	drawMap( gmMoisture, 3 );
-	drawMap( gmElevation, 4 );
-	drawMap( gmTemperature, 5 );
-	map->dumpMap(".");
-}
 
 void MapRender::computeHistogram( float** hs, int* count, bucketFn fn )
 {
-	int size = map->centers.size();
+	int size = proto->centers.size();
 	*count = size;
 
 	if( !size )
@@ -104,7 +186,7 @@ void MapRender::computeHistogram( float** hs, int* count, bucketFn fn )
 	memset( &histogram[0], 0, sizeof(float) * size );
 
 	Center* p;
-	FOREACH1( p, map->centers ) {
+	FOREACH1( p, proto->centers ) {
 		int bucket = fn( p );
 		if( bucket >= 0 )
 			histogram[bucket] = ( histogram[bucket] || 0 ) + 1;
@@ -191,16 +273,9 @@ void MapRender::drawHistograms( int picture )
 
 void MapRender::drawMap( GeneratorMode mode, int picture )
 {
-	graphicsReset();
 	//noiseLayer.visible = true;
 
-
 	switch( mode ){
-		case gm3d:
-			//noiseLayer.visible = false;
-			render3dPolygons();
-			return;
-			break;
 		case gmPolygons:
 			//noiseLayer.visible = false;
 			renderDebugPolygons( picture );
@@ -246,75 +321,6 @@ void MapRender::drawMap( GeneratorMode mode, int picture )
 }
 
 
-void MapRender::render3dPolygons(  )
-{
-/*	double zScale = -0.15*SIZE;
-
-	if( sprite ){
-		RenderManager::FreeGLSprite(sprite);
-		sprite = NULL;
-	}
-
-	int count = 0;
-	// Calculate count of vertices
-	FOREACHIT1( map->centers ){
-		count += (*it)->borders.count;
-	}
-
-	if( !count )
-		return;
-
-	int mesh = MeshManager::get("mesh_terrain");
-	sprite = RenderManager::CreateGLSprite( 0, 0, 1, SIZE, SIZE, mesh );
-
-	GLBrush& brush = sprite->brush;
-	brush.init(-1);
-
-	// Init vertex brush
-	int vx_count = count * 3;
-	brush.resize_verticles( vx_count );
-	brush.indices_count = 0;
-	brush.indices_list = (UINT*)malloc( (UINT)sizeof(UINT) * vx_count );
-	VertexV2FT2FC4UI* arr = brush.points();
-
-	Center* p;
-	FOREACH1( p, map->centers ){
-		ITER_LIST( Edge*, p->borders ){
-			Edge* edge = it->data;
-			UINT color = BiomesColors[p->biome];
-			Corner* corner0 = edge->v0;
-			Corner* corner1 = edge->v1;
-
-			if( !corner0 || !corner1 ){
-			// Edge of the map; we can't deal with it right now
-			continue;
-			}
-
-			float zp = zScale * p->elevation;
-			float z0 = zScale * corner0->elevation;
-			float z1 = zScale*corner1->elevation;
-			// Verticles
-			s3f vc[3] = {
-					s3f(p->point.x, p->point.y, zp),
-					s3f(corner0->point.x, corner0->point.y, z0),
-					s3f(corner1->point.x, corner1->point.y, z1)
-			};
-
-			// Add position & color to brush
-			for( int i = 0; i < 3; ++i ){
-				int ti = brush.indices_count;
-				arr[ti].verticles = vc[i];
-				brush.indices_list[brush.indices_count++] = ti + brush.point_index;
-				arr[ti].color.set( color );
-			}
-
-		}
-	}
-*/
-	// Render engine cares about all other stuff, not me
-}
-
-
 void MapRender::renderPolygons( int picture )
 {
 	// My Voronoi polygon rendering doesn't handle the boundary
@@ -326,10 +332,10 @@ void MapRender::renderPolygons( int picture )
 	list< VertexV2FT2FC4UI* > lines;
 
 	Center* p;
-	FOREACH1( p, map->centers ) {
+	FOREACH1( p, proto->centers ) {
 		ITER_LIST( Center*, p->neighbors ) {
 			Center* r = it->data;
-			Edge* edge = map->lookupEdgeFromCenter( p, r );
+			Edge* edge = MapGenerator::lookupEdgeFromCenter( p, r );
 			UINT color = BiomesColors[p->biome];
 			preparePolygon( p, edge, color, &lines );
 		}
@@ -345,10 +351,10 @@ void MapRender::renderGradientPolygions( int picture, UINT color_low, UINT color
 	list< VertexV2FT2FC4UI* > lines;
 
 	Center* p;
-	FOREACH1( p, map->centers ) {
+	FOREACH1( p, proto->centers ) {
 		ITER_LIST( Center*, p->neighbors ) {
 			Center* r = it->data;
-			Edge* edge = map->lookupEdgeFromCenter( p, r );
+			Edge* edge = MapGenerator::lookupEdgeFromCenter( p, r );
 
 			if( !edge->v0 || !edge->v1 )
 				continue;
@@ -422,8 +428,6 @@ void MapRender::renderBridges( int picture )
 		}
 	}*/
 }
-
-
 void MapRender::renderRoads( int picture )
 {
 /*	// First draw the roads, because any other feature should draw
@@ -502,10 +506,10 @@ void MapRender::renderEdges( int picture )
 	list< VertexV2FT2FC4UI* > lines;
 
 	Center* p;
-	FOREACH1( p, map->centers ){
+	FOREACH1( p, proto->centers ){
 		ITER_LIST( Center*, p->neighbors ){
 			Center* r = it->data;
-			Edge* edge = map->lookupEdgeFromCenter( p, r );
+			Edge* edge = MapGenerator::lookupEdgeFromCenter( p, r );
 
 			int thikness = 1;
 			UINT color = gcBLACK;
@@ -547,7 +551,7 @@ void MapRender::renderDebugPolygons( int picture )
 	list< VertexV2FT2FC4UI* > lines;
 
 	Center* p;
-	FOREACH1( p, map->centers ){
+	FOREACH1( p, proto->centers ){
 		int color;
 		if( p->biome != bNONE )
 			color = BiomesColors[p->biome];
@@ -586,8 +590,10 @@ void MapRender::renderWatersheds( int picture )
 {
 	list< VertexV2FT2FC4UI* > lines;
 
+	// TODO: prevents corners from being list
+
 	Edge* edge;
-	FOREACH1( edge, map->edges ){
+	FOREACH1( edge, proto->edges ){
 		if( !edge->v0 || !edge->v1 )
 			continue;
 
@@ -596,8 +602,8 @@ void MapRender::renderWatersheds( int picture )
 			int w1 = watersheds.watersheds[edge->d1->index];
 			if( w0 != w1 ){
 				float a = 0.5 * sqrt(
-					( map->corners[w0]->watershed_size || 1 )
-					+ ( map->corners[w1]->watershed->watershed_size	|| 1 ) );
+					( proto->corners[w0]->watershed_size || 1 )
+					+ ( proto->corners[w1]->watershed->watershed_size	|| 1 ) );
 				prepareLine( edge, 3.5, gcBLACK, &lines, a * 255 );
 			}
 		}
@@ -715,7 +721,7 @@ void MapRender::draw( list< VertexV2FT2FC4UI* >& verticles, int picture )
 	VertexV2FT2FC4UI* arr = brush.points();
 
 	s2f offset;
-	TextureInfo* tex = Textures::get_pointer( texture_id );
+	TextureInfo* tex = Textures::get_pointer( proto->texture_id );
 	tex->getTexturePosition( offset, picture );
 
 	int index = 0;
@@ -729,7 +735,7 @@ void MapRender::draw( list< VertexV2FT2FC4UI* >& verticles, int picture )
 		index++;
 	}
 
-	GLTextures::update( &atlas, sprite );
+	GLTextures::update( &proto->atlas, sprite );
 
 	delete sprite;
 	VBuffer::free_buffer( &VBOHandle );

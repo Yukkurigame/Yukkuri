@@ -7,10 +7,12 @@
 #include "utils/bson.h"
 #include "map/Tiles.h"
 #include "map/Chunk.h"
+#include "graphics/render/Textures.h"
 #include "debug.h"
 
 
 #define BINARY(d) (char*)&d
+#define BINARYP(d) (char*)d
 
 #define IF_MATCH( string, type, action )				\
 	if( strcmp( string, bson_iterator_key( it ) ) == 0 ){ \
@@ -34,12 +36,31 @@ int construct_bson( bson* b, ChunkTile* data )
 
 
 template<>
+int construct_bson( bson* b, TextureDump* data )
+{
+	bson_append_start_array( b, "image" );
+		bson_append_string( b, "name", data->texture.id );
+		bson_append_binary( b, "desc", BSON_BINDATA, BINARYP(data), sizeof(TextureDump) );
+		bson_append_binary( b, "data", BSON_BINDATA, data->data, data->size );
+	bson_append_finish_array( b );
+	return 1;
+}
+
+template<>
 int construct_bson( bson* b, RegionMap* data )
 {
 	bson_append_int( b, "seed", data->seed );
 	bson_append_string( b, "seed_string", data->seed_string );
 	bson_append_double( b, "latitude", data->latitude );
 	bson_append_double( b, "longitude", data->longitude );
+
+	TextureDump* tx = new TextureDump;
+	Textures::dump( tx, data->texture_id );
+	construct_bson( b, tx );
+	free(tx->texture.id);
+	free(tx->data);
+	delete tx;
+
 	return 1;
 }
 
@@ -92,6 +113,45 @@ int construct_data( bson_iterator* iter, Biome& data )
 }
 
 
+int construct_data_texture( bson_iterator* parent, UINT& out )
+{
+	bson_iterator it[1];
+	int count = 3;
+	bson_iterator_subiterator( parent, it );
+
+	TextureDump* tx = new TextureDump;
+	// First - load description
+	while( bson_iterator_next( it ) ) {
+		IF_MATCH( "desc", BSON_BINDATA,
+			count -= construct_data_binary( it, tx, sizeof( TextureDump ) ); )
+	}
+
+	// Reset iterator and pointers then load pointers data from bson
+	tx->data = tx->texture.id = NULL;
+	bson_iterator_subiterator( parent, it );
+	while( bson_iterator_next( it ) ) {
+		IF_MATCH( "name", BSON_STRING,
+				count -= construct_data( it, tx->texture.id ); )
+		IF_MATCH( "data", BSON_BINDATA,
+				tx->data = (char*)realloc( tx->data, tx->size );
+				count -= construct_data_binary( it, tx->data, tx->size ); )
+	}
+	count = ( count < 0 ? 0 : ( count > 0 ? 1 : count ) );
+
+	if( !count )
+		out = Textures::load( tx );
+
+	if( tx->texture.id )
+		free( tx->texture.id );
+	if( tx->data )
+		free( tx->data );
+	delete tx;
+
+	return 1 - count;
+}
+
+
+
 int dump_bson( char*& output, bson* b )
 {
 	int length = bson_size( b );
@@ -110,12 +170,15 @@ int dump_bson( RegionMap* data, bson* b )
     while( bson_iterator_next( it ) ) {
 		IF_MATCH( "latitude", BSON_DOUBLE,
 			count += construct_data( it, data->latitude ); )
-		IF_MATCH( "latitude", BSON_DOUBLE,
+		IF_MATCH( "longitude", BSON_DOUBLE,
 			count += construct_data( it, data->longitude ); )
 		IF_MATCH( "seed", BSON_INT,
 			count += construct_data( it, data->seed ); )
-		IF_MATCH( "seed_string", BSON_INT,
+		IF_MATCH( "seed_string", BSON_STRING,
 			count += construct_data( it, data->seed_string ); )
+		IF_MATCH( "image", BSON_ARRAY,
+			count += construct_data_texture( it, data->texture_id );
+    	)
     }
 	return count;
 }

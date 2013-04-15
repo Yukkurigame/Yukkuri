@@ -9,6 +9,15 @@
 
 #include "map/Constants.h"
 
+#define GENERATOR_NUM_POINTS 2000
+// 0 to 1, fraction of water corners for water polygon
+#define GENERATOR_LAKE_THRESHOLD 0.3
+#define GENERATOR_NUM_LLOYD_ITERATIONS 4
+#define GENERATOR_MIN_SIZE = 32;
+#define GENERATOR_SIZE 600
+
+
+
 enum ElevationGradientColors
 {
 	egcOCEAN = 0x008800, egcGRADIENT_LOW = 0x008800, egcGRADIENT_HIGH = 0xffff00
@@ -25,9 +34,8 @@ typedef enum MoistureGradientColors MoistureGradientColor;
 
 enum GeneratorModes
 {
-	gm3d, gmPolygons, gmWatersheds, gmBiome, gmSlopes, gmSmooth, gmElevation, gmMoisture,
+	gmPolygons, gmWatersheds, gmBiome, gmSlopes, gmSmooth, gmElevation, gmMoisture,
 	gmTemperature,
-
 };
 
 typedef enum GeneratorModes GeneratorMode;

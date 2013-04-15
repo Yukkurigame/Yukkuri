@@ -7,6 +7,7 @@
 
 #include "graphics/render/Textures.h"
 #include "graphics/render/Atlas.h"
+#include "graphics/render/GLTextures.h"
 #include "debug.h"
 
 #include "scripts/LuaConfig.h"
@@ -225,3 +226,35 @@ bool Textures::load( )
 	return TextureAtlas::create( &atlasHandle, &normalsHandle, atlasWidth, atlasHeight );
 }
 
+
+
+void Textures::dump( TextureDump* output, UINT id )
+{
+	TextureInfo* tex = get_pointer( id );
+	output->texture.fromTextureInfo(tex);
+	output->texture.id = strdup( tex->id );
+	output->width = (float)tex->swidth / (float)tex->twidth;
+	output->height = (float)tex->sheight / (float)tex->theight;
+	output->size = sizeof(char) * output->width * output->height * 4;
+	output->data = (char*)malloc( output->size );
+
+	bind( tex->atlas, 0 );
+	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
+	glGetTexImage( GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, output->data );
+	unbind( tex->atlas );
+}
+
+
+UINT Textures::load( TextureDump* input )
+{
+	UINT count = textures_count;
+	resize( 1 );
+	TextureInfo& ti = textures[count];
+	ti.fromTextureInfo( &input->texture );
+	ti.id = strdup( input->texture.id );
+	ti.atlas = 0;
+
+	GLTextures::generate( &ti.atlas, input->width, input->height, GL_UNSIGNED_BYTE,
+			input->data );
+	return count;
+}

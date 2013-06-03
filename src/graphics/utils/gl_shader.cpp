@@ -72,6 +72,28 @@ namespace {
 		return buf; /* Return the buffer */
 	}
 
+	int extract_version( char** version, char* buffer )
+	{
+		char* tmpbuf = strdup( buffer );
+		char* endl = strtok( tmpbuf, "\n" );
+		while( strncmp( tmpbuf, "#version", 8 ) != 0 && endl )
+			endl = strtok( NULL, "\n" ); // End of this line
+
+		if( !endl )
+			return 0;
+
+		int len = strlen(tmpbuf);
+		int vlen = len + 2;
+		int buflen = strlen(buffer) - vlen;
+		*version = (char*)malloc(vlen);
+		strncpy( *version, tmpbuf, vlen );
+		(*version)[len] = '\n';
+		memmove( buffer, buffer + vlen, buflen );
+		memset( &buffer[buflen], '\0', vlen );
+		free(tmpbuf);
+		return buflen;
+	}
+
 
 	std::map< enum GLSFlags, GLuint > shaders[glpLast];
 	std::map< enum GLSFlags, UniformHandlers > uniforms[glpLast];
@@ -173,6 +195,7 @@ bool check_shader( GLuint object, int status_name, const char* name )
 
 GLint create_shader( const char* filename, int type, const char* defines )
 {
+	char* version = NULL;
 	/* Pointer will receive the contents of our shader source code files */
 	char* buffer = filetobuf( filename );
 	if( buffer == NULL ){
@@ -180,11 +203,18 @@ GLint create_shader( const char* filename, int type, const char* defines )
 		return -1;
 	}
 
+	if( !extract_version( &version, buffer ) ){
+		free(buffer);
+		Debug::debug( Debug::OS, "Shader version not specified in file %s.\n", filename );
+		return -1;
+	}
+
+
 	int size = 8 + strlen(filename);
 	char* name = (char*)malloc( (unsigned)sizeof(char) * size );
 	snprintf( name, size, "Shader %s", filename );
 
-	const char* sources[2] = { defines, buffer };
+	const char* sources[3] = { version, defines, buffer };
 
 	/* Create an empty shader handle */
 	GLuint shader = glCreateShader( type );
@@ -193,7 +223,7 @@ GLint create_shader( const char* filename, int type, const char* defines )
 	/* Note that the source code is NULL character terminated. */
 	/* GL will automatically detect that therefore the length info can be 0 in this case (the last parameter) */
 
-	glShaderSource( shader, 2, sources, 0 );
+	glShaderSource( shader, 3, sources, 0 );
 
 	/* Compile the shader */
 	glCompileShader( shader );
@@ -204,6 +234,7 @@ GLint create_shader( const char* filename, int type, const char* defines )
 	}
 	// Free allocated resources
 	free(name);
+	free(version);
 	free(buffer);
 
 	return shader;

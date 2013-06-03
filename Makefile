@@ -19,7 +19,7 @@ MAPDIR = map/
 3RDPARTYDIR= 3rdparty/
 UTILSDIR = utils/
 
-UTILS = bson.cpp list.cpp path.cpp utf.cpp
+UTILS = bson.cpp list.cpp path.cpp utf.cpp file.cpp
 CORE = yukkuri.cpp
 UNITS =  unitmanager.cpp ProtoStack.cpp Prototypes.cpp ActionTimer.cpp Scope.cpp Unit.cpp \
 		 UnitStatic.cpp UnitDynamic.cpp UnitEntity.cpp UnitCorpse.cpp UnitPlayer.cpp
@@ -37,9 +37,10 @@ SCRIPTS = Lua.cpp LuaRegister.cpp LuaConfig.cpp LuaScript.cpp LuaThread.cpp prot
 		  api.cpp $(addprefix $(SCRIPTSAPIDIR), $(SCRIPTSAPI))
 WIDGETS = Widget.cpp WidgetText.cpp WidgetBar.cpp
 INTERFACE = Interface.cpp $(addprefix $(WIDGETSDIR), $(WIDGETS))
-MAP = $(addsuffix .cpp, Tiles Chunk Region RegionFile RegionFileCache Map \
-	$(addprefix generator/, MapGen MapGenerator Dumper NoisyEdges Watersheds IslandShape \
-		$(addprefix graph/, Center Corner Edge) ) )
+MAP = $(addsuffix .cpp, Tiles Chunk Region RegionFile RegionFileCache Map Packer \
+	$(addprefix generator/, MapGenerator Dumper NoisyEdges Watersheds IslandShape \
+		$(addprefix graph/, Center Corner Edge) \
+		$(addprefix modules/, Shape Temperature Water Features Render) ) )
 3RDPARTY = CUData.cpp CUDataUser.cpp CUDataTemplates.cpp LuaPusher.cpp rand31.cpp timer/TimerManager.cpp \
 		   $(addprefix objTester/, list.cpp obj_parser.cpp string_extra.cpp) \
 		   $(addprefix bson/, numbers.c encoding.c bson.c ) 
@@ -117,8 +118,8 @@ dirs:
 	 $(SCRIPTSDIR)$(SCRIPTSAPIDIR)$(PUSHERAPIDIR) $(SCRIPTSDIR)$(SCRIPTSAPIDIR)/modules \
 	 $(GRAPHICSDIR) $(GRAPHICSDIR)render/ $(GRAPHICSDIR)sprite/ $(GRAPHICSDIR)utils/ $(UNITSDIR) \
 	 $(INTERFACEDIR) $(INTERFACEDIR)$(WIDGETSDIR) $(MAPDIR) $(MAPDIR)/generator \
-	 $(MAPDIR)/generator/graph $(MAPDIR)/generator/fifth-party $(3RDPARTYDIR) $(3RDPARTYDIR)objTester \
-	 $(3RDPARTYDIR)timer $(3RDPARTYDIR)bson $(PHYSICSDIR))
+	 $(MAPDIR)/generator/graph $(MAPDIR)/generator/modules \
+	 $(3RDPARTYDIR) $(3RDPARTYDIR)objTester $(3RDPARTYDIR)timer $(3RDPARTYDIR)bson $(PHYSICSDIR))
 
 
 clean: cleanheaders cleanobjs cleanprog cleandirs

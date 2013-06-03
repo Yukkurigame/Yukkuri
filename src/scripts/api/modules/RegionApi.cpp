@@ -35,13 +35,28 @@ int RegionApi::loadRegion( lua_State *L )
 {
 	luaL_argcheck( L, lua_isstring( L, 1 ), 1, "Parameter not given." );
 	const char* name = lua_tostring( L, 1 );
-	Region::load( name );
+	int status = Region::load( name );
 	lua_pop( L, 1 );
-	return 0;
+	lua_pushnumber( L, status );
+	return 1;
 }
 
 int RegionApi::imageName( lua_State* L )
 {
 	lua_pushstring( L, Region::get_seed() );
+	return 1;
+}
+
+
+int RegionApi::latitude( lua_State* L )
+{
+	lua_pushnumber( L, Region::get_latitude() );
+	return 1;
+}
+
+
+int RegionApi::longitude( lua_State* L )
+{
+	lua_pushnumber( L, Region::get_longitude() );
 	return 1;
 }

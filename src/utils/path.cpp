@@ -181,21 +181,20 @@ int Path::split( char*** dst, const char* src )
 	int part_end = srcend;
 	char** reverse_names = NULL;
 	while( index > 0 ){
-		while( !is_sep(src[index]) && index > 0 )
+		while( !is_sep(src[index]) && index >= 0 )
 			--index;
 		int part_length = part_end - index;
 		// In separator
 		if( !part_length ){
 			--index;
-			--part_end;
 			continue;
 		}
 
 		count++;
 		reverse_names = (char**)realloc( reverse_names, sizeof(char*) * count );
-		reverse_names[count-1] = (char*)malloc( sizeof(char) * part_length );
-		strncpy( reverse_names[count-1], &src[index+1], part_length );
-		reverse_names[count-1][part_length] = '\0';
+		reverse_names[count-1] = (char*)malloc( sizeof(char) * ( part_length + 1 ) );
+		strncpy( reverse_names[count-1], &src[index+1], part_length-1 );
+		reverse_names[count-1][part_length-1] = '\0';
 		part_end = index;
 	}
 

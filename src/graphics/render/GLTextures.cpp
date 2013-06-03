@@ -116,6 +116,8 @@ Texture* GLTextures::create( std::string name, GLuint texture, int width, int he
 
 /*	This function creates new opengl texture. If texture is exists it will be cleared.
  *	ahandle - pointer to texture id
+ *	target - OpenGL target (GL_TEXTURE_X)
+ *  internalformat - GL internal format
  *	width, height - texture size
  *	returns boolean
  */

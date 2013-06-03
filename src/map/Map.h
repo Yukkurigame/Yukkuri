@@ -5,14 +5,7 @@
 #include "map/Chunk.h"
 
 
-enum {
-	TILE_TYPE_NONE = 0,
-	TILE_TYPE_NORMAL,
-	TILE_TYPE_BLOCK
-};
-
-
-
+/*
 struct posOffset
 {
 	int X;
@@ -32,16 +25,15 @@ struct posOffset
 	posOffset operator *( posOffset a ){ return posOffset( a.X * X, a.Y * Y ); }
 	void operator *=( int a ){ X *= a; Y *= a; }
 	void operator *=( posOffset a ){ X *= a.X; Y *= a.Y; }
-
 };
+*/
+
 
 namespace Map
 {
 
 	bool init( );
 	void clean( );
-
-
 
 	unsigned char isActive( );
 	void setActive( );

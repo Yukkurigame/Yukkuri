@@ -36,6 +36,9 @@ namespace Textures {
 	UINT push( TextureProxy*, GLuint atlas, GLuint normals );
 	void push( list< TextureProxy* >& tarray, GLuint atlas, GLuint normals );
 
+	void dump( TextureDump* output, UINT id );
+	UINT load( TextureDump* input );
+
 }
 
 

@@ -8,10 +8,10 @@
 
 #include "graphics/utils/Image.h"
 #include "utils/path.h"
-#include "SOIL.h"
 #include "config.h"
 #include "safestring.h"
 #include "debug.h"
+#include <SOIL.h>
 #include <cstdlib>
 
 #include <sys/stat.h>

@@ -89,6 +89,7 @@ struct VertexV2FT2FC4UI
 	}
 };
 
+
 struct Texture
 {
 	GLuint tex;
@@ -96,6 +97,7 @@ struct Texture
 	int w;
 	int h;
 };
+
 
 // FIXME: PLEASE, CLEAN AND DESCRIBE THIS SHIT
 // TODO: Describe
@@ -155,6 +157,19 @@ struct TextureInfo
 	{
 	}
 
+	void fromTextureInfo( TextureInfo* t )
+	{
+		rows = t->rows;
+		cols = t->cols;
+		swidth = t->swidth;
+		sheight = t->sheight;
+		twidth = t->twidth;
+		theight = t->theight;
+		atlas = t->atlas;
+		normals = t->normals;
+		pos = t->pos;
+	}
+
 	void fromTextureProxy( TextureProxy* t )
 	{
 		fromTextureProxy( t, 0 );
@@ -208,6 +223,17 @@ struct TextureInfo
 		init_coords( coords, &s, indices, indices_count, count );
 	}
 };
+
+
+struct TextureDump
+{
+	char* data;
+	int size;
+	int width;
+	int height;
+	TextureInfo texture;
+};
+
 
 #define QUAD_TRIANGLES_POINTS 2
 

@@ -13,7 +13,14 @@
 
 
 // Power of two
-#define CHUNK_SIZE 3
+#define CHUNK_SIZE 1
+
+struct ChunkTile
+{
+	s3f position;
+	Biome type;
+	//float height[REGION_CHUNK_SIZE][REGION_CHUNK_SIZE];
+};
 
 
 struct MapChunk
@@ -39,8 +46,11 @@ namespace ChunkManager {
 	int size_p2( );
 
 	const s2i& get_count( );
+
+	/*
 	signed int get_space( s2f& pos );
 	void return_space( unsigned int p );
+	*/
 
 };
 
